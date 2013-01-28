@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.11'
 
+gem 'unicorn', '4.5.0'
+
 gem 'exception_notifier', '1.0.0'
 gem 'aws-ses', '0.4.4', :require => 'aws/ses'
 
