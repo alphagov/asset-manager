@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.11'
 
+gem 'exception_notifier', '1.0.0'
+gem 'aws-ses', '0.4.4', :require => 'aws/ses'
 
 # Gems used only for assets and not required
 # in production environments by default.
