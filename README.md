@@ -1,4 +1,4 @@
-Asset Manager
+Asset Manager (Mule)
 =============
 
 This is an application to manage uploaded assets (images, pdfs etc.) for various applications.
