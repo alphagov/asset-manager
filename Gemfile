@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'rails', '3.2.11'
-gem 'mongoid', '~> 2.4.10'
-gem 'bson_ext', '~> 1.6.4'
+gem 'mongoid', '2.4.12'
+gem 'bson_ext', '1.6.4'
 
 gem 'unicorn', '4.5.0'
 

@@ -131,10 +131,10 @@ PLATFORMS
 
 DEPENDENCIES
   aws-ses (= 0.4.4)
-  bson_ext (~> 1.6.4)
+  bson_ext (= 1.6.4)
   ci_reporter (= 1.8.4)
   exception_notifier (= 1.0.0)
-  mongoid (~> 2.4.10)
+  mongoid (= 2.4.12)
   rails (= 3.2.11)
   rspec-rails (= 2.12.2)
   simplecov-rcov (= 0.2.3)
