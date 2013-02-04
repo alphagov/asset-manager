@@ -9,6 +9,9 @@ gem 'unicorn', '4.5.0'
 gem 'exception_notifier', '1.0.0'
 gem 'aws-ses', '0.4.4', :require => 'aws/ses'
 
+gem 'carrierwave', '0.6.1'
+gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
+
 group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
