@@ -26,7 +26,6 @@ describe AssetsController do
         asset = assigns(:asset)
 
         body = JSON.parse(response.body)
-
         body['asset']['id'].should == "http://test.host/assets/#{asset.id}"
       end
     end
@@ -47,6 +46,48 @@ describe AssetsController do
         post :create, asset: @atts
 
         response.status.should == 422
+      end
+    end
+  end
+
+  describe "GET show" do
+    context "an asset which exists" do
+      before do
+        @asset = FactoryGirl.create(:asset)
+      end
+
+      it "is a successful request" do
+        get :show, id: @asset.id
+
+        response.should be_success
+      end
+
+      it "assigns the asset to the template" do
+        get :show, id: @asset.id
+
+        assigns(:asset).should be_a(Asset)
+        assigns(:asset).id.should == @asset.id
+      end
+
+      it "renders the show template" do
+        get :show, id: @asset.id
+
+        response.should render_template("show")
+      end
+    end
+
+    context "an asset which does not exist" do
+      it "returns a not found status" do
+        get :show, id: "some-gif-or-other"
+
+        response.status.should == 404
+      end
+
+      it "returns a not found message" do
+        get :show, id: "some-gif-or-other"
+
+        body = JSON.parse(response.body)
+        body['_response_info']['status'].should == "not found"
       end
     end
   end
