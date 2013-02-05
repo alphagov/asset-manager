@@ -4,4 +4,6 @@ class Asset
   field :file, type: String
 
   validates :file, presence: true
+
+  mount_uploader :file, AssetUploader
 end
