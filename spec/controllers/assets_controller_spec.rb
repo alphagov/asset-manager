@@ -9,7 +9,7 @@ describe AssetsController do
         @atts = { :file => load_fixture_file("asset.png") }
       end
 
-      it "is uploaded" do
+      it "is persisted" do
         post :create, asset: @atts
 
         assigns(:asset).should be_persisted
@@ -32,8 +32,22 @@ describe AssetsController do
     end
 
     context "an invalid asset" do
-      it "is not uploaded"
-      it "returns an unprocessable status"
+      before do
+        @atts = { :file => nil }
+      end
+
+      it "is not persisted" do
+        post :create, asset: @atts
+
+        assigns(:asset).should_not be_persisted
+        assigns(:asset).file.current_path.should be_nil
+      end
+
+      it "returns an unprocessable status" do
+        post :create, asset: @atts
+
+        response.status.should == 422
+      end
     end
   end
 
