@@ -22,5 +22,7 @@ group :development, :test do
   gem 'rspec-rails', '2.12.2'
   gem 'simplecov-rcov', '0.2.3'
   gem 'ci_reporter', '1.8.4'
+
+  gem "factory_girl_rails", "~> 4.0"
   gem 'mocha', '0.13.2', :require => false
 end
