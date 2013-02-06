@@ -14,6 +14,12 @@ gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
 
 gem 'rabl', '0.6.14'
 
+if ENV['BUNDLE_DEV']
+  gem 'gds-sso', path: '../gds-sso'
+else
+  gem 'gds-sso', '3.0.0'
+end
+
 group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
