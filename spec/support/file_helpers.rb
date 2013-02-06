@@ -11,3 +11,4 @@ module ControllerFileHelpers
   end
 end
 RSpec.configuration.include ControllerFileHelpers, :type => :controller
+RSpec.configuration.include ControllerFileHelpers, :type => :request
