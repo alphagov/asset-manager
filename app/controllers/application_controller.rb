@@ -3,6 +3,11 @@ class ApplicationController < ActionController::Base
 
   private
     def error_404
-      render "base/not_found", :status => 404
+      error 404, "not found"
+    end
+
+    def error(code, message)
+      @status = message
+      render "base/error", :status => code
     end
 end

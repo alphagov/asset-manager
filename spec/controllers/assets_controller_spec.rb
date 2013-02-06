@@ -27,9 +27,9 @@ describe AssetsController do
 
         body = JSON.parse(response.body)
 
-        body['asset']['id'].should == "http://test.host/assets/#{asset.id}"
-        body['asset']['name'].should == "asset.png"
-        body['asset']['content_type'].should == "image/png"
+        body['id'].should == "http://test.host/assets/#{asset.id}"
+        body['name'].should == "asset.png"
+        body['content_type'].should == "image/png"
       end
     end
 

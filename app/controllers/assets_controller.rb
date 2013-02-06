@@ -14,7 +14,7 @@ class AssetsController < ApplicationController
     if @asset.save
       render "create", :status => :created
     else
-      render :json => { :errors => @asset.errors.full_messages }, :status => :unprocessable_entity
+      error 422, @asset.errors.full_messages
     end
   end
 
