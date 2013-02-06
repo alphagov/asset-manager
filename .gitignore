@@ -16,3 +16,6 @@
 
 /coverage
 /spec/reports
+
+# Upload directory should be clean
+/uploads
