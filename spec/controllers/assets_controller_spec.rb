@@ -20,13 +20,16 @@ describe AssetsController do
 
         response.status.should == 201
       end
-      it "returns the location of the new asset" do
+      it "returns the location and details of the new asset" do
         post :create, asset: @atts
 
         asset = assigns(:asset)
 
         body = JSON.parse(response.body)
+
         body['asset']['id'].should == "http://test.host/assets/#{asset.id}"
+        body['asset']['name'].should == "asset.png"
+        body['asset']['content_type'].should == "image/png"
       end
     end
 
