@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+source 'https://gems.gemfury.com/vo6ZrmjBQu5szyywDszE/'
 
 gem 'rails', '3.2.11'
 gem 'mongoid', '2.4.12'
@@ -13,6 +14,12 @@ gem 'carrierwave', '0.6.1'
 gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
 
 gem 'rabl', '0.6.14'
+
+if ENV['BUNDLE_DEV']
+  gem 'gds-sso', path: '../gds-sso'
+else
+  gem 'gds-sso', '3.0.0'
+end
 
 group :assets do
   gem 'uglifier', '>= 1.0.3'

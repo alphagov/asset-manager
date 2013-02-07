@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe "Asset requests" do
 
+  before(:each) do
+    login_as_stub_user
+  end
+
   describe "uploading an asset" do
     it "creates an asset with the file provided" do
       post "/assets", :asset => { :file => load_fixture_file("asset.png") }

@@ -3,6 +3,10 @@ require 'spec_helper'
 describe AssetsController do
   render_views # for json responses
 
+  before(:each) do
+    login_as_stub_user
+  end
+
   describe "POST create" do
     context "a valid asset" do
       before do
