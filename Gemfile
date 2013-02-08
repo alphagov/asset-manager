@@ -7,7 +7,7 @@ gem 'bson_ext', '1.6.4'
 
 gem 'unicorn', '4.5.0'
 
-gem 'exception_notifier', '1.0.0'
+gem 'exception_notification', '2.6.1'
 gem 'aws-ses', '0.4.4', :require => 'aws/ses'
 
 gem 'carrierwave', '0.6.1'
