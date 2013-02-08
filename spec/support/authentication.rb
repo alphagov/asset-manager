@@ -8,7 +8,7 @@ module AuthenticationControllerHelpers
   end
 
   def stub_user
-    ReadOnlyUser.first
+    FactoryGirl.create(:user)
   end
 
   def login_as_stub_user
@@ -23,7 +23,7 @@ module AuthenticationFeatureHelpers
   end
 
   def stub_user
-    ReadOnlyUser.first
+    FactoryGirl.create(:user)
   end
 
   def login_as_stub_user
