@@ -1,7 +1,6 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Asset do
-
   describe "creating an asset" do
     it "should be valid given a file" do
       a = Asset.new(:file => load_fixture_file("asset.png"))
@@ -13,7 +12,7 @@ describe Asset do
       a.should_not be_valid
     end
 
-    it "should be created" do
+    it "should be persisted" do
       CarrierWave::Mount::Mounter.any_instance.expects(:store!)
 
       a = Asset.new(:file => load_fixture_file("asset.png"))
@@ -22,5 +21,4 @@ describe Asset do
       a.should be_persisted
     end
   end
-
 end
