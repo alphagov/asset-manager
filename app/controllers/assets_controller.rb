@@ -18,8 +18,8 @@ class AssetsController < ApplicationController
     end
   end
 
-  private
-    def restrict_request_format
-      request.format = :json
-    end
+private
+  def restrict_request_format
+    request.format = :json
+  end
 end

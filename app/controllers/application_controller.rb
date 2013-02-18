@@ -5,13 +5,13 @@ class ApplicationController < ActionController::Base
   before_filter :authenticate_user!
   before_filter :require_signin_permission!
 
-  private
-    def error_404
-      error 404, "not found"
-    end
+private
+  def error_404
+    error 404, "not found"
+  end
 
-    def error(code, message)
-      @status = message
-      render "base/error", :status => code
-    end
+  def error(code, message)
+    @status = message
+    render "base/error", :status => code
+  end
 end
