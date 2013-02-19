@@ -1,7 +1,6 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe "Asset requests" do
-
   before(:each) do
     login_as_stub_user
   end
