@@ -41,6 +41,7 @@ describe "Asset requests" do
       body["id"].should == "http://www.example.com/assets/#{asset.id}"
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
+      body["file_url"].should == "http://www.example.com/files/#{asset.id}/asset.png"
     end
 
     it "cannot retrieve details about an asset which does not exist" do
@@ -51,5 +52,4 @@ describe "Asset requests" do
       body["_response_info"]["status"].should == "not found"
     end
   end
-
 end
