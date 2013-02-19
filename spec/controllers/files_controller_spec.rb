@@ -12,8 +12,8 @@ describe FilesController do
         get :download, :id => @asset.id, :filename => @asset.file.identifier
       end
 
-      it "should response with 200" do
-        response.status.should == 200
+      it "should load successfully" do
+        response.should be_success
       end
 
       it "should have the correct content type" do
