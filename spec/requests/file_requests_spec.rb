@@ -11,4 +11,15 @@ describe "File requests" do
       response.status.should == 404
     end
   end
+
+  describe "request an asset that does exist" do
+    it "should return the file we requested" do
+      asset = FactoryGirl.create(:asset)
+
+      get "/files/#{asset.id}/asset.png"
+
+      response.should be_success
+      Digest::MD5.hexdigest(body).should == Digest::MD5.hexdigest(File.open(asset.file.path).read)
+    end
+  end
 end
