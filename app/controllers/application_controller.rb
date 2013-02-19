@@ -13,6 +13,6 @@ private
 
   def error(code, message)
     @status = message
-    render "base/error", :status => code
+    render "base/error", :status => code, :handlers => :rabl, :formats => [:json]
   end
 end
