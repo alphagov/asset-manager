@@ -31,7 +31,7 @@ describe AssetsController do
 
         body = JSON.parse(response.body)
 
-        body['id'].should == "http://test.host/assets/#{asset.id}"
+        body['id'].should == "http://test.host/#{ASSET_PREFIX}/assets/#{asset.id}"
         body['name'].should == "asset.png"
         body['content_type'].should == "image/png"
       end
