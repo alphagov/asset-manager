@@ -16,14 +16,8 @@ describe FilesController do
         response.should be_success
       end
 
-      context "File headers" do
-        it "should have the correct content type" do
-          response.headers["Content-Type"].should == "image/png"
-        end
-
-        it "should set the X-Sendfile header" do
-          response.headers["X-Sendfile"] == @asset.file.identifier
-        end
+      it "should have the correct content type" do
+        response.headers["Content-Type"].should == "image/png"
       end
 
       context "Cache headers" do

@@ -13,13 +13,14 @@ describe "File requests" do
   end
 
   describe "request an asset that does exist" do
-    it "should return the file we requested" do
-      asset = FactoryGirl.create(:asset)
+    before(:each) do
+      @asset = FactoryGirl.create(:asset)
+      get "/#{ASSET_PREFIX}/files/#{@asset.id}/asset.png"
+    end
 
-      get "/#{ASSET_PREFIX}/files/#{asset.id}/asset.png"
-
+    it "should set the X-Sendfile header" do
       response.should be_success
-      Digest::MD5.hexdigest(body).should == Digest::MD5.hexdigest(File.open(asset.file.path).read)
+      response.headers["X-Sendfile"].should == @asset.file.path
     end
   end
 end
