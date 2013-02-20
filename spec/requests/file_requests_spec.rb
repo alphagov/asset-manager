@@ -15,12 +15,16 @@ describe "File requests" do
   describe "request an asset that does exist" do
     before(:each) do
       @asset = FactoryGirl.create(:asset)
-      get "/#{ASSET_PREFIX}/files/#{@asset.id}/asset.png"
+
+      get "/#{ASSET_PREFIX}/files/#{@asset.id}/asset.png", nil, {
+        "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
+        "HTTP_X_ACCEL_MAPPING" => "/var/govuk/asset-manager/spec/support/uploads/asset/=/media/"
+      }
     end
 
-    it "should set the X-Sendfile header" do
+    it "should set the X-Accel-Redirect header" do
       response.should be_success
-      response.headers["X-Sendfile"].should == @asset.file.path
+      response.headers["X-Accel-Redirect"].should == "/media/#{@asset.id}/#{@asset.file.identifier}"
     end
   end
 end
