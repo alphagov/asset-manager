@@ -7,19 +7,19 @@ describe "Asset requests" do
 
   describe "uploading an asset" do
     it "creates an asset with the file provided" do
-      post "/#{ASSET_PREFIX}/assets", :asset => { :file => load_fixture_file("asset.png") }
+      post "/assets", :asset => { :file => load_fixture_file("asset.png") }
       body = JSON.parse(response.body)
 
       response.status.should == 201
       body["_response_info"]["status"].should == "created"
 
-      body["id"].should =~ %r{http://www.example.com/#{ASSET_PREFIX}/assets/[a-z0-9]+}
+      body["id"].should =~ %r{http://www.example.com/assets/[a-z0-9]+}
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
     end
 
     it "cannot create an asset without a file" do
-      post "/#{ASSET_PREFIX}/assets", :asset => { :file => nil }
+      post "/assets", :asset => { :file => nil }
       body = JSON.parse(response.body)
 
       response.status.should == 422
@@ -31,20 +31,20 @@ describe "Asset requests" do
     it "retreives details about an existing asset" do
       asset = FactoryGirl.create(:asset)
 
-      get "/#{ASSET_PREFIX}/assets/#{asset.id}"
+      get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
 
       response.status.should == 200
       body["_response_info"]["status"].should == "ok"
 
-      body["id"].should == "http://www.example.com/#{ASSET_PREFIX}/assets/#{asset.id}"
+      body["id"].should == "http://www.example.com/assets/#{asset.id}"
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
-      body["file_url"].should == "http://www.example.com/#{ASSET_PREFIX}/files/#{asset.id}/asset.png"
+      body["file_url"].should == "http://www.example.com/files/#{asset.id}/asset.png"
     end
 
     it "cannot retrieve details about an asset which does not exist" do
-      get "/#{ASSET_PREFIX}/assets/blah"
+      get "/assets/blah"
       body = JSON.parse(response.body)
 
       response.status.should == 404

@@ -1,9 +1,5 @@
 AssetManager::Application.routes.draw do
-  scope :path => "#{ASSET_PREFIX}" do
-    resources :assets, :only => [:show, :create]
-    match "files/:id/:filename" => "files#download",
-          :constraints => { :filename => /.*/ }
-  end
+  resources :assets, :only => [:show, :create]
 
-  root :to => redirect("/#{ASSET_PREFIX}", :status => 302)
+  match "files/:id/:filename" => "files#download", :constraints => { :filename => /.*/ }
 end

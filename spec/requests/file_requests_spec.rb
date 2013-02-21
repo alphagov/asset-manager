@@ -7,7 +7,7 @@ describe "File requests" do
 
   describe "requesting an asset that doesn't exist" do
     it "should respond with file not found" do
-      get "/#{ASSET_PREFIX}/files/34/test.jpg"
+      get "/files/34/test.jpg"
       response.status.should == 404
     end
   end
@@ -16,7 +16,7 @@ describe "File requests" do
     before(:each) do
       @asset = FactoryGirl.create(:asset)
 
-      get "/#{ASSET_PREFIX}/files/#{@asset.id}/asset.png", nil, {
+      get "/files/#{@asset.id}/asset.png", nil, {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
         "HTTP_X_ACCEL_MAPPING" => "/var/govuk/asset-manager/spec/support/uploads/asset/=/media/"
       }
