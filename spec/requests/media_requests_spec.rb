@@ -18,7 +18,7 @@ describe "Media requests" do
 
       get "/media/#{@asset.id}/asset.png", nil, {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => "/var/govuk/asset-manager/spec/support/uploads/asset/=/raw/"
+        "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/spec/support/uploads/asset/=/raw/"
       }
     end
 
