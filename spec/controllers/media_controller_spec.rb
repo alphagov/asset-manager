@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe FilesController do
+describe MediaController do
   before(:each) do
     login_as_stub_user
   end

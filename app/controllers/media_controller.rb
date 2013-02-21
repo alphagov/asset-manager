@@ -1,4 +1,4 @@
-class FilesController < ApplicationController
+class MediaController < ApplicationController
   rescue_from Mongoid::Errors::DocumentNotFound, :with => :error_404
   rescue_from BSON::InvalidObjectId, :with => :error_404
 
