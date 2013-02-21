@@ -1,5 +1,6 @@
 class AssetsController < ApplicationController
   before_filter :restrict_request_format
+  before_filter :set_cache
 
   rescue_from Mongoid::Errors::DocumentNotFound, :with => :error_404
   rescue_from BSON::InvalidObjectId, :with => :error_404
