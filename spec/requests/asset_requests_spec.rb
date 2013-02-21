@@ -40,7 +40,7 @@ describe "Asset requests" do
       body["id"].should == "http://www.example.com/assets/#{asset.id}"
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
-      body["file_url"].should == "http://www.example.com/media/#{asset.id}/asset.png"
+      body["file_url"].should == "https://static.test.gov.uk/media/#{asset.id}/asset.png"
     end
 
     it "cannot retrieve details about an asset which does not exist" do
