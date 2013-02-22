@@ -21,7 +21,7 @@ else
   gem 'gds-sso', '3.0.0'
 end
 
-gem 'plek', '1.1.0'
+gem 'plek', '1.3.0'
 
 group :assets do
   gem 'uglifier', '>= 1.0.3'
