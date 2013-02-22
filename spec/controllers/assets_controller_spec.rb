@@ -58,29 +58,6 @@ describe AssetsController do
   end
 
   describe "GET show" do
-    context "Cache headers" do
-      before do
-        asset = FactoryGirl.create(:asset)
-        get :show, id: asset.id
-      end
-
-      it "should have a max-age of 30 minutes" do
-        response.headers["Cache-Control"].should include "max-age=1800"
-      end
-
-      it "should have a public directive" do
-        response.headers["Cache-Control"].should include "public"
-      end
-
-      it "should have a stale-if-error of 1 day" do
-        response.headers["Cache-Control"].should include "stale-if-error=86400"
-      end
-
-      it "should have a stale-while-revalidate of 1 day" do
-        response.headers["Cache-Control"].should include "stale-while-revalidate=86400"
-      end
-    end
-
     context "an asset which exists" do
       before do
         @asset = FactoryGirl.create(:asset)
