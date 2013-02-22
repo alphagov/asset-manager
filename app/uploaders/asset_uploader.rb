@@ -5,7 +5,7 @@ class AssetUploader < CarrierWave::Uploader::Base
   storage :file
 
   def store_dir
-    id = model.id
+    id = model.id.to_s
     path = id.scan(/\d{2}/)[0..1].join("/")
     "#{Rails.root}/uploads/assets/#{path}/#{id}"
   end
