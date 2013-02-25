@@ -7,7 +7,7 @@ class AssetUploader < CarrierWave::Uploader::Base
   def store_dir
     id = model.id.to_s
     path = id.scan(/\d{2}/)[0..1].join("/")
-    "#{Rails.root}/uploads/assets/#{path}/#{id}"
+    "#{ENV['GOVUK_APP_ROOT']}/uploads/assets/#{path}/#{id}"
   end
 
   def cache_dir
