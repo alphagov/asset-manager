@@ -3,9 +3,6 @@ class AssetsController < ApplicationController
   before_filter :require_signin_permission!
   before_filter :restrict_request_format
 
-  rescue_from Mongoid::Errors::DocumentNotFound, :with => :error_404
-  rescue_from BSON::InvalidObjectId, :with => :error_404
-
   def show
     @asset = Asset.find(params[:id])
   end

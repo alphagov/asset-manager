@@ -3,6 +3,9 @@ class ApplicationController < ActionController::Base
 
   include GDS::SSO::ControllerMethods
 
+  rescue_from Mongoid::Errors::DocumentNotFound, :with => :error_404
+  rescue_from BSON::InvalidObjectId, :with => :error_404
+
 private
   def error_404
     error 404, "not found"
