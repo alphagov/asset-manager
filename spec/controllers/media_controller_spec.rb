@@ -1,10 +1,6 @@
 require "spec_helper"
 
 describe MediaController do
-  before(:each) do
-    login_as_stub_user
-  end
-
   describe "GET files" do
     describe "HTTP headers" do
       before(:each) do

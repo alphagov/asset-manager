@@ -1,10 +1,6 @@
 require "spec_helper"
 
 describe "Media requests" do
-  before(:each) do
-    login_as_stub_user
-  end
-
   describe "requesting an asset that doesn't exist" do
     it "should respond with file not found" do
       get "/media/34/test.jpg"
