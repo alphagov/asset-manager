@@ -1,4 +1,6 @@
 class MediaController < ApplicationController
+  skip_before_filter :authenticate_user!
+  skip_before_filter :require_signin_permission!
   before_filter { set_expiry(24.hours) }
 
   def download
