@@ -15,8 +15,7 @@ private
   end
 
   def error(code, message)
-    @status = message
-    render "base/error", :status => code, :handlers => :rabl, :formats => [:json]
+    render :json => {:_response_info => {:status => message}}, :status => code
   end
 
   def set_expiry(duration = 30.minutes)

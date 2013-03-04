@@ -75,12 +75,6 @@ describe AssetsController do
         assigns(:asset).should be_a(Asset)
         assigns(:asset).id.should == @asset.id
       end
-
-      it "renders the show template" do
-        get :show, id: @asset.id
-
-        response.should render_template("show")
-      end
     end
 
     context "an asset which does not exist" do
