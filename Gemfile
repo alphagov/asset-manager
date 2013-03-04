@@ -14,6 +14,7 @@ gem 'carrierwave', '0.6.1'
 gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
 
 gem 'rabl', '0.6.14'
+gem 'draper', '1.1.0'
 
 if ENV['BUNDLE_DEV']
   gem 'gds-sso', path: '../gds-sso'
