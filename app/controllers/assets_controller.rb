@@ -4,14 +4,14 @@ class AssetsController < ApplicationController
   def show
     @asset = Asset.find(params[:id])
 
-    render :json => @asset.decorate
+    render :json => AssetPresenter.new(@asset, view_context)
   end
 
   def create
     @asset = Asset.new(params[:asset])
 
     if @asset.save
-      render :json => @asset.decorate.as_json(:status => :created), :status => :created
+      render :json => AssetPresenter.new(@asset, view_context).as_json(:status => :created), :status => :created
     else
       error 422, @asset.errors.full_messages
     end
