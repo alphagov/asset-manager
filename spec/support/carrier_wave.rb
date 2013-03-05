@@ -2,20 +2,20 @@ CarrierWave::Uploader::Base.descendants.each do |klass|
   next if klass.anonymous?
   klass.class_eval do
     def cache_dir
-      "#{Rails.root}/spec/support/uploads/tmp"
+      "#{Rails.root}/tmp/test_uploads/tmp"
     end
 
     def store_dir
-      "#{Rails.root}/spec/support/uploads/#{model.class.to_s.underscore}/#{model.id}"
+      "#{Rails.root}/tmp/test_uploads/#{model.class.to_s.underscore}/#{model.id}"
     end
   end
 end
 
 def clean_upload_directory!
-  FileUtils.rm_rf(Dir["#{Rails.root}/spec/support/uploads/[^.]*"])
+  FileUtils.rm_rf(Dir["#{Rails.root}/tmp/test_uploads/[^.]*"])
 end
 
-RSpec.configuration.after(:all) do
+RSpec.configuration.after(:suite) do
   clean_upload_directory!
 end
 
