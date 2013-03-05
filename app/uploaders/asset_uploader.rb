@@ -6,7 +6,7 @@ class AssetUploader < CarrierWave::Uploader::Base
 
   def store_dir
     id = model.id.to_s
-    path = id.scan(/\d{2}/)[0..1].join("/")
+    path = id.match(/\A(..)(..)/)[1..2].join(File::SEPARATOR)
     "#{ENV['GOVUK_APP_ROOT']}/uploads/assets/#{path}/#{id}"
   end
 
