@@ -21,7 +21,7 @@ describe "Media requests" do
     it "should set the X-Accel-Redirect header" do
       response.should be_success
       id = @asset.id.to_s
-      response.headers["X-Accel-Redirect"].should == "/raw/#{id[0..1]}/#{id[2..3]}/#{id}/#{@asset.file.identifier}"
+      response.headers["X-Accel-Redirect"].should == "/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{@asset.file.identifier}"
     end
   end
 end
