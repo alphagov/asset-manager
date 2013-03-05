@@ -13,7 +13,7 @@ describe Asset do
     end
 
     it "should be persisted" do
-      CarrierWave::Mount::Mounter.any_instance.expects(:store!)
+      CarrierWave::Mount::Mounter.any_instance.should_receive(:store!)
 
       a = Asset.new(:file => load_fixture_file("asset.png"))
       a.save

@@ -31,7 +31,7 @@ describe "Asset requests" do
     it "retreives details about an existing asset" do
       asset = FactoryGirl.create(:asset)
 
-      Plek.any_instance.stubs(:asset_root).returns("http://assets.digital.cabinet-office.gov.uk")
+      Plek.any_instance.stub(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
