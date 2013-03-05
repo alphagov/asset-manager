@@ -14,13 +14,14 @@ describe "Media requests" do
 
       get "/media/#{@asset.id}/asset.png", nil, {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/asset/=/raw/"
+        "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
       }
     end
 
     it "should set the X-Accel-Redirect header" do
       response.should be_success
-      response.headers["X-Accel-Redirect"].should == "/raw/#{@asset.id}/#{@asset.file.identifier}"
+      id = @asset.id.to_s
+      response.headers["X-Accel-Redirect"].should == "/raw/#{id[0..1]}/#{id[2..3]}/#{id}/#{@asset.file.identifier}"
     end
   end
 end
