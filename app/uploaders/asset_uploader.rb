@@ -6,12 +6,16 @@ class AssetUploader < CarrierWave::Uploader::Base
 
   def store_dir
     id = model.id.to_s
-    path = id.match(/\A(..)(..)/)[1..2].join(File::SEPARATOR)
-    "#{ENV['GOVUK_APP_ROOT']}/uploads/assets/#{path}/#{id}"
+    "#{store_base_dir}/assets/#{id[0..1]}/#{id[2..3]}/#{id}"
   end
 
   def cache_dir
-    "/tmp/uploads"
+    "#{store_base_dir}/tmp"
+  end
+
+  # Split out the base storage dir so that it can be overridden in tests.
+  def store_base_dir
+    "#{ENV['GOVUK_APP_ROOT']}/uploads"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
