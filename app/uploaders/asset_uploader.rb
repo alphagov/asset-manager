@@ -6,7 +6,9 @@ class AssetUploader < CarrierWave::Uploader::Base
 
   def store_dir
     id = model.id.to_s
-    "#{store_base_dir}/assets/#{id[0..1]}/#{id[2..3]}/#{id}"
+    # We use chars 2-5 of the timestamp portion of the BSON id (see http://docs.mongodb.org/manual/core/object-id/)
+    # to achieve a good distribution of directories
+    "#{store_base_dir}/assets/#{id[2..3]}/#{id[4..5]}/#{id}"
   end
 
   def cache_dir
