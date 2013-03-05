@@ -23,5 +23,10 @@ describe "Media requests" do
       id = @asset.id.to_s
       response.headers["X-Accel-Redirect"].should == "/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{@asset.file.identifier}"
     end
+
+    it "should set the correct content headers" do
+      response.headers["Content-Type"].should == "image/png"
+      response.headers["Content-Disposition"].should == 'inline; filename="asset.png"'
+    end
   end
 end

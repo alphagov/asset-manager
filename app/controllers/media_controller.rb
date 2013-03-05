@@ -8,7 +8,7 @@ class MediaController < ApplicationController
     error_404 if @asset.nil? || @asset.file.file.identifier != params[:filename]
 
     respond_to do |format|
-      format.any { send_file(@asset.file.path) }
+      format.any { send_file(@asset.file.path, :disposition => 'inline') }
     end
   end
 
