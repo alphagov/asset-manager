@@ -11,12 +11,4 @@ class MediaController < ApplicationController
       format.any { send_file(@asset.file.path, :disposition => 'inline') }
     end
   end
-
-  def redirect
-    @asset = Asset.find(params[:id])
-    error_404 if @asset.nil?
-
-    redirect_to(:action => "download", :status => 301,
-                :id => @asset.id, :filename => @asset.file.file.identifier)
-  end
 end

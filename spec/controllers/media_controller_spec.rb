@@ -34,21 +34,5 @@ describe MediaController do
         end
       end
     end
-
-    describe "redirect" do
-      it "should be a 404 page if the asset doesn't exist" do
-        get :redirect, :id => "goble-de-gook"
-
-        response.should_not be_success
-      end
-
-      it "should be a redirect to a path with the filename" do
-        asset = FactoryGirl.create(:asset)
-        get :redirect, :id => asset.id
-
-        response.should redirect_to(:action => "download", :id => asset.id,
-                                    :filename => asset.file.file.identifier)
-      end
-    end
   end
 end
