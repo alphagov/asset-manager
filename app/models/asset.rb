@@ -11,13 +11,16 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
+  before_save :reset_state_if_file_changed
+  after_save :schedule_virus_scan
+
   state_machine :state, :initial => :unscanned do
     event :scanned_clean do
-      transition :unscanned => :clean
+      transition any => :clean
     end
 
     event :scanned_infected do
-      transition :unscanned => :infected
+      transition any => :infected
     end
   end
 
@@ -28,5 +31,16 @@ class Asset
     else
       self.scanned_infected
     end
+  end
+
+  private
+
+  def reset_state_if_file_changed
+    if self.file_changed?
+      self.state = 'unscanned'
+    end
+  end
+  def schedule_virus_scan
+    self.delay.scan_for_viruses if self.unscanned?
   end
 end
