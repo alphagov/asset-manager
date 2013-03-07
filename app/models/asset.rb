@@ -2,6 +2,7 @@ require 'virus_scanner'
 
 class Asset
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   field :file, type: String
   field :state, type: String, default: 'unscanned'
