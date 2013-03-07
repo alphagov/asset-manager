@@ -17,7 +17,7 @@ class AssetUploader < CarrierWave::Uploader::Base
 
   # Split out the base storage dir so that it can be overridden in tests.
   def store_base_dir
-    "#{ENV['GOVUK_APP_ROOT']}/uploads"
+    "#{ENV['GOVUK_APP_ROOT'] || Rails.root}/uploads"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
