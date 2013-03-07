@@ -7,6 +7,11 @@ FactoryGirl.define do
       a.scanned_clean!
     end
   end
+  factory :infected_asset, :parent => :asset do
+    after :create do |a|
+      a.scanned_infected!
+    end
+  end
 
   factory :user do
     sequence(:name) { |n| "Winston #{n}"}

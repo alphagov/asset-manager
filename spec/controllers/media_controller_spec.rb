@@ -3,9 +3,9 @@ require "spec_helper"
 describe MediaController do
 
   describe "GET 'download'" do
-    context "with a valid file" do
+    context "with a valid clean file" do
       before :each do
-        @asset = FactoryGirl.create(:asset)
+        @asset = FactoryGirl.create(:clean_asset)
       end
 
       def do_get
@@ -33,6 +33,28 @@ describe MediaController do
         do_get
 
         response.headers["Cache-Control"].should == "max-age=86400, public"
+      end
+    end
+
+    context "with an unscanned file" do
+      before :each do
+        @asset = FactoryGirl.create(:asset)
+      end
+
+      it "should return a 404" do
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        response.code.to_i.should == 404
+      end
+    end
+
+    context "with an infected file" do
+      before :each do
+        @asset = FactoryGirl.create(:infected_asset)
+      end
+
+      it "should return a 404" do
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        response.code.to_i.should == 404
       end
     end
 

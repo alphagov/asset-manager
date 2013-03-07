@@ -4,7 +4,7 @@ class MediaController < ApplicationController
 
   def download
     @asset = Asset.find(params[:id])
-    unless @asset.file.file.identifier == params[:filename]
+    unless @asset.file.file.identifier == params[:filename] and @asset.clean?
       error_404
       return
     end

@@ -1,9 +1,11 @@
 require "spec_helper"
 
-
 describe "Virus scanning of uploaded images" do
+  before :each do
+    login_as_stub_user
+  end
 
-  specify "uploading a clean asset, and seeing it available after virus scanning", :pending => true do
+  specify "uploading a clean asset, and seeing it available after virus scanning" do
     post "/assets", :asset => { :file => load_fixture_file("lorem.txt") }
     response.status.should == 201
 
@@ -15,7 +17,7 @@ describe "Virus scanning of uploaded images" do
     get "/media/#{@asset.id}/lorem.txt"
     response.status.should == 404
 
-    # Run virus scanning
+    run_all_delayed_jobs
 
     get "/media/#{@asset.id}/lorem.txt"
     response.status.should == 200
@@ -36,13 +38,13 @@ describe "Virus scanning of uploaded images" do
       @tempfile = Tempfile.new(@original_filename)
       @tempfile.set_encoding(Encoding::BINARY) if @tempfile.respond_to?(:set_encoding)
 
-      @tempfile.write "X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STAN"
-      @tempfile.write "DARD-ANTIVIRUS-TEST-FILE!$H+H*"
+      @tempfile.write 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STAN'
+      @tempfile.write 'DARD-ANTIVIRUS-TEST-FILE!$H+H*'
       @tempfile.rewind
     end
   end
 
-  specify "uploading an infected asset, and not seeing it available after virus scanning", :pending => true do
+  specify "uploading an infected asset, and not seeing it available after virus scanning" do
     post "/assets", :asset => { :file => UploadedVirus.new }
     response.status.should == 201
 
@@ -54,7 +56,7 @@ describe "Virus scanning of uploaded images" do
     get "/media/#{@asset.id}/eicar.com"
     response.status.should == 404
 
-    # Run virus scanning
+    run_all_delayed_jobs
 
     get "/media/#{@asset.id}/eicar.com"
     response.status.should == 404

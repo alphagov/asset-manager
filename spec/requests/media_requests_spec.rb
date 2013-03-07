@@ -10,7 +10,7 @@ describe "Media requests" do
 
   describe "request an asset that does exist" do
     before(:each) do
-      @asset = FactoryGirl.create(:asset)
+      @asset = FactoryGirl.create(:clean_asset)
 
       get "/media/#{@asset.id}/asset.png", nil, {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
