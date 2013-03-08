@@ -47,13 +47,5 @@ describe VirusScanner do
         @scanner.clean?
       end.should raise_error(VirusScanner::Error, "ERROR: Can't access file /path/to/file")
     end
-
-    it "should raise an error if the Open3 call fails" do
-      Open3.stub(:capture2e).and_raise(Errno::ENOENT.new("govuk_clamscan"))
-
-      lambda do
-        @scanner.clean?
-      end.should raise_error(VirusScanner::Error, "No such file or directory - govuk_clamscan")
-    end
   end
 end

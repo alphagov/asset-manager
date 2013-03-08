@@ -28,10 +28,8 @@ class VirusScanner
       @clean = false
       @virus_info = out_str
     else
-      raise Error.new(out_str)
+      raise Error, out_str
     end
     @scanned = true
-  rescue SystemCallError => e
-    raise Error.new(e)
   end
 end

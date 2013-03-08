@@ -88,7 +88,7 @@ describe Asset do
       @asset.state.should == 'infected'
     end
 
-    it "should not change the state, and raise an error if there is an error scanning" do
+    it "should not change the state, and pass throuth the error if there is an error scanning" do
       VirusScanner.any_instance.stub(:clean?).and_raise(VirusScanner::Error.new("Boom!"))
 
       lambda do
