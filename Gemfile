@@ -13,6 +13,11 @@ gem 'aws-ses', '0.4.4', :require => 'aws/ses'
 gem 'carrierwave', '0.6.1'
 gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
 
+gem 'state_machine', '1.1.2'
+
+gem 'delayed_job', '3.0.5'
+gem 'delayed_job_mongoid', '1.1.0'
+
 if ENV['BUNDLE_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
@@ -27,6 +32,8 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '2.12.2'
+  gem 'database_cleaner', '0.9.1'
+
   gem 'simplecov-rcov', '0.2.3'
   gem 'ci_reporter', '1.8.4'
 
