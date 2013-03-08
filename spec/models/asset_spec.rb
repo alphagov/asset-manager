@@ -79,24 +79,52 @@ describe Asset do
       @asset.state.should == 'clean'
     end
 
-    it "should set the state to infected if a virus is found" do
-      VirusScanner.any_instance.stub(:clean?).and_return(false)
+    context "when a virus is found" do
+      before :each do
+        VirusScanner.any_instance.stub(:clean?).and_return(false)
+        VirusScanner.any_instance.stub(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
+      end
 
-      @asset.scan_for_viruses
+      it "should set the state to infected if a virus is found" do
+        @asset.scan_for_viruses
 
-      @asset.reload
-      @asset.state.should == 'infected'
+        @asset.reload
+        @asset.state.should == 'infected'
+      end
+
+      it "should send an exception notification" do
+        ExceptionNotifier::Notifier.should_receive(:background_exception_notification).
+          with(VirusScanner::InfectedFile.new, :data => {:virus_info => "/path/to/file: Eicar-Test-Signature FOUND"})
+
+        @asset.scan_for_viruses
+      end
     end
 
-    it "should not change the state, and pass throuth the error if there is an error scanning" do
-      VirusScanner.any_instance.stub(:clean?).and_raise(VirusScanner::Error.new("Boom!"))
+    context "when there is an error scanning" do
+      before :each do
+        @error = VirusScanner::Error.new("Boom!")
+        VirusScanner.any_instance.stub(:clean?).and_raise(@error)
+      end
 
-      lambda do
-        @asset.scan_for_viruses
-      end.should raise_error(VirusScanner::Error, "Boom!")
+      it "should not change the state, and pass throuth the error if there is an error scanning" do
+        lambda do
+          @asset.scan_for_viruses
+        end.should raise_error(VirusScanner::Error, "Boom!")
 
-      @asset.reload
-      @asset.state.should == "unscanned"
+        @asset.reload
+        @asset.state.should == "unscanned"
+      end
+
+      it "should send an exception notification" do
+        ExceptionNotifier::Notifier.should_receive(:background_exception_notification).
+          with(@error)
+
+        begin
+          @asset.scan_for_viruses
+        rescue VirusScanner::Error
+          # Swallow the passed through exception
+        end
+      end
     end
   end
 end

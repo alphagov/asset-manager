@@ -6,11 +6,14 @@ require 'open3'
 # to either clamscan or clamdscan
 class VirusScanner
   class Error < StandardError; end
+  class InfectedFile < StandardError; end # Used for sending exception_notifications on infection
 
   def initialize(file_path)
     @file_path = file_path
     @scanned = false
   end
+
+  attr_reader :virus_info
 
   def clean?
     scan unless @scanned

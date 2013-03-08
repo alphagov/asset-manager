@@ -39,6 +39,14 @@ describe VirusScanner do
       @scanner.clean?.should == false
     end
 
+    it "should make virus info available after detecting a virus" do
+      status = stub("Process::Status", :exitstatus => 1)
+      Open3.stub(:capture2e).and_return(["/path/to/file: Eicar-Test-Signature FOUND", status])
+
+      @scanner.clean?
+      @scanner.virus_info.should == "/path/to/file: Eicar-Test-Signature FOUND"
+    end
+
     it "should raise an error with the output message if clamdscan fails" do
       status = stub("Process::Status", :exitstatus => 2)
       Open3.stub(:capture2e).and_return(["ERROR: Can't access file /path/to/file", status])
