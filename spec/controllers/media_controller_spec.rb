@@ -1,53 +1,73 @@
 require "spec_helper"
 
 describe MediaController do
-  describe "GET files" do
-    describe "HTTP headers" do
-      before(:each) do
-        @asset = FactoryGirl.create(:asset)
-        get :download, :id => @asset.id, :filename => @asset.file.identifier
+
+  describe "GET 'download'" do
+    context "with a valid clean file" do
+      before :each do
+        @asset = FactoryGirl.create(:clean_asset)
       end
 
-      it "should load successfully" do
+      def do_get
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+      end
+
+      it "should be successful" do
+        do_get
         response.should be_success
       end
 
+      it "should send the file using send_file" do
+        controller.should_receive(:send_file).with(@asset.file.path, :disposition => "inline")
+        controller.stub(:render) # prevent template_not_found errors because we intercepted send_file
+
+        do_get
+      end
+
       it "should have the correct content type" do
+        do_get
         response.headers["Content-Type"].should == "image/png"
       end
 
-      context "Cache headers" do
-        it "should have a max-age of 12 hours" do
-          response.headers["Cache-Control"].should include "max-age=86400"
-        end
+      it "should set the cache-control headers to 24 hours" do
+        do_get
 
-        it "should have a public directive" do
-          response.headers["Cache-Control"].should include "public"
-        end
-
-        it "should have a stale-if-error of 1 day" do
-          response.headers["Cache-Control"].should include "stale-if-error=86400"
-        end
-
-        it "should have a stale-while-revalidate of 1 day" do
-          response.headers["Cache-Control"].should include "stale-while-revalidate=86400"
-        end
+        response.headers["Cache-Control"].should == "max-age=86400, public"
       end
     end
 
-    describe "redirect" do
-      it "should be a 404 page if the asset doesn't exist" do
-        get :redirect, :id => "goble-de-gook"
-
-        response.should_not be_success
+    context "with an unscanned file" do
+      before :each do
+        @asset = FactoryGirl.create(:asset)
       end
 
-      it "should be a redirect to a path with the filename" do
-        asset = FactoryGirl.create(:asset)
-        get :redirect, :id => asset.id
+      it "should return a 404" do
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        response.code.to_i.should == 404
+      end
+    end
 
-        response.should redirect_to(:action => "download", :id => asset.id,
-                                    :filename => asset.file.file.identifier)
+    context "with an infected file" do
+      before :each do
+        @asset = FactoryGirl.create(:infected_asset)
+      end
+
+      it "should return a 404" do
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        response.code.to_i.should == 404
+      end
+    end
+
+    context "with an invalid url" do
+      it "should 404 for a non-existent ID" do
+        get :download, :id => "1234556678895332452345", :filename => "something.jpg"
+        response.code.to_i.should == 404
+      end
+
+      it "should 404 for a valid ID with an non-matching filename" do
+        asset = FactoryGirl.create(:asset)
+        get :download, :id => asset.id.to_s, :filename => "not-the-filename.pdf"
+        response.code.to_i.should == 404
       end
     end
   end

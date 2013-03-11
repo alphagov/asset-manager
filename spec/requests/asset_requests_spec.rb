@@ -3,6 +3,7 @@ require "spec_helper"
 describe "Asset requests" do
   before(:each) do
     login_as_stub_user
+    Plek.any_instance.stub(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")
   end
 
   describe "uploading an asset" do
@@ -16,6 +17,7 @@ describe "Asset requests" do
       body["id"].should =~ %r{http://www.example.com/assets/[a-z0-9]+}
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
+      body["state"].should == "unscanned"
     end
 
     it "cannot create an asset without a file" do
@@ -29,9 +31,7 @@ describe "Asset requests" do
 
   describe "retrieving an asset" do
     it "retreives details about an existing asset" do
-      asset = FactoryGirl.create(:asset)
-
-      Plek.any_instance.stub(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")
+      asset = FactoryGirl.create(:clean_asset)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -43,6 +43,23 @@ describe "Asset requests" do
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
       body["file_url"].should == "http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png"
+      body["state"].should == "clean"
+    end
+
+    it "returns details about an infected asset" do
+      asset = FactoryGirl.create(:infected_asset)
+
+      get "/assets/#{asset.id}"
+      body = JSON.parse(response.body)
+
+      response.status.should == 200
+      body["_response_info"]["status"].should == "ok"
+
+      body["id"].should == "http://www.example.com/assets/#{asset.id}"
+      body["name"].should == "asset.png"
+      body["content_type"].should == "image/png"
+      body["file_url"].should == "http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png"
+      body["state"].should == "infected"
     end
 
     it "cannot retrieve details about an asset which does not exist" do

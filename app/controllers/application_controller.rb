@@ -17,10 +17,4 @@ private
   def error(code, message)
     render :json => {:_response_info => {:status => message}}, :status => code
   end
-
-  def set_expiry(duration = 30.minutes)
-    unless Rails.env.development?
-      expires_in duration, :public => true, "stale-if-error" => 24.hours, "stale-while-revalidate" => 24.hours
-    end
-  end
 end

@@ -1,22 +1,27 @@
 class MediaController < ApplicationController
   skip_before_filter :authenticate_user!
   skip_before_filter :require_signin_permission!
-  before_filter { set_expiry(24.hours) }
 
   def download
     @asset = Asset.find(params[:id])
-    error_404 if @asset.nil? || @asset.file.file.identifier != params[:filename]
+    unless @asset.file.file.identifier == params[:filename] and @asset.clean?
+      error_404
+      return
+    end
 
     respond_to do |format|
-      format.any { send_file(@asset.file.path, :disposition => 'inline') }
+      format.any do
+        set_expiry(24.hours)
+        send_file(@asset.file.path, :disposition => 'inline')
+      end
     end
   end
 
-  def redirect
-    @asset = Asset.find(params[:id])
-    error_404 if @asset.nil?
+  protected
 
-    redirect_to(:action => "download", :status => 301,
-                :id => @asset.id, :filename => @asset.file.file.identifier)
+  def set_expiry(duration)
+    unless Rails.env.development?
+      expires_in duration, :public => true
+    end
   end
 end
