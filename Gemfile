@@ -39,4 +39,5 @@ group :development, :test do
   gem 'ci_reporter', '1.8.4'
 
   gem "factory_girl_rails", "~> 4.0"
+  gem "pry"
 end
