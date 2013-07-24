@@ -10,7 +10,7 @@ describe VirusScanner do
 
     it "should call out to clamdscan" do
       status = stub("Process::Status", :exitstatus => 0)
-      Open3.should_receive(:capture2e).with("govuk_clamscan", "--no-summary", "/path/to/file").and_return(["", status])
+      Open3.should_receive(:capture2e).with("clamscan", "--no-summary", "/path/to/file").and_return(["", status])
 
       @scanner.clean?
     end
