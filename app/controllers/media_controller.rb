@@ -11,8 +11,7 @@ class MediaController < ApplicationController
 
     respond_to do |format|
       format.any do
-        set_expiry(24.hours)
-        send_file(@asset.file.path, :disposition => 'inline')
+        redirect_to @asset.file.to_s
       end
     end
   end
