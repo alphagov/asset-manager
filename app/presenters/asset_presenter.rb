@@ -11,9 +11,9 @@ class AssetPresenter
         :status => options[:status] || "ok",
       },
       :id => @view_context.asset_url(@asset.id),
-      :name => @asset.file.file.identifier,
+      :name => @asset.file.to_s.split('/').last,
       :content_type => asset_mime_type.to_s,
-      :file_url => "#{Plek.new.asset_root}/media/#{@asset.id}/#{@asset.file.file.identifier}",
+      :file_url => "#{Plek.new.asset_root}/media/#{@asset.id}/#{@asset.file.to_s.split('/').last}",
       :state => @asset.state,
     }
   end

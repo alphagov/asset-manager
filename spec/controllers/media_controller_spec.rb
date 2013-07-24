@@ -9,7 +9,7 @@ describe MediaController do
       end
 
       def do_get
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.to_s.split('/').last
       end
 
       it "should be successful" do
@@ -42,7 +42,7 @@ describe MediaController do
       end
 
       it "should return a 404" do
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.to_s.split('/').last
         response.code.to_i.should == 404
       end
     end
@@ -53,7 +53,7 @@ describe MediaController do
       end
 
       it "should return a 404" do
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.to_s.split('/').last
         response.code.to_i.should == 404
       end
     end
