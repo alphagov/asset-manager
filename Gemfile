@@ -8,6 +8,8 @@ gem 'rails', '3.2.13'
 gem 'mongoid', '2.4.12'
 gem 'bson_ext', '1.6.4'
 
+gem 'dotenv-rails'
+
 gem 'unicorn', '4.5.0'
 
 gem 'exception_notification', '2.6.1'
