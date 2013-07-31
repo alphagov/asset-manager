@@ -42,7 +42,7 @@ describe "Asset requests" do
       body["id"].should == "http://www.example.com/assets/#{asset.id}"
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
-      body["file_url"].should == "http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png"
+      body["file_url"].should include "#{asset.id}/asset.png"
       body["state"].should == "clean"
     end
 
@@ -58,7 +58,7 @@ describe "Asset requests" do
       body["id"].should == "http://www.example.com/assets/#{asset.id}"
       body["name"].should == "asset.png"
       body["content_type"].should == "image/png"
-      body["file_url"].should == "http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png"
+      body["file_url"].should include "#{asset.id}/asset.png"
       body["state"].should == "infected"
     end
 
