@@ -37,6 +37,10 @@ class Asset
     raise
   end
 
+  def file_url
+    file.url
+  end
+  
   private
 
   def reset_state_if_file_changed

@@ -13,7 +13,7 @@ class AssetPresenter
       :id => @view_context.asset_url(@asset.id),
       :name => @asset.file.to_s.split('/').last,
       :content_type => asset_mime_type.to_s,
-      :file_url => "#{Plek.new.asset_root}/media/#{@asset.id}/#{@asset.file.to_s.split('/').last}",
+      :file_url => @asset.file_url,
       :state => @asset.state,
     }
   end
