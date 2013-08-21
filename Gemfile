@@ -10,7 +10,8 @@ gem 'bson_ext', '1.6.4'
 
 gem 'dotenv-rails'
 
-gem 'unicorn', '4.5.0'
+gem 'foreman'
+gem 'thin'
 
 gem 'exception_notification', '2.6.1'
 gem 'aws-ses', '0.4.4', :require => 'aws/ses'
