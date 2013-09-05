@@ -9,30 +9,24 @@ describe MediaController do
       end
 
       def do_get
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.to_s.split('/').last
       end
 
       it "should be successful" do
         do_get
-        response.should be_success
+        response.should be_redirect
       end
 
       it "should send the file using send_file" do
-        controller.should_receive(:send_file).with(@asset.file.path, :disposition => "inline")
-        controller.stub(:render) # prevent template_not_found errors because we intercepted send_file
+        controller.should_receive(:redirect_to).with(@asset.file.to_s)
+        controller.stub(:render) # prevent template_not_found errors because we intercepted redirect_to
 
         do_get
       end
 
-      it "should have the correct content type" do
+      it "should redirect to the correct location" do
         do_get
-        response.headers["Content-Type"].should == "image/png"
-      end
-
-      it "should set the cache-control headers to 24 hours" do
-        do_get
-
-        response.headers["Cache-Control"].should == "max-age=86400, public"
+        response.headers["Location"].should == @asset.file.to_s
       end
     end
 
@@ -42,7 +36,7 @@ describe MediaController do
       end
 
       it "should return a 404" do
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.to_s.split('/').last
         response.code.to_i.should == 404
       end
     end
@@ -53,7 +47,7 @@ describe MediaController do
       end
 
       it "should return a 404" do
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.to_s.split('/').last
         response.code.to_i.should == 404
       end
     end

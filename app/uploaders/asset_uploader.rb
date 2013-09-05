@@ -2,7 +2,7 @@
 
 class AssetUploader < CarrierWave::Uploader::Base
 
-  storage :file
+  storage :fog
 
   def store_dir
     id = model.id.to_s
@@ -12,12 +12,12 @@ class AssetUploader < CarrierWave::Uploader::Base
   end
 
   def cache_dir
-    "#{store_base_dir}/tmp"
+    "tmp"
   end
 
   # Split out the base storage dir so that it can be overridden in tests.
   def store_base_dir
-    "#{ENV['GOVUK_APP_ROOT'] || Rails.root}/uploads"
+    "uploads"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:

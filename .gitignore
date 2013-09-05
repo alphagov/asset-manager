@@ -19,3 +19,6 @@
 
 # Upload directory should be clean
 /uploads
+
+/.env
+/.powrc

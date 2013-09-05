@@ -1,6 +1,6 @@
 AssetUploader.class_eval do
   def store_base_dir
-    "#{Rails.root}/tmp/test_uploads"
+    "tmp/test_uploads"
   end
 
   enable_processing = false
