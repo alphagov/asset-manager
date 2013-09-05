@@ -6,6 +6,7 @@ source 'https://BnrJb6FZyzspBboNJzYZ@gem.fury.io/govuk/'
 
 gem 'rails', '3.2.13'
 gem 'mongoid', '2.4.12'
+gem 'mongoid_spacial'
 gem 'bson_ext', '1.6.4'
 
 gem 'dotenv-rails'

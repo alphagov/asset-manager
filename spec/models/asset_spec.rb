@@ -37,6 +37,7 @@ describe Asset do
         creator: "A N Other",
         subject: %w{cat kitty},
         license: "CC BY 3.0",
+        spatial: {lat: 42, lng: 23},
       }.each_pair do |key, value|
         b.send(key).should == value
       end

@@ -114,6 +114,9 @@ GEM
       activemodel (~> 3.1)
       mongo (<= 1.6.2)
       tzinfo (~> 0.3.22)
+    mongoid_spacial (0.2.17)
+      activesupport (~> 3.0)
+      mongoid (>= 2.1.0, < 3.0.0)
     multi_json (1.7.7)
     multipart-post (1.1.5)
     net-scp (1.1.2)
@@ -229,6 +232,7 @@ DEPENDENCIES
   foreman
   gds-sso (= 3.0.0)
   mongoid (= 2.4.12)
+  mongoid_spacial
   plek (= 1.4.0)
   pry
   rails (= 3.2.13)

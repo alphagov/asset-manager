@@ -21,6 +21,7 @@ class AssetPresenter
       :creator        => @asset.creator,
       :subject        => @asset.subject,
       :license        => @asset.license,
+      :spatial        => @asset.spatial,
     }
   end
 

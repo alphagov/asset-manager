@@ -29,6 +29,7 @@ describe "Asset requests" do
         creator: "A N Other",
         subject: %w{cat kitty},
         license: "CC BY 3.0",
+        spatial: {"lat" => 42.0, "lng" => 23.0},
       }
       
       post "/assets", :asset => { :file => load_fixture_file("asset.png")}.merge(metadata)
@@ -98,6 +99,7 @@ describe "Asset requests" do
         creator: "A N Other",
         subject: %w{cat kitty},
         license: "CC BY 3.0",
+        spatial: {"lat" => 42.0, "lng" => 23.0},
       }.each_pair do |key, value|
         body[key.to_s].should == value
       end

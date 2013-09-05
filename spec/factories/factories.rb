@@ -19,6 +19,7 @@ FactoryGirl.define do
     creator     "A N Other"
     subject     %w{cat kitty}
     license     "CC BY 3.0"
+    spatial     lat: 42, lng: 23
   end
 
   factory :user do
