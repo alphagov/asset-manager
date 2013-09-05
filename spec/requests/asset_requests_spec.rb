@@ -20,6 +20,26 @@ describe "Asset requests" do
       body["state"].should == "unscanned"
     end
 
+    it "creates an asset with metadata provided" do
+
+      metadata = {
+        title: "My Cat",
+        source: "http://catgifs.com/42",
+        description: "My cat is lovely",
+        creator: "A N Other",
+        subject: %w{cat kitty},
+        license: "CC BY 3.0",
+      }
+      
+      post "/assets", :asset => { :file => load_fixture_file("asset.png")}.merge(metadata)
+      body = JSON.parse(response.body)
+
+      metadata.each_pair do |key, value|
+        body[key.to_s].should == value
+      end
+
+    end
+
     it "cannot create an asset without a file" do
       post "/assets", :asset => { :file => nil }
       body = JSON.parse(response.body)
@@ -60,6 +80,28 @@ describe "Asset requests" do
       body["content_type"].should == "image/png"
       body["file_url"].should include "#{asset.id}/asset.png"
       body["state"].should == "infected"
+    end
+
+    it "retreives details about assets with metadata" do
+      asset = FactoryGirl.create(:asset_with_metadata)
+
+      get "/assets/#{asset.id}"
+      body = JSON.parse(response.body)
+
+      response.status.should == 200
+      body["_response_info"]["status"].should == "ok"
+
+      metadata = {
+        title: "My Cat",
+        source: "http://catgifs.com/42",
+        description: "My cat is lovely",
+        creator: "A N Other",
+        subject: %w{cat kitty},
+        license: "CC BY 3.0",
+      }.each_pair do |key, value|
+        body[key.to_s].should == value
+      end
+
     end
 
     it "cannot retrieve details about an asset which does not exist" do

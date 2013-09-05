@@ -4,8 +4,14 @@ class Asset
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  field :file, type: String
-  field :state, type: String, default: 'unscanned'
+  field :file,             type: String
+  field :state,            type: String, default: 'unscanned'
+  field :title,            type: String
+  field :source,           type: String
+  field :description,      type: String
+  field :creator,          type: String
+  field :subject,          type: Array
+  field :license,          type: String
 
   validates :file, presence: true
 

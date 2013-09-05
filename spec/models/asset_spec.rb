@@ -22,6 +22,29 @@ describe Asset do
     end
   end
 
+  describe "with metadata" do
+    
+    it "should persist all fields" do
+      
+      a = FactoryGirl.create(:asset_with_metadata)
+
+      # Load from DB
+      b = Asset.find(a.id)
+      metadata = {
+        title: "My Cat",
+        source: "http://catgifs.com/42",
+        description: "My cat is lovely",
+        creator: "A N Other",
+        subject: %w{cat kitty},
+        license: "CC BY 3.0",
+      }.each_pair do |key, value|
+        b.send(key).should == value
+      end
+
+    end
+    
+  end
+
   describe "scheduling a virus scan" do
     it "should schedule a scan after create" do
       a = Asset.new(:file => load_fixture_file("asset.png"))
