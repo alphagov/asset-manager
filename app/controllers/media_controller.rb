@@ -17,11 +17,4 @@ class MediaController < ApplicationController
     end
   end
 
-  protected
-
-  def set_expiry(duration)
-    unless Rails.env.development?
-      expires_in duration, :public => true
-    end
-  end
 end

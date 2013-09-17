@@ -91,6 +91,31 @@ describe AssetsController do
         body['_response_info']['status'].should == "not found"
       end
     end
+
+    describe "cache headers" do
+      it "sets the cache-control headers to 0 for an unscanned asset" do
+        asset = FactoryGirl.create(:asset, :state => 'unscanned')
+        get :show, id: asset.id
+
+        response.headers["Cache-Control"].should == "max-age=0, public"
+      end
+
+      it "sets the cache-control headers to 30 minutes for a clean asset" do
+        asset = FactoryGirl.create(:asset)
+        asset.scanned_clean!
+        get :show, id: asset.id
+
+        response.headers["Cache-Control"].should == "max-age=1800, public"
+      end
+
+      it "sets the cache-control headers to 30 minutes for an infected asset" do
+        asset = FactoryGirl.create(:asset)
+        asset.scanned_infected!
+        get :show, id: asset.id
+
+        response.headers["Cache-Control"].should == "max-age=1800, public"
+      end
+    end
   end
 
 end
