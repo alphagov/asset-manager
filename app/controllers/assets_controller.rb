@@ -4,6 +4,7 @@ class AssetsController < ApplicationController
   def show
     @asset = Asset.find(params[:id])
 
+    @asset.unscanned? ? set_expiry(0) : set_expiry(30.minutes)
     render :json => AssetPresenter.new(@asset, view_context)
   end
 
