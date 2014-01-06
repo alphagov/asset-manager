@@ -1,5 +1,5 @@
-source 'https://rubygems.org'
 source 'https://BnrJb6FZyzspBboNJzYZ@gem.fury.io/govuk/'
+source 'https://rubygems.org'
 
 gem 'rails', '3.2.16'
 gem 'mongoid', '2.4.12'
@@ -25,7 +25,7 @@ else
 end
 
 gem 'plek', '1.3.0'
-gem 'logstasher', '0.4.0'
+gem 'logstasher', '0.4.1'
 
 group :assets do
   gem 'uglifier', '>= 1.0.3'
