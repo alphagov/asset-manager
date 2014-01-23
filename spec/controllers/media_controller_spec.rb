@@ -3,6 +3,10 @@ require "spec_helper"
 describe MediaController do
 
   describe "GET 'download'" do
+    before(:each) do
+      controller.stub(private?: false)
+    end
+
     context "with a valid clean file" do
       before :each do
         @asset = FactoryGirl.create(:clean_asset)
@@ -68,6 +72,55 @@ describe MediaController do
         asset = FactoryGirl.create(:asset)
         get :download, :id => asset.id.to_s, :filename => "not-the-filename.pdf"
         response.code.to_i.should == 404
+      end
+    end
+
+    context "access limiting on the public interface" do
+      before(:each) do
+        @restricted_asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug')
+        @unrestricted_asset = FactoryGirl.create(:clean_asset)
+      end
+
+      it "404s requests to access limited documents" do
+        get :download, id: @restricted_asset.id.to_s, filename: 'asset.png'
+        response.status.should == 404
+      end
+
+      it "permits access to unrestricted documents" do
+        get :download, id: @unrestricted_asset.id.to_s, filename: 'asset.png'
+        response.should be_success
+      end
+    end
+
+    context "access limiting on the private interface" do
+      before(:each) do
+        controller.stub(private?: true)
+
+        @asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug')
+      end
+
+      it "bounces anonymous users to sign-on" do
+        controller.should_receive(:authenticate_user!)
+
+        get :download, id: @asset.id.to_s, filename: 'asset.png'
+      end
+
+      it "prevents access to access limited documents if the user has the wrong organisation" do
+        user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
+        login_as(user)
+
+        get :download, id: @asset.id.to_s, filename: 'asset.png'
+
+        response.status.should == 403
+      end
+
+      it "permits access to access limited documents if the user has the right organisation" do
+        user = FactoryGirl.create(:user, organisation_slug: 'correct-organisation-slug')
+        login_as(user)
+
+        get :download, id: @asset.id.to_s, filename: 'asset.png'
+
+        response.should be_success
       end
     end
   end

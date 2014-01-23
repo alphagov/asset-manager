@@ -134,4 +134,38 @@ describe Asset do
       end
     end
   end
+
+  describe "#accessible_by?(user)" do
+    before(:all) do
+      @user = FactoryGirl.build(:user, organisation_slug: 'example-organisation')
+    end
+
+    it "is always true if the asset is not access limited" do
+      Asset.new(access_limited: false).accessible_by?(@user).should be_true
+      Asset.new(access_limited: false).accessible_by?(nil).should be_true
+      asset = Asset.new(access_limited: false, organisation_slug: (@user.organisation_slug + "-2"))
+      asset.accessible_by?(@user).should be_true
+    end
+
+    it "is true if the asset is access limited and the user has the correct organisation" do
+      asset = Asset.new(access_limited: true, organisation_slug: @user.organisation_slug)
+      asset.accessible_by?(@user).should be_true
+    end
+
+    it "is false if the asset is access limited and the user has an incorrect organisation" do
+      asset = Asset.new(access_limited: true, organisation_slug: (@user.organisation_slug + "-2"))
+      asset.accessible_by?(@user).should be_false
+    end
+
+    it "is false if the asset is access limited and the user has no organisation" do
+      unassociated_user = FactoryGirl.build(:user, organisation_slug: nil)
+      asset = Asset.new(access_limited: true, organisation_slug: @user.organisation_slug)
+      asset.accessible_by?(unassociated_user).should be_false
+    end
+
+    it "is false if the asset is access limited and the user is not logged in" do
+      asset = Asset.new(access_limited: true, organisation_slug: @user.organisation_slug)
+      asset.accessible_by?(nil).should be_false
+    end
+  end
 end

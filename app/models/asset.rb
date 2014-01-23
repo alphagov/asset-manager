@@ -41,6 +41,12 @@ class Asset
     raise
   end
 
+  def accessible_by?(user)
+    return true unless access_limited?
+
+    user && user.organisation_slug == self.organisation_slug
+  end
+
 protected
 
   def reset_state_if_file_changed

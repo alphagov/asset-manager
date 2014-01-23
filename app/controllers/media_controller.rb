@@ -1,20 +1,42 @@
 class MediaController < ApplicationController
-  skip_before_filter :authenticate_user!
-  skip_before_filter :require_signin_permission!
+  before_filter :authenticate_if_private
 
   def download
-    @asset = Asset.find(params[:id])
-    unless @asset.file.file.identifier == params[:filename] and @asset.clean?
+    unless asset.file.file.identifier == params[:filename] and asset.clean?
       error_404
+      return
+    end
+
+    unless asset.accessible_by?(current_user)
+      if private?
+        error 403, "Forbidden"
+      else
+        error_404
+      end
+
       return
     end
 
     respond_to do |format|
       format.any do
         set_expiry(24.hours)
-        send_file(@asset.file.path, :disposition => 'inline')
+        send_file(asset.file.path, :disposition => 'inline')
       end
     end
+  end
+
+protected
+
+  def authenticate_if_private
+    authenticate_user! if private?
+  end
+
+  def asset
+    @asset ||= Asset.find(params[:id])
+  end
+
+  def private?
+    request.host.include? 'private'
   end
 
 end
