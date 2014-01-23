@@ -7,7 +7,11 @@ class Asset
   field :file, type: String
   field :state, type: String, default: 'unscanned'
 
+  field :access_limited, type: Boolean, default: false
+  field :organisation_slug, type: String
+
   validates :file, presence: true
+  validates :organisation_slug, presence: true, if: :access_limited?
 
   mount_uploader :file, AssetUploader
 

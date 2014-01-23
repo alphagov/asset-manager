@@ -12,6 +12,13 @@ describe Asset do
       a.should_not be_valid
     end
 
+    it "should not be valid without an organisation id if it is access limited" do
+      Asset.new(:file => load_fixture_file("asset.png")).should be_valid
+      Asset.new(:file => load_fixture_file("asset.png"), :organisation_slug => 'example-organisation').should be_valid
+      Asset.new(:file => load_fixture_file("asset.png"), :access_limited => true).should_not be_valid
+      Asset.new(:file => load_fixture_file("asset.png"), :access_limited => true, :organisation_slug => 'example-organisation').should be_valid
+    end
+
     it "should be persisted" do
       CarrierWave::Mount::Mounter.any_instance.should_receive(:store!)
 
