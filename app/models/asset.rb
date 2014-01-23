@@ -41,13 +41,14 @@ class Asset
     raise
   end
 
-  private
+protected
 
   def reset_state_if_file_changed
     if self.file_changed?
       self.state = 'unscanned'
     end
   end
+
   def schedule_virus_scan
     self.delay.scan_for_viruses if self.unscanned?
   end
