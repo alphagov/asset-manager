@@ -2,18 +2,8 @@ class MediaController < ApplicationController
   before_filter :authenticate_if_private
 
   def download
-    unless asset.file.file.identifier == params[:filename] and asset.clean?
+    unless asset_present_and_clean? && asset.accessible_by?(current_user)
       error_404
-      return
-    end
-
-    unless asset.accessible_by?(current_user)
-      if private?
-        error 403, "Forbidden"
-      else
-        error_404
-      end
-
       return
     end
 
@@ -37,6 +27,10 @@ protected
 
   def requested_via_private_vhost?
     request.host.include? 'private'
+  end
+
+  def asset_present_and_clean?
+    asset.file.file.identifier == params[:filename] and asset.clean?
   end
 
 end

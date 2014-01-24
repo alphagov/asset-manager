@@ -105,13 +105,13 @@ describe MediaController do
         get :download, id: @asset.id.to_s, filename: 'asset.png'
       end
 
-      it "prevents access to access limited documents if the user has the wrong organisation" do
+      it "404s requests to access limited documents if the user has the wrong organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
         get :download, id: @asset.id.to_s, filename: 'asset.png'
 
-        response.status.should == 403
+        response.status.should == 404
       end
 
       it "permits access to access limited documents if the user has the right organisation" do
