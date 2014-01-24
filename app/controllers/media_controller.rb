@@ -28,14 +28,14 @@ class MediaController < ApplicationController
 protected
 
   def authenticate_if_private
-    authenticate_user! if private?
+    authenticate_user! if requested_via_private_vhost?
   end
 
   def asset
     @asset ||= Asset.find(params[:id])
   end
 
-  def private?
+  def requested_via_private_vhost?
     request.host.include? 'private'
   end
 

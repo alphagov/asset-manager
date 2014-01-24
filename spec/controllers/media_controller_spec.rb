@@ -4,7 +4,7 @@ describe MediaController do
 
   describe "GET 'download'" do
     before(:each) do
-      controller.stub(private?: false)
+      controller.stub(requested_via_private_vhost?: false)
     end
 
     context "with a valid clean file" do
@@ -94,7 +94,7 @@ describe MediaController do
 
     context "access limiting on the private interface" do
       before(:each) do
-        controller.stub(private?: true)
+        controller.stub(requested_via_private_vhost?: true)
 
         @asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug')
       end
