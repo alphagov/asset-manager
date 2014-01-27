@@ -1,6 +1,4 @@
 class AssetsController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter :require_signin_permission!
   before_filter :restrict_request_format
 
   def show

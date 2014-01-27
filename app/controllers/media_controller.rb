@@ -1,4 +1,5 @@
 class MediaController < ApplicationController
+  skip_before_filter :require_signin_permission!
   before_filter :authenticate_if_private
 
   def download
@@ -18,7 +19,7 @@ class MediaController < ApplicationController
 protected
 
   def authenticate_if_private
-    authenticate_user! if requested_via_private_vhost?
+    require_signin_permission! if requested_via_private_vhost?
   end
 
   def asset

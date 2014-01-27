@@ -100,7 +100,7 @@ describe MediaController do
       end
 
       it "bounces anonymous users to sign-on" do
-        controller.should_receive(:authenticate_user!)
+        controller.should_receive(:require_signin_permission!)
 
         get :download, id: @asset.id.to_s, filename: 'asset.png'
       end
