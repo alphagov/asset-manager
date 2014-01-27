@@ -27,7 +27,7 @@ protected
   end
 
   def requested_via_private_vhost?
-    request.host.include? 'private'
+    request.host == ENV['PRIVATE_ASSET_HOST']
   end
 
   def asset_present_and_clean?
