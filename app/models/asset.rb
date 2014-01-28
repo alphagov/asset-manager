@@ -7,7 +7,11 @@ class Asset
   field :file, type: String
   field :state, type: String, default: 'unscanned'
 
+  field :access_limited, type: Boolean, default: false
+  field :organisation_slug, type: String
+
   validates :file, presence: true
+  validates :organisation_slug, presence: true, if: :access_limited?
 
   mount_uploader :file, AssetUploader
 
@@ -37,13 +41,20 @@ class Asset
     raise
   end
 
-  private
+  def accessible_by?(user)
+    return true unless access_limited?
+
+    user && user.organisation_slug == self.organisation_slug
+  end
+
+protected
 
   def reset_state_if_file_changed
     if self.file_changed?
       self.state = 'unscanned'
     end
   end
+
   def schedule_virus_scan
     self.delay.scan_for_viruses if self.unscanned?
   end

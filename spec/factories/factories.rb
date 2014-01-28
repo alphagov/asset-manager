@@ -13,6 +13,11 @@ FactoryGirl.define do
     end
   end
 
+  factory :access_limited_asset, :parent => :clean_asset do
+    access_limited true
+    organisation_slug 'example-organisation'
+  end
+
   factory :user do
     sequence(:name) { |n| "Winston #{n}"}
     permissions { ["signin"] }
