@@ -25,7 +25,7 @@ else
 end
 
 gem 'plek', '1.3.0'
-gem 'logstasher', '0.4.1'
+gem 'logstasher', '0.4.8'
 
 group :assets do
   gem 'uglifier', '>= 1.0.3'
