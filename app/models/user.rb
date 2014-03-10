@@ -15,6 +15,10 @@ class User
 
   attr_accessible :email, :name, :uid, :version
 
+  def self.find_by_email(email)
+    where(email: email).first
+  end
+
   def self.find_by_uid(uid)
     where(uid: uid).first
   end
