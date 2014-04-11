@@ -1,4 +1,4 @@
 #!/bin/bash
 
 bundle install
-bundle exec rails s -p 3037
+govuk_setenv asset-manager bundle exec rails s -p 3037
