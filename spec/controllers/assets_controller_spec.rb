@@ -57,6 +57,63 @@ describe AssetsController do
     end
   end
 
+  describe "PUT update" do
+    context "a valid asset" do
+      before do
+        @asset = FactoryGirl.create(:asset)
+        @atts = {
+          :file => load_fixture_file("asset2.jpg"),
+          :title => "updated title",
+        }
+      end
+
+      it "updates attributes" do
+        put :update, id: @asset.id, asset: @atts
+
+        assigns(:asset).should be_persisted
+        assigns(:asset).title.should == "updated title"
+        assigns(:asset).file.current_path.should =~ /asset2\.jpg$/
+      end
+
+      it "returns a success status" do
+        put :update, id: @asset.id, asset: @atts
+
+        response.status.should == 200
+      end
+
+      it "returns the location and details of the new asset" do
+        put :update, id: @asset.id, asset: @atts
+
+        asset = assigns(:asset)
+
+        body = JSON.parse(response.body)
+
+        body['id'].should == "http://test.host/assets/#{asset.id}"
+        body['name'].should == "asset2.jpg"
+        body['content_type'].should == "image/jpeg"
+      end
+    end
+
+    context "an invalid asset" do
+      before do
+        @atts = { :file => nil }
+      end
+
+      it "is not persisted" do
+        post :create, asset: @atts
+
+        assigns(:asset).should_not be_persisted
+        assigns(:asset).file.current_path.should be_nil
+      end
+
+      it "returns an unprocessable status" do
+        post :create, asset: @atts
+
+        response.status.should == 422
+      end
+    end
+  end
+
   describe "GET show" do
     context "an asset which exists" do
       before do
