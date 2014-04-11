@@ -3,7 +3,11 @@ class MediaController < ApplicationController
   before_filter :authenticate_if_private
 
   def download
-    unless asset_present_and_clean? && asset.accessible_by?(current_user)
+    unless filename_correct?
+      return redirect_to_correct_filename
+    end
+
+    unless asset.clean? && asset.accessible_by?(current_user)
       error_404
       return
     end
@@ -30,8 +34,15 @@ protected
     request.host == ENV['PRIVATE_ASSET_MANAGER_HOST']
   end
 
-  def asset_present_and_clean?
-    asset.file.file.identifier == params[:filename] and asset.clean?
+  def filename_correct?
+    asset.file.file.identifier == params[:filename]
   end
 
+  def redirect_to_correct_filename
+    redirect_to(
+      :action => :download,
+      id: params[:id],
+      filename: File.basename(asset.file.path),
+    )
+  end
 end
