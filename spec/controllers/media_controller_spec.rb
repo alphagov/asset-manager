@@ -39,12 +39,28 @@ describe MediaController do
         response.headers["Cache-Control"].should == "max-age=86400, public"
       end
 
-      context "when the file name in the URL represents an old version (or is just invalid)" do
+      context "when the file name in the URL represents an old version" do
+        let(:old_file_name) { "an_old_filename.pdf" }
+
+        before do
+          Asset.stub(:find).with(@asset.id.to_s).and_return(@asset)
+          @asset.stub(:filename_valid?).and_return(true)
+        end
+
         it "redirects to the new file name" do
-          get :download, id: @asset.id, filename: "an_old_filename.pdf"
-          p @asset.file
+          get :download, id: @asset.id, filename: old_file_name
 
           response.should redirect_to("/media/#{@asset.id}/asset.png")
+        end
+      end
+
+      context "when the file name in the URL is invalid" do
+        let(:invalid_file_name) { "invalid_file_name.pdf" }
+
+        it "redirects to the new file name" do
+          get :download, id: @asset.id, filename: invalid_file_name
+
+          response.should be_not_found
         end
       end
     end

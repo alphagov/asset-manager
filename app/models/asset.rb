@@ -6,6 +6,8 @@ class Asset
 
   field :file, type: String
   field :state, type: String, default: 'unscanned'
+  field :filename_history, type: Array
+  protected :filename_history=
 
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
@@ -28,6 +30,22 @@ class Asset
     end
   end
 
+  def file=(file)
+    super(file).tap {
+      if file
+        filename_history.push(File.basename(file.original_filename))
+      end
+    }
+  end
+
+  def filename_valid?(filename)
+    filename_history.include?(filename)
+  end
+
+  def filename
+    file.file.identifier
+  end
+
   def scan_for_viruses
     scanner = VirusScanner.new(self.file.current_path)
     if scanner.clean?
@@ -48,6 +66,10 @@ class Asset
   end
 
 protected
+
+  def filename_history
+    super || self.filename_history = []
+  end
 
   def reset_state_if_file_changed
     if self.file_changed?
