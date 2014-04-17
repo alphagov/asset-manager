@@ -38,6 +38,31 @@ describe MediaController do
 
         response.headers["Cache-Control"].should == "max-age=86400, public"
       end
+
+      context "when the file name in the URL represents an old version" do
+        let(:old_file_name) { "an_old_filename.pdf" }
+
+        before do
+          Asset.stub(:find).with(@asset.id.to_s).and_return(@asset)
+          @asset.stub(:filename_valid?).and_return(true)
+        end
+
+        it "redirects to the new file name" do
+          get :download, id: @asset.id, filename: old_file_name
+
+          response.should redirect_to("/media/#{@asset.id}/asset.png")
+        end
+      end
+
+      context "when the file name in the URL is invalid" do
+        let(:invalid_file_name) { "invalid_file_name.pdf" }
+
+        it "redirects to the new file name" do
+          get :download, id: @asset.id, filename: invalid_file_name
+
+          response.should be_not_found
+        end
+      end
     end
 
     context "with an unscanned file" do
@@ -62,15 +87,9 @@ describe MediaController do
       end
     end
 
-    context "with an invalid url" do
-      it "should 404 for a non-existent ID" do
+    context "with a URL containing an invalid ID" do
+      it "should return a 404" do
         get :download, :id => "1234556678895332452345", :filename => "something.jpg"
-        response.code.to_i.should == 404
-      end
-
-      it "should 404 for a valid ID with an non-matching filename" do
-        asset = FactoryGirl.create(:asset)
-        get :download, :id => asset.id.to_s, :filename => "not-the-filename.pdf"
         response.code.to_i.should == 404
       end
     end

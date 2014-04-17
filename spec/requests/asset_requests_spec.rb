@@ -29,6 +29,35 @@ describe "Asset requests" do
     end
   end
 
+  describe "updating an asset" do
+    let(:asset_id) {
+      post "/assets", :asset => { :file => load_fixture_file("asset.png") }
+      body = JSON.parse(response.body)
+      body.fetch("id").split("/").last
+    }
+
+    it "updates an asset with the file provided" do
+      put "/assets/#{asset_id}", :asset => { :file => load_fixture_file("asset2.jpg") }
+      body = JSON.parse(response.body)
+
+      response.status.should == 200
+      body["_response_info"]["status"].should == "success"
+
+      body["id"].should end_with(asset_id)
+      body["name"].should == "asset2.jpg"
+      body["content_type"].should == "image/jpeg"
+      body["state"].should == "unscanned"
+    end
+
+    it "cannot create an asset without a file" do
+      post "/assets", :asset => { :file => nil }
+      body = JSON.parse(response.body)
+
+      response.status.should == 422
+      body["_response_info"]["status"].should == ["File can't be blank"]
+    end
+  end
+
   describe "retrieving an asset" do
     it "retreives details about an existing asset" do
       asset = FactoryGirl.create(:clean_asset)

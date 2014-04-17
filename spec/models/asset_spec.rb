@@ -29,6 +29,44 @@ describe Asset do
     end
   end
 
+  describe "#filename" do
+    let(:asset) {
+      Asset.new(:file => load_fixture_file("asset.png"))
+    }
+
+    it "returns the current file attachments base name" do
+      expect(asset.filename).to eq("asset.png")
+    end
+  end
+
+  describe "#filename_valid?" do
+    let(:asset) {
+      Asset.new(:file => load_fixture_file("asset.png"))
+    }
+
+    context "for current file" do
+      it "returns true" do
+        expect(asset.filename_valid?("asset.png")).to be_true
+      end
+    end
+
+    context "for a previous file name" do
+      before do
+        asset.file = load_fixture_file("asset2.jpg")
+      end
+
+      it "returns true" do
+        expect(asset.filename_valid?("asset.png")).to be_true
+      end
+    end
+
+    context "for a file that has never been attached to the asset" do
+      it "returns false" do
+        expect(asset.filename_valid?("never_existed.png")).to be_false
+      end
+    end
+  end
+
   describe "scheduling a virus scan" do
     it "should schedule a scan after create" do
       a = Asset.new(:file => load_fixture_file("asset.png"))

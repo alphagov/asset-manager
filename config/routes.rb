@@ -1,5 +1,5 @@
 AssetManager::Application.routes.draw do
-  resources :assets, :only => [:show, :create]
+  resources :assets, :only => [:show, :create, :update]
 
   match "media/:id/:filename" => "media#download", :constraints => { :filename => /.*/ }
 
