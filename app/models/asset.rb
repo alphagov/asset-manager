@@ -31,10 +31,9 @@ class Asset
   end
 
   def file=(file)
+    old_filename = filename
     super(file).tap {
-      if file
-        filename_history.push(File.basename(file.original_filename))
-      end
+      filename_history.push(old_filename) if old_filename
     }
   end
 
@@ -43,7 +42,7 @@ class Asset
   end
 
   def filename
-    file.file.identifier
+    file.file.try(:identifier)
   end
 
   def scan_for_viruses
