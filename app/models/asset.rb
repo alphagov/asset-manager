@@ -38,8 +38,8 @@ class Asset
     }
   end
 
-  def filename_valid?(filename)
-    filename_history.include?(filename)
+  def filename_valid?(filename_to_test)
+    valid_filenames.include?(filename_to_test)
   end
 
   def filename
@@ -69,6 +69,10 @@ protected
 
   def filename_history
     super || self.filename_history = []
+  end
+
+  def valid_filenames
+    filename_history + [filename]
   end
 
   def reset_state_if_file_changed
