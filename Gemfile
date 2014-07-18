@@ -21,7 +21,7 @@ gem 'delayed_job_mongoid', '1.1.0'
 if ENV['BUNDLE_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
-  gem 'gds-sso', '9.2.4'
+  gem 'gds-sso', '9.3.0'
 end
 
 gem 'plek', '1.3.0'
