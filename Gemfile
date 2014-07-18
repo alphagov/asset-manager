@@ -1,4 +1,3 @@
-source 'https://BnrJb6FZyzspBboNJzYZ@gem.fury.io/govuk/'
 source 'https://rubygems.org'
 
 gem 'rails', '3.2.17'
