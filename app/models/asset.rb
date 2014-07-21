@@ -50,11 +50,11 @@ class Asset
     if scanner.clean?
       self.scanned_clean
     else
-      ExceptionNotifier::Notifier.background_exception_notification VirusScanner::InfectedFile.new, :data => {:virus_info => scanner.virus_info}
+      Airbrake.notify_or_ignore(VirusScanner::InfectedFile.new, :error_message => scanner.virus_info, :params => {:id => self.id, :filename => self.filename})
       self.scanned_infected
     end
   rescue => e
-    ExceptionNotifier::Notifier.background_exception_notification e
+    Airbrake.notify_or_ignore(e, :params => {:id => self.id, :filename => self.filename})
     raise
   end
 
