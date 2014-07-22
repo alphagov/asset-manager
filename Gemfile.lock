@@ -28,12 +28,10 @@ GEM
     activesupport (3.2.17)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    arel (3.0.3)
-    aws-ses (0.4.4)
+    airbrake (4.0.0)
       builder
-      mail (> 2.2.5)
-      mime-types
-      xml-simple
+      multi_json
+    arel (3.0.3)
     bson (1.6.4)
     bson_ext (1.6.4)
       bson (~> 1.6.4)
@@ -55,8 +53,6 @@ GEM
       mongoid (>= 2.0)
     diff-lcs (1.1.3)
     erubis (2.7.0)
-    exception_notification (2.6.1)
-      actionmailer (>= 3.0.4)
     execjs (1.4.0)
       multi_json (~> 1.0)
     factory_girl (4.2.0)
@@ -186,13 +182,12 @@ GEM
       rack (>= 1.0)
     warden-oauth2 (0.0.1)
       warden
-    xml-simple (1.1.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-ses (= 0.4.4)
+  airbrake (~> 4.0.0)
   bson_ext (= 1.6.4)
   carrierwave (= 0.6.1)
   carrierwave-mongoid (= 0.2.1)
@@ -200,7 +195,6 @@ DEPENDENCIES
   database_cleaner (= 0.9.1)
   delayed_job (= 3.0.5)
   delayed_job_mongoid (= 1.1.0)
-  exception_notification (= 2.6.1)
   factory_girl_rails (~> 4.0)
   gds-sso (= 9.3.0)
   logstasher (= 0.4.8)

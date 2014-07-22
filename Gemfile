@@ -6,8 +6,7 @@ gem 'bson_ext', '1.6.4'
 
 gem 'unicorn', '4.5.0'
 
-gem 'exception_notification', '2.6.1'
-gem 'aws-ses', '0.4.4', :require => 'aws/ses'
+gem 'airbrake', '~> 4.0.0'
 
 gem 'carrierwave', '0.6.1'
 gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'

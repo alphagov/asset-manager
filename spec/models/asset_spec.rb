@@ -138,8 +138,8 @@ describe Asset do
       end
 
       it "should send an exception notification" do
-        ExceptionNotifier::Notifier.should_receive(:background_exception_notification).
-          with(VirusScanner::InfectedFile.new, :data => {:virus_info => "/path/to/file: Eicar-Test-Signature FOUND"})
+        Airbrake.should_receive(:notify_or_ignore).
+          with(VirusScanner::InfectedFile.new, :error_message => "/path/to/file: Eicar-Test-Signature FOUND", :params => {:id => @asset.id, :filename => @asset.filename})
 
         @asset.scan_for_viruses
       end
@@ -161,8 +161,8 @@ describe Asset do
       end
 
       it "should send an exception notification" do
-        ExceptionNotifier::Notifier.should_receive(:background_exception_notification).
-          with(@error)
+        Airbrake.should_receive(:notify_or_ignore).
+          with(@error, :params => {:id => @asset.id, :filename => @asset.filename})
 
         begin
           @asset.scan_for_viruses
