@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require File.expand_path("../../config/environment", __FILE__)
+
+filename = ARGV.any? ? ARGV.fetch(0) : nil
+
+unless filename
+  puts "You need to provide a filename as first argument when running this script"
+  abort
+end
+
+file = File.new(filename)
+asset = Asset.new(file: file)
+
+if asset.save
+  puts "Saved!"
+  puts "Asset id: #{asset.id}"
+  puts "Asset name: #{asset.file.filename}"
+  puts "Asset basepath: /media/#{asset.id}/#{asset.file.filename}"
+else
+  puts "Not saved, error messages:"
+  puts asset.errors.full_messages
+end
