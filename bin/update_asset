@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require File.expand_path("../../config/environment", __FILE__)
+
+old_asset_id = ARGV.any? ? ARGV.fetch(0) : nil
+filename = ARGV.any? ? ARGV.fetch(1) : nil
+
+unless old_asset_id
+  puts "You need to provide the asset ID as first argument when running this script"
+  abort
+end
+
+unless filename
+  puts "You need to provide a filename as second argument when running this script"
+  abort
+end
+
+file = File.new(filename)
+old_asset = Asset.find(old_asset_id)
+
+if old_asset.update_attributes(file: file)
+  puts "Updated!"
+  puts "Asset id: #{old_asset.id}"
+  puts "Asset name: #{old_asset.file.filename}"
+  puts "Asset basepath: /media/#{old_asset.id}/#{old_asset.file.filename}"
+else
+  puts "not updated, something went wrong"
+  puts "errors: #{old_asset.errors.full_messages}"
+end
