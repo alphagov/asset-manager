@@ -50,6 +50,7 @@ protected
       :action => :download,
       id: params[:id],
       filename: asset.filename,
+      only_path: true,
     )
   end
 end

@@ -50,7 +50,7 @@ describe MediaController do
         it "redirects to the new file name" do
           get :download, id: @asset.id, filename: old_file_name
 
-          response.should redirect_to("/media/#{@asset.id}/asset.png")
+          response.location.should =~ %r(\A/media/#{@asset.id}/asset.png)
         end
       end
 
