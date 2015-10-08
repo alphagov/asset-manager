@@ -7,23 +7,23 @@ describe "Virus scanning of uploaded images" do
 
   specify "uploading a clean asset, and seeing it available after virus scanning" do
     post "/assets", :asset => { :file => load_fixture_file("lorem.txt") }
-    response.status.should == 201
+    expect(response.status).to eq(201)
 
     @asset = Asset.last
 
     asset_details = JSON.parse(response.body)
-    asset_details["id"].should =~ %r{http://www.example.com/assets/#{@asset.id}}
+    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{@asset.id}})
 
     get "/media/#{@asset.id}/lorem.txt"
-    response.status.should == 404
+    expect(response.status).to eq(404)
 
     run_all_delayed_jobs
 
     get "/media/#{@asset.id}/lorem.txt"
-    response.status.should == 200
+    expect(response.status).to eq(200)
 
     expected = File.read(fixture_file_path("lorem.txt"))
-    response.body.should == expected
+    expect(response.body).to eq(expected)
   end
 
   # Extension to UploadedFile to represent an uploaded virus
@@ -46,19 +46,19 @@ describe "Virus scanning of uploaded images" do
 
   specify "uploading an infected asset, and not seeing it available after virus scanning" do
     post "/assets", :asset => { :file => UploadedVirus.new }
-    response.status.should == 201
+    expect(response.status).to eq(201)
 
     @asset = Asset.last
 
     asset_details = JSON.parse(response.body)
-    asset_details["id"].should =~ %r{http://www.example.com/assets/#{@asset.id}}
+    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{@asset.id}})
 
     get "/media/#{@asset.id}/eicar.com"
-    response.status.should == 404
+    expect(response.status).to eq(404)
 
     run_all_delayed_jobs
 
     get "/media/#{@asset.id}/eicar.com"
-    response.status.should == 404
+    expect(response.status).to eq(404)
   end
 end

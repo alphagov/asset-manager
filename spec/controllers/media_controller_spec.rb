@@ -18,39 +18,39 @@ describe MediaController do
 
       it "should be successful" do
         do_get
-        response.should be_success
+        expect(response).to be_success
       end
 
       it "should send the file using send_file" do
-        controller.should_receive(:send_file).with(@asset.file.path, :disposition => "inline")
-        controller.stub(:render) # prevent template_not_found errors because we intercepted send_file
+        expect(controller).to receive(:send_file).with(@asset.file.path, :disposition => "inline")
+        allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
         do_get
       end
 
       it "should have the correct content type" do
         do_get
-        response.headers["Content-Type"].should == "image/png"
+        expect(response.headers["Content-Type"]).to eq("image/png")
       end
 
       it "should set the cache-control headers to 24 hours" do
         do_get
 
-        response.headers["Cache-Control"].should == "max-age=86400, public"
+        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
       end
 
       context "when the file name in the URL represents an old version" do
         let(:old_file_name) { "an_old_filename.pdf" }
 
         before do
-          Asset.stub(:find).with(@asset.id.to_s).and_return(@asset)
-          @asset.stub(:filename_valid?).and_return(true)
+          allow(Asset).to receive(:find).with(@asset.id.to_s).and_return(@asset)
+          allow(@asset).to receive(:filename_valid?).and_return(true)
         end
 
         it "redirects to the new file name" do
           get :download, id: @asset.id, filename: old_file_name
 
-          response.location.should =~ %r(\A/media/#{@asset.id}/asset.png)
+          expect(response.location).to match(%r(\A/media/#{@asset.id}/asset.png))
         end
       end
 
@@ -60,7 +60,7 @@ describe MediaController do
         it "redirects to the new file name" do
           get :download, id: @asset.id, filename: invalid_file_name
 
-          response.should be_not_found
+          expect(response).to be_not_found
         end
       end
     end
@@ -72,7 +72,7 @@ describe MediaController do
 
       it "should return a 404" do
         get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
-        response.code.to_i.should == 404
+        expect(response.code.to_i).to eq(404)
       end
     end
 
@@ -83,14 +83,14 @@ describe MediaController do
 
       it "should return a 404" do
         get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
-        response.code.to_i.should == 404
+        expect(response.code.to_i).to eq(404)
       end
     end
 
     context "with a URL containing an invalid ID" do
       it "should return a 404" do
         get :download, :id => "1234556678895332452345", :filename => "something.jpg"
-        response.code.to_i.should == 404
+        expect(response.code.to_i).to eq(404)
       end
     end
 
@@ -102,12 +102,12 @@ describe MediaController do
 
       it "404s requests to access limited documents" do
         get :download, id: @restricted_asset.id.to_s, filename: 'asset.png'
-        response.status.should == 404
+        expect(response.status).to eq(404)
       end
 
       it "permits access to unrestricted documents" do
         get :download, id: @unrestricted_asset.id.to_s, filename: 'asset.png'
-        response.should be_success
+        expect(response).to be_success
       end
     end
 
@@ -119,7 +119,7 @@ describe MediaController do
       end
 
       it "bounces anonymous users to sign-on" do
-        controller.should_receive(:require_signin_permission!)
+        expect(controller).to receive(:require_signin_permission!)
 
         get :download, id: @asset.id.to_s, filename: 'asset.png'
       end
@@ -130,7 +130,7 @@ describe MediaController do
 
         get :download, id: @asset.id.to_s, filename: 'asset.png'
 
-        response.status.should == 404
+        expect(response.status).to eq(404)
       end
 
       it "permits access to access limited documents if the user has the right organisation" do
@@ -139,7 +139,7 @@ describe MediaController do
 
         get :download, id: @asset.id.to_s, filename: 'asset.png'
 
-        response.should be_success
+        expect(response).to be_success
       end
     end
   end

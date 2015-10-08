@@ -31,7 +31,7 @@ group :assets do
 end
 
 group :development, :test do
-  gem 'rspec-rails', '2.12.2'
+  gem 'rspec-rails', '~> 2.99.0'
   gem 'database_cleaner', '0.9.1'
 
   gem 'simplecov-rcov', '0.2.3'
