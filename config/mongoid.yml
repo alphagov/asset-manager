@@ -1,21 +1,36 @@
 development:
-  host: localhost
-  database: govuk_assets_development
-  persist_in_safe_mode: true
-
+  sessions:
+    default:
+      database: govuk_assets_development
+      hosts:
+        - localhost:27017
+      options:
+        safe: true
+        # consistency: :eventual
+        # max_retries: 30
+        # retry_interval: 1
 test:
-  host: localhost
-  database: govuk_assets_test
+  sessions:
+    default:
+      database: govuk_assets_test
+      hosts:
+        - localhost:27017
+      options:
+        consistency: :strong
+        max_retries: 1
+        retry_interval: 0
 
 # set these environment variables on your prod server
 production:
-  host: <%= ENV['MONGOID_HOST'] %>
-  port: <%= ENV['MONGOID_PORT'] %>
-  username: <%= ENV['MONGOID_USERNAME'] %>
-  password: <%= ENV['MONGOID_PASSWORD'] %>
-  database: <%= ENV['MONGOID_DATABASE'] %>
-  # slaves:
-  #   - host: slave1.local
-  #     port: 27018
-  #   - host: slave2.local
-  #     port: 27019
+  sessions:
+    default:
+      database: <%= ENV['MONGOID_DATABASE'] %>
+      hosts:
+        - "<%= ENV['MONGOID_HOST'] %>:<%= ENV['MONGOID_PORT'] %>"
+      username: <%= ENV['MONGOID_USERNAME'] %>
+      password: <%= ENV['MONGOID_PASSWORD'] %>
+      options:
+        # safe: true
+        # consistency: :eventual
+        # max_retries: 30
+        # retry_interval: 1

@@ -6,7 +6,7 @@ class Asset
 
   field :file, type: String
   field :state, type: String, default: 'unscanned'
-  field :filename_history, type: Array
+  field :filename_history, type: Array, default: -> { [] }
   protected :filename_history=
 
   field :access_limited, type: Boolean, default: false
@@ -65,10 +65,6 @@ class Asset
   end
 
 protected
-
-  def filename_history
-    super || self.filename_history = []
-  end
 
   def valid_filenames
     filename_history + [filename]

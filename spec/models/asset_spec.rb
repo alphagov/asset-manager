@@ -75,9 +75,8 @@ describe Asset do
       end.to change(Delayed::Job, :count).by(1)
 
       job = Delayed::Job.last
-      handler = YAML.load(job.handler)
-      expect(handler.object).to eq(a)
-      expect(handler.method_name).to eq(:scan_for_viruses)
+      expect(job.payload_object.object).to eq(a)
+      expect(job.payload_object.method_name).to eq(:scan_for_viruses)
     end
 
     it "should schedule a scan after save if the file is changed" do
@@ -88,9 +87,8 @@ describe Asset do
       end.to change(Delayed::Job, :count).by(1)
 
       job = Delayed::Job.last
-      handler = YAML.load(job.handler)
-      expect(handler.object).to eq(a)
-      expect(handler.method_name).to eq(:scan_for_viruses)
+      expect(job.payload_object.object).to eq(a)
+      expect(job.payload_object.method_name).to eq(:scan_for_viruses)
     end
 
     it "should not schedule a scan after update if the file is unchanged" do

@@ -1,20 +1,19 @@
 source 'https://rubygems.org'
 
 gem 'rails', '3.2.22'
-gem 'mongoid', '2.4.12'
-gem 'bson_ext', '1.6.4'
+gem 'mongoid', '~> 3.0'
 
 gem 'unicorn', '4.5.0'
 
 gem 'airbrake', '~> 4.0.0'
 
-gem 'carrierwave', '0.6.1'
-gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
+gem 'carrierwave', '~> 0.10.0'
+gem 'carrierwave-mongoid', '~> 0.8.1', :require => 'carrierwave/mongoid'
 
 gem 'state_machine', '~> 1.2.0'
 
-gem 'delayed_job', '3.0.5'
-gem 'delayed_job_mongoid', '1.1.0'
+gem 'delayed_job', '~> 4.1.1'
+gem 'delayed_job_mongoid', '~> 2.2.0'
 
 if ENV['BUNDLE_DEV']
   gem 'gds-sso', path: '../gds-sso'
