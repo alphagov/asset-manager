@@ -11,7 +11,7 @@ gem 'airbrake', '~> 4.0.0'
 gem 'carrierwave', '0.6.1'
 gem 'carrierwave-mongoid', '0.2.1', :require => 'carrierwave/mongoid'
 
-gem 'state_machine', '1.1.2'
+gem 'state_machine', '~> 1.2.0'
 
 gem 'delayed_job', '3.0.5'
 gem 'delayed_job_mongoid', '1.1.0'
