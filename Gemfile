@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.22'
-gem 'mongoid', '~> 3.0'
+gem 'rails', '4.2.4'
+gem 'mongoid', '~> 4.0'
 
 gem 'unicorn', '4.5.0'
 
@@ -25,9 +25,10 @@ gem 'plek', '1.3.0'
 gem 'logstasher', '0.4.8'
 gem 'rack_strip_client_ip', '0.0.1'
 
-group :assets do
-  gem 'uglifier', '>= 1.0.3'
-end
+gem 'uglifier', '>= 1.3.0'
+
+# bundle exec rake doc:rails generates the API under doc/api.
+gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development, :test do
   gem 'rspec-rails', '~> 2.99.0'
