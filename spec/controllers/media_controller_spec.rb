@@ -1,10 +1,10 @@
-require "spec_helper"
+require "rails_helper"
 
-describe MediaController do
+RSpec.describe MediaController, type: :controller do
 
   describe "GET 'download'" do
     before(:each) do
-      controller.stub(requested_via_private_vhost?: false)
+      allow(controller).to receive_messages(requested_via_private_vhost?: false)
     end
 
     context "with a valid clean file" do
@@ -113,7 +113,7 @@ describe MediaController do
 
     context "access limiting on the private interface" do
       before(:each) do
-        controller.stub(requested_via_private_vhost?: true)
+        allow(controller).to receive_messages(requested_via_private_vhost?: true)
 
         @asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug')
       end

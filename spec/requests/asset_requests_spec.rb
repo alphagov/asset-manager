@@ -1,6 +1,6 @@
-require "spec_helper"
+require "rails_helper"
 
-describe "Asset requests" do
+RSpec.describe "Asset requests", type: :request do
   before(:each) do
     login_as_stub_user
     allow_any_instance_of(Plek).to receive(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")

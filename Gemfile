@@ -29,7 +29,7 @@ gem 'rack_strip_client_ip', '0.0.1'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development, :test do
-  gem 'rspec-rails', '~> 2.99.0'
+  gem 'rspec-rails', '~> 3.3.0'
 
   # NOTE: 1.5.0 has a bug with mongoid and truncation: https://github.com/DatabaseCleaner/database_cleaner/issues/299
   gem 'database_cleaner', '~> 1.4.0'

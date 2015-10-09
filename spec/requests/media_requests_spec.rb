@@ -1,6 +1,6 @@
-require "spec_helper"
+require "rails_helper"
 
-describe "Media requests" do
+RSpec.describe "Media requests", type: :request do
   describe "requesting an asset that doesn't exist" do
     it "should respond with file not found" do
       get "/media/34/test.jpg"

@@ -1,6 +1,6 @@
-require "spec_helper"
+require "rails_helper"
 
-describe Asset do
+RSpec.describe Asset, type: :model do
   describe "creating an asset" do
     it "should be valid given a file" do
       a = Asset.new(:file => load_fixture_file("asset.png"))

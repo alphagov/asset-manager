@@ -1,6 +1,6 @@
-require "spec_helper"
+require "rails_helper"
 
-describe "Virus scanning of uploaded images" do
+RSpec.describe "Virus scanning of uploaded images", type: :request do
   before :each do
     login_as_stub_user
   end

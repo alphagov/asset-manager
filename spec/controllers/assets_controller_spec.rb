@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe AssetsController do
+RSpec.describe AssetsController, type: :controller do
   render_views # for json responses
 
   before(:each) do

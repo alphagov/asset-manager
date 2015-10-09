@@ -19,3 +19,5 @@
 
 # Upload directory should be clean
 /uploads
+
+/spec/examples.txt
