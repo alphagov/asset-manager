@@ -63,7 +63,6 @@ describe AssetsController do
         @asset = FactoryGirl.create(:asset)
         @atts = {
           :file => load_fixture_file("asset2.jpg"),
-          :title => "updated title",
         }
       end
 
@@ -71,7 +70,6 @@ describe AssetsController do
         put :update, id: @asset.id, asset: @atts
 
         expect(assigns(:asset)).to be_persisted
-        expect(assigns(:asset).title).to eq("updated title")
         expect(assigns(:asset).file.current_path).to match(/asset2\.jpg$/)
       end
 
