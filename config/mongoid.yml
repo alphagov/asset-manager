@@ -1,9 +1,7 @@
 development:
   sessions:
     default:
-      database: govuk_assets_development
-      hosts:
-        - localhost:27017
+      uri: mongodb://localhost/govuk_assets_development
       options:
         write:
           w: 1
@@ -11,28 +9,19 @@ development:
 test:
   sessions:
     default:
-      database: govuk_assets_test
-      hosts:
-        - localhost:27017
+      uri: mongodb://localhost/govuk_assets_test
       options:
         write:
           w: 1
         read: primary
         max_retries: 1
         retry_interval: 0
-
-# set these environment variables on your prod server
 production:
   sessions:
     default:
-      database: <%= ENV['MONGOID_DATABASE'] %>
-      hosts:
-        - "<%= ENV['MONGOID_HOST'] %>:<%= ENV['MONGOID_PORT'] %>"
-      username: <%= ENV['MONGOID_USERNAME'] %>
-      password: <%= ENV['MONGOID_PASSWORD'] %>
+      uri: <%= ENV['MONGODB_URI'] %>
       options:
         write:
           w: 1
         read: primary
-        # max_retries: 30
-        # retry_interval: 1
+        retry_interval: 120
