@@ -9,7 +9,7 @@ class AssetsController < ApplicationController
   end
 
   def create
-    @asset = Asset.new(params[:asset])
+    @asset = Asset.new(asset_params)
 
     if @asset.save
       render :json => AssetPresenter.new(@asset, view_context).as_json(:status => :created), :status => :created
@@ -21,7 +21,7 @@ class AssetsController < ApplicationController
   def update
     @asset = Asset.find(params.fetch(:id))
 
-    if @asset.update_attributes(params.fetch(:asset))
+    if @asset.update_attributes(asset_params)
       render :json => AssetPresenter.new(@asset, view_context).as_json(:status => :success)
     else
       error 422, @asset.errors.full_messages
@@ -31,5 +31,9 @@ class AssetsController < ApplicationController
 private
   def restrict_request_format
     request.format = :json
+  end
+
+  def asset_params
+    params.require(:asset).permit(:file)
   end
 end

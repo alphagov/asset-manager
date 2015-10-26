@@ -1,11 +1,11 @@
-require "spec_helper"
+require "rails_helper"
 
-describe "Healthcheck" do
+RSpec.describe "Healthcheck", type: :request do
 
   it "should respond with success on the healthehcek path" do
     get "/healthcheck"
-    response.status.should == 200
-    response.content_type.should == "text/plain"
-    response.body.should == "OK"
+    expect(response.status).to eq(200)
+    expect(response.content_type).to eq("text/plain")
+    expect(response.body).to eq("OK")
   end
 end

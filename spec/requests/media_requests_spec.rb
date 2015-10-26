@@ -1,10 +1,10 @@
-require "spec_helper"
+require "rails_helper"
 
-describe "Media requests" do
+RSpec.describe "Media requests", type: :request do
   describe "requesting an asset that doesn't exist" do
     it "should respond with file not found" do
       get "/media/34/test.jpg"
-      response.status.should == 404
+      expect(response.status).to eq(404)
     end
   end
 
@@ -19,14 +19,14 @@ describe "Media requests" do
     end
 
     it "should set the X-Accel-Redirect header" do
-      response.should be_success
+      expect(response).to be_success
       id = @asset.id.to_s
-      response.headers["X-Accel-Redirect"].should == "/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{@asset.file.identifier}"
+      expect(response.headers["X-Accel-Redirect"]).to eq("/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{@asset.file.identifier}")
     end
 
     it "should set the correct content headers" do
-      response.headers["Content-Type"].should == "image/png"
-      response.headers["Content-Disposition"].should == 'inline; filename="asset.png"'
+      expect(response.headers["Content-Type"]).to eq("image/png")
+      expect(response.headers["Content-Disposition"]).to eq('inline; filename="asset.png"')
     end
   end
 end

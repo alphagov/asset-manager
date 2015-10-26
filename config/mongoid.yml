@@ -1,21 +1,27 @@
 development:
-  host: localhost
-  database: govuk_assets_development
-  persist_in_safe_mode: true
-
+  sessions:
+    default:
+      uri: mongodb://localhost/govuk_assets_development
+      options:
+        write:
+          w: 1
+        read: primary
 test:
-  host: localhost
-  database: govuk_assets_test
-
-# set these environment variables on your prod server
+  sessions:
+    default:
+      uri: mongodb://localhost/govuk_assets_test
+      options:
+        write:
+          w: 1
+        read: primary
+        max_retries: 1
+        retry_interval: 0
 production:
-  host: <%= ENV['MONGOID_HOST'] %>
-  port: <%= ENV['MONGOID_PORT'] %>
-  username: <%= ENV['MONGOID_USERNAME'] %>
-  password: <%= ENV['MONGOID_PASSWORD'] %>
-  database: <%= ENV['MONGOID_DATABASE'] %>
-  # slaves:
-  #   - host: slave1.local
-  #     port: 27018
-  #   - host: slave2.local
-  #     port: 27019
+  sessions:
+    default:
+      uri: <%= ENV['MONGODB_URI'] %>
+      options:
+        write:
+          w: 1
+        read: primary
+        retry_interval: 120

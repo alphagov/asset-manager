@@ -1,9 +1,9 @@
-require "spec_helper"
+require "rails_helper"
 
-describe "Asset requests" do
+RSpec.describe "Asset requests", type: :request do
   before(:each) do
     login_as_stub_user
-    Plek.any_instance.stub(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")
+    allow_any_instance_of(Plek).to receive(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")
   end
 
   describe "uploading an asset" do
@@ -11,21 +11,21 @@ describe "Asset requests" do
       post "/assets", :asset => { :file => load_fixture_file("asset.png") }
       body = JSON.parse(response.body)
 
-      response.status.should == 201
-      body["_response_info"]["status"].should == "created"
+      expect(response.status).to eq(201)
+      expect(body["_response_info"]["status"]).to eq("created")
 
-      body["id"].should =~ %r{http://www.example.com/assets/[a-z0-9]+}
-      body["name"].should == "asset.png"
-      body["content_type"].should == "image/png"
-      body["state"].should == "unscanned"
+      expect(body["id"]).to match(%r{http://www.example.com/assets/[a-z0-9]+})
+      expect(body["name"]).to eq("asset.png")
+      expect(body["content_type"]).to eq("image/png")
+      expect(body["state"]).to eq("unscanned")
     end
 
     it "cannot create an asset without a file" do
       post "/assets", :asset => { :file => nil }
       body = JSON.parse(response.body)
 
-      response.status.should == 422
-      body["_response_info"]["status"].should == ["File can't be blank"]
+      expect(response.status).to eq(422)
+      expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
   end
 
@@ -40,21 +40,21 @@ describe "Asset requests" do
       put "/assets/#{asset_id}", :asset => { :file => load_fixture_file("asset2.jpg") }
       body = JSON.parse(response.body)
 
-      response.status.should == 200
-      body["_response_info"]["status"].should == "success"
+      expect(response.status).to eq(200)
+      expect(body["_response_info"]["status"]).to eq("success")
 
-      body["id"].should end_with(asset_id)
-      body["name"].should == "asset2.jpg"
-      body["content_type"].should == "image/jpeg"
-      body["state"].should == "unscanned"
+      expect(body["id"]).to end_with(asset_id)
+      expect(body["name"]).to eq("asset2.jpg")
+      expect(body["content_type"]).to eq("image/jpeg")
+      expect(body["state"]).to eq("unscanned")
     end
 
     it "cannot create an asset without a file" do
       post "/assets", :asset => { :file => nil }
       body = JSON.parse(response.body)
 
-      response.status.should == 422
-      body["_response_info"]["status"].should == ["File can't be blank"]
+      expect(response.status).to eq(422)
+      expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
   end
 
@@ -65,14 +65,14 @@ describe "Asset requests" do
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
 
-      response.status.should == 200
-      body["_response_info"]["status"].should == "ok"
+      expect(response.status).to eq(200)
+      expect(body["_response_info"]["status"]).to eq("ok")
 
-      body["id"].should == "http://www.example.com/assets/#{asset.id}"
-      body["name"].should == "asset.png"
-      body["content_type"].should == "image/png"
-      body["file_url"].should == "http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png"
-      body["state"].should == "clean"
+      expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
+      expect(body["name"]).to eq("asset.png")
+      expect(body["content_type"]).to eq("image/png")
+      expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
+      expect(body["state"]).to eq("clean")
     end
 
     it "returns details about an infected asset" do
@@ -81,22 +81,22 @@ describe "Asset requests" do
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
 
-      response.status.should == 200
-      body["_response_info"]["status"].should == "ok"
+      expect(response.status).to eq(200)
+      expect(body["_response_info"]["status"]).to eq("ok")
 
-      body["id"].should == "http://www.example.com/assets/#{asset.id}"
-      body["name"].should == "asset.png"
-      body["content_type"].should == "image/png"
-      body["file_url"].should == "http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png"
-      body["state"].should == "infected"
+      expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
+      expect(body["name"]).to eq("asset.png")
+      expect(body["content_type"]).to eq("image/png")
+      expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
+      expect(body["state"]).to eq("infected")
     end
 
     it "cannot retrieve details about an asset which does not exist" do
       get "/assets/blah"
       body = JSON.parse(response.body)
 
-      response.status.should == 404
-      body["_response_info"]["status"].should == "not found"
+      expect(response.status).to eq(404)
+      expect(body["_response_info"]["status"]).to eq("not found")
     end
   end
 end
