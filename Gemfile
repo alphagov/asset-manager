@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.4'
 gem 'mongoid', '~> 4.0'
 
-gem 'unicorn', '4.5.0'
+gem 'unicorn', '5.0.1'
 
 gem 'airbrake', '~> 4.0.0'
 
