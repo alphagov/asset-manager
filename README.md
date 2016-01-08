@@ -37,3 +37,7 @@ bundle exec rake jobs:work
 ### Testing
 
 `bundle exec rspec`
+
+## Licence
+
+[MIT License](LICENCE)
