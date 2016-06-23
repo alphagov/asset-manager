@@ -44,7 +44,7 @@ bundle exec rake jobs:work
 
 `POST /assets` expects a single file uploaded via the `asset[file]` parameter. This creates the asset and schedules it for scanning.
 
-`POST /assets/:id` expects a file in the same format, and replaces it at the provided ID.
+`PUT /assets/:id` expects a file in the same format, and replaces it at the provided ID.
 
 `GET /assets/:id` returns information about the requested asset, but not the asset itself.
 
