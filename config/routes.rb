@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :assets, :only => [:show, :create, :update]
+  resources :assets, :only => [:show, :create, :update, :destroy]
 
   get "/media/:id/:filename" => "media#download", :constraints => { :filename => /.*/ }
 

@@ -18,6 +18,10 @@ FactoryGirl.define do
     organisation_slug 'example-organisation'
   end
 
+  factory :deleted_asset, :parent => :asset do
+    deleted_at Time.now
+  end
+
   factory :user do
     sequence(:name) { |n| "Winston #{n}"}
     permissions { ["signin"] }
