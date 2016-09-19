@@ -112,6 +112,56 @@ RSpec.describe AssetsController, type: :controller do
     end
   end
 
+  describe "DELETE destroy" do
+    context "a valid asset" do
+      before do
+        @asset = FactoryGirl.create(:asset)
+        @atts = {
+          :file => load_fixture_file("asset2.jpg"),
+        }
+      end
+
+      it "deletes the asset" do
+        delete :destroy, id: @asset.id
+
+        expect((get :show, id: @asset.id).status).to eq(404)
+      end
+
+      it "returns a success status" do
+        delete :destroy, id: @asset.id
+
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context "an asset that doesn't exist" do
+      it "responds with 404" do
+        delete :destroy, id: "12345"
+        expect(response.status).to eq(404)
+      end
+    end
+
+    context "when Asset#destroy fails" do
+      let(:asset) { FactoryGirl.create(:asset) }
+      let(:errors) { ActiveModel::Errors.new(asset) }
+
+      before do
+        errors.add(:base, "Something went wrong")
+        allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
+        allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
+        delete :destroy, id: asset.id
+      end
+
+      it "responds with 422" do
+        expect(response.status).to eq(422)
+      end
+
+      it "returns the asset errors" do
+        expect(response.body).to match(/Something went wrong/)
+      end
+    end
+  end
+
   describe "GET show" do
     context "an asset which exists" do
       before do

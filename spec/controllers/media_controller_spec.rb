@@ -142,5 +142,16 @@ RSpec.describe MediaController, type: :controller do
         expect(response).to be_success
       end
     end
+
+    context "with a soft deleted file" do
+      before do
+        @asset = FactoryGirl.create(:deleted_asset)
+        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+      end
+
+      it "response should be 404" do
+        expect(response.status).to eq(404)
+      end
+    end
   end
 end

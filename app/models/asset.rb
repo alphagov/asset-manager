@@ -2,6 +2,7 @@ require 'virus_scanner'
 
 class Asset
   include Mongoid::Document
+  include Mongoid::Paranoia
   include Mongoid::Timestamps
 
   field :file, type: String
