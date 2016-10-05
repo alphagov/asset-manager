@@ -38,6 +38,16 @@ class AssetsController < ApplicationController
     end
   end
 
+  def restore
+    @asset = Asset.unscoped.find(params.fetch(:id))
+
+    if @asset.restore
+      render :json => AssetPresenter.new(@asset, view_context).as_json(:status => :success)
+    else
+      error 422, @asset.errors.full_messages
+    end
+  end
+
   private
   def restrict_request_format
     request.format = :json
