@@ -99,4 +99,47 @@ RSpec.describe "Asset requests", type: :request do
       expect(body["_response_info"]["status"]).to eq("not found")
     end
   end
+
+  describe "deleting an asset" do
+    it "soft deletes an existing asset" do
+      asset = FactoryGirl.create(:clean_asset)
+
+      delete "/assets/#{asset.id}"
+      body = JSON.parse(response.body)
+
+      expect(response.status).to eq(200)
+      expect(body["_response_info"]["status"]).to eq("success")
+      expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
+      expect(body["name"]).to eq("asset.png")
+      expect(body["content_type"]).to eq("image/png")
+      expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
+      expect(body["state"]).to eq("clean")
+
+      get "/assets/#{asset.id}"
+
+      expect(response.status).to eq(404)
+    end
+  end
+
+  describe "restoring an asset" do
+    it "restores a soft deleted asset" do
+      asset = FactoryGirl.create(:clean_asset)
+
+      post "/assets/#{asset.id}/restore"
+
+      body = JSON.parse(response.body)
+
+      expect(response.status).to eq(200)
+      expect(body["_response_info"]["status"]).to eq("success")
+      expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
+      expect(body["name"]).to eq("asset.png")
+      expect(body["content_type"]).to eq("image/png")
+      expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
+      expect(body["state"]).to eq("clean")
+
+      get "/assets/#{asset.id}"
+
+      expect(response).to be_successful
+    end
+  end
 end
