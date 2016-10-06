@@ -216,5 +216,12 @@ RSpec.describe Asset, type: :model do
       asset.destroy
       expect(asset.deleted_at).not_to be_nil
     end
+
+    it "can be restored" do
+      asset.destroy
+      expect(asset.deleted_at).not_to be_nil
+      asset.restore
+      expect(asset.deleted_at).to be_nil
+    end
   end
 end

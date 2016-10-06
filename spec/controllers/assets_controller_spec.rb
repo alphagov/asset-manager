@@ -197,6 +197,45 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
 
+    describe "POST restore" do
+      let(:asset) { FactoryGirl.create(:asset, deleted_at: 10.minutes.ago) }
+
+      context "an asset which has been soft deleted" do
+        before do
+          post :restore, id: asset.id
+        end
+
+        it "is a successful request" do
+          expect(response).to be_successful
+        end
+
+        it "assigns the asset" do
+          restored_asset = assigns(:asset)
+          expect(restored_asset).to be
+          expect(restored_asset.deleted_at).to be_nil
+        end
+      end
+
+      context "when restoring fails" do
+        let(:errors) { ActiveModel::Errors.new(asset) }
+
+        before do
+          errors.add(:base, "Something went wrong")
+          allow_any_instance_of(Asset).to receive(:restore).and_return(false)
+          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
+          post :restore, id: asset.id
+        end
+
+        it "responds with 422" do
+          expect(response.status).to be(422)
+        end
+
+        it "responds with an error message" do
+          expect(response.body).to match(/Something went wrong/)
+        end
+      end
+    end
+
     describe "cache headers" do
       it "sets the cache-control headers to 0 for an unscanned asset" do
         asset = FactoryGirl.create(:asset, :state => 'unscanned')
