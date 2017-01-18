@@ -1,5 +1,7 @@
 FROM ruby:2.2.3
-RUN apt-get update -qq && apt-get upgrade -y && apt-get clean
+RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt-get clean
+RUN freshclam
+RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
 
 ENV PORT 3037
 ENV MONGODB_URI mongodb://mongo/asset-manager-development
