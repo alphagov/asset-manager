@@ -1,7 +1,7 @@
 development:
   sessions:
     default:
-      uri: mongodb://localhost/govuk_assets_development
+      uri: <%= ENV["MONGODB_URI"] || "mongodb://localhost/govuk_assets_development" %>
       options:
         write:
           w: 1
@@ -9,7 +9,7 @@ development:
 test:
   sessions:
     default:
-      uri: mongodb://localhost/govuk_assets_test
+      uri: <%= ENV["TEST_MONGODB_URI"] || "mongodb://localhost/govuk_assets_test" %>
       options:
         write:
           w: 1
