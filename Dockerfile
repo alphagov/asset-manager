@@ -3,8 +3,9 @@ RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt
 RUN freshclam
 RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
 
+ENV GOVUK_ASSET_ROOT http://assets-origin.dev.gov.uk
+ENV MONGODB_URI mongodb://mongo/asset-manager
 ENV PORT 3037
-ENV MONGODB_URI mongodb://mongo/asset-manager-development
 ENV TEST_MONGODB_URI mongodb://mongo/asset-manager-test
 
 ENV APP_HOME /app
