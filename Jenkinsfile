@@ -19,7 +19,7 @@ node ('mongodb-2.4') {
     }
 
     stage("Checkout") {
-      checkout scm
+      govuk.checkoutFromGitHubWithSSH(REPOSITORY)
     }
 
     stage("Clean up workspace") {
