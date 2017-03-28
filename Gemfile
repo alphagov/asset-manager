@@ -22,7 +22,7 @@ else
   gem 'gds-sso', '~> 11.2'
 end
 
-gem 'plek', '1.3.0'
+gem 'plek', '~> 2.0'
 gem 'logstasher', '0.4.8'
 gem 'rack_strip_client_ip', '0.0.1'
 
