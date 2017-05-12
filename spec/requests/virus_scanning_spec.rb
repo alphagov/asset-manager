@@ -18,6 +18,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     expect(response.status).to eq(404)
 
     run_all_delayed_jobs
+    sleep 2
 
     get "/media/#{@asset.id}/lorem.txt"
     expect(response.status).to eq(200)
