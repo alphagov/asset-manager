@@ -38,7 +38,6 @@ group :development, :test do
   gem 'database_cleaner', '~> 1.4.0'
 
   gem 'simplecov-rcov', '0.2.3'
-  gem 'ci_reporter_rspec', '~> 1.0.0'
 
   gem 'factory_girl_rails', '~> 4.0'
   gem 'govuk-lint', '~> 0.5.1'
