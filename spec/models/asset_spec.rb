@@ -100,6 +100,22 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "when an asset is marked as clean" do
+    let(:asset) { FactoryGirl.create(:asset) }
+    let(:cloud_storage) { double(:cloud_storage) }
+
+    before do
+      allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
+      allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+    end
+
+    it 'saves the asset to cloud storage' do
+      expect(cloud_storage).to receive(:save).with(asset)
+
+      asset.scan_for_viruses
+    end
+  end
+
   describe "virus_scanning the attached file" do
     let(:asset) { FactoryGirl.create(:asset) }
 

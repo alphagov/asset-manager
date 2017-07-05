@@ -1,4 +1,5 @@
 require 'virus_scanner'
+require 'services'
 
 class Asset
   include Mongoid::Document
@@ -25,6 +26,8 @@ class Asset
     event :scanned_clean do
       transition any => :clean
     end
+
+    after_transition to: :clean, do: :save_to_cloud_storage
 
     event :scanned_infected do
       transition any => :infected
@@ -63,6 +66,10 @@ class Asset
     return true unless access_limited?
 
     user && user.organisation_slug == self.organisation_slug
+  end
+
+  def save_to_cloud_storage
+    Services.cloud_storage.save(self)
   end
 
 protected
