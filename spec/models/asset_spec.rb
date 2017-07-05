@@ -100,6 +100,21 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "when a file is scanned clean" do
+    before :each do
+      @asset = FactoryGirl.create(:asset)
+      allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
+    end
+
+    it 'uploads the file to s3' do
+      s3_uploader = double(:upload)
+      expect(S3Uploader).to receive(:new).with(@asset).and_return(s3_uploader)
+      expect(s3_uploader).to receive(:upload)
+
+      @asset.scan_for_viruses
+    end
+  end
+
   describe "virus_scanning the attached file" do
     before :each do
       @asset = FactoryGirl.create(:asset)
