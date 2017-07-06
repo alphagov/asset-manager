@@ -28,6 +28,8 @@ gem 'rack_strip_client_ip', '0.0.1'
 
 gem 'mongoid_paranoia', '0.2.1'
 
+gem 'aws-sdk', '~> 2'
+
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
