@@ -10,3 +10,4 @@ end
 RSpec.configuration.include FileHelpers, type: :model
 RSpec.configuration.include FileHelpers, type: :controller
 RSpec.configuration.include FileHelpers, type: :request
+RSpec.configuration.include FileHelpers, type: :uploader
