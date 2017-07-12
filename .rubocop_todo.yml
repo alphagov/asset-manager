@@ -10,8 +10,3 @@
 Lint/HandleExceptions:
   Exclude:
     - 'spec/models/asset_spec.rb'
-
-# Offense count: 1
-Lint/UselessAssignment:
-  Exclude:
-    - 'spec/support/carrier_wave.rb'
