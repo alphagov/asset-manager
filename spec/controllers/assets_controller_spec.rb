@@ -261,5 +261,4 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
   end
-
 end

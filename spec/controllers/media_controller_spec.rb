@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
-
   describe "GET 'download'" do
     before(:each) do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)

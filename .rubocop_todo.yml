@@ -16,16 +16,6 @@ Lint/UselessAssignment:
   Exclude:
     - 'spec/support/carrier_wave.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/EmptyLinesAroundBlockBody:
-  Exclude:
-    - 'spec/controllers/assets_controller_spec.rb'
-    - 'spec/controllers/media_controller_spec.rb'
-    - 'spec/lib/virus_scanner_spec.rb'
-    - 'spec/requests/healthcheck_spec.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
