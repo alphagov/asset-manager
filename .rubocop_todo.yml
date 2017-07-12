@@ -16,13 +16,6 @@ Lint/UselessAssignment:
   Exclude:
     - 'spec/support/carrier_wave.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowForAlignment.
-Style/ExtraSpacing:
-  Exclude:
-    - 'bin/setup'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: MaxLineLength.
