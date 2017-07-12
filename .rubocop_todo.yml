@@ -16,12 +16,6 @@ Lint/UselessAssignment:
   Exclude:
     - 'spec/support/carrier_wave.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/DefWithParentheses:
-  Exclude:
-    - 'spec/requests/virus_scanning_spec.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/EmptyLinesAroundAccessModifier:

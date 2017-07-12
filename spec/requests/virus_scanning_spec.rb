@@ -31,7 +31,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
   #
   # This is using the EICAR test virus (details: http://www.eicar.org/86-0-Intended-use.html)
   class UploadedVirus < Rack::Test::UploadedFile
-    def initialize()
+    def initialize
       @content_type = "text/plain"
       @original_filename = 'eicar.com'
 
