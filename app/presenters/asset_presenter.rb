@@ -1,5 +1,4 @@
 class AssetPresenter
-
   def initialize(asset, view_context)
     @asset = asset
     @view_context = view_context

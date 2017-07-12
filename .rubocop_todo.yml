@@ -16,14 +16,6 @@ Lint/UselessAssignment:
   Exclude:
     - 'spec/support/carrier_wave.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'app/presenters/asset_presenter.rb'
-    - 'app/uploaders/asset_uploader.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
