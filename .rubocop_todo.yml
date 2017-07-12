@@ -18,13 +18,6 @@ Lint/UselessAssignment:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/EmptyLinesAroundModuleBody:
-  Exclude:
-    - 'app/helpers/application_helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment.
 Style/ExtraSpacing:
   Exclude:
