@@ -162,11 +162,7 @@ RSpec.describe Asset, type: :model do
         expect(Airbrake).to receive(:notify_or_ignore).
           with(@error, params: { id: @asset.id, filename: @asset.filename })
 
-        begin
-          @asset.scan_for_viruses
-        rescue VirusScanner::Error
-          # Swallow the passed through exception
-        end
+        @asset.scan_for_viruses rescue VirusScanner::Error
       end
     end
   end
