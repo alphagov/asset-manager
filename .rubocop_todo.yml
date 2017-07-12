@@ -18,13 +18,6 @@ Lint/UselessAssignment:
 
 # Offense count: 1
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/BracesAroundHashParameters:
-  Exclude:
-    - 'spec/requests/media_requests_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
 Style/DefWithParentheses:
   Exclude:
     - 'spec/requests/virus_scanning_spec.rb'
