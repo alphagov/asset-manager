@@ -16,13 +16,6 @@ Lint/UselessAssignment:
   Exclude:
     - 'spec/support/carrier_wave.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/EmptyLinesAroundAccessModifier:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/assets_controller.rb'
-
 # Offense count: 4
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
