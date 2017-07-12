@@ -20,7 +20,7 @@ class VirusScanner
     @clean
   end
 
-  private
+private
 
   def scan
     out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', @file_path)
