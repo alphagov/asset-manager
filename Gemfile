@@ -9,7 +9,7 @@ gem 'unicorn', '5.0.1'
 gem 'airbrake', '~> 4.0.0'
 
 gem 'carrierwave', '~> 0.10.0'
-gem 'carrierwave-mongoid', '~> 0.8.1', :require => 'carrierwave/mongoid'
+gem 'carrierwave-mongoid', '~> 0.8.1', require: 'carrierwave/mongoid'
 
 gem 'state_machines-mongoid', '~> 0.1.1'
 

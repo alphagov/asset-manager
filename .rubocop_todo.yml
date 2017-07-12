@@ -68,12 +68,6 @@ Style/ExtraSpacing:
   Exclude:
     - 'bin/setup'
 
-# Offense count: 110
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, UseHashRocketsWithSymbolValues.
-Style/HashSyntax:
-  Enabled: false
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: MaxLineLength.

@@ -16,7 +16,7 @@ class MediaController < ApplicationController
     respond_to do |format|
       format.any do
         set_expiry(24.hours)
-        send_file(asset.file.path, :disposition => 'inline')
+        send_file(asset.file.path, disposition: 'inline')
       end
     end
   end
@@ -47,7 +47,7 @@ protected
 
   def redirect_to_current_filename
     redirect_to(
-      :action => :download,
+      action: :download,
       id: params[:id],
       filename: asset.filename,
       only_path: true,

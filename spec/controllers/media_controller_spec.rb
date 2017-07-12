@@ -13,7 +13,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       def do_get
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
       end
 
       it "should be successful" do
@@ -22,7 +22,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "should send the file using send_file" do
-        expect(controller).to receive(:send_file).with(@asset.file.path, :disposition => "inline")
+        expect(controller).to receive(:send_file).with(@asset.file.path, disposition: "inline")
         allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
         do_get
@@ -71,7 +71,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "should return a 404" do
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
         expect(response.code.to_i).to eq(404)
       end
     end
@@ -82,14 +82,14 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "should return a 404" do
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
         expect(response.code.to_i).to eq(404)
       end
     end
 
     context "with a URL containing an invalid ID" do
       it "should return a 404" do
-        get :download, :id => "1234556678895332452345", :filename => "something.jpg"
+        get :download, id: "1234556678895332452345", filename: "something.jpg"
         expect(response.code.to_i).to eq(404)
       end
     end
@@ -146,7 +146,7 @@ RSpec.describe MediaController, type: :controller do
     context "with a soft deleted file" do
       before do
         @asset = FactoryGirl.create(:deleted_asset)
-        get :download, :id => @asset.id.to_s, :filename => @asset.file.file.identifier
+        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
       end
 
       it "response should be 404" do
