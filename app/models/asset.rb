@@ -72,9 +72,7 @@ protected
   end
 
   def reset_state_if_file_changed
-    if self.file_changed?
-      self.state = 'unscanned'
-    end
+    self.state = 'unscanned' if self.file_changed?
   end
 
   def schedule_virus_scan

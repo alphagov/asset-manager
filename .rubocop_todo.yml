@@ -16,14 +16,6 @@ Lint/UselessAssignment:
   Exclude:
     - 'spec/support/carrier_wave.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: MaxLineLength.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/models/asset.rb'
-
 # Offense count: 5
 Style/MethodCalledOnDoEndBlock:
   Exclude:
