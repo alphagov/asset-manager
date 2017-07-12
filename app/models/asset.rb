@@ -26,7 +26,9 @@ class Asset
       transition any => :clean
     end
 
-    after_transition to: :clean, do: :upload_to_s3
+    after_transition to: :clean do |asset, _|
+      asset.delay.upload_to_s3
+    end
 
     event :scanned_infected do
       transition any => :infected
