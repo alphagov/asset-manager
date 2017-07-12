@@ -3,14 +3,10 @@ FactoryGirl.define do
     file Rack::Test::UploadedFile.new(Rails.root.join("spec", "fixtures", "files", "asset.png"))
   end
   factory :clean_asset, parent: :asset do
-    after :create do |a|
-      a.scanned_clean!
-    end
+    after :create, &:scanned_clean!
   end
   factory :infected_asset, parent: :asset do
-    after :create do |a|
-      a.scanned_infected!
-    end
+    after :create, &:scanned_infected!
   end
 
   factory :access_limited_asset, parent: :clean_asset do
