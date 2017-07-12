@@ -15,7 +15,7 @@ private
   end
 
   def error(code, message)
-    render json: {_response_info: {status: message}}, status: code
+    render json: { _response_info: { status: message } }, status: code
   end
 
   def set_expiry(duration)

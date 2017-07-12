@@ -4,5 +4,5 @@ Rails.application.routes.draw do
 
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }
 
-  get "/healthcheck" => Proc.new { [200, {"Content-type" => "text/plain"}, ["OK"]] }
+  get "/healthcheck" => Proc.new { [200, { "Content-type" => "text/plain" }, ["OK"]] }
 end

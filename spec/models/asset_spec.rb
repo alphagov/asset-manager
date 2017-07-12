@@ -137,7 +137,7 @@ RSpec.describe Asset, type: :model do
 
       it "should send an exception notification" do
         expect(Airbrake).to receive(:notify_or_ignore).
-          with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: {id: @asset.id, filename: @asset.filename})
+          with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: @asset.id, filename: @asset.filename })
 
         @asset.scan_for_viruses
       end
@@ -160,7 +160,7 @@ RSpec.describe Asset, type: :model do
 
       it "should send an exception notification" do
         expect(Airbrake).to receive(:notify_or_ignore).
-          with(@error, params: {id: @asset.id, filename: @asset.filename})
+          with(@error, params: { id: @asset.id, filename: @asset.filename })
 
         begin
           @asset.scan_for_viruses

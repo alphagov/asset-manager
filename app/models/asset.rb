@@ -51,11 +51,11 @@ class Asset
     if scanner.clean?
       self.scanned_clean
     else
-      Airbrake.notify_or_ignore(VirusScanner::InfectedFile.new, error_message: scanner.virus_info, params: {id: self.id, filename: self.filename})
+      Airbrake.notify_or_ignore(VirusScanner::InfectedFile.new, error_message: scanner.virus_info, params: { id: self.id, filename: self.filename })
       self.scanned_infected
     end
   rescue => e
-    Airbrake.notify_or_ignore(e, params: {id: self.id, filename: self.filename})
+    Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
     raise
   end
 
