@@ -23,7 +23,7 @@ FactoryGirl.define do
   end
 
   factory :user do
-    sequence(:name) { |n| "Winston #{n}"}
+    sequence(:name) { |n| "Winston #{n}" }
     permissions { ["signin"] }
   end
 end
