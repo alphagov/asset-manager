@@ -70,9 +70,9 @@ RSpec.describe Asset, type: :model do
   describe "scheduling a virus scan" do
     it "should schedule a scan after create" do
       a = Asset.new(file: load_fixture_file("asset.png"))
-      expect do
+      expect {
         a.save!
-      end.to change(Delayed::Job, :count).by(1)
+      }.to change(Delayed::Job, :count).by(1)
 
       job = Delayed::Job.last
       expect(job.payload_object.object).to eq(a)
@@ -82,9 +82,9 @@ RSpec.describe Asset, type: :model do
     it "should schedule a scan after save if the file is changed" do
       a = FactoryGirl.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
-      expect do
+      expect {
         a.save!
-      end.to change(Delayed::Job, :count).by(1)
+      }.to change(Delayed::Job, :count).by(1)
 
       job = Delayed::Job.last
       expect(job.payload_object.object).to eq(a)
@@ -94,9 +94,9 @@ RSpec.describe Asset, type: :model do
     it "should not schedule a scan after update if the file is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       a.created_at = 5.days.ago
-      expect do
+      expect {
         a.save!
-      end.not_to change(Delayed::Job, :count)
+      }.not_to change(Delayed::Job, :count)
     end
   end
 
@@ -150,9 +150,9 @@ RSpec.describe Asset, type: :model do
       end
 
       it "should not change the state, and pass throuth the error if there is an error scanning" do
-        expect do
+        expect {
           @asset.scan_for_viruses
-        end.to raise_error(VirusScanner::Error, "Boom!")
+        }.to raise_error(VirusScanner::Error, "Boom!")
 
         @asset.reload
         expect(@asset.state).to eq("unscanned")

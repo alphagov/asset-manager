@@ -50,9 +50,9 @@ RSpec.describe VirusScanner do
       status = double("Process::Status", exitstatus: 2)
       allow(Open3).to receive(:capture2e).and_return(["ERROR: Can't access file /path/to/file", status])
 
-      expect do
+      expect {
         @scanner.clean?
-      end.to raise_error(VirusScanner::Error, "ERROR: Can't access file /path/to/file")
+      }.to raise_error(VirusScanner::Error, "ERROR: Can't access file /path/to/file")
     end
   end
 end
