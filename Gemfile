@@ -33,11 +33,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development, :test do
   gem 'rspec-rails'
-
   gem 'database_cleaner'
-
   gem 'simplecov-rcov'
-
   gem 'factory_girl_rails'
   gem 'govuk-lint'
 end
