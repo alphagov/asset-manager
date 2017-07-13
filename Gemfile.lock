@@ -256,7 +256,7 @@ DEPENDENCIES
   database_cleaner
   delayed_job (~> 4.1.1)
   delayed_job_mongoid (~> 2.2.0)
-  factory_girl_rails (~> 4.0)
+  factory_girl_rails
   gds-sso (~> 11.2)
   govuk-lint
   logstasher (= 0.4.8)

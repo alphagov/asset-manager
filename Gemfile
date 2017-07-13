@@ -38,6 +38,6 @@ group :development, :test do
 
   gem 'simplecov-rcov'
 
-  gem 'factory_girl_rails', '~> 4.0'
+  gem 'factory_girl_rails'
   gem 'govuk-lint'
 end
