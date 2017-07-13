@@ -40,5 +40,5 @@ group :development, :test do
   gem 'simplecov-rcov', '0.2.3'
 
   gem 'factory_girl_rails', '~> 4.0'
-  gem 'govuk-lint', '~> 0.5.1'
+  gem 'govuk-lint'
 end
