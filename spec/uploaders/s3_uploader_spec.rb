@@ -9,12 +9,11 @@ RSpec.describe S3Uploader, type: :uploader do
   before do
     allow(subject).to receive(:upload).and_call_original
     allow(Aws::S3::Object).to receive(:new).and_return(object)
-    allow(ENV).to receive(:[]).with('BUCKET_NAME').and_return('bucket-name')
   end
 
   describe '#upload' do
     it 'creates an object in the named bucket with the asset id as a key' do
-      expect(Aws::S3::Object).to receive(:new).with(bucket_name: 'bucket-name', key: asset.id.to_s)
+      expect(Aws::S3::Object).to receive(:new).with(bucket_name: Rails.configuration.bucket_name, key: asset.id.to_s)
 
       subject.upload
     end
