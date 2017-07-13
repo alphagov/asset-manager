@@ -34,8 +34,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 group :development, :test do
   gem 'rspec-rails', '~> 3.4.0'
 
-  # NOTE: 1.5.0 has a bug with mongoid and truncation: https://github.com/DatabaseCleaner/database_cleaner/issues/299
-  gem 'database_cleaner', '~> 1.4.0'
+  gem 'database_cleaner'
 
   gem 'simplecov-rcov', '0.2.3'
 
