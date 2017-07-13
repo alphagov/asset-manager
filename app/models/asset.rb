@@ -72,6 +72,9 @@ class Asset
 
   def save_to_cloud_storage
     Services.cloud_storage.save(self)
+  rescue => e
+    Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
+    raise
   end
 
 protected

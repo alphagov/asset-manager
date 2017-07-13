@@ -131,6 +131,30 @@ RSpec.describe Asset, type: :model do
 
       asset.save_to_cloud_storage
     end
+
+    context 'when an exception is raised' do
+      let(:exception_class) { Class.new(StandardError) }
+      let(:exception) { exception_class.new }
+
+      before do
+        allow(cloud_storage).to receive(:save).and_raise(exception)
+      end
+
+      it 'reports the exception to Errbit via Airbrake' do
+        expect(Airbrake).to receive(:notify_or_ignore)
+          .with(exception, params: { id: asset.id, filename: asset.filename })
+
+        asset.save_to_cloud_storage rescue exception_class
+      end
+
+      it 're-raises the exception so Delayed::Job will re-try it' do
+        allow(Airbrake).to receive(:notify_or_ignore)
+
+        expect {
+          asset.save_to_cloud_storage
+        }.to raise_error(exception)
+      end
+    end
   end
 
   describe "virus_scanning the attached file" do
