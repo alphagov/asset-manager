@@ -32,13 +32,9 @@ gem 'mongoid_paranoia', '0.2.1'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.4.0'
-
-  # NOTE: 1.5.0 has a bug with mongoid and truncation: https://github.com/DatabaseCleaner/database_cleaner/issues/299
-  gem 'database_cleaner', '~> 1.4.0'
-
-  gem 'simplecov-rcov', '0.2.3'
-
-  gem 'factory_girl_rails', '~> 4.0'
-  gem 'govuk-lint', '~> 0.5.1'
+  gem 'rspec-rails'
+  gem 'database_cleaner'
+  gem 'simplecov-rcov'
+  gem 'factory_girl_rails'
+  gem 'govuk-lint'
 end
