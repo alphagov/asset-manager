@@ -8,7 +8,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "uploading an asset" do
     it "creates an asset with the file provided" do
-      post "/assets", :asset => { :file => load_fixture_file("asset.png") }
+      post "/assets", asset: { file: load_fixture_file("asset.png") }
       body = JSON.parse(response.body)
 
       expect(response.status).to eq(201)
@@ -21,7 +21,7 @@ RSpec.describe "Asset requests", type: :request do
     end
 
     it "cannot create an asset without a file" do
-      post "/assets", :asset => { :file => nil }
+      post "/assets", asset: { file: nil }
       body = JSON.parse(response.body)
 
       expect(response.status).to eq(422)
@@ -31,13 +31,13 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "updating an asset" do
     let(:asset_id) {
-      post "/assets", :asset => { :file => load_fixture_file("asset.png") }
+      post "/assets", asset: { file: load_fixture_file("asset.png") }
       body = JSON.parse(response.body)
       body.fetch("id").split("/").last
     }
 
     it "updates an asset with the file provided" do
-      put "/assets/#{asset_id}", :asset => { :file => load_fixture_file("asset2.jpg") }
+      put "/assets/#{asset_id}", asset: { file: load_fixture_file("asset2.jpg") }
       body = JSON.parse(response.body)
 
       expect(response.status).to eq(200)
@@ -50,7 +50,7 @@ RSpec.describe "Asset requests", type: :request do
     end
 
     it "cannot create an asset without a file" do
-      post "/assets", :asset => { :file => nil }
+      post "/assets", asset: { file: nil }
       body = JSON.parse(response.body)
 
       expect(response.status).to eq(422)

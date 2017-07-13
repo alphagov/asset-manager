@@ -10,7 +10,7 @@ RSpec.describe AssetsController, type: :controller do
   describe "POST create" do
     context "a valid asset" do
       before do
-        @atts = { :file => load_fixture_file("asset.png") }
+        @atts = { file: load_fixture_file("asset.png") }
       end
 
       it "is persisted" do
@@ -39,7 +39,7 @@ RSpec.describe AssetsController, type: :controller do
 
     context "an invalid asset" do
       before do
-        @atts = { :file => nil }
+        @atts = { file: nil }
       end
 
       it "is not persisted" do
@@ -62,7 +62,7 @@ RSpec.describe AssetsController, type: :controller do
       before do
         @asset = FactoryGirl.create(:asset)
         @atts = {
-          :file => load_fixture_file("asset2.jpg"),
+          file: load_fixture_file("asset2.jpg"),
         }
       end
 
@@ -94,7 +94,7 @@ RSpec.describe AssetsController, type: :controller do
 
     context "an invalid asset" do
       before do
-        @atts = { :file => nil }
+        @atts = { file: nil }
       end
 
       it "is not persisted" do
@@ -117,7 +117,7 @@ RSpec.describe AssetsController, type: :controller do
       before do
         @asset = FactoryGirl.create(:asset)
         @atts = {
-          :file => load_fixture_file("asset2.jpg"),
+          file: load_fixture_file("asset2.jpg"),
         }
       end
 
@@ -238,7 +238,7 @@ RSpec.describe AssetsController, type: :controller do
 
     describe "cache headers" do
       it "sets the cache-control headers to 0 for an unscanned asset" do
-        asset = FactoryGirl.create(:asset, :state => 'unscanned')
+        asset = FactoryGirl.create(:asset, state: 'unscanned')
         get :show, id: asset.id
 
         expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
@@ -261,5 +261,4 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
   end
-
 end

@@ -7,20 +7,19 @@ class ApplicationController < ActionController::Base
 
   before_filter :require_signin_permission!
 
-  rescue_from Mongoid::Errors::DocumentNotFound, :with => :error_404
+  rescue_from Mongoid::Errors::DocumentNotFound, with: :error_404
 
 private
+
   def error_404
     error 404, "not found"
   end
 
   def error(code, message)
-    render :json => {:_response_info => {:status => message}}, :status => code
+    render json: { _response_info: { status: message } }, status: code
   end
 
   def set_expiry(duration)
-    unless Rails.env.development?
-      expires_in duration, :public => true
-    end
+    expires_in duration, public: true unless Rails.env.development?
   end
 end

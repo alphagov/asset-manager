@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 class AssetUploader < CarrierWave::Uploader::Base
-
   storage :file
 
   def store_dir
@@ -51,5 +50,4 @@ class AssetUploader < CarrierWave::Uploader::Base
   # def filename
   #   "something.jpg" if original_filename
   # end
-
 end
