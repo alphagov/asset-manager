@@ -25,5 +25,21 @@ RSpec.describe S3Uploader, type: :uploader do
 
       subject.upload
     end
+
+    context 'when uploading raises an exception' do
+      before do
+        class AnException < StandardError; end
+
+        allow(object).to receive(:upload_file).and_raise(AnException)
+      end
+
+      it 'notifies Airbrake and re-raises the exception' do
+        expect(Airbrake).to receive(:notify_or_ignore).with(AnException, params: { id: asset.id, file: asset.file.path })
+
+        expect {
+          subject.upload
+        }.to raise_error(AnException)
+      end
+    end
   end
 end
