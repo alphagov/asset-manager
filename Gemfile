@@ -32,7 +32,7 @@ gem 'mongoid_paranoia', '0.2.1'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.4.0'
+  gem 'rspec-rails'
 
   gem 'database_cleaner'
 
