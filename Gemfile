@@ -36,7 +36,7 @@ group :development, :test do
 
   gem 'database_cleaner'
 
-  gem 'simplecov-rcov', '0.2.3'
+  gem 'simplecov-rcov'
 
   gem 'factory_girl_rails', '~> 4.0'
   gem 'govuk-lint'
