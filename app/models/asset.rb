@@ -26,6 +26,10 @@ class Asset
       transition any => :clean
     end
 
+    after_transition to: :clean do |asset, _|
+      asset.delay.upload_to_s3
+    end
+
     event :scanned_infected do
       transition any => :infected
     end
@@ -63,6 +67,10 @@ class Asset
     return true unless access_limited?
 
     user && user.organisation_slug == self.organisation_slug
+  end
+
+  def upload_to_s3
+    S3Uploader.new(self).upload
   end
 
 protected

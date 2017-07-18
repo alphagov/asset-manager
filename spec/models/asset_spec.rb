@@ -100,6 +100,41 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#upload_to_s3" do
+    let(:asset) { FactoryGirl.create(:clean_asset) }
+    let(:s3_uploader) { double(upload: nil) }
+
+    before do
+      allow(S3Uploader).to receive(:new).and_return(s3_uploader)
+    end
+
+    it 'instantiates an instance of S3Uploader with self' do
+      expect(S3Uploader).to receive(:new).with(asset)
+
+      asset.upload_to_s3
+    end
+
+    it 'calls upload' do
+      expect(s3_uploader).to receive(:upload)
+
+      asset.upload_to_s3
+    end
+  end
+
+  describe "when a file is scanned clean" do
+    it 'queues the upload of the file to s3' do
+      asset = FactoryGirl.create(:asset)
+
+      expect {
+        asset.scanned_clean
+      }.to change(Delayed::Job, :count).by(1)
+
+      job = Delayed::Job.last
+      expect(job.payload_object.object).to eq(asset)
+      expect(job.payload_object.method_name).to eq(:upload_to_s3)
+    end
+  end
+
   describe "virus_scanning the attached file" do
     before :each do
       @asset = FactoryGirl.create(:asset)
