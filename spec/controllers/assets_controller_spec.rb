@@ -104,7 +104,6 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "DELETE destroy" do
     context "a valid asset" do
-      let(:atts) { { file: load_fixture_file("asset2.jpg") } }
       let(:asset) { FactoryGirl.create(:asset) }
 
       it "deletes the asset" do
