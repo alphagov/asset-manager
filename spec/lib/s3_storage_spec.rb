@@ -20,4 +20,19 @@ RSpec.describe S3Storage do
       subject.save(asset)
     end
   end
+
+  describe '#load' do
+    let(:get_object_output) { instance_double(Aws::S3::Types::GetObjectOutput) }
+    let(:io) { StringIO.new('s3-object-data') }
+
+    before do
+      allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)
+      allow(s3_object).to receive(:get).and_return(get_object_output)
+      allow(get_object_output).to receive(:body).and_return(io)
+    end
+
+    it 'downloads file from S3 bucket' do
+      expect(subject.load(asset)).to eq(io)
+    end
+  end
 end

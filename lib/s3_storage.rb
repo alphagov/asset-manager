@@ -7,4 +7,9 @@ class S3Storage
     object = Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.id.to_s)
     object.upload_file(asset.file.path)
   end
+
+  def load(asset)
+    object = Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.id.to_s)
+    object.get.body
+  end
 end
