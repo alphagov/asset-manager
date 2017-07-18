@@ -9,21 +9,21 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "POST create" do
     context "a valid asset" do
-      let(:atts) { { file: load_fixture_file("asset.png") } }
+      let(:attributes) { { file: load_fixture_file("asset.png") } }
 
       it "is persisted" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.current_path).to match(/asset\.png$/)
       end
       it "returns a created status" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         expect(response.status).to eq(201)
       end
       it "returns the location and details of the new asset" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         asset = assigns(:asset)
 
@@ -36,17 +36,17 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context "an invalid asset" do
-      let(:atts) { { file: nil } }
+      let(:attributes) { { file: nil } }
 
       it "is not persisted" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         expect(assigns(:asset)).not_to be_persisted
         expect(assigns(:asset).file.current_path).to be_nil
       end
 
       it "returns an unprocessable status" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         expect(response.status).to eq(422)
       end
@@ -55,24 +55,24 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "PUT update" do
     context "a valid asset" do
-      let(:atts) { { file: load_fixture_file("asset2.jpg") } }
+      let(:attributes) { { file: load_fixture_file("asset2.jpg") } }
       let(:asset) { FactoryGirl.create(:asset) }
 
       it "updates attributes" do
-        put :update, id: asset.id, asset: atts
+        put :update, id: asset.id, asset: attributes
 
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.current_path).to match(/asset2\.jpg$/)
       end
 
       it "returns a success status" do
-        put :update, id: asset.id, asset: atts
+        put :update, id: asset.id, asset: attributes
 
         expect(response.status).to eq(200)
       end
 
       it "returns the location and details of the new asset" do
-        put :update, id: asset.id, asset: atts
+        put :update, id: asset.id, asset: attributes
 
         asset = assigns(:asset)
 
@@ -85,17 +85,17 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context "an invalid asset" do
-      let(:atts) { { file: nil } }
+      let(:attributes) { { file: nil } }
 
       it "is not persisted" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         expect(assigns(:asset)).not_to be_persisted
         expect(assigns(:asset).file.current_path).to be_nil
       end
 
       it "returns an unprocessable status" do
-        post :create, asset: atts
+        post :create, asset: attributes
 
         expect(response.status).to eq(422)
       end
