@@ -9,11 +9,11 @@ RSpec.describe S3Storage do
   let(:asset) { FactoryGirl.build(:asset) }
   let(:s3_object_params) { { bucket_name: bucket_name, key: asset.id.to_s } }
 
-  describe '#save' do
-    before do
-      allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)
-    end
+  before do
+    allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)
+  end
 
+  describe '#save' do
     it 'uploads file to S3 bucket' do
       expect(s3_object).to receive(:upload_file).with(asset.file.path)
 
@@ -26,7 +26,6 @@ RSpec.describe S3Storage do
     let(:io) { StringIO.new('s3-object-data') }
 
     before do
-      allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)
       allow(s3_object).to receive(:get).and_return(get_object_output)
       allow(get_object_output).to receive(:body).and_return(io)
     end
