@@ -9,17 +9,16 @@ RSpec.describe "Media requests", type: :request do
   end
 
   describe "request an asset that does exist" do
-    before(:each) do
-      @asset = FactoryGirl.create(:clean_asset)
-
-      get "/media/#{@asset.id}/asset.png", nil, "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
+    let(:asset) { FactoryGirl.create(:clean_asset) }
+    before do
+      get "/media/#{asset.id}/asset.png", nil, "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
         "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
     end
 
     it "should set the X-Accel-Redirect header" do
       expect(response).to be_success
-      id = @asset.id.to_s
-      expect(response.headers["X-Accel-Redirect"]).to eq("/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{@asset.file.identifier}")
+      id = asset.id.to_s
+      expect(response.headers["X-Accel-Redirect"]).to eq("/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{asset.file.identifier}")
     end
 
     it "should set the correct content headers" do

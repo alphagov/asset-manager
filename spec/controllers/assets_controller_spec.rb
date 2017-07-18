@@ -3,29 +3,27 @@ require 'rails_helper'
 RSpec.describe AssetsController, type: :controller do
   render_views # for json responses
 
-  before(:each) do
+  before do
     login_as_stub_user
   end
 
   describe "POST create" do
     context "a valid asset" do
-      before do
-        @atts = { file: load_fixture_file("asset.png") }
-      end
+      let(:attributes) { { file: load_fixture_file("asset.png") } }
 
       it "is persisted" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.current_path).to match(/asset\.png$/)
       end
       it "returns a created status" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         expect(response.status).to eq(201)
       end
       it "returns the location and details of the new asset" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         asset = assigns(:asset)
 
@@ -38,19 +36,17 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context "an invalid asset" do
-      before do
-        @atts = { file: nil }
-      end
+      let(:attributes) { { file: nil } }
 
       it "is not persisted" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         expect(assigns(:asset)).not_to be_persisted
         expect(assigns(:asset).file.current_path).to be_nil
       end
 
       it "returns an unprocessable status" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         expect(response.status).to eq(422)
       end
@@ -59,28 +55,24 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "PUT update" do
     context "a valid asset" do
-      before do
-        @asset = FactoryGirl.create(:asset)
-        @atts = {
-          file: load_fixture_file("asset2.jpg"),
-        }
-      end
+      let(:attributes) { { file: load_fixture_file("asset2.jpg") } }
+      let(:asset) { FactoryGirl.create(:asset) }
 
       it "updates attributes" do
-        put :update, id: @asset.id, asset: @atts
+        put :update, id: asset.id, asset: attributes
 
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.current_path).to match(/asset2\.jpg$/)
       end
 
       it "returns a success status" do
-        put :update, id: @asset.id, asset: @atts
+        put :update, id: asset.id, asset: attributes
 
         expect(response.status).to eq(200)
       end
 
       it "returns the location and details of the new asset" do
-        put :update, id: @asset.id, asset: @atts
+        put :update, id: asset.id, asset: attributes
 
         asset = assigns(:asset)
 
@@ -93,19 +85,17 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context "an invalid asset" do
-      before do
-        @atts = { file: nil }
-      end
+      let(:attributes) { { file: nil } }
 
       it "is not persisted" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         expect(assigns(:asset)).not_to be_persisted
         expect(assigns(:asset).file.current_path).to be_nil
       end
 
       it "returns an unprocessable status" do
-        post :create, asset: @atts
+        post :create, asset: attributes
 
         expect(response.status).to eq(422)
       end
@@ -114,21 +104,16 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "DELETE destroy" do
     context "a valid asset" do
-      before do
-        @asset = FactoryGirl.create(:asset)
-        @atts = {
-          file: load_fixture_file("asset2.jpg"),
-        }
-      end
+      let(:asset) { FactoryGirl.create(:asset) }
 
       it "deletes the asset" do
-        delete :destroy, id: @asset.id
+        delete :destroy, id: asset.id
 
-        expect((get :show, id: @asset.id).status).to eq(404)
+        expect((get :show, id: asset.id).status).to eq(404)
       end
 
       it "returns a success status" do
-        delete :destroy, id: @asset.id
+        delete :destroy, id: asset.id
 
         expect(response.status).to eq(200)
       end
@@ -164,21 +149,19 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "GET show" do
     context "an asset which exists" do
-      before do
-        @asset = FactoryGirl.create(:asset)
-      end
+      let(:asset) { FactoryGirl.create(:asset) }
 
       it "is a successful request" do
-        get :show, id: @asset.id
+        get :show, id: asset.id
 
         expect(response).to be_success
       end
 
       it "assigns the asset to the template" do
-        get :show, id: @asset.id
+        get :show, id: asset.id
 
         expect(assigns(:asset)).to be_a(Asset)
-        expect(assigns(:asset).id).to eq(@asset.id)
+        expect(assigns(:asset).id).to eq(asset.id)
       end
     end
 
@@ -237,15 +220,15 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     describe "cache headers" do
+      let(:asset) { FactoryGirl.create(:asset) }
+
       it "sets the cache-control headers to 0 for an unscanned asset" do
-        asset = FactoryGirl.create(:asset, state: 'unscanned')
         get :show, id: asset.id
 
         expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
       end
 
       it "sets the cache-control headers to 30 minutes for a clean asset" do
-        asset = FactoryGirl.create(:asset)
         asset.scanned_clean!
         get :show, id: asset.id
 
@@ -253,7 +236,6 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it "sets the cache-control headers to 30 minutes for an infected asset" do
-        asset = FactoryGirl.create(:asset)
         asset.scanned_infected!
         get :show, id: asset.id
 

@@ -101,102 +101,99 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "virus_scanning the attached file" do
-    before :each do
-      @asset = FactoryGirl.create(:asset)
-    end
+    let(:asset) { FactoryGirl.create(:asset) }
 
     it "should call out to the VirusScanner to scan the file" do
       scanner = double("VirusScanner")
-      expect(VirusScanner).to receive(:new).with(@asset.file.path).and_return(scanner)
+      expect(VirusScanner).to receive(:new).with(asset.file.path).and_return(scanner)
       expect(scanner).to receive(:clean?).and_return(true)
 
-      @asset.scan_for_viruses
+      asset.scan_for_viruses
     end
 
     it "should set the state to clean if the file is clean" do
       allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
 
-      @asset.scan_for_viruses
+      asset.scan_for_viruses
 
-      @asset.reload
-      expect(@asset.state).to eq('clean')
+      asset.reload
+      expect(asset.state).to eq('clean')
     end
 
     context "when a virus is found" do
-      before :each do
+      before do
         allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(false)
         allow_any_instance_of(VirusScanner).to receive(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
       end
 
       it "should set the state to infected if a virus is found" do
-        @asset.scan_for_viruses
+        asset.scan_for_viruses
 
-        @asset.reload
-        expect(@asset.state).to eq('infected')
+        asset.reload
+        expect(asset.state).to eq('infected')
       end
 
       it "should send an exception notification" do
         expect(Airbrake).to receive(:notify_or_ignore).
-          with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: @asset.id, filename: @asset.filename })
+          with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: asset.id, filename: asset.filename })
 
-        @asset.scan_for_viruses
+        asset.scan_for_viruses
       end
     end
 
     context "when there is an error scanning" do
-      before :each do
-        @error = VirusScanner::Error.new("Boom!")
-        allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(@error)
+      let(:error) { VirusScanner::Error.new("Boom!") }
+
+      before do
+        allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(error)
       end
 
       it "should not change the state, and pass throuth the error if there is an error scanning" do
         expect {
-          @asset.scan_for_viruses
+          asset.scan_for_viruses
         }.to raise_error(VirusScanner::Error, "Boom!")
 
-        @asset.reload
-        expect(@asset.state).to eq("unscanned")
+        asset.reload
+        expect(asset.state).to eq("unscanned")
       end
 
       it "should send an exception notification" do
         expect(Airbrake).to receive(:notify_or_ignore).
-          with(@error, params: { id: @asset.id, filename: @asset.filename })
+          with(error, params: { id: asset.id, filename: asset.filename })
 
-        @asset.scan_for_viruses rescue VirusScanner::Error
+        asset.scan_for_viruses rescue VirusScanner::Error
       end
     end
   end
 
   describe "#accessible_by?(user)" do
-    before(:all) do
-      @user = FactoryGirl.build(:user, organisation_slug: 'example-organisation')
-    end
+    let(:user) { FactoryGirl.build(:user, organisation_slug: 'example-organisation') }
 
     it "is always true if the asset is not access limited" do
-      expect(Asset.new(access_limited: false).accessible_by?(@user)).to be_truthy
+      expect(Asset.new(access_limited: false).accessible_by?(user)).to be_truthy
       expect(Asset.new(access_limited: false).accessible_by?(nil)).to be_truthy
-      asset = Asset.new(access_limited: false, organisation_slug: (@user.organisation_slug + "-2"))
-      expect(asset.accessible_by?(@user)).to be_truthy
+      asset = Asset.new(access_limited: false, organisation_slug: (user.organisation_slug + "-2"))
+      expect(asset.accessible_by?(user)).to be_truthy
     end
 
     it "is true if the asset is access limited and the user has the correct organisation" do
-      asset = Asset.new(access_limited: true, organisation_slug: @user.organisation_slug)
-      expect(asset.accessible_by?(@user)).to be_truthy
+      asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
+      expect(asset.accessible_by?(user)).to be_truthy
     end
 
     it "is false if the asset is access limited and the user has an incorrect organisation" do
-      asset = Asset.new(access_limited: true, organisation_slug: (@user.organisation_slug + "-2"))
-      expect(asset.accessible_by?(@user)).to be_falsey
+      asset = Asset.new(access_limited: true, organisation_slug: (user.organisation_slug + "-2"))
+      expect(asset.accessible_by?(user)).to be_falsey
     end
 
     it "is false if the asset is access limited and the user has no organisation" do
       unassociated_user = FactoryGirl.build(:user, organisation_slug: nil)
-      asset = Asset.new(access_limited: true, organisation_slug: @user.organisation_slug)
+      asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
       expect(asset.accessible_by?(unassociated_user)).to be_falsey
     end
 
     it "is false if the asset is access limited and the user is not logged in" do
-      asset = Asset.new(access_limited: true, organisation_slug: @user.organisation_slug)
+      asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
       expect(asset.accessible_by?(nil)).to be_falsey
     end
   end

@@ -2,17 +2,15 @@ require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
   describe "GET 'download'" do
-    before(:each) do
+    before do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
     end
 
     context "with a valid clean file" do
-      before :each do
-        @asset = FactoryGirl.create(:clean_asset)
-      end
+      let(:asset) { FactoryGirl.create(:clean_asset) }
 
       def do_get
-        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
+        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
       end
 
       it "should be successful" do
@@ -21,7 +19,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "should send the file using send_file" do
-        expect(controller).to receive(:send_file).with(@asset.file.path, disposition: "inline")
+        expect(controller).to receive(:send_file).with(asset.file.path, disposition: "inline")
         allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
         do_get
@@ -42,14 +40,14 @@ RSpec.describe MediaController, type: :controller do
         let(:old_file_name) { "an_old_filename.pdf" }
 
         before do
-          allow(Asset).to receive(:find).with(@asset.id.to_s).and_return(@asset)
-          allow(@asset).to receive(:filename_valid?).and_return(true)
+          allow(Asset).to receive(:find).with(asset.id.to_s).and_return(asset)
+          allow(asset).to receive(:filename_valid?).and_return(true)
         end
 
         it "redirects to the new file name" do
-          get :download, id: @asset.id, filename: old_file_name
+          get :download, id: asset.id, filename: old_file_name
 
-          expect(response.location).to match(%r(\A/media/#{@asset.id}/asset.png))
+          expect(response.location).to match(%r(\A/media/#{asset.id}/asset.png))
         end
       end
 
@@ -57,7 +55,7 @@ RSpec.describe MediaController, type: :controller do
         let(:invalid_file_name) { "invalid_file_name.pdf" }
 
         it "redirects to the new file name" do
-          get :download, id: @asset.id, filename: invalid_file_name
+          get :download, id: asset.id, filename: invalid_file_name
 
           expect(response).to be_not_found
         end
@@ -65,23 +63,19 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an unscanned file" do
-      before :each do
-        @asset = FactoryGirl.create(:asset)
-      end
+      let(:asset) { FactoryGirl.create(:asset) }
 
       it "should return a 404" do
-        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
+        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
         expect(response.code.to_i).to eq(404)
       end
     end
 
     context "with an infected file" do
-      before :each do
-        @asset = FactoryGirl.create(:infected_asset)
-      end
+      let(:asset) { FactoryGirl.create(:infected_asset) }
 
       it "should return a 404" do
-        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
+        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
         expect(response.code.to_i).to eq(404)
       end
     end
@@ -94,40 +88,38 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "access limiting on the public interface" do
-      before(:each) do
-        @restricted_asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug')
-        @unrestricted_asset = FactoryGirl.create(:clean_asset)
-      end
+      let(:restricted_asset) { FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug') }
+      let(:unrestricted_asset) { FactoryGirl.create(:clean_asset) }
 
       it "404s requests to access limited documents" do
-        get :download, id: @restricted_asset.id.to_s, filename: 'asset.png'
+        get :download, id: restricted_asset.id.to_s, filename: 'asset.png'
         expect(response.status).to eq(404)
       end
 
       it "permits access to unrestricted documents" do
-        get :download, id: @unrestricted_asset.id.to_s, filename: 'asset.png'
+        get :download, id: unrestricted_asset.id.to_s, filename: 'asset.png'
         expect(response).to be_success
       end
     end
 
     context "access limiting on the private interface" do
-      before(:each) do
-        allow(controller).to receive_messages(requested_via_private_vhost?: true)
+      let(:asset) { FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug') }
 
-        @asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug')
+      before do
+        allow(controller).to receive_messages(requested_via_private_vhost?: true)
       end
 
       it "bounces anonymous users to sign-on" do
         expect(controller).to receive(:require_signin_permission!)
 
-        get :download, id: @asset.id.to_s, filename: 'asset.png'
+        get :download, id: asset.id.to_s, filename: 'asset.png'
       end
 
       it "404s requests to access limited documents if the user has the wrong organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
-        get :download, id: @asset.id.to_s, filename: 'asset.png'
+        get :download, id: asset.id.to_s, filename: 'asset.png'
 
         expect(response.status).to eq(404)
       end
@@ -136,16 +128,17 @@ RSpec.describe MediaController, type: :controller do
         user = FactoryGirl.create(:user, organisation_slug: 'correct-organisation-slug')
         login_as(user)
 
-        get :download, id: @asset.id.to_s, filename: 'asset.png'
+        get :download, id: asset.id.to_s, filename: 'asset.png'
 
         expect(response).to be_success
       end
     end
 
     context "with a soft deleted file" do
+      let(:asset) { FactoryGirl.create(:deleted_asset) }
+
       before do
-        @asset = FactoryGirl.create(:deleted_asset)
-        get :download, id: @asset.id.to_s, filename: @asset.file.file.identifier
+        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
       end
 
       it "response should be 404" do

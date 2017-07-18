@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Virus scanning of uploaded images", type: :request do
-  before :each do
+  before do
     login_as_stub_user
   end
 
@@ -9,17 +9,17 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     post "/assets", asset: { file: load_fixture_file("lorem.txt") }
     expect(response.status).to eq(201)
 
-    @asset = Asset.last
+    asset = Asset.last
 
     asset_details = JSON.parse(response.body)
-    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{@asset.id}})
+    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{asset.id}})
 
-    get "/media/#{@asset.id}/lorem.txt"
+    get "/media/#{asset.id}/lorem.txt"
     expect(response.status).to eq(404)
 
     run_all_delayed_jobs
 
-    get "/media/#{@asset.id}/lorem.txt"
+    get "/media/#{asset.id}/lorem.txt"
     expect(response.status).to eq(200)
 
     expected = File.read(fixture_file_path("lorem.txt"))
@@ -48,17 +48,17 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     post "/assets", asset: { file: UploadedVirus.new }
     expect(response.status).to eq(201)
 
-    @asset = Asset.last
+    asset = Asset.last
 
     asset_details = JSON.parse(response.body)
-    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{@asset.id}})
+    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{asset.id}})
 
-    get "/media/#{@asset.id}/eicar.com"
+    get "/media/#{asset.id}/eicar.com"
     expect(response.status).to eq(404)
 
     run_all_delayed_jobs
 
-    get "/media/#{@asset.id}/eicar.com"
+    get "/media/#{asset.id}/eicar.com"
     expect(response.status).to eq(404)
   end
 end
