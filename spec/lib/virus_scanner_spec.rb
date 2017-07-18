@@ -3,7 +3,7 @@ require 'virus_scanner'
 
 RSpec.describe VirusScanner do
   describe "scanning a file" do
-    before :each do
+    before do
       @scanner = VirusScanner.new("/path/to/file")
     end
 

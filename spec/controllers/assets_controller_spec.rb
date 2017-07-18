@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AssetsController, type: :controller do
   render_views # for json responses
 
-  before(:each) do
+  before do
     login_as_stub_user
   end
 

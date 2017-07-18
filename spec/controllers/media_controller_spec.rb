@@ -2,12 +2,12 @@ require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
   describe "GET 'download'" do
-    before(:each) do
+    before do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
     end
 
     context "with a valid clean file" do
-      before :each do
+      before do
         @asset = FactoryGirl.create(:clean_asset)
       end
 
@@ -65,7 +65,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an unscanned file" do
-      before :each do
+      before do
         @asset = FactoryGirl.create(:asset)
       end
 
@@ -76,7 +76,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an infected file" do
-      before :each do
+      before do
         @asset = FactoryGirl.create(:infected_asset)
       end
 
@@ -94,7 +94,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "access limiting on the public interface" do
-      before(:each) do
+      before do
         @restricted_asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug')
         @unrestricted_asset = FactoryGirl.create(:clean_asset)
       end
@@ -111,7 +111,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "access limiting on the private interface" do
-      before(:each) do
+      before do
         allow(controller).to receive_messages(requested_via_private_vhost?: true)
 
         @asset = FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug')

@@ -101,7 +101,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "virus_scanning the attached file" do
-    before :each do
+    before do
       @asset = FactoryGirl.create(:asset)
     end
 
@@ -123,7 +123,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when a virus is found" do
-      before :each do
+      before do
         allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(false)
         allow_any_instance_of(VirusScanner).to receive(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
       end
@@ -144,7 +144,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when there is an error scanning" do
-      before :each do
+      before do
         @error = VirusScanner::Error.new("Boom!")
         allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(@error)
       end

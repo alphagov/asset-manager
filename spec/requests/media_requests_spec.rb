@@ -9,7 +9,7 @@ RSpec.describe "Media requests", type: :request do
   end
 
   describe "request an asset that does exist" do
-    before(:each) do
+    before do
       @asset = FactoryGirl.create(:clean_asset)
 
       get "/media/#{@asset.id}/asset.png", nil, "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
