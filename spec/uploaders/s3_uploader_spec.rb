@@ -40,4 +40,21 @@ RSpec.describe S3Uploader, type: :uploader do
       end
     end
   end
+
+  describe '#download' do
+    let(:body) { StringIO.new }
+    let(:get_output_object) { double(:get_output_object, body: body) }
+
+    it 'creates an object in the named bucket with the asset id as a key' do
+      expect(Aws::S3::Object).to receive(:new).with(bucket_name: Rails.configuration.bucket_name, key: asset.id.to_s)
+
+      subject.upload
+    end
+
+    it 'downloads the object from S3 and returns its body' do
+      allow(object).to receive(:get).and_return(get_output_object)
+
+      expect(subject.download).to eq(body)
+    end
+  end
 end

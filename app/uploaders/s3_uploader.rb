@@ -10,4 +10,9 @@ class S3Uploader
     Airbrake.notify_or_ignore(e, params: { id: @asset.id.to_s, file: @asset.file.path })
     raise
   end
+
+  def download
+    object = Aws::S3::Object.new(bucket_name: Rails.configuration.bucket_name, key: @asset.id.to_s)
+    object.get.body
+  end
 end
