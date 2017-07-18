@@ -27,7 +27,9 @@ class Asset
       transition any => :clean
     end
 
-    after_transition to: :clean, do: :save_to_cloud_storage
+    after_transition to: :clean do |asset, _|
+      asset.delay.save_to_cloud_storage
+    end
 
     event :scanned_infected do
       transition any => :infected

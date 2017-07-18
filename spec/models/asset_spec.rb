@@ -101,18 +101,35 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "when an asset is marked as clean" do
-    let(:asset) { FactoryGirl.create(:asset) }
-    let(:cloud_storage) { double(:cloud_storage) }
+    let!(:asset) { FactoryGirl.create(:asset) }
 
     before do
       allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
+    end
+
+    it 'schedules saving the asset to cloud storage' do
+      expect {
+        asset.scan_for_viruses
+      }.to change(Delayed::Job, :count).by(1)
+
+      job = Delayed::Job.last
+      expect(job.payload_object.object).to eq(asset)
+      expect(job.payload_object.method_name).to eq(:save_to_cloud_storage)
+    end
+  end
+
+  describe "#save_to_cloud_storage" do
+    let(:asset) { FactoryGirl.create(:clean_asset) }
+    let(:cloud_storage) { double(:cloud_storage) }
+
+    before do
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
     end
 
     it 'saves the asset to cloud storage' do
       expect(cloud_storage).to receive(:save).with(asset)
 
-      asset.scan_for_viruses
+      asset.save_to_cloud_storage
     end
   end
 
