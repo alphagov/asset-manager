@@ -2,7 +2,7 @@ require 'rails_helper'
 require 's3_storage'
 
 RSpec.describe S3Storage do
-  subject { described_class.new(bucket_name) }
+  subject { described_class.build(bucket_name) }
 
   let(:bucket_name) { 'bucket-name' }
   let(:s3_object) { instance_double(Aws::S3::Object) }
@@ -19,6 +19,16 @@ RSpec.describe S3Storage do
 
       subject.save(asset)
     end
+
+    context 'when bucket name is blank' do
+      let(:bucket_name) { '' }
+
+      it 'does not upload file to S3 bucket' do
+        expect(Aws::S3::Object).not_to receive(:new)
+
+        subject.save(asset)
+      end
+    end
   end
 
   describe '#load' do
@@ -32,6 +42,20 @@ RSpec.describe S3Storage do
 
     it 'downloads file from S3 bucket' do
       expect(subject.load(asset)).to eq(io)
+    end
+
+    context 'when bucket name is blank' do
+      let(:bucket_name) { '' }
+
+      it 'does not download file from S3 bucket' do
+        expect(Aws::S3::Object).not_to receive(:new)
+
+        subject.load(asset)
+      end
+
+      it 'returns empty StringIO' do
+        expect(subject.load(asset).read).to eq('')
+      end
     end
   end
 end
