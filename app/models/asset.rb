@@ -1,4 +1,5 @@
 require 'virus_scanner'
+require 'services'
 
 class Asset
   include Mongoid::Document
@@ -24,6 +25,10 @@ class Asset
   state_machine :state, initial: :unscanned do
     event :scanned_clean do
       transition any => :clean
+    end
+
+    after_transition to: :clean do |asset, _|
+      asset.delay.save_to_cloud_storage
     end
 
     event :scanned_infected do
@@ -63,6 +68,13 @@ class Asset
     return true unless access_limited?
 
     user && user.organisation_slug == self.organisation_slug
+  end
+
+  def save_to_cloud_storage
+    Services.cloud_storage.save(self)
+  rescue => e
+    Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
+    raise
   end
 
 protected

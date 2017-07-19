@@ -16,7 +16,12 @@ class MediaController < ApplicationController
     respond_to do |format|
       format.any do
         set_expiry(24.hours)
-        send_file(asset.file.path, disposition: 'inline')
+        if params[:stream_from_s3].present?
+          body = Services.cloud_storage.load(asset)
+          send_data(body.read, filename: File.basename(asset.file.path), disposition: 'inline')
+        else
+          send_file(asset.file.path, disposition: 'inline')
+        end
       end
     end
   end
