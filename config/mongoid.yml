@@ -1,27 +1,18 @@
 development:
-  sessions:
+  clients:
     default:
       uri: <%= ENV["MONGODB_URI"] || "mongodb://localhost/govuk_assets_development" %>
-      options:
-        write:
-          w: 1
-        read: primary
 test:
-  sessions:
+  clients:
     default:
       uri: <%= ENV["TEST_MONGODB_URI"] || "mongodb://localhost/govuk_assets_test" %>
       options:
-        write:
-          w: 1
-        read: primary
-        max_retries: 1
-        retry_interval: 0
+        read:
+          mode: :primary
 production:
-  sessions:
+  clients:
     default:
       uri: <%= ENV['MONGODB_URI'] %>
       options:
-        write:
-          w: 1
-        read: primary
-        retry_interval: 120
+        read:
+          mode: :primary

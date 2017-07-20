@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '4.2.7.1'
-gem 'mongoid', '~> 4.0'
+gem 'mongoid', '~> 5.0'
 gem 'nokogiri', '1.6.6.4'
 
 gem 'unicorn', '5.0.1'

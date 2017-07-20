@@ -74,7 +74,7 @@ RSpec.describe Asset, type: :model do
         a.save!
       }.to change(Delayed::Job, :count).by(1)
 
-      job = Delayed::Job.last
+      job = Delayed::Job.asc('_id').last
       expect(job.payload_object.object).to eq(a)
       expect(job.payload_object.method_name).to eq(:scan_for_viruses)
     end
@@ -86,7 +86,7 @@ RSpec.describe Asset, type: :model do
         a.save!
       }.to change(Delayed::Job, :count).by(1)
 
-      job = Delayed::Job.last
+      job = Delayed::Job.asc('_id').last
       expect(job.payload_object.object).to eq(a)
       expect(job.payload_object.method_name).to eq(:scan_for_viruses)
     end
@@ -112,7 +112,7 @@ RSpec.describe Asset, type: :model do
         asset.scan_for_viruses
       }.to change(Delayed::Job, :count).by(1)
 
-      job = Delayed::Job.last
+      job = Delayed::Job.asc('_id').last
       expect(job.payload_object.object).to eq(asset)
       expect(job.payload_object.method_name).to eq(:save_to_cloud_storage)
     end
