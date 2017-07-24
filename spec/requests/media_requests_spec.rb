@@ -2,9 +2,9 @@ require "rails_helper"
 
 RSpec.describe "Media requests", type: :request do
   describe "requesting an asset that doesn't exist" do
-    it "should respond with file not found" do
+    it "should respond with not found status" do
       get "/media/34/test.jpg"
-      expect(response.status).to eq(404)
+      expect(response).to have_http_status(:not_found)
     end
   end
 

@@ -124,14 +124,14 @@ RSpec.describe MediaController, type: :controller do
       let(:restricted_asset) { FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug') }
       let(:unrestricted_asset) { FactoryGirl.create(:clean_asset) }
 
-      it "404s requests to access limited documents" do
+      it "responds with not found status for access-limited documents" do
         get :download, id: restricted_asset.id.to_s, filename: 'asset.png'
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
 
       it "permits access to unrestricted documents" do
         get :download, id: unrestricted_asset.id.to_s, filename: 'asset.png'
-        expect(response).to be_success
+        expect(response).to have_http_status(:success)
       end
     end
 
@@ -148,13 +148,13 @@ RSpec.describe MediaController, type: :controller do
         get :download, id: asset.id.to_s, filename: 'asset.png'
       end
 
-      it "404s requests to access limited documents if the user has the wrong organisation" do
+      it "responds with not found status for access-limited documents if the user has the wrong organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
         get :download, id: asset.id.to_s, filename: 'asset.png'
 
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
 
       it "permits access to access limited documents if the user has the right organisation" do
@@ -174,8 +174,8 @@ RSpec.describe MediaController, type: :controller do
         get :download, id: asset.id.to_s, filename: asset.file.file.identifier
       end
 
-      it "response should be 404" do
-        expect(response.status).to eq(404)
+      it "responds with not found status" do
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
