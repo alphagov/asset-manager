@@ -17,11 +17,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.current_path).to match(/asset\.png$/)
       end
+
       it "returns a created status" do
         post :create, asset: attributes
 
         expect(response.status).to eq(201)
       end
+
       it "returns the location and details of the new asset" do
         post :create, asset: attributes
 
