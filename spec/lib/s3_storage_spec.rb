@@ -47,14 +47,10 @@ RSpec.describe S3Storage do
     context 'when bucket name is blank' do
       let(:bucket_name) { '' }
 
-      it 'does not download file from S3 bucket' do
-        expect(Aws::S3::Object).not_to receive(:new)
-
-        subject.load(asset)
-      end
-
-      it 'returns empty StringIO' do
-        expect(subject.load(asset).read).to eq('')
+      it 'raises NotConfiguredError exception' do
+        expect {
+          subject.load(asset)
+        }.to raise_error(S3Storage::NotConfiguredError, 'AWS S3 bucket not correctly configured')
       end
     end
   end

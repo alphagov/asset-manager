@@ -8,6 +8,28 @@ RSpec.describe "Media requests", type: :request do
     end
   end
 
+  describe "request an asset to be streamed from S3", disable_cloud_storage_stub: true do
+    context "when bucket not configured" do
+      let(:asset) { FactoryGirl.create(:clean_asset) }
+
+      before do
+        allow(AssetManager::Application.config).to receive(:aws_s3_bucket_name).and_return(nil)
+      end
+
+      it "should respond with internal server error status" do
+        get "/media/#{asset.id}/asset.png?stream_from_s3=true"
+        expect(response).to have_http_status(:internal_server_error)
+      end
+
+      it "should include error message in JSON response" do
+        get "/media/#{asset.id}/asset.png?stream_from_s3=true"
+        json = JSON.parse(response.body)
+        status = json['_response_info']['status']
+        expect(status).to eq('Internal server error: AWS S3 bucket not correctly configured')
+      end
+    end
+  end
+
   describe "request an asset that does exist" do
     let(:asset) { FactoryGirl.create(:clean_asset) }
 
