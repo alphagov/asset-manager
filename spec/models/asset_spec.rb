@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Asset, type: :model do
+  include DelayedJobHelpers
+
   describe "creating an asset" do
     it "should be valid given a file" do
       a = Asset.new(file: load_fixture_file("asset.png"))
@@ -74,9 +76,8 @@ RSpec.describe Asset, type: :model do
         a.save!
       }.to change(Delayed::Job, :count).by(1)
 
-      job = Delayed::Job.asc('_id').last
-      expect(job.payload_object.object).to eq(a)
-      expect(job.payload_object.method_name).to eq(:scan_for_viruses)
+      expect(most_recently_enqueued_job).to have_payload(a)
+      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
     end
 
     it "should schedule a scan after save if the file is changed" do
@@ -86,9 +87,8 @@ RSpec.describe Asset, type: :model do
         a.save!
       }.to change(Delayed::Job, :count).by(1)
 
-      job = Delayed::Job.asc('_id').last
-      expect(job.payload_object.object).to eq(a)
-      expect(job.payload_object.method_name).to eq(:scan_for_viruses)
+      expect(most_recently_enqueued_job).to have_payload(a)
+      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
     end
 
     it "should not schedule a scan after update if the file is unchanged" do
@@ -112,9 +112,8 @@ RSpec.describe Asset, type: :model do
         asset.scan_for_viruses
       }.to change(Delayed::Job, :count).by(1)
 
-      job = Delayed::Job.asc('_id').last
-      expect(job.payload_object.object).to eq(asset)
-      expect(job.payload_object.method_name).to eq(:save_to_cloud_storage)
+      expect(most_recently_enqueued_job).to have_payload(asset)
+      expect(most_recently_enqueued_job).to have_method_name(:save_to_cloud_storage)
     end
   end
 
