@@ -69,6 +69,40 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
+      context "when config.stream_all_assets_from_s3 is true" do
+        let(:io) { StringIO.new('s3-object-data') }
+        let(:cloud_storage) { double(:cloud_storage) }
+
+        before do
+          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+          allow(cloud_storage).to receive(:load).with(asset).and_return(io)
+          allow(AssetManager::Application.config).to receive(:stream_all_assets_from_s3).and_return(true)
+        end
+
+        it "should be successful" do
+          do_get
+          expect(response).to be_success
+        end
+
+        it "should send the file using send_data" do
+          expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
+          allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
+
+          do_get
+        end
+
+        it "should have the correct content type" do
+          do_get
+          expect(response.headers["Content-Type"]).to eq("image/png")
+        end
+
+        it "should set the cache-control headers to 24 hours" do
+          do_get
+
+          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+        end
+      end
+
       context "when the file name in the URL represents an old version" do
         let(:old_file_name) { "an_old_filename.pdf" }
 
