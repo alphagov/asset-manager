@@ -36,6 +36,29 @@ Newly uploaded assets return 404 until they've been scanned for viruses. Scannin
 bundle exec rake jobs:work
 ```
 
+### Assets on S3
+
+This functionality is *very* experimental and should not be switched on in production until performance tests have been carried out to ensure there has been no degradation in performance.
+
+As long as the S3 bucket is configured, all assets are uploaded to the S3 bucket via a separate `Delayed::Job` triggered if virus scanning succeeds. Assets are still saved to the NFS mount as per the original behaviour.
+
+The following environment variables are only needed if you want to enable this functionality, i.e. they are all optional.
+
+#### Standard AWS environment variables
+
+* `AWS_ACCESS_KEY_ID`
+* `AWS_SECRET_ACCESS_KEY`
+* `AWS_REGION`
+
+#### Application-specific environment variables
+
+* `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored
+* `STREAM_ALL_ASSETS_FROM_S3` - causes *all* assets to be served from S3 via the app
+
+#### Request parameter
+
+Assets can be streamed from S3 even if `STREAM_ALL_ASSETS_FROM_S3` is not set by adding `stream_from_s3=true` as a request parameter key-value pair to the query string.
+
 ### Testing
 
 `bundle exec rspec`
