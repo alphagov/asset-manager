@@ -17,11 +17,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.current_path).to match(/asset\.png$/)
       end
+
       it "returns a created status" do
         post :create, asset: attributes
 
-        expect(response.status).to eq(201)
+        expect(response).to have_http_status(:created)
       end
+
       it "returns the location and details of the new asset" do
         post :create, asset: attributes
 
@@ -45,10 +47,10 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).file.current_path).to be_nil
       end
 
-      it "returns an unprocessable status" do
+      it "returns an unprocessable entity status" do
         post :create, asset: attributes
 
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
@@ -68,7 +70,7 @@ RSpec.describe AssetsController, type: :controller do
       it "returns a success status" do
         put :update, id: asset.id, asset: attributes
 
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:success)
       end
 
       it "returns the location and details of the new asset" do
@@ -94,10 +96,10 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).file.current_path).to be_nil
       end
 
-      it "returns an unprocessable status" do
+      it "returns an unprocessable entity status" do
         post :create, asset: attributes
 
-        expect(response.status).to eq(422)
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
@@ -115,14 +117,14 @@ RSpec.describe AssetsController, type: :controller do
       it "returns a success status" do
         delete :destroy, id: asset.id
 
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:success)
       end
     end
 
     context "an asset that doesn't exist" do
-      it "responds with 404" do
+      it "responds with not found status" do
         delete :destroy, id: "12345"
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -137,8 +139,8 @@ RSpec.describe AssetsController, type: :controller do
         delete :destroy, id: asset.id
       end
 
-      it "responds with 422" do
-        expect(response.status).to eq(422)
+      it "responds with unprocessable entity status" do
+        expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it "returns the asset errors" do
@@ -169,7 +171,7 @@ RSpec.describe AssetsController, type: :controller do
       it "returns a not found status" do
         get :show, id: "some-gif-or-other"
 
-        expect(response.status).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
 
       it "returns a not found message" do
@@ -189,7 +191,7 @@ RSpec.describe AssetsController, type: :controller do
         end
 
         it "is a successful request" do
-          expect(response).to be_successful
+          expect(response).to be_success
         end
 
         it "assigns the asset" do
@@ -209,8 +211,8 @@ RSpec.describe AssetsController, type: :controller do
           post :restore, id: asset.id
         end
 
-        it "responds with 422" do
-          expect(response.status).to be(422)
+        it "responds with unprocessable entity status" do
+          expect(response).to have_http_status(:unprocessable_entity)
         end
 
         it "responds with an error message" do

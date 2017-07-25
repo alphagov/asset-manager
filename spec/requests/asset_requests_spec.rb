@@ -11,7 +11,7 @@ RSpec.describe "Asset requests", type: :request do
       post "/assets", asset: { file: load_fixture_file("asset.png") }
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(201)
+      expect(response).to have_http_status(:created)
       expect(body["_response_info"]["status"]).to eq("created")
 
       expect(body["id"]).to match(%r{http://www.example.com/assets/[a-z0-9]+})
@@ -24,7 +24,7 @@ RSpec.describe "Asset requests", type: :request do
       post "/assets", asset: { file: nil }
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe "Asset requests", type: :request do
       put "/assets/#{asset_id}", asset: { file: load_fixture_file("asset2.jpg") }
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(body["_response_info"]["status"]).to eq("success")
 
       expect(body["id"]).to end_with(asset_id)
@@ -53,7 +53,7 @@ RSpec.describe "Asset requests", type: :request do
       post "/assets", asset: { file: nil }
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(422)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
   end
@@ -65,7 +65,7 @@ RSpec.describe "Asset requests", type: :request do
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(body["_response_info"]["status"]).to eq("ok")
 
       expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
@@ -81,7 +81,7 @@ RSpec.describe "Asset requests", type: :request do
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(body["_response_info"]["status"]).to eq("ok")
 
       expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
@@ -95,7 +95,7 @@ RSpec.describe "Asset requests", type: :request do
       get "/assets/blah"
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(404)
+      expect(response).to have_http_status(:not_found)
       expect(body["_response_info"]["status"]).to eq("not found")
     end
   end
@@ -107,7 +107,7 @@ RSpec.describe "Asset requests", type: :request do
       delete "/assets/#{asset.id}"
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(body["_response_info"]["status"]).to eq("success")
       expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
       expect(body["name"]).to eq("asset.png")
@@ -117,7 +117,7 @@ RSpec.describe "Asset requests", type: :request do
 
       get "/assets/#{asset.id}"
 
-      expect(response.status).to eq(404)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -129,7 +129,7 @@ RSpec.describe "Asset requests", type: :request do
 
       body = JSON.parse(response.body)
 
-      expect(response.status).to eq(200)
+      expect(response).to have_http_status(:success)
       expect(body["_response_info"]["status"]).to eq("success")
       expect(body["id"]).to eq("http://www.example.com/assets/#{asset.id}")
       expect(body["name"]).to eq("asset.png")
@@ -139,7 +139,7 @@ RSpec.describe "Asset requests", type: :request do
 
       get "/assets/#{asset.id}"
 
-      expect(response).to be_successful
+      expect(response).to be_success
     end
   end
 end

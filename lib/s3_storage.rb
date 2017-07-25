@@ -1,10 +1,14 @@
+require 'cloud_storage'
+
 class S3Storage
+  NotConfiguredError = Class.new(CloudStorage::NotConfiguredError)
+
   class Null
     def save(_asset)
     end
 
     def load(_asset)
-      StringIO.new
+      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
     end
   end
 
