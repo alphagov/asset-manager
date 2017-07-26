@@ -16,11 +16,7 @@ gem 'state_machines-mongoid', '~> 0.1.1'
 gem 'delayed_job', '~> 4.1.1'
 gem 'delayed_job_mongoid', '~> 2.2.0'
 
-if ENV['BUNDLE_DEV']
-  gem 'gds-sso', path: '../gds-sso'
-else
-  gem 'gds-sso', '~> 11.2'
-end
+gem 'gds-sso', '~> 11.2'
 
 gem 'plek', '~> 2.0'
 gem 'logstasher', '0.4.8'
