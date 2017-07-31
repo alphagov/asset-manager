@@ -29,8 +29,7 @@ class MediaController < ApplicationController
 protected
 
   def stream_from_s3?
-    config = AssetManager::Application.config
-    config.stream_all_assets_from_s3 || params[:stream_from_s3].present?
+    AssetManager.stream_all_assets_from_s3 || params[:stream_from_s3].present?
   end
 
   def filename_current?

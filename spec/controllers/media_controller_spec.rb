@@ -76,7 +76,7 @@ RSpec.describe MediaController, type: :controller do
         before do
           allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
           allow(cloud_storage).to receive(:load).with(asset).and_return(io)
-          allow(AssetManager::Application.config).to receive(:stream_all_assets_from_s3).and_return(true)
+          allow(AssetManager).to receive(:stream_all_assets_from_s3).and_return(true)
         end
 
         it "should be successful" do
