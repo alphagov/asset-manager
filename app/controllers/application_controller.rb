@@ -27,6 +27,8 @@ private
   end
 
   def set_expiry(duration)
-    expires_in duration, public: true unless Rails.env.development?
+    unless Rails.env.development?
+      expires_in duration, public: true
+    end
   end
 end
