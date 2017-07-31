@@ -36,4 +36,5 @@ module AssetManager
 
   mattr_accessor :aws_s3_bucket_name
   mattr_accessor :stream_all_assets_from_s3
+  mattr_accessor :cache_control
 end

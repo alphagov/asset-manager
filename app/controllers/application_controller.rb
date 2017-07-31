@@ -28,7 +28,7 @@ private
 
   def set_expiry(duration)
     unless Rails.env.development?
-      expires_in duration, public: true
+      expires_in duration, **AssetManager.cache_control.options
     end
   end
 end

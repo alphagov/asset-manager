@@ -15,7 +15,7 @@ class MediaController < ApplicationController
 
     respond_to do |format|
       format.any do
-        set_expiry(24.hours)
+        set_expiry(AssetManager.cache_control.max_age)
         if stream_from_s3?
           body = Services.cloud_storage.load(asset)
           send_data(body.read, filename: File.basename(asset.file.path), disposition: 'inline')
