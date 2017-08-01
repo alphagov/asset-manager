@@ -1,4 +1,5 @@
 require "rails_helper"
+require "content_disposition_configuration"
 
 RSpec.describe Asset, type: :model do
   include DelayedJobHelpers
@@ -121,11 +122,14 @@ RSpec.describe Asset, type: :model do
     let(:asset) { FactoryGirl.create(:clean_asset) }
     let(:cloud_storage) { double(:cloud_storage) }
     let(:cache_control) { instance_double(CacheControlConfiguration) }
+    let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
 
     before do
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
       allow(AssetManager).to receive(:cache_control).and_return(cache_control)
       allow(cache_control).to receive(:header).and_return('cache-control-header')
+      allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
+      allow(content_disposition).to receive(:header_for).with(asset).and_return('content-disposition-header')
     end
 
     it 'saves the asset to cloud storage' do
@@ -135,7 +139,13 @@ RSpec.describe Asset, type: :model do
     end
 
     it 'sets the Cache-Control header on the asset stored in the cloud' do
-      expect(cloud_storage).to receive(:save).with(anything, cache_control: 'cache-control-header')
+      expect(cloud_storage).to receive(:save).with(anything, include(cache_control: 'cache-control-header'))
+
+      asset.save_to_cloud_storage
+    end
+
+    it 'sets the Content-Disposition header on the asset stored in the cloud' do
+      expect(cloud_storage).to receive(:save).with(anything, include(content_disposition: 'content-disposition-header'))
 
       asset.save_to_cloud_storage
     end
