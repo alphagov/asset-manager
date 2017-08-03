@@ -15,9 +15,15 @@ RSpec.describe S3Storage do
 
   describe '#save' do
     it 'uploads file to S3 bucket' do
-      expect(s3_object).to receive(:upload_file).with(asset.file.path)
+      expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
 
       subject.save(asset)
+    end
+
+    it 'passes options to Aws::S3::Object#upload_file' do
+      expect(s3_object).to receive(:upload_file).with(anything, cache_control: 'cache-control-header')
+
+      subject.save(asset, cache_control: 'cache-control-header')
     end
 
     context 'when bucket name is blank' do

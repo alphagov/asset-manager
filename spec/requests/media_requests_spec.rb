@@ -13,7 +13,7 @@ RSpec.describe "Media requests", type: :request do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
       before do
-        allow(AssetManager::Application.config).to receive(:aws_s3_bucket_name).and_return(nil)
+        allow(AssetManager).to receive(:aws_s3_bucket_name).and_return(nil)
       end
 
       it "should respond with internal server error status" do

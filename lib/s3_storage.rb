@@ -19,8 +19,8 @@ class S3Storage
     @bucket_name = bucket_name
   end
 
-  def save(asset)
-    object_for(asset).upload_file(asset.file.path)
+  def save(asset, options = {})
+    object_for(asset).upload_file(asset.file.path, options)
   end
 
   def load(asset)

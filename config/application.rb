@@ -33,4 +33,8 @@ module AssetManager
 
     config.action_dispatch.x_sendfile_header = "X-Accel-Redirect"
   end
+
+  mattr_accessor :aws_s3_bucket_name
+  mattr_accessor :stream_all_assets_from_s3
+  mattr_accessor :cache_control
 end
