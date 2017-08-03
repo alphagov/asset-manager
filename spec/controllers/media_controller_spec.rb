@@ -69,6 +69,21 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
+      context "when redirect_to_s3 param is present" do
+        let(:cloud_storage) { double(:cloud_storage) }
+
+        before do
+          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+          allow(cloud_storage).to receive(:public_url_for).with(asset).and_return('public-url')
+        end
+
+        it "should redirect temporarily (302 Found) to the public URL of the asset" do
+          do_get redirect_to_s3: true
+          expect(response).to redirect_to('public-url')
+          expect(response).to have_http_status(:found)
+        end
+      end
+
       context "when config.stream_all_assets_from_s3 is true" do
         let(:io) { StringIO.new('s3-object-data') }
         let(:cloud_storage) { double(:cloud_storage) }
