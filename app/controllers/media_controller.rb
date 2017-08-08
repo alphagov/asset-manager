@@ -31,7 +31,7 @@ class MediaController < ApplicationController
 protected
 
   def redirect_to_s3?
-    AssetManager.redirect_all_asset_requests_to_s3 || params[:redirect_to_s3].present?
+    asset.uploaded_to_s3?
   end
 
   def stream_from_s3?

@@ -14,6 +14,8 @@ class Asset
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
 
+  field :uploaded_to_s3, type: Boolean, default: false
+
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
 
@@ -72,6 +74,7 @@ class Asset
 
   def save_to_cloud_storage
     Services.cloud_storage.save(self, cloud_storage_options)
+    update_attribute(:uploaded_to_s3, true)
   rescue => e
     Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
     raise
