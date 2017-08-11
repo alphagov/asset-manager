@@ -22,8 +22,8 @@ We now want to try redirecting requests from Asset Manager to S3. We have code i
 | Create S3 Bucket                    | Y           | Y       | Y          |
 | Upload assets to S3                 | Y           | Y       | Y          |
 | Optionally proxy to assets on S3    | Y           | Y       | Y          |
-| Public-read on S3 bucket            |             |         |            |
-| Optionally redirect to assets on S3 |             |         |            |
+| Public-read on S3 bucket            | Y           |         |            |
+| Optionally redirect to assets on S3 | Y           |         |            |
 | S3 access logging                   |             |         |            |
 | S3 CNAME                            |             |         |            |
 | S3 CDN                              | NA          |         |            |
