@@ -76,6 +76,10 @@ The following environment variables are only needed if you want to enable this f
 
 `GET /assets/:id` returns information about the requested asset, but not the asset itself.
 
+`DELETE /assets/:id` marks the asset as having been deleted.
+
+`POST /assets/:id/restore` restores a previously deleted asset.
+
 See the `AssetPresenter` class for the return format for the above API calls. All API requests must be authenticated with a token generated in the Signon application.
 
 `GET /media/:id/:filename` serves the file to the user if it is marked as clean.
@@ -136,6 +140,32 @@ $ curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 # Request asset using latest filename
 $ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt
 Tue 18 Jul 2017 17:06:41 BST
+```
+
+#### Delete asset
+
+```
+# Delete the asset
+$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
+  --request DELETE
+{"_response_info":{"status":"success"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+
+# Confirm that it's been deleted
+$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
+{"_response_info":{"status":"not found"}}
+```
+
+#### Restore asset
+
+```
+# This assumes the asset has been deleted
+$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96/restore \
+  --request POST
+{"_response_info":{"status":"success"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+
+# Confirm that it's been restored
+$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
+{"_response_info":{"status":"ok"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
 ```
 
 ## Licence
