@@ -132,57 +132,60 @@ RSpec.describe Asset, type: :model do
 
   describe "#save_to_cloud_storage" do
     let(:asset) { FactoryGirl.create(:clean_asset) }
-    let(:cloud_storage) { double(:cloud_storage) }
-    let(:cache_control) { instance_double(CacheControlConfiguration) }
-    let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
 
-    before do
-      allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-      allow(AssetManager).to receive(:cache_control).and_return(cache_control)
-      allow(cache_control).to receive(:header).and_return('cache-control-header')
-      allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
-      allow(content_disposition).to receive(:header_for).with(asset).and_return('content-disposition-header')
-    end
-
-    it 'saves the asset to cloud storage' do
-      expect(cloud_storage).to receive(:save).with(asset, anything)
-
-      asset.save_to_cloud_storage
-    end
-
-    it 'sets the Cache-Control header on the asset stored in the cloud' do
-      expect(cloud_storage).to receive(:save).with(anything, include(cache_control: 'cache-control-header'))
-
-      asset.save_to_cloud_storage
-    end
-
-    it 'sets the Content-Disposition header on the asset stored in the cloud' do
-      expect(cloud_storage).to receive(:save).with(anything, include(content_disposition: 'content-disposition-header'))
-
-      asset.save_to_cloud_storage
-    end
-
-    context 'when an exception is raised' do
-      let(:exception_class) { Class.new(StandardError) }
-      let(:exception) { exception_class.new }
+    context 'when S3 bucket is configured' do
+      let(:cloud_storage) { double(:cloud_storage) }
+      let(:cache_control) { instance_double(CacheControlConfiguration) }
+      let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
 
       before do
-        allow(cloud_storage).to receive(:save).and_raise(exception)
+        allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+        allow(AssetManager).to receive(:cache_control).and_return(cache_control)
+        allow(cache_control).to receive(:header).and_return('cache-control-header')
+        allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
+        allow(content_disposition).to receive(:header_for).with(asset).and_return('content-disposition-header')
       end
 
-      it 'reports the exception to Errbit via Airbrake' do
-        expect(Airbrake).to receive(:notify_or_ignore)
-          .with(exception, params: { id: asset.id, filename: asset.filename })
+      it 'saves the asset to cloud storage' do
+        expect(cloud_storage).to receive(:save).with(asset, anything)
 
-        asset.save_to_cloud_storage rescue exception_class
+        asset.save_to_cloud_storage
       end
 
-      it 're-raises the exception so Delayed::Job will re-try it' do
-        allow(Airbrake).to receive(:notify_or_ignore)
+      it 'sets the Cache-Control header on the asset stored in the cloud' do
+        expect(cloud_storage).to receive(:save).with(anything, include(cache_control: 'cache-control-header'))
 
-        expect {
-          asset.save_to_cloud_storage
-        }.to raise_error(exception)
+        asset.save_to_cloud_storage
+      end
+
+      it 'sets the Content-Disposition header on the asset stored in the cloud' do
+        expect(cloud_storage).to receive(:save).with(anything, include(content_disposition: 'content-disposition-header'))
+
+        asset.save_to_cloud_storage
+      end
+
+      context 'when an exception is raised' do
+        let(:exception_class) { Class.new(StandardError) }
+        let(:exception) { exception_class.new }
+
+        before do
+          allow(cloud_storage).to receive(:save).and_raise(exception)
+        end
+
+        it 'reports the exception to Errbit via Airbrake' do
+          expect(Airbrake).to receive(:notify_or_ignore)
+            .with(exception, params: { id: asset.id, filename: asset.filename })
+
+          asset.save_to_cloud_storage rescue exception_class
+        end
+
+        it 're-raises the exception so Delayed::Job will re-try it' do
+          allow(Airbrake).to receive(:notify_or_ignore)
+
+          expect {
+            asset.save_to_cloud_storage
+          }.to raise_error(exception)
+        end
       end
     end
   end
