@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'airbrake', '~> 4.0.0'
+gem 'airbrake', '~> 4.0'
 gem 'aws-sdk'
 gem 'carrierwave', '~> 0.10.0'
 gem 'carrierwave-mongoid', '~> 0.8.1', require: 'carrierwave/mongoid'
