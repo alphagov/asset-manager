@@ -40,4 +40,5 @@ module AssetManager
   mattr_accessor :aws_s3_use_virtual_host
   mattr_accessor :cache_control
   mattr_accessor :content_disposition
+  mattr_accessor :default_content_type
 end

@@ -51,6 +51,18 @@ class Asset
     file.file.try(:identifier)
   end
 
+  def extension
+    File.extname(filename).downcase.delete('.')
+  end
+
+  def content_type
+    if extension.present?
+      Mime::Type.lookup_by_extension(extension).to_s
+    else
+      AssetManager.default_content_type
+    end
+  end
+
   def scan_for_viruses
     scanner = VirusScanner.new(self.file.current_path)
     if scanner.clean?
@@ -82,7 +94,8 @@ protected
   def cloud_storage_options
     {
       cache_control: AssetManager.cache_control.header,
-      content_disposition: AssetManager.content_disposition.header_for(self)
+      content_disposition: AssetManager.content_disposition.header_for(self),
+      content_type: content_type
     }
   end
 

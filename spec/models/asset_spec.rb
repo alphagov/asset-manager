@@ -164,6 +164,12 @@ RSpec.describe Asset, type: :model do
         asset.save_to_cloud_storage
       end
 
+      it 'sets the Content-Type header on the asset stored in the cloud' do
+        expect(cloud_storage).to receive(:save).with(anything, include(content_type: 'image/png'))
+
+        asset.save_to_cloud_storage
+      end
+
       context 'when an exception is raised' do
         let(:exception_class) { Class.new(StandardError) }
         let(:exception) { exception_class.new }
@@ -317,6 +323,50 @@ RSpec.describe Asset, type: :model do
       expect(asset.deleted_at).not_to be_nil
       asset.restore
       expect(asset.deleted_at).to be_nil
+    end
+  end
+
+  describe "extension" do
+    context "when asset file has extension" do
+      let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+
+      it "returns asset file extension" do
+        expect(asset.extension).to eq('png')
+      end
+    end
+
+    context "when asset file has capitalised extension" do
+      let(:asset) { Asset.new(file: load_fixture_file("asset-with-capitalised-extension.TXT")) }
+
+      it "returns downcased extension" do
+        expect(asset.extension).to eq('txt')
+      end
+    end
+
+    context "when asset file has no extension" do
+      let(:asset) { Asset.new(file: load_fixture_file("asset-without-extension")) }
+
+      it "returns empty string" do
+        expect(asset.extension).to eq('')
+      end
+    end
+  end
+
+  describe "content_type" do
+    context "when asset file has extension" do
+      let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+
+      it "returns content type based on asset file extension" do
+        expect(asset.content_type).to eq(Mime::Type.lookup('image/png').to_s)
+      end
+    end
+
+    context "when asset file has no extension" do
+      let(:asset) { Asset.new(file: load_fixture_file("asset-without-extension")) }
+
+      it "returns default content type" do
+        expect(asset.content_type).to eq('application/octet-stream')
+      end
     end
   end
 end
