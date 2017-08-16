@@ -19,7 +19,6 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
-  before_save :reset_state_if_file_changed
   after_save :schedule_virus_scan
 
   state_machine :state, initial: :unscanned do
@@ -41,6 +40,7 @@ class Asset
     super(file).tap {
       filename_history.push(old_filename) if old_filename
     }
+    reset_state
   end
 
   def filename_valid?(filename_to_test)
@@ -90,8 +90,8 @@ protected
     filename_history + [filename]
   end
 
-  def reset_state_if_file_changed
-    self.state = 'unscanned' if self.file_changed?
+  def reset_state
+    self.state = 'unscanned'
   end
 
   def schedule_virus_scan
