@@ -92,6 +92,18 @@ RSpec.describe Asset, type: :model do
       expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
     end
 
+    it "should schedule a scan after save if the file is changed even if filename is unchanged" do
+      a = FactoryGirl.create(:clean_asset)
+      original_filename = a.file.send(:original_filename)
+      a.file = load_fixture_file("lorem.txt", named: original_filename)
+      expect {
+        a.save!
+      }.to change(Delayed::Job, :count).by(1)
+
+      expect(most_recently_enqueued_job).to have_payload(a)
+      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+    end
+
     it "should not schedule a scan after update if the file is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       a.created_at = 5.days.ago
