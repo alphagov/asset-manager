@@ -59,3 +59,51 @@ quantile(d$size, c(.5, .8, .95, .99, 1))
 ```
 
 The median file size is 204k, 95% of all assets are under 2.3Mb and the largest asset is just over 174Mb.
+
+## File extensions
+
+We can count the files by extension by splitting the filename on a period ('.') and counting the extensions
+
+``` r
+files <- read_csv('~/file_sizes.csv', col_names=c('size', 'filename'))
+
+extensions <- files %>%
+  rowwise() %>%
+  mutate(ext = tolower(last(unlist(strsplit(filename, '\\.'))))) %>%
+  ungroup()
+
+extensions %>%
+  group_by(ext) %>%
+  summarise(count = n()) %>%
+  mutate(freq = percent(count/sum(count))) %>%
+  arrange(desc(count)) %>%
+  head(20)
+```
+
+```
+# A tibble: 20 x 3
+     ext count  freq
+   <chr> <int> <chr>
+ 1   pdf 56297 96.0%
+ 2   jpg  1532  2.6%
+ 3   doc   220  0.4%
+ 4   png   209  0.4%
+ 5   gif    78  0.1%
+ 6  docx    64  0.1%
+ 7  xlsx    61  0.1%
+ 8   xls    52  0.1%
+ 9   odt    28  0.0%
+10   ppt    24  0.0%
+11   zip     7  0.0%
+12   ods     6  0.0%
+13  pptx     4  0.0%
+14  xlsm     4  0.0%
+15   url     3  0.0%
+16   csv     2  0.0%
+17  jpeg     2  0.0%
+18    pd     2  0.0%
+19   txt     2  0.0%
+20  webp     2  0.0%
+```
+
+It is worth noting here that 'pdf' and 'jpg' files (which make up over 98% of the assets stored) are not very compressible using gzip so we may not see any benefit from storing compressed versions of them on S3.
