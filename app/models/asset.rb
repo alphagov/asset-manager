@@ -6,7 +6,6 @@ class Asset
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
-  field :file, type: String
   field :state, type: String, default: 'unscanned'
   field :filename_history, type: Array, default: -> { [] }
   protected :filename_history=
