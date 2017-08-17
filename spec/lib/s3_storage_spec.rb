@@ -84,4 +84,28 @@ RSpec.describe S3Storage do
       end
     end
   end
+
+  describe '#presigned_url_for' do
+    before do
+      allow(AssetManager).to receive(:aws_s3_use_virtual_host).and_return(use_virtual_host)
+    end
+
+    context 'when configured not to use virtual host' do
+      let(:use_virtual_host) { false }
+
+      it 'returns presigned URL for asset on S3' do
+        allow(s3_object).to receive(:presigned_url).with(:get, expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
+        expect(subject.presigned_url_for(asset)).to eq('presigned-url')
+      end
+    end
+
+    context 'when configured to use virtual host' do
+      let(:use_virtual_host) { true }
+
+      it 'returns presigned URL for asset on S3 using virtual host' do
+        allow(s3_object).to receive(:presigned_url).with(:get, expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
+        expect(subject.presigned_url_for(asset)).to eq('presigned-url')
+      end
+    end
+  end
 end
