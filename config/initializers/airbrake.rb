@@ -6,5 +6,6 @@ if ENV["ERRBIT_API_KEY"].present?
     config.host = errbit_uri.host
     config.secure = errbit_uri.scheme == "https"
     config.environment_name = ENV["ERRBIT_ENVIRONMENT_NAME"]
+    config.ignore << 'ActionController::BadRequest'
   end
 end
