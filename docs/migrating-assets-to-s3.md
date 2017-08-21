@@ -9,9 +9,13 @@ The aim of this document is to provide a high level overview of our progress.
 
 We've modified Asset Manager to upload assets to S3 in addition to storing them on NFS.
 
-We've tested the performance of proxying requests from Asset Manager to S3 but it's not good enough.
+We've modified the Asset Manager to allow us to optionally:
 
-We now want to try redirecting requests from Asset Manager to S3. We have code in Asset Manager to support this but we need objects within our assets bucket to be publicly readable in order for us to test it.
+* Proxy asset requests to S3 via the Rails app
+* Proxy asset requests to S3 via nginx
+* Redirect asset requests to S3
+
+We think that redirecting to assets on S3 is the ideal solution but it requires us to make a decision about the new URLs we'll need to create. We've decided to pursue the option of proxying asset requests to S3 via nginx so that we can defer making a decision about new URLs.
 
 
 ## Plan
@@ -21,22 +25,25 @@ We now want to try redirecting requests from Asset Manager to S3. We have code i
 | Create IAM User                     | Y           | Y       | Y          |
 | Create S3 Bucket                    | Y           | Y       | Y          |
 | Upload assets to S3                 | Y           | Y       | Y          |
-| Optionally proxy to assets on S3    | Y           | Y       | Y          |
-| Public-read on S3 bucket            | Y           |         |            |
-| Optionally redirect to assets on S3 | Y           |         |            |
-| S3 access logging                   |             |         |            |
-| S3 CNAME                            |             |         |            |
-| S3 CDN                              | NA          |         |            |
+| Optionally proxy from Rails to S3   | Y           | Y       | Y          |
+| Optionally proxy from nginx to S3   | Y           |         |            |
 | Migrate existing assets             |             |         |            |
-| Redirect to assets on S3            |             |         |            |
 | Remove NFS                          |             |         |            |
 
 
 ## History
 
+### Thu 17 Aug
+
+* Assets can be proxied from S3 via nginx in integration.
+
+### Thu 10 Aug
+
+* Decided to revisit the idea of proxying requests via nginx to allow us to defer the decision about new asset URLs.
+
 ### Mon 7 Aug
 
-* Assets can be proxied from S3 in all environments.
+* Assets can be proxied from S3 via the Rails app in all environments.
 
 ### Wed 2 Aug
 
