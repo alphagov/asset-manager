@@ -52,7 +52,7 @@ RSpec.describe MediaController, type: :controller do
 
         it "streams the asset to the client using send_data" do
           expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
-          allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
+          allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_data
 
           do_get stream_from_s3: true
         end
@@ -125,7 +125,7 @@ RSpec.describe MediaController, type: :controller do
 
         it "streams the asset to the client using send_data" do
           expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
-          allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
+          allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_data
 
           do_get
         end
