@@ -10,7 +10,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
       def do_get(extra_params = {})
-        get :download, { id: asset.id.to_s, filename: asset.file.file.identifier }.merge(extra_params)
+        get :download, { id: asset, filename: asset.file.file.identifier }.merge(extra_params)
       end
 
       it "responds with 200 OK" do
@@ -146,12 +146,12 @@ RSpec.describe MediaController, type: :controller do
         let(:old_file_name) { "an_old_filename.pdf" }
 
         before do
-          allow(Asset).to receive(:find).with(asset.id.to_s).and_return(asset)
+          allow(Asset).to receive(:find).with(asset.id).and_return(asset)
           allow(asset).to receive(:filename_valid?).and_return(true)
         end
 
         it "redirects to the new file name" do
-          get :download, id: asset.id, filename: old_file_name
+          get :download, id: asset, filename: old_file_name
 
           expect(response.location).to match(%r(\A/media/#{asset.id}/asset.png))
         end
@@ -161,7 +161,7 @@ RSpec.describe MediaController, type: :controller do
         let(:invalid_file_name) { "invalid_file_name.pdf" }
 
         it "responds with 404 Not Found" do
-          get :download, id: asset.id, filename: invalid_file_name
+          get :download, id: asset, filename: invalid_file_name
 
           expect(response).to have_http_status(:not_found)
         end
@@ -172,7 +172,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
+        get :download, id: asset, filename: asset.file.file.identifier
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -181,7 +181,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:infected_asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
+        get :download, id: asset, filename: asset.file.file.identifier
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -198,12 +198,12 @@ RSpec.describe MediaController, type: :controller do
       let(:unrestricted_asset) { FactoryGirl.create(:clean_asset) }
 
       it "responds with 404 Not Found for access-limited documents" do
-        get :download, id: restricted_asset.id.to_s, filename: 'asset.png'
+        get :download, id: restricted_asset, filename: 'asset.png'
         expect(response).to have_http_status(:not_found)
       end
 
       it "responds with 200 OK for unrestricted documents" do
-        get :download, id: unrestricted_asset.id.to_s, filename: 'asset.png'
+        get :download, id: unrestricted_asset, filename: 'asset.png'
         expect(response).to have_http_status(:ok)
       end
     end
@@ -218,14 +218,14 @@ RSpec.describe MediaController, type: :controller do
       it "bounces anonymous users to sign-on" do
         expect(controller).to receive(:require_signin_permission!)
 
-        get :download, id: asset.id.to_s, filename: 'asset.png'
+        get :download, id: asset, filename: 'asset.png'
       end
 
       it "responds with 404 Not Found for access-limited documents if the user has the wrong organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
-        get :download, id: asset.id.to_s, filename: 'asset.png'
+        get :download, id: asset, filename: 'asset.png'
 
         expect(response).to have_http_status(:not_found)
       end
@@ -234,7 +234,7 @@ RSpec.describe MediaController, type: :controller do
         user = FactoryGirl.create(:user, organisation_slug: 'correct-organisation-slug')
         login_as(user)
 
-        get :download, id: asset.id.to_s, filename: 'asset.png'
+        get :download, id: asset, filename: 'asset.png'
 
         expect(response).to have_http_status(:ok)
       end
@@ -244,7 +244,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:deleted_asset) }
 
       before do
-        get :download, id: asset.id.to_s, filename: asset.file.file.identifier
+        get :download, id: asset, filename: asset.file.file.identifier
       end
 
       it "responds with not found status" do
