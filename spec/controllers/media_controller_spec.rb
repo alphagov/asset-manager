@@ -13,24 +13,24 @@ RSpec.describe MediaController, type: :controller do
         get :download, { id: asset.id.to_s, filename: asset.file.file.identifier }.merge(extra_params)
       end
 
-      it "should be successful" do
+      it "responds with 200 OK" do
         do_get
-        expect(response).to be_success
+        expect(response).to have_http_status(:ok)
       end
 
-      it "should send the file using send_file" do
+      it "sends the file using send_file" do
         expect(controller).to receive(:send_file).with(asset.file.path, disposition: "inline")
         allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
         do_get
       end
 
-      it "should have the correct content type" do
+      it "sets the Content-Type header based on the file extension" do
         do_get
         expect(response.headers["Content-Type"]).to eq("image/png")
       end
 
-      it "should set the cache-control headers to 24 hours" do
+      it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
         do_get
 
         expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
@@ -45,24 +45,24 @@ RSpec.describe MediaController, type: :controller do
           allow(cloud_storage).to receive(:load).with(asset).and_return(io)
         end
 
-        it "should be successful" do
+        it "responds with 200 OK" do
           do_get stream_from_s3: true
-          expect(response).to be_success
+          expect(response).to have_http_status(:ok)
         end
 
-        it "should send the file using send_data" do
+        it "streams the asset to the client using send_data" do
           expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
           allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
           do_get stream_from_s3: true
         end
 
-        it "should have the correct content type" do
+        it "sets the Content-Type header based on the file extension" do
           do_get stream_from_s3: true
           expect(response.headers["Content-Type"]).to eq("image/png")
         end
 
-        it "should set the cache-control headers to 24 hours" do
+        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
           do_get stream_from_s3: true
 
           expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
@@ -77,10 +77,14 @@ RSpec.describe MediaController, type: :controller do
           allow(cloud_storage).to receive(:public_url_for).with(asset).and_return('public-url')
         end
 
-        it "should redirect temporarily (302 Found) to the public URL of the asset" do
+        it "responds with 302 Found (temporary redirect)" do
+          do_get redirect_to_s3: true
+          expect(response).to have_http_status(:found)
+        end
+
+        it "redirects to the public URL of the asset" do
           do_get redirect_to_s3: true
           expect(response).to redirect_to('public-url')
-          expect(response).to have_http_status(:found)
         end
       end
 
@@ -93,12 +97,12 @@ RSpec.describe MediaController, type: :controller do
           allow(cloud_storage).to receive(:presigned_url_for).with(asset).and_return(presigned_url)
         end
 
-        it "should respond with a 200" do
+        it "responds with 200 OK" do
           do_get proxy_via_nginx: true
           expect(response).to have_http_status(:ok)
         end
 
-        it "should set the X-Accel-Redirect header to instruct nginx to proxy the request to S3" do
+        it "instructs nginx to proxy the request to S3" do
           do_get proxy_via_nginx: true
           expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
         end
@@ -114,24 +118,24 @@ RSpec.describe MediaController, type: :controller do
           allow(AssetManager).to receive(:stream_all_assets_from_s3).and_return(true)
         end
 
-        it "should be successful" do
+        it "responds with 200 OK" do
           do_get
-          expect(response).to be_success
+          expect(response).to have_http_status(:ok)
         end
 
-        it "should send the file using send_data" do
+        it "streams the asset to the client using send_data" do
           expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
           allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
           do_get
         end
 
-        it "should have the correct content type" do
+        it "sets the Content-Type header based on the file extension" do
           do_get
           expect(response.headers["Content-Type"]).to eq("image/png")
         end
 
-        it "should set the cache-control headers to 24 hours" do
+        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
           do_get
 
           expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
@@ -156,10 +160,10 @@ RSpec.describe MediaController, type: :controller do
       context "when the file name in the URL is invalid" do
         let(:invalid_file_name) { "invalid_file_name.pdf" }
 
-        it "redirects to the new file name" do
+        it "responds with 404 Not Found" do
           get :download, id: asset.id, filename: invalid_file_name
 
-          expect(response).to be_not_found
+          expect(response).to have_http_status(:not_found)
         end
       end
     end
@@ -167,25 +171,25 @@ RSpec.describe MediaController, type: :controller do
     context "with an unscanned file" do
       let(:asset) { FactoryGirl.create(:asset) }
 
-      it "should return a 404" do
+      it "responds with 404 Not Found" do
         get :download, id: asset.id.to_s, filename: asset.file.file.identifier
-        expect(response.code.to_i).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
     context "with an infected file" do
       let(:asset) { FactoryGirl.create(:infected_asset) }
 
-      it "should return a 404" do
+      it "responds with 404 Not Found" do
         get :download, id: asset.id.to_s, filename: asset.file.file.identifier
-        expect(response.code.to_i).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
     context "with a URL containing an invalid ID" do
-      it "should return a 404" do
+      it "responds with 404 Not Found" do
         get :download, id: "1234556678895332452345", filename: "something.jpg"
-        expect(response.code.to_i).to eq(404)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -193,14 +197,14 @@ RSpec.describe MediaController, type: :controller do
       let(:restricted_asset) { FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug') }
       let(:unrestricted_asset) { FactoryGirl.create(:clean_asset) }
 
-      it "responds with not found status for access-limited documents" do
+      it "responds with 404 Not Found for access-limited documents" do
         get :download, id: restricted_asset.id.to_s, filename: 'asset.png'
         expect(response).to have_http_status(:not_found)
       end
 
-      it "permits access to unrestricted documents" do
+      it "responds with 200 OK for unrestricted documents" do
         get :download, id: unrestricted_asset.id.to_s, filename: 'asset.png'
-        expect(response).to have_http_status(:success)
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -217,7 +221,7 @@ RSpec.describe MediaController, type: :controller do
         get :download, id: asset.id.to_s, filename: 'asset.png'
       end
 
-      it "responds with not found status for access-limited documents if the user has the wrong organisation" do
+      it "responds with 404 Not Found for access-limited documents if the user has the wrong organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
@@ -226,13 +230,13 @@ RSpec.describe MediaController, type: :controller do
         expect(response).to have_http_status(:not_found)
       end
 
-      it "permits access to access limited documents if the user has the right organisation" do
+      it "responds with 200 OK for access-limited documents if the user has the right organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'correct-organisation-slug')
         login_as(user)
 
         get :download, id: asset.id.to_s, filename: 'asset.png'
 
-        expect(response).to be_success
+        expect(response).to have_http_status(:ok)
       end
     end
 
