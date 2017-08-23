@@ -175,21 +175,22 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
-      context "when redirect_to_s3 param is present" do
+      context "when redirect_to_s3? is truthy" do
         let(:cloud_storage) { double(:cloud_storage) }
 
         before do
+          allow(controller).to receive(:redirect_to_s3?).and_return(true)
           allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
           allow(cloud_storage).to receive(:public_url_for).with(asset).and_return('public-url')
         end
 
         it "responds with 302 Found (temporary redirect)" do
-          do_get redirect_to_s3: true
+          do_get
           expect(response).to have_http_status(:found)
         end
 
         it "redirects to the public URL of the asset" do
-          do_get redirect_to_s3: true
+          do_get
           expect(response).to redirect_to('public-url')
         end
       end
