@@ -55,10 +55,11 @@ The following environment variables are only needed if you want to enable this f
 #### Application-specific environment variables
 
 * `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored
+* `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (requires CNAME setup for bucket)
+
 * `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_RAILS` - causes *all* asset requests to be proxied to S3 via the Rails app
 * `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *all* asset requests to be proxied to S3 via Nginx
 * `REDIRECT_ALL_ASSET_REQUESTS_TO_S3` - causes *all* asset requests to be redirected to S3
-* `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (requires CNAME setup for bucket)
 
 #### Request parameters
 

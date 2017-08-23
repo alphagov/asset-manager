@@ -35,10 +35,12 @@ module AssetManager
   end
 
   mattr_accessor :aws_s3_bucket_name
+  mattr_accessor :aws_s3_use_virtual_host
+
   mattr_accessor :proxy_all_asset_requests_to_s3_via_rails
   mattr_accessor :proxy_all_asset_requests_to_s3_via_nginx
   mattr_accessor :redirect_all_asset_requests_to_s3
-  mattr_accessor :aws_s3_use_virtual_host
+
   mattr_accessor :cache_control
   mattr_accessor :content_disposition
   mattr_accessor :default_content_type
