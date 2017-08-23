@@ -1,6 +1,111 @@
 require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
+  describe "#proxy_to_s3_via_nginx?" do
+    before do
+      allow(controller).to receive(:params)
+        .and_return(proxy_to_s3_via_nginx: proxy_to_s3_via_nginx)
+    end
+
+    context "when proxy_to_s3_via_nginx is not set" do
+      let(:proxy_to_s3_via_nginx) { false }
+
+      it "returns falsey" do
+        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
+      end
+    end
+
+    context "when proxy_to_s3_via_nginx is set" do
+      let(:proxy_to_s3_via_nginx) { true }
+
+      it "returns truthy" do
+        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
+      end
+    end
+  end
+
+  describe "#redirect_to_s3?" do
+    before do
+      allow(AssetManager).to receive(:redirect_all_asset_requests_to_s3)
+        .and_return(redirect_all_asset_requests_to_s3)
+      allow(controller).to receive(:params)
+        .and_return(redirect_to_s3: redirect_to_s3)
+    end
+
+    context "when redirect_all_asset_requests_to_s3 is not set" do
+      let(:redirect_all_asset_requests_to_s3) { false }
+
+      context "when redirect_to_s3 is not set" do
+        let(:redirect_to_s3) { false }
+
+        it "returns falsey" do
+          expect(controller.send(:redirect_to_s3?)).to be_falsey
+        end
+      end
+
+      context "when redirect_to_s3 is set" do
+        let(:redirect_to_s3) { true }
+
+        it "returns truthy" do
+          expect(controller.send(:redirect_to_s3?)).to be_truthy
+        end
+      end
+    end
+
+    context "when redirect_all_asset_requests_to_s3 is set" do
+      let(:redirect_all_asset_requests_to_s3) { true }
+
+      context "even when redirect_to_s3 is not set" do
+        let(:redirect_to_s3) { false }
+
+        it "returns truthy" do
+          expect(controller.send(:redirect_to_s3?)).to be_truthy
+        end
+      end
+    end
+  end
+
+  describe "#proxy_to_s3_via_rails?" do
+    before do
+      allow(AssetManager).to receive(:proxy_all_asset_requests_to_s3_via_rails)
+        .and_return(proxy_all_asset_requests_to_s3_via_rails)
+      allow(controller).to receive(:params)
+        .and_return(proxy_to_s3_via_rails: proxy_to_s3_via_rails)
+    end
+
+    context "when proxy_all_asset_requests_to_s3_via_rails is not set" do
+      let(:proxy_all_asset_requests_to_s3_via_rails) { false }
+
+      context "when proxy_to_s3_via_rails is not set" do
+        let(:proxy_to_s3_via_rails) { false }
+
+        it "returns falsey" do
+          expect(controller.send(:proxy_to_s3_via_rails?)).to be_falsey
+        end
+      end
+
+      context "when proxy_to_s3_via_rails is set" do
+        let(:proxy_to_s3_via_rails) { true }
+
+        it "returns truthy" do
+          expect(controller.send(:proxy_to_s3_via_rails?)).to be_truthy
+        end
+      end
+    end
+
+    context "when proxy_all_asset_requests_to_s3_via_rails is set" do
+      let(:proxy_all_asset_requests_to_s3_via_rails) { true }
+
+      context "even when proxy_to_s3_via_rails is not set" do
+        let(:proxy_to_s3_via_rails) { false }
+
+        it "returns truthy" do
+          expect(controller.send(:proxy_to_s3_via_rails?)).to be_truthy
+        end
+      end
+    end
+  end
+
   describe "GET 'download'" do
     before do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
