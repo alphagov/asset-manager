@@ -21,7 +21,7 @@ class MediaController < ApplicationController
         elsif proxy_to_s3_via_rails?
           body = Services.cloud_storage.load(asset)
           send_data(body.read, **AssetManager.content_disposition.options_for(asset))
-        elsif proxy_via_nginx?
+        elsif proxy_to_s3_via_nginx?
           url = Services.cloud_storage.presigned_url_for(asset)
           headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
           render nothing: true
@@ -34,8 +34,8 @@ class MediaController < ApplicationController
 
 protected
 
-  def proxy_via_nginx?
-    params[:proxy_via_nginx].present?
+  def proxy_to_s3_via_nginx?
+    params[:proxy_to_s3_via_nginx].present?
   end
 
   def redirect_to_s3?

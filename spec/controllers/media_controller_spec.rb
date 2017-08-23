@@ -88,7 +88,7 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
-      context "when proxy_via_nginx param is present" do
+      context "when proxy_to_s3_via_nginx param is present" do
         let(:cloud_storage) { double(:cloud_storage) }
         let(:presigned_url) { 'https://s3-host.test/presigned-url' }
 
@@ -98,12 +98,12 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "responds with 200 OK" do
-          do_get proxy_via_nginx: true
+          do_get proxy_to_s3_via_nginx: true
           expect(response).to have_http_status(:ok)
         end
 
         it "instructs nginx to proxy the request to S3" do
-          do_get proxy_via_nginx: true
+          do_get proxy_to_s3_via_nginx: true
           expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
         end
       end
