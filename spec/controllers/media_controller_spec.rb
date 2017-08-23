@@ -1,29 +1,6 @@
 require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
-  describe "#proxy_to_s3_via_nginx?" do
-    before do
-      allow(controller).to receive(:params)
-        .and_return(proxy_to_s3_via_nginx: proxy_to_s3_via_nginx)
-    end
-
-    context "when proxy_to_s3_via_nginx is not set" do
-      let(:proxy_to_s3_via_nginx) { false }
-
-      it "returns falsey" do
-        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-      end
-    end
-
-    context "when proxy_to_s3_via_nginx is set" do
-      let(:proxy_to_s3_via_nginx) { true }
-
-      it "returns truthy" do
-        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-      end
-    end
-  end
-
   describe "#redirect_to_s3?" do
     before do
       allow(AssetManager).to receive(:redirect_all_asset_requests_to_s3)
@@ -61,6 +38,29 @@ RSpec.describe MediaController, type: :controller do
         it "returns truthy" do
           expect(controller.send(:redirect_to_s3?)).to be_truthy
         end
+      end
+    end
+  end
+
+  describe "#proxy_to_s3_via_nginx?" do
+    before do
+      allow(controller).to receive(:params)
+        .and_return(proxy_to_s3_via_nginx: proxy_to_s3_via_nginx)
+    end
+
+    context "when proxy_to_s3_via_nginx is not set" do
+      let(:proxy_to_s3_via_nginx) { false }
+
+      it "returns falsey" do
+        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
+      end
+    end
+
+    context "when proxy_to_s3_via_nginx is set" do
+      let(:proxy_to_s3_via_nginx) { true }
+
+      it "returns truthy" do
+        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
       end
     end
   end
@@ -175,26 +175,6 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
-      context "when redirect_to_s3? is truthy" do
-        let(:cloud_storage) { double(:cloud_storage) }
-
-        before do
-          allow(controller).to receive(:redirect_to_s3?).and_return(true)
-          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-          allow(cloud_storage).to receive(:public_url_for).with(asset).and_return('public-url')
-        end
-
-        it "responds with 302 Found (temporary redirect)" do
-          do_get
-          expect(response).to have_http_status(:found)
-        end
-
-        it "redirects to the public URL of the asset" do
-          do_get
-          expect(response).to redirect_to('public-url')
-        end
-      end
-
       context "when proxy_to_s3_via_nginx? is truthy" do
         let(:cloud_storage) { double(:cloud_storage) }
         let(:presigned_url) { 'https://s3-host.test/presigned-url' }
@@ -213,6 +193,26 @@ RSpec.describe MediaController, type: :controller do
         it "instructs nginx to proxy the request to S3" do
           do_get
           expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
+        end
+      end
+
+      context "when redirect_to_s3? is truthy" do
+        let(:cloud_storage) { double(:cloud_storage) }
+
+        before do
+          allow(controller).to receive(:redirect_to_s3?).and_return(true)
+          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+          allow(cloud_storage).to receive(:public_url_for).with(asset).and_return('public-url')
+        end
+
+        it "responds with 302 Found (temporary redirect)" do
+          do_get
+          expect(response).to have_http_status(:found)
+        end
+
+        it "redirects to the public URL of the asset" do
+          do_get
+          expect(response).to redirect_to('public-url')
         end
       end
 

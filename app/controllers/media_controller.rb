@@ -18,13 +18,13 @@ class MediaController < ApplicationController
         set_expiry(AssetManager.cache_control.max_age)
         if redirect_to_s3?
           redirect_to Services.cloud_storage.public_url_for(asset)
-        elsif proxy_to_s3_via_rails?
-          body = Services.cloud_storage.load(asset)
-          send_data(body.read, **AssetManager.content_disposition.options_for(asset))
         elsif proxy_to_s3_via_nginx?
           url = Services.cloud_storage.presigned_url_for(asset)
           headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
           render nothing: true
+        elsif proxy_to_s3_via_rails?
+          body = Services.cloud_storage.load(asset)
+          send_data(body.read, **AssetManager.content_disposition.options_for(asset))
         else
           send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
         end
@@ -34,12 +34,12 @@ class MediaController < ApplicationController
 
 protected
 
-  def proxy_to_s3_via_nginx?
-    params[:proxy_to_s3_via_nginx].present?
-  end
-
   def redirect_to_s3?
     AssetManager.redirect_all_asset_requests_to_s3 || params[:redirect_to_s3].present?
+  end
+
+  def proxy_to_s3_via_nginx?
+    params[:proxy_to_s3_via_nginx].present?
   end
 
   def proxy_to_s3_via_rails?

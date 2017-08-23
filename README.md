@@ -62,8 +62,8 @@ The following environment variables are only needed if you want to enable this f
 #### Request parameters
 
 * Asset requests can be proxied to S3 via the Rails app even if `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_RAILS` is not set by adding `proxy_to_s3_via_rails=true` as a request parameter key-value pair to the query string.
-* Asset requests can be redirected to S3 even if `REDIRECT_ALL_ASSET_REQUESTS_TO_S3` is not set by adding `redirect_to_s3=true` as a request parameter key-value pair to the query string.
 * Asset requests can be proxied to S3 via Nginx by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
+* Asset requests can be redirected to S3 even if `REDIRECT_ALL_ASSET_REQUESTS_TO_S3` is not set by adding `redirect_to_s3=true` as a request parameter key-value pair to the query string.
 
 ### Testing
 
