@@ -44,23 +44,41 @@ RSpec.describe MediaController, type: :controller do
 
   describe "#proxy_to_s3_via_nginx?" do
     before do
+      allow(AssetManager).to receive(:proxy_all_asset_requests_to_s3_via_nginx)
+        .and_return(proxy_all_asset_requests_to_s3_via_nginx)
       allow(controller).to receive(:params)
         .and_return(proxy_to_s3_via_nginx: proxy_to_s3_via_nginx)
     end
 
-    context "when proxy_to_s3_via_nginx is not set" do
-      let(:proxy_to_s3_via_nginx) { false }
+    context "when proxy_all_asset_requests_to_s3_via_nginx is not set" do
+      let(:proxy_all_asset_requests_to_s3_via_nginx) { false }
 
-      it "returns falsey" do
-        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
+      context "when proxy_to_s3_via_nginx is not set" do
+        let(:proxy_to_s3_via_nginx) { false }
+
+        it "returns falsey" do
+          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
+        end
       end
-    end
 
-    context "when proxy_to_s3_via_nginx is set" do
-      let(:proxy_to_s3_via_nginx) { true }
+      context "when proxy_to_s3_via_nginx is set" do
+        let(:proxy_to_s3_via_nginx) { true }
 
-      it "returns truthy" do
-        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
+        it "returns truthy" do
+          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
+        end
+      end
+
+      context "when proxy_all_asset_requests_to_s3_via_nginx is set" do
+        let(:proxy_all_asset_requests_to_s3_via_nginx) { true }
+
+        context "even when proxy_to_s3_via_nginx is not set" do
+          let(:proxy_to_s3_via_nginx) { false }
+
+          it "returns truthy" do
+            expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
+          end
+        end
       end
     end
   end

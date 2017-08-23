@@ -56,13 +56,14 @@ The following environment variables are only needed if you want to enable this f
 
 * `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored
 * `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_RAILS` - causes *all* asset requests to be proxied to S3 via the Rails app
+* `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *all* asset requests to be proxied to S3 via Nginx
 * `REDIRECT_ALL_ASSET_REQUESTS_TO_S3` - causes *all* asset requests to be redirected to S3
 * `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (requires CNAME setup for bucket)
 
 #### Request parameters
 
 * Asset requests can be proxied to S3 via the Rails app even if `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_RAILS` is not set by adding `proxy_to_s3_via_rails=true` as a request parameter key-value pair to the query string.
-* Asset requests can be proxied to S3 via Nginx by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
+* Asset requests can be proxied to S3 via Nginx even if `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` is not set by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
 * Asset requests can be redirected to S3 even if `REDIRECT_ALL_ASSET_REQUESTS_TO_S3` is not set by adding `redirect_to_s3=true` as a request parameter key-value pair to the query string.
 
 ### Testing

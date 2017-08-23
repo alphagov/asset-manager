@@ -39,7 +39,7 @@ protected
   end
 
   def proxy_to_s3_via_nginx?
-    params[:proxy_to_s3_via_nginx].present?
+    AssetManager.proxy_all_asset_requests_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
   end
 
   def proxy_to_s3_via_rails?
