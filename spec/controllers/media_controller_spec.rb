@@ -141,17 +141,18 @@ RSpec.describe MediaController, type: :controller do
         expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
       end
 
-      context "when proxy_to_s3_via_rails param is present" do
+      context "when proxy_to_s3_via_rails? is truthy" do
         let(:io) { StringIO.new('s3-object-data') }
         let(:cloud_storage) { double(:cloud_storage) }
 
         before do
+          allow(controller).to receive(:proxy_to_s3_via_rails?).and_return(true)
           allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
           allow(cloud_storage).to receive(:load).with(asset).and_return(io)
         end
 
         it "responds with 200 OK" do
-          do_get proxy_to_s3_via_rails: true
+          do_get
           expect(response).to have_http_status(:ok)
         end
 
@@ -159,16 +160,16 @@ RSpec.describe MediaController, type: :controller do
           expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
           allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_data
 
-          do_get proxy_to_s3_via_rails: true
+          do_get
         end
 
         it "sets the Content-Type header based on the file extension" do
-          do_get proxy_to_s3_via_rails: true
+          do_get
           expect(response.headers["Content-Type"]).to eq("image/png")
         end
 
         it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          do_get proxy_to_s3_via_rails: true
+          do_get
 
           expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
         end
@@ -210,40 +211,6 @@ RSpec.describe MediaController, type: :controller do
         it "instructs nginx to proxy the request to S3" do
           do_get proxy_to_s3_via_nginx: true
           expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
-        end
-      end
-
-      context "when config.proxy_all_asset_requests_to_s3_via_rails is true" do
-        let(:io) { StringIO.new('s3-object-data') }
-        let(:cloud_storage) { double(:cloud_storage) }
-
-        before do
-          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-          allow(cloud_storage).to receive(:load).with(asset).and_return(io)
-          allow(AssetManager).to receive(:proxy_all_asset_requests_to_s3_via_rails).and_return(true)
-        end
-
-        it "responds with 200 OK" do
-          do_get
-          expect(response).to have_http_status(:ok)
-        end
-
-        it "streams the asset to the client using send_data" do
-          expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
-          allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_data
-
-          do_get
-        end
-
-        it "sets the Content-Type header based on the file extension" do
-          do_get
-          expect(response.headers["Content-Type"]).to eq("image/png")
-        end
-
-        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          do_get
-
-          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
         end
       end
 
