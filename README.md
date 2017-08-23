@@ -54,8 +54,14 @@ The following environment variables are only needed if you want to enable this f
 
 #### Application-specific environment variables
 
+##### AWS
+
 * `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored
 * `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (requires CNAME setup for bucket)
+
+##### Feature flags
+
+At most *one* of these should be used in any given environment. If none of them are set then the default behaviour is for the Rails app to instruct Nginx to serve the assets from the NFS mount.
 
 * `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_RAILS` - causes *all* asset requests to be proxied to S3 via the Rails app
 * `PROXY_ALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *all* asset requests to be proxied to S3 via Nginx
