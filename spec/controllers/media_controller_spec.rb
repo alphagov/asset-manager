@@ -36,7 +36,7 @@ RSpec.describe MediaController, type: :controller do
         expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
       end
 
-      context "when stream_from_s3 param is present" do
+      context "when proxy_to_s3_via_rails param is present" do
         let(:io) { StringIO.new('s3-object-data') }
         let(:cloud_storage) { double(:cloud_storage) }
 
@@ -46,7 +46,7 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "responds with 200 OK" do
-          do_get stream_from_s3: true
+          do_get proxy_to_s3_via_rails: true
           expect(response).to have_http_status(:ok)
         end
 
@@ -54,16 +54,16 @@ RSpec.describe MediaController, type: :controller do
           expect(controller).to receive(:send_data).with('s3-object-data', filename: 'asset.png', disposition: "inline")
           allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_data
 
-          do_get stream_from_s3: true
+          do_get proxy_to_s3_via_rails: true
         end
 
         it "sets the Content-Type header based on the file extension" do
-          do_get stream_from_s3: true
+          do_get proxy_to_s3_via_rails: true
           expect(response.headers["Content-Type"]).to eq("image/png")
         end
 
         it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          do_get stream_from_s3: true
+          do_get proxy_to_s3_via_rails: true
 
           expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
         end
@@ -108,14 +108,14 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
-      context "when config.stream_all_assets_from_s3 is true" do
+      context "when config.proxy_all_asset_requests_to_s3_via_rails is true" do
         let(:io) { StringIO.new('s3-object-data') }
         let(:cloud_storage) { double(:cloud_storage) }
 
         before do
           allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
           allow(cloud_storage).to receive(:load).with(asset).and_return(io)
-          allow(AssetManager).to receive(:stream_all_assets_from_s3).and_return(true)
+          allow(AssetManager).to receive(:proxy_all_asset_requests_to_s3_via_rails).and_return(true)
         end
 
         it "responds with 200 OK" do

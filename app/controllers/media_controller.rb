@@ -18,7 +18,7 @@ class MediaController < ApplicationController
         set_expiry(AssetManager.cache_control.max_age)
         if redirect_to_s3?
           redirect_to Services.cloud_storage.public_url_for(asset)
-        elsif stream_from_s3?
+        elsif proxy_to_s3_via_rails?
           body = Services.cloud_storage.load(asset)
           send_data(body.read, **AssetManager.content_disposition.options_for(asset))
         elsif proxy_via_nginx?
@@ -42,8 +42,8 @@ protected
     AssetManager.redirect_all_asset_requests_to_s3 || params[:redirect_to_s3].present?
   end
 
-  def stream_from_s3?
-    AssetManager.stream_all_assets_from_s3 || params[:stream_from_s3].present?
+  def proxy_to_s3_via_rails?
+    AssetManager.proxy_all_asset_requests_to_s3_via_rails || params[:proxy_to_s3_via_rails].present?
   end
 
   def filename_current?
