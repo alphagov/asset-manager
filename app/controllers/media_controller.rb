@@ -18,13 +18,13 @@ class MediaController < ApplicationController
         set_expiry(AssetManager.cache_control.max_age)
         if redirect_to_s3?
           redirect_to Services.cloud_storage.public_url_for(asset)
-        elsif stream_from_s3?
-          body = Services.cloud_storage.load(asset)
-          send_data(body.read, **AssetManager.content_disposition.options_for(asset))
-        elsif proxy_via_nginx?
+        elsif proxy_to_s3_via_nginx?
           url = Services.cloud_storage.presigned_url_for(asset)
           headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
           render nothing: true
+        elsif proxy_to_s3_via_rails?
+          body = Services.cloud_storage.load(asset)
+          send_data(body.read, **AssetManager.content_disposition.options_for(asset))
         else
           send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
         end
@@ -34,16 +34,19 @@ class MediaController < ApplicationController
 
 protected
 
-  def proxy_via_nginx?
-    params[:proxy_via_nginx].present?
-  end
-
   def redirect_to_s3?
     AssetManager.redirect_all_asset_requests_to_s3 || params[:redirect_to_s3].present?
   end
 
-  def stream_from_s3?
-    AssetManager.stream_all_assets_from_s3 || params[:stream_from_s3].present?
+  def proxy_to_s3_via_nginx?
+    random_number_generator = Random.new
+    percentage = AssetManager.proxy_percentage_of_asset_requests_to_s3_via_nginx
+    proxy_to_s3_via_nginx = random_number_generator.rand(100) < percentage
+    proxy_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
+  end
+
+  def proxy_to_s3_via_rails?
+    AssetManager.proxy_all_asset_requests_to_s3_via_rails || params[:proxy_to_s3_via_rails].present?
   end
 
   def filename_current?
