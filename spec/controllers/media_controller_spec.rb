@@ -238,16 +238,30 @@ RSpec.describe MediaController, type: :controller do
       context "when proxy_to_s3_via_nginx? is truthy" do
         let(:cloud_storage) { double(:cloud_storage) }
         let(:presigned_url) { 'https://s3-host.test/presigned-url' }
+        let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
 
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
           allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
           allow(cloud_storage).to receive(:presigned_url_for).with(asset).and_return(presigned_url)
+          allow(controller).to receive(:asset).and_return(asset)
+          allow(asset).to receive(:etag).and_return("599ffda8-e169")
+          allow(asset).to receive(:last_modified).and_return(last_modified)
         end
 
         it "responds with 200 OK" do
           do_get
           expect(response).to have_http_status(:ok)
+        end
+
+        it "sends ETag response header with quoted value" do
+          do_get
+          expect(response.headers["ETag"]).to eq(%{"599ffda8-e169"})
+        end
+
+        it "sends Last-Modified response header in HTTP time format" do
+          do_get
+          expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
         end
 
         it "instructs nginx to proxy the request to S3" do

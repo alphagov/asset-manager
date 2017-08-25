@@ -369,4 +369,48 @@ RSpec.describe Asset, type: :model do
       end
     end
   end
+
+  describe "#etag" do
+    let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+
+    let(:size) { 1024 }
+    let(:mtime) { Time.zone.parse('2017-01-01') }
+    let(:stat) { instance_double(File::Stat, size: size, mtime: mtime) }
+
+    before do
+      allow(File).to receive(:stat).and_return(stat)
+    end
+
+    it "returns string made up of 2 parts separated by a hyphen" do
+      parts = asset.etag.split('-')
+      expect(parts.length).to eq(2)
+    end
+
+    it "has 1st part as file mtime (unix time in seconds written in lowercase hex)" do
+      last_modified_hex = asset.etag.split('-').first
+      last_modified = last_modified_hex.to_i(16)
+      expect(last_modified).to eq(mtime.to_i)
+    end
+
+    it "has 2nd part as file size (number of bytes written in lowercase hex)" do
+      size_hex = asset.etag.split('-').last
+      size = size_hex.to_i(16)
+      expect(size).to eq(size)
+    end
+  end
+
+  describe "#last_modified" do
+    let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+
+    let(:mtime) { Time.zone.parse('2017-01-01') }
+    let(:stat) { instance_double(File::Stat, mtime: mtime) }
+
+    before do
+      allow(File).to receive(:stat).and_return(stat)
+    end
+
+    it "returns time file was last modified" do
+      expect(asset.last_modified).to eq(mtime)
+    end
+  end
 end

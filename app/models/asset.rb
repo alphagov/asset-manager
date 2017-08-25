@@ -62,6 +62,14 @@ class Asset
     end
   end
 
+  def etag
+    '%x-%x' % [last_modified, file_stat.size]
+  end
+
+  def last_modified
+    file_stat.mtime
+  end
+
   def scan_for_viruses
     scanner = VirusScanner.new(self.file.current_path)
     if scanner.clean?
@@ -104,9 +112,14 @@ protected
 
   def reset_state
     self.state = 'unscanned'
+    @file_stat = nil
   end
 
   def schedule_virus_scan
     self.delay.scan_for_viruses if self.unscanned?
+  end
+
+  def file_stat
+    @file_stat ||= File.stat(file.path)
   end
 end
