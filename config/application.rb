@@ -32,6 +32,9 @@ module AssetManager
     config.action_dispatch.rack_cache = nil
 
     config.action_dispatch.x_sendfile_header = "X-Accel-Redirect"
+
+    require "cache_control_middleware"
+    config.middleware.insert_before Rack::ETag, CacheControlMiddleware
   end
 
   mattr_accessor :aws_s3_bucket_name
