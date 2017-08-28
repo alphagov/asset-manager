@@ -194,18 +194,6 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
-
-    context 'when S3 bucket is not configured' do
-      before do
-        allow(AssetManager).to receive(:aws_s3_bucket_name).and_return(nil)
-      end
-
-      it 'does not attempt to build AWS S3 resource', disable_cloud_storage_stub: true do
-        expect(Aws::Resources::Resource).not_to receive(:new)
-
-        asset.save_to_cloud_storage
-      end
-    end
   end
 
   describe "virus_scanning the attached file" do

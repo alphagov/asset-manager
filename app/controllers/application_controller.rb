@@ -1,5 +1,3 @@
-require 'cloud_storage'
-
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -10,7 +8,6 @@ class ApplicationController < ActionController::Base
   before_filter :require_signin_permission!
 
   rescue_from Mongoid::Errors::DocumentNotFound, with: :error_404
-  rescue_from CloudStorage::NotConfiguredError, with: :error_500
 
 private
 
