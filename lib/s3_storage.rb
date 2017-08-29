@@ -38,6 +38,6 @@ class S3Storage
 private
 
   def object_for(asset)
-    Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.id.to_s)
+    Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.uuid)
   end
 end
