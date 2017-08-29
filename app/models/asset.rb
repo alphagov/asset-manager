@@ -90,21 +90,13 @@ class Asset
   end
 
   def save_to_cloud_storage
-    Services.cloud_storage.save(self, cloud_storage_options)
+    Services.cloud_storage.save(self)
   rescue => e
     Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
     raise
   end
 
 protected
-
-  def cloud_storage_options
-    {
-      cache_control: AssetManager.cache_control.header,
-      content_disposition: AssetManager.content_disposition.header_for(self),
-      content_type: content_type
-    }
-  end
 
   def valid_filenames
     filename_history + [filename]
