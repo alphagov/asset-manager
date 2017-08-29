@@ -30,6 +30,11 @@ RSpec.describe Asset, type: :model do
 
       expect(a).to be_persisted
     end
+
+    it 'should generate a 36-character UUID' do
+      a = Asset.new
+      expect(a.uuid.length).to eq(36)
+    end
   end
 
   describe "#filename" do
