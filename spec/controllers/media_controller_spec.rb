@@ -254,14 +254,19 @@ RSpec.describe MediaController, type: :controller do
           expect(response).to have_http_status(:ok)
         end
 
-        it "sends ETag response header with quoted value" do
+        it "sends X-Accel-ETag response header with quoted value" do
           do_get
-          expect(response.headers["ETag"]).to eq(%{"599ffda8-e169"})
+          expect(response.headers["X-Accel-ETag"]).to eq(%{"599ffda8-e169"})
         end
 
-        it "sends Last-Modified response header in HTTP time format" do
+        it "sends X-Accel-Last-Modified response header in HTTP time format" do
           do_get
-          expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
+          expect(response.headers["X-Accel-Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
+        end
+
+        it "does not send Cache-Control response header" do
+          do_get
+          expect(response.headers["Cache-Control"]).not_to be_present
         end
 
         it "instructs nginx to proxy the request to S3" do

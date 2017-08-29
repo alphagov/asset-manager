@@ -30,6 +30,28 @@ RSpec.describe "Media requests", type: :request do
     end
   end
 
+  describe "request an asset to be proxied to S3 via Nginx" do
+    let(:asset) { FactoryGirl.create(:clean_asset) }
+
+    it "does not send ETag response header" do
+      get "/media/#{asset.id}/asset.png?proxy_to_s3_via_nginx=true"
+
+      expect(headers['ETag']).not_to be_present
+    end
+
+    it "does not send Last-Modified response header" do
+      get "/media/#{asset.id}/asset.png?proxy_to_s3_via_nginx=true"
+
+      expect(headers['Last-Modified']).not_to be_present
+    end
+
+    it "does not send Cache-Control response header" do
+      get "/media/#{asset.id}/asset.png?proxy_to_s3_via_nginx=true"
+
+      expect(headers['Cache-Control']).not_to be_present
+    end
+  end
+
   describe "request an asset that does exist" do
     let(:asset) { FactoryGirl.create(:clean_asset) }
 
