@@ -10,6 +10,8 @@ class Asset
   field :filename_history, type: Array, default: -> { [] }
   protected :filename_history=
 
+  field :uuid, type: String, default: -> { SecureRandom.uuid }
+
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
 

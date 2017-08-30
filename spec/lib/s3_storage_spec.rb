@@ -7,7 +7,7 @@ RSpec.describe S3Storage do
   let(:bucket_name) { 'bucket-name' }
   let(:s3_object) { instance_double(Aws::S3::Object) }
   let(:asset) { FactoryGirl.build(:asset) }
-  let(:s3_object_params) { { bucket_name: bucket_name, key: asset.id.to_s } }
+  let(:s3_object_params) { { bucket_name: bucket_name, key: asset.uuid } }
 
   before do
     allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)

@@ -29,6 +29,12 @@ RSpec.describe Asset, type: :model do
 
       expect(a).to be_persisted
     end
+
+    it 'should generate a UUID' do
+      allow(SecureRandom).to receive(:uuid).and_return('uuid')
+      a = Asset.new
+      expect(a.uuid).to eq('uuid')
+    end
   end
 
   describe "#filename" do
