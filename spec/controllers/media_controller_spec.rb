@@ -239,6 +239,7 @@ RSpec.describe MediaController, type: :controller do
         let(:cloud_storage) { double(:cloud_storage) }
         let(:presigned_url) { 'https://s3-host.test/presigned-url' }
         let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
+        let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
 
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
@@ -247,6 +248,9 @@ RSpec.describe MediaController, type: :controller do
           allow(controller).to receive(:asset).and_return(asset)
           allow(asset).to receive(:etag).and_return("599ffda8-e169")
           allow(asset).to receive(:last_modified).and_return(last_modified)
+          allow(asset).to receive(:content_type).and_return('content-type')
+          allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
+          allow(content_disposition).to receive(:header_for).with(asset).and_return("content-disposition")
         end
 
         it "responds with 200 OK" do
@@ -262,6 +266,16 @@ RSpec.describe MediaController, type: :controller do
         it "sends Last-Modified response header in HTTP time format" do
           do_get
           expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
+        end
+
+        it "sends Content-Disposition response header based on asset filename" do
+          do_get
+          expect(response.headers["Content-Disposition"]).to eq("content-disposition")
+        end
+
+        it "sends Content-Type response header based on asset file extension" do
+          do_get
+          expect(response.headers["Content-Type"]).to eq("content-type")
         end
 
         it "instructs nginx to proxy the request to S3" do

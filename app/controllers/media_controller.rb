@@ -23,6 +23,8 @@ class MediaController < ApplicationController
           headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
           headers['ETag'] = %{"#{asset.etag}"}
           headers['Last-Modified'] = asset.last_modified.httpdate
+          headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
+          headers['Content-Type'] = asset.content_type
           render nothing: true
         elsif proxy_to_s3_via_rails?
           body = Services.cloud_storage.load(asset)
