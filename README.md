@@ -44,9 +44,7 @@ This functionality is *very* experimental and should not be switched on in produ
 
 As long as the S3 bucket is configured, all assets are uploaded to the S3 bucket via a separate `Delayed::Job` triggered if virus scanning succeeds. Assets are still saved to the NFS mount as per the original behaviour.
 
-The following environment variables are only needed if you want to enable this functionality, i.e. they are all optional.
-
-#### Standard AWS environment variables
+#### Standard AWS environment variables (required in production)
 
 * `AWS_ACCESS_KEY_ID`
 * `AWS_SECRET_ACCESS_KEY`
@@ -56,8 +54,8 @@ The following environment variables are only needed if you want to enable this f
 
 ##### AWS
 
-* `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored
-* `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (requires CNAME setup for bucket)
+* `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored (required in production)
+* `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (assumes CNAME has been setup for bucket)
 
 ##### Feature flags
 
