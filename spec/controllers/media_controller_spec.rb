@@ -240,11 +240,13 @@ RSpec.describe MediaController, type: :controller do
         let(:presigned_url) { 'https://s3-host.test/presigned-url' }
         let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
         let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
+        let(:http_method) { 'GET' }
 
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
           allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-          allow(cloud_storage).to receive(:presigned_url_for).with(asset).and_return(presigned_url)
+          allow(cloud_storage).to receive(:presigned_url_for)
+            .with(asset, http_method: http_method).and_return(presigned_url)
           allow(controller).to receive(:asset).and_return(asset)
           allow(asset).to receive(:etag).and_return("599ffda8-e169")
           allow(asset).to receive(:last_modified).and_return(last_modified)
@@ -281,6 +283,15 @@ RSpec.describe MediaController, type: :controller do
         it "instructs nginx to proxy the request to S3" do
           do_get
           expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
+        end
+
+        context "and HTTP method is HEAD" do
+          let(:http_method) { 'HEAD' }
+
+          it "responds with 200 OK" do
+            head :download, id: asset, filename: asset.file.file.identifier
+            expect(response).to have_http_status(:ok)
+          end
         end
       end
 

@@ -19,7 +19,7 @@ class MediaController < ApplicationController
         if redirect_to_s3?
           redirect_to Services.cloud_storage.public_url_for(asset)
         elsif proxy_to_s3_via_nginx?
-          url = Services.cloud_storage.presigned_url_for(asset)
+          url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
           headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
           headers['ETag'] = %{"#{asset.etag}"}
           headers['Last-Modified'] = asset.last_modified.httpdate

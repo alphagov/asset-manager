@@ -93,9 +93,14 @@ RSpec.describe S3Storage do
     context 'when configured not to use virtual host' do
       let(:use_virtual_host) { false }
 
-      it 'returns presigned URL for asset on S3' do
-        allow(s3_object).to receive(:presigned_url).with(:get, expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
+      it 'returns presigned URL for GET request to asset on S3 by default' do
+        allow(s3_object).to receive(:presigned_url).with('GET', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
+      end
+
+      it 'returns presigned URL for HEAD request to asset on S3 when http_method specified' do
+        allow(s3_object).to receive(:presigned_url).with('HEAD', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
+        expect(subject.presigned_url_for(asset, http_method: 'HEAD')).to eq('presigned-url')
       end
     end
 
@@ -103,7 +108,7 @@ RSpec.describe S3Storage do
       let(:use_virtual_host) { true }
 
       it 'returns presigned URL for asset on S3 using virtual host' do
-        allow(s3_object).to receive(:presigned_url).with(:get, expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
+        allow(s3_object).to receive(:presigned_url).with('GET', expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
       end
     end
