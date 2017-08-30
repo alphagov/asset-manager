@@ -1,8 +1,7 @@
 class DataMigration
   def self.add_uuid_to_assets
     Asset.where(uuid: nil).each do |asset|
-      asset.uuid = SecureRandom.uuid
-      asset.save
+      asset.update_attribute(:uuid, SecureRandom.uuid)
     end
   end
 end
