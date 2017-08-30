@@ -1,20 +1,4 @@
-require 'cloud_storage'
-
 class S3Storage
-  NotConfiguredError = Class.new(CloudStorage::NotConfiguredError)
-
-  class Null
-    def save(_asset, _options = {}); end
-
-    def load(_asset)
-      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
-    end
-  end
-
-  def self.build(bucket_name)
-    bucket_name.present? ? new(bucket_name) : Null.new
-  end
-
   def initialize(bucket_name)
     @bucket_name = bucket_name
   end
