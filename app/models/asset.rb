@@ -57,11 +57,8 @@ class Asset
   end
 
   def content_type
-    if extension.present?
-      Mime::Type.lookup_by_extension(extension).to_s
-    else
-      AssetManager.default_content_type
-    end
+    mime_type = Mime::Type.lookup_by_extension(extension)
+    mime_type ? mime_type.to_s : AssetManager.default_content_type
   end
 
   def etag

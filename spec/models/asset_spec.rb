@@ -335,10 +335,20 @@ RSpec.describe Asset, type: :model do
 
   describe "content_type" do
     context "when asset file has extension" do
-      let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+      context 'and the extension is a recognised mime type' do
+        let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
-      it "returns content type based on asset file extension" do
-        expect(asset.content_type).to eq(Mime::Type.lookup('image/png').to_s)
+        it "returns content type based on asset file extension" do
+          expect(asset.content_type).to eq(Mime::Type.lookup('image/png').to_s)
+        end
+      end
+
+      context 'and the extension is not a recognised mime type' do
+        let(:asset) { Asset.new(file: load_fixture_file("asset-with-unregistered-mimetype-extension.doc")) }
+
+        it "returns default content type" do
+          expect(asset.content_type).to eq('application/octet-stream')
+        end
       end
     end
 
