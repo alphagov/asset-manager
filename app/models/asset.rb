@@ -69,6 +69,10 @@ class Asset
     file_stat.mtime
   end
 
+  def md5_hexdigest
+    @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
+  end
+
   def scan_for_viruses
     scanner = VirusScanner.new(self.file.current_path)
     if scanner.clean?
@@ -104,6 +108,7 @@ protected
   def reset_state
     self.state = 'unscanned'
     @file_stat = nil
+    @md5_hexdigest = nil
   end
 
   def schedule_virus_scan

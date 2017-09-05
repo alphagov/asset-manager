@@ -20,7 +20,10 @@ class S3Storage
   end
 
   def save(asset, options = {})
-    object_for(asset).upload_file(asset.file.path, options)
+    unless md5_from_metadata_for(asset) == asset.md5_hexdigest
+      s3_options = { metadata: { 'md5-hexdigest' => asset.md5_hexdigest } }.merge(options)
+      object_for(asset).upload_file(asset.file.path, s3_options)
+    end
   end
 
   def load(asset)
@@ -39,5 +42,20 @@ private
 
   def object_for(asset)
     Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.uuid)
+  end
+
+  def head_object_for(asset)
+    client.head_object(bucket: @bucket_name, key: asset.uuid)
+  end
+
+  def md5_from_metadata_for(asset)
+    result = head_object_for(asset)
+    result.metadata['md5-hexdigest']
+  rescue Aws::S3::Errors::NotFound
+    nil
+  end
+
+  def client
+    Aws::S3::Client.new
   end
 end

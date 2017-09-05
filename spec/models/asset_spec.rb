@@ -404,4 +404,13 @@ RSpec.describe Asset, type: :model do
       expect(asset.last_modified).to eq(mtime)
     end
   end
+
+  describe "#md5_hexdigest" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
+
+    it "returns MD5 hex digest for asset file content" do
+      expect(asset.md5_hexdigest).to eq(md5_hexdigest)
+    end
+  end
 end
