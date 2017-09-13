@@ -26,9 +26,6 @@ class MediaController < ApplicationController
           headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
           headers['Content-Type'] = asset.content_type
           render nothing: true
-        elsif proxy_to_s3_via_rails?
-          body = Services.cloud_storage.load(asset)
-          send_data(body.read, **AssetManager.content_disposition.options_for(asset))
         else
           send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
         end
@@ -47,10 +44,6 @@ protected
     percentage = AssetManager.proxy_percentage_of_asset_requests_to_s3_via_nginx
     proxy_to_s3_via_nginx = random_number_generator.rand(100) < percentage
     proxy_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
-  end
-
-  def proxy_to_s3_via_rails?
-    AssetManager.proxy_all_asset_requests_to_s3_via_rails || params[:proxy_to_s3_via_rails].present?
   end
 
   def filename_current?
