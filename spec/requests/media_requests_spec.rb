@@ -8,28 +8,6 @@ RSpec.describe "Media requests", type: :request do
     end
   end
 
-  describe "request an asset to be proxied to S3 via the Rails app", disable_cloud_storage_stub: true do
-    context "when bucket not configured" do
-      let(:asset) { FactoryGirl.create(:clean_asset) }
-
-      before do
-        allow(AssetManager).to receive(:aws_s3_bucket_name).and_return(nil)
-      end
-
-      it "should respond with internal server error status" do
-        get "/media/#{asset.id}/asset.png?proxy_to_s3_via_rails=true"
-        expect(response).to have_http_status(:internal_server_error)
-      end
-
-      it "should include error message in JSON response" do
-        get "/media/#{asset.id}/asset.png?proxy_to_s3_via_rails=true"
-        json = JSON.parse(response.body)
-        status = json['_response_info']['status']
-        expect(status).to eq('Internal server error: AWS S3 bucket not correctly configured')
-      end
-    end
-  end
-
   describe "request an asset that does exist" do
     let(:asset) { FactoryGirl.create(:clean_asset) }
 
