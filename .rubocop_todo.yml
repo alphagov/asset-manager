@@ -22,13 +22,6 @@ RSpec/ExampleLength:
     - 'spec/requests/asset_requests_spec.rb'
     - 'spec/requests/virus_scanning_spec.rb'
 
-# Offense count: 2
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: implicit, each, example
-RSpec/HookArgument:
-  Exclude:
-    - 'spec/support/database_cleaner.rb'
-
 # Offense count: 6
 # Configuration parameters: AssignmentOnly.
 RSpec/InstanceVariable:
