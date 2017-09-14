@@ -10,9 +10,9 @@ class AssetPresenter
         status: options[:status] || "ok",
       },
       id: @view_context.asset_url(@asset.id),
-      name: @asset.file.file.identifier,
+      name: @asset.filename,
       content_type: @asset.content_type,
-      file_url: "#{Plek.new.asset_root}/media/#{@asset.id}/#{@asset.file.file.identifier}",
+      file_url: "#{Plek.new.asset_root}/media/#{@asset.id}/#{@asset.filename}",
       state: @asset.state,
     }
   end
