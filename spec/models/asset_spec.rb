@@ -259,31 +259,31 @@ RSpec.describe Asset, type: :model do
     let(:user) { FactoryGirl.build(:user, organisation_slug: 'example-organisation') }
 
     it "is always true if the asset is not access limited" do
-      expect(Asset.new(access_limited: false).accessible_by?(user)).to be_truthy
-      expect(Asset.new(access_limited: false).accessible_by?(nil)).to be_truthy
+      expect(Asset.new(access_limited: false)).to be_accessible_by(user)
+      expect(Asset.new(access_limited: false)).to be_accessible_by(nil)
       asset = Asset.new(access_limited: false, organisation_slug: (user.organisation_slug + "-2"))
-      expect(asset.accessible_by?(user)).to be_truthy
+      expect(asset).to be_accessible_by(user)
     end
 
     it "is true if the asset is access limited and the user has the correct organisation" do
       asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
-      expect(asset.accessible_by?(user)).to be_truthy
+      expect(asset).to be_accessible_by(user)
     end
 
     it "is false if the asset is access limited and the user has an incorrect organisation" do
       asset = Asset.new(access_limited: true, organisation_slug: (user.organisation_slug + "-2"))
-      expect(asset.accessible_by?(user)).to be_falsey
+      expect(asset).not_to be_accessible_by(user)
     end
 
     it "is false if the asset is access limited and the user has no organisation" do
       unassociated_user = FactoryGirl.build(:user, organisation_slug: nil)
       asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
-      expect(asset.accessible_by?(unassociated_user)).to be_falsey
+      expect(asset).not_to be_accessible_by(unassociated_user)
     end
 
     it "is false if the asset is access limited and the user is not logged in" do
       asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
-      expect(asset.accessible_by?(nil)).to be_falsey
+      expect(asset).not_to be_accessible_by(nil)
     end
   end
 
