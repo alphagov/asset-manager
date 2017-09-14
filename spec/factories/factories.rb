@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :asset do
-    file Rack::Test::UploadedFile.new(Rails.root.join("spec", "fixtures", "files", "asset.png"))
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec", "fixtures", "files", "asset.png")) }
   end
   factory :clean_asset, parent: :asset do
     after :create, &:scanned_clean!
@@ -15,7 +15,7 @@ FactoryGirl.define do
   end
 
   factory :deleted_asset, parent: :asset do
-    deleted_at Time.now
+    deleted_at { Time.now }
   end
 
   factory :user do
