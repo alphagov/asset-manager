@@ -1,7 +1,8 @@
-FROM ruby:2.2.3
+FROM ruby:2.3.1
 RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt-get clean
 RUN freshclam
 RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
+RUN gem install bundler -v1.14.5
 
 ENV GOVUK_APP_NAME asset-manager
 ENV GOVUK_ASSET_ROOT http://assets-origin.dev.gov.uk
