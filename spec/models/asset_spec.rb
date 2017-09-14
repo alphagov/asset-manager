@@ -4,24 +4,24 @@ RSpec.describe Asset, type: :model do
   include DelayedJobHelpers
 
   describe "creating an asset" do
-    it "should be valid given a file" do
+    it "is valid given a file" do
       a = Asset.new(file: load_fixture_file("asset.png"))
       expect(a).to be_valid
     end
 
-    it "should not be valid without a file" do
+    it "is not valid without a file" do
       a = Asset.new(file: nil)
       expect(a).not_to be_valid
     end
 
-    it "should not be valid without an organisation id if it is access limited" do
+    it "is not valid without an organisation id if it is access limited" do
       expect(Asset.new(file: load_fixture_file("asset.png"))).to be_valid
       expect(Asset.new(file: load_fixture_file("asset.png"), organisation_slug: 'example-organisation')).to be_valid
       expect(Asset.new(file: load_fixture_file("asset.png"), access_limited: true)).not_to be_valid
       expect(Asset.new(file: load_fixture_file("asset.png"), access_limited: true, organisation_slug: 'example-organisation')).to be_valid
     end
 
-    it "should be persisted" do
+    it "is persisted" do
       expect_any_instance_of(CarrierWave::Mount::Mounter).to receive(:store!)
 
       a = Asset.new(file: load_fixture_file("asset.png"))
@@ -30,7 +30,7 @@ RSpec.describe Asset, type: :model do
       expect(a).to be_persisted
     end
 
-    it 'should generate a UUID' do
+    it 'generates a UUID' do
       allow(SecureRandom).to receive(:uuid).and_return('uuid')
       a = Asset.new
       expect(a.uuid).to eq('uuid')
@@ -76,7 +76,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "scheduling a virus scan" do
-    it "should schedule a scan after create" do
+    it "schedules a scan after create" do
       a = Asset.new(file: load_fixture_file("asset.png"))
       expect {
         a.save!
@@ -86,7 +86,7 @@ RSpec.describe Asset, type: :model do
       expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
     end
 
-    it "should schedule a scan after save if the file is changed" do
+    it "schedules a scan after save if the file is changed" do
       a = FactoryGirl.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
       expect {
@@ -97,7 +97,7 @@ RSpec.describe Asset, type: :model do
       expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
     end
 
-    it "should schedule a scan after save if the file is changed even if filename is unchanged" do
+    it "schedules a scan after save if the file is changed even if filename is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
@@ -109,7 +109,7 @@ RSpec.describe Asset, type: :model do
       expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
     end
 
-    it "should not schedule a scan after update if the file is unchanged" do
+    it "does not schedule a scan after update if the file is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       a.created_at = 5.days.ago
       expect {
@@ -192,7 +192,7 @@ RSpec.describe Asset, type: :model do
   describe "virus_scanning the attached file" do
     let(:asset) { FactoryGirl.create(:asset) }
 
-    it "should call out to the VirusScanner to scan the file" do
+    it "calls out to the VirusScanner to scan the file" do
       scanner = double("VirusScanner")
       expect(VirusScanner).to receive(:new).with(asset.file.path).and_return(scanner)
       expect(scanner).to receive(:clean?).and_return(true)
@@ -200,7 +200,7 @@ RSpec.describe Asset, type: :model do
       asset.scan_for_viruses
     end
 
-    it "should set the state to clean if the file is clean" do
+    it "sets the state to clean if the file is clean" do
       allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
 
       asset.scan_for_viruses
@@ -215,14 +215,14 @@ RSpec.describe Asset, type: :model do
         allow_any_instance_of(VirusScanner).to receive(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
       end
 
-      it "should set the state to infected if a virus is found" do
+      it "sets the state to infected if a virus is found" do
         asset.scan_for_viruses
 
         asset.reload
         expect(asset.state).to eq('infected')
       end
 
-      it "should send an exception notification" do
+      it "sends an exception notification" do
         expect(Airbrake).to receive(:notify_or_ignore).
           with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: asset.id, filename: asset.filename })
 
@@ -237,7 +237,7 @@ RSpec.describe Asset, type: :model do
         allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(error)
       end
 
-      it "should not change the state, and pass throuth the error if there is an error scanning" do
+      it "does not change the state, and pass throuth the error if there is an error scanning" do
         expect {
           asset.scan_for_viruses
         }.to raise_error(VirusScanner::Error, "Boom!")
@@ -246,7 +246,7 @@ RSpec.describe Asset, type: :model do
         expect(asset.state).to eq("unscanned")
       end
 
-      it "should send an exception notification" do
+      it "sends an exception notification" do
         expect(Airbrake).to receive(:notify_or_ignore).
           with(error, params: { id: asset.id, filename: asset.filename })
 
