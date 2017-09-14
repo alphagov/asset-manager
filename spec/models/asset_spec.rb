@@ -237,7 +237,7 @@ RSpec.describe Asset, type: :model do
         allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(error)
       end
 
-      it "does not change the state, and pass throuth the error if there is an error scanning" do
+      it "does not change the state, and pass through the error if there is an error scanning" do
         expect {
           asset.scan_for_viruses
         }.to raise_error(VirusScanner::Error, "Boom!")
