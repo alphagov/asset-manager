@@ -13,13 +13,6 @@ RSpec/AnyInstance:
     - 'spec/models/asset_spec.rb'
     - 'spec/requests/asset_requests_spec.rb'
 
-# Offense count: 2
-# Configuration parameters: SkipBlocks, EnforcedStyle, SupportedStyles.
-# SupportedStyles: described_class, explicit
-RSpec/DescribedClass:
-  Exclude:
-    - 'spec/lib/data_migration_spec.rb'
-
 # Offense count: 13
 # Configuration parameters: Max.
 RSpec/ExampleLength:
