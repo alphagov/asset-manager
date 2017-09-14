@@ -10,7 +10,7 @@ RSpec.describe DataMigration do
       described_class.add_uuid_to_assets
 
       unmigrated_asset.reload
-      expect(unmigrated_asset.uuid).to_not be_blank
+      expect(unmigrated_asset.uuid).not_to be_blank
     end
 
     it 'does not generate a new uuid for an asset when one already exists' do
