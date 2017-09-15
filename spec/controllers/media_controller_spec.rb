@@ -134,7 +134,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
       def do_get(extra_params = {})
-        get :download, { id: asset, filename: asset.file.file.identifier }.merge(extra_params)
+        get :download, { id: asset, filename: asset.filename }.merge(extra_params)
       end
 
       it "responds with 200 OK" do
@@ -214,7 +214,7 @@ RSpec.describe MediaController, type: :controller do
           let(:http_method) { 'HEAD' }
 
           it "responds with 200 OK" do
-            head :download, id: asset, filename: asset.file.file.identifier
+            head :download, id: asset, filename: asset.filename
             expect(response).to have_http_status(:ok)
           end
         end
@@ -270,7 +270,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.file.file.identifier
+        get :download, id: asset, filename: asset.filename
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -279,7 +279,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:infected_asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.file.file.identifier
+        get :download, id: asset, filename: asset.filename
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -342,7 +342,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:deleted_asset) }
 
       before do
-        get :download, id: asset, filename: asset.file.file.identifier
+        get :download, id: asset, filename: asset.filename
       end
 
       it "responds with not found status" do
