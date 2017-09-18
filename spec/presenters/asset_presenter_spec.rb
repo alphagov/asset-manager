@@ -10,9 +10,11 @@ RSpec.describe AssetPresenter do
     let(:options) { {} }
     let(:json) { presenter.as_json(options) }
     let(:asset_url) { 'asset-url' }
+    let(:public_url_path) { '/public-url-path' }
 
     before do
       allow(view_context).to receive(:asset_url).with(asset.id).and_return(asset_url)
+      allow(asset).to receive(:public_url_path).and_return(public_url_path)
     end
 
     context 'when no status is supplied' do
@@ -46,7 +48,7 @@ RSpec.describe AssetPresenter do
     it 'returns hash including public asset URL as file_url' do
       uri = URI.parse(json[:file_url])
       expect("#{uri.scheme}://#{uri.host}").to eq(Plek.new.asset_root)
-      expect(uri.path).to eq("/media/#{asset.id}/#{asset.filename}")
+      expect(uri.path).to eq(public_url_path)
     end
 
     it 'returns hash including asset state' do
