@@ -7,7 +7,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "action_mailer/railtie"
 # require "action_view/railtie"
-# require "sprockets/railtie"
+require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -32,6 +32,8 @@ module AssetManager
     config.action_dispatch.rack_cache = nil
 
     config.action_dispatch.x_sendfile_header = "X-Accel-Redirect"
+
+    config.assets.prefix = '/asset-manager'
   end
 
   mattr_accessor :aws_s3_bucket_name
