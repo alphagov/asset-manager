@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
-  resources :assets, only: %i(show create update destroy)
-  post "/assets/:id/restore", to: "assets#restore"
+  resources :assets, only: %i(show create update destroy) do
+    member do
+      post :restore
+    end
+  end
 
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }
 
