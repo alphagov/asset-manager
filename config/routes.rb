@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :whitehall_assets, only: %i(create)
 
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }
+  get "/government/uploads/*path" => "whitehall_media#download"
 
   get "/healthcheck" => Proc.new { [200, { "Content-type" => "text/plain" }, ["OK"]] }
 end
