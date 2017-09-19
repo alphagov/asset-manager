@@ -162,69 +162,27 @@ RSpec.describe Asset, type: :model do
 
     before do
       allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
+      allow(SaveToCloudStorageWorker).to receive(:perform_async)
     end
 
     it 'schedules saving the asset to cloud storage' do
-      expect {
-        asset.scan_for_viruses
-      }.to change(Delayed::Job, :count).by(1)
+      expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset)
 
-      expect(most_recently_enqueued_job).to have_payload(asset)
-      expect(most_recently_enqueued_job).to have_method_name(:save_to_cloud_storage)
+      asset.scan_for_viruses
     end
   end
 
   describe "#save_to_cloud_storage" do
-    let(:asset) { FactoryGirl.create(:clean_asset) }
+    let(:asset) { FactoryGirl.create(:asset) }
+    let(:worker) { double(:save_to_cloud_storage_worker) }
 
-    context 'when S3 bucket is configured' do
-      let(:cloud_storage) { double(:cloud_storage) }
-
-      before do
-        allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-      end
-
-      it 'saves the asset to cloud storage' do
-        expect(cloud_storage).to receive(:save).with(asset)
-
-        asset.save_to_cloud_storage
-      end
-
-      context 'when an exception is raised' do
-        let(:exception_class) { Class.new(StandardError) }
-        let(:exception) { exception_class.new }
-
-        before do
-          allow(cloud_storage).to receive(:save).and_raise(exception)
-        end
-
-        it 'reports the exception to Errbit via Airbrake' do
-          expect(Airbrake).to receive(:notify_or_ignore)
-            .with(exception, params: { id: asset.id, filename: asset.filename })
-
-          asset.save_to_cloud_storage rescue exception_class
-        end
-
-        it 're-raises the exception so Delayed::Job will re-try it' do
-          allow(Airbrake).to receive(:notify_or_ignore)
-
-          expect {
-            asset.save_to_cloud_storage
-          }.to raise_error(exception)
-        end
-      end
+    before do
+      allow(SaveToCloudStorageWorker).to receive(:new).and_return(worker)
     end
 
-    context 'when S3 bucket is not configured' do
-      before do
-        allow(AssetManager).to receive(:aws_s3_bucket_name).and_return(nil)
-      end
-
-      it 'does not attempt to build AWS S3 resource', disable_cloud_storage_stub: true do
-        expect(Aws::Resources::Resource).not_to receive(:new)
-
-        asset.save_to_cloud_storage
-      end
+    it 'synchronously calls SaveToCloudStorageWorker' do
+      expect(worker).to receive(:perform).with(asset)
+      asset.save_to_cloud_storage
     end
   end
 

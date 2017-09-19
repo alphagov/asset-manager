@@ -54,6 +54,7 @@ RSpec/NestedGroups:
     - 'spec/lib/s3_storage_spec.rb'
     - 'spec/models/asset_spec.rb'
     - 'spec/models/whitehall_asset_spec.rb'
+    - 'spec/workers/save_to_cloud_storage_worker_spec.rb'
 
 # Offense count: 10
 # Configuration parameters: Strict, EnforcedStyle, SupportedStyles.
@@ -71,3 +72,4 @@ RSpec/VerifiedDoubles:
     - 'spec/models/asset_spec.rb'
     - 'spec/support/authentication.rb'
     - 'spec/support/cloud_storage.rb'
+    - 'spec/workers/save_to_cloud_storage_worker_spec.rb'

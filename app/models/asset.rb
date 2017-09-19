@@ -36,7 +36,7 @@ class Asset
     end
 
     after_transition to: :clean do |asset, _|
-      asset.delay.save_to_cloud_storage
+      SaveToCloudStorageWorker.perform_async(asset)
     end
 
     event :scanned_infected do
@@ -113,10 +113,7 @@ class Asset
   end
 
   def save_to_cloud_storage
-    Services.cloud_storage.save(self)
-  rescue => e
-    Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
-    raise
+    SaveToCloudStorageWorker.new.perform(self)
   end
 
 protected
