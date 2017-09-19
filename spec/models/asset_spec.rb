@@ -29,11 +29,20 @@ RSpec.describe Asset, type: :model do
 
       expect(a).to be_persisted
     end
+  end
 
-    it 'generates a UUID' do
+  describe '#uuid' do
+    it 'is generated on instantiation' do
       allow(SecureRandom).to receive(:uuid).and_return('uuid')
-      a = Asset.new
-      expect(a.uuid).to eq('uuid')
+      asset = Asset.new
+      expect(asset.uuid).to eq('uuid')
+    end
+
+    it 'cannot be changed after creation' do
+      asset = FactoryGirl.create(:asset, uuid: 'uuid')
+      asset.uuid = 'new-uuid'
+      asset.save!
+      expect(asset.reload.uuid).to eq('uuid')
     end
   end
 

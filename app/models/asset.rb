@@ -11,6 +11,7 @@ class Asset
   protected :filename_history=
 
   field :uuid, type: String, default: -> { SecureRandom.uuid }
+  attr_readonly :uuid
 
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
