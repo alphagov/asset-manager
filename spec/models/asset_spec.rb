@@ -74,6 +74,18 @@ RSpec.describe Asset, type: :model do
       it 'is valid' do
         expect(asset).to be_valid
       end
+
+      context 'and legacy_url_path is not unique' do
+        let(:existing_asset) { FactoryGirl.create(:asset, legacy_url_path: nil) }
+
+        before do
+          asset.legacy_url_path = existing_asset.legacy_url_path
+        end
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
     end
 
     context 'when legacy_url_path is set' do
@@ -95,6 +107,20 @@ RSpec.describe Asset, type: :model do
         it 'is not valid' do
           expect(asset).not_to be_valid
           expect(asset.errors[:legacy_url_path]).to include('must start with /government/uploads')
+        end
+      end
+
+      context 'and legacy_url_path is not unique' do
+        let(:valid_path) { '/government/uploads/asset.png' }
+        let(:existing_asset) { FactoryGirl.create(:asset, legacy_url_path: valid_path) }
+
+        before do
+          asset.legacy_url_path = existing_asset.legacy_url_path
+        end
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+          expect(asset.errors[:legacy_url_path]).to include('is already taken')
         end
       end
     end

@@ -20,11 +20,15 @@ class Asset
   field :organisation_slug, type: String
 
   validates :file, presence: true
-  validates :legacy_url_path, format: {
-    with: %r{\A/government/uploads},
-    allow_blank: true,
-    message: 'must start with /government/uploads'
-  }
+  validates :legacy_url_path,
+    uniqueness: {
+      allow_blank: true
+    },
+    format: {
+      with: %r{\A/government/uploads},
+      allow_blank: true,
+      message: 'must start with /government/uploads'
+    }
   validates :organisation_slug, presence: true, if: :access_limited?
 
   validates :uuid, presence: true,
