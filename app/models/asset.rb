@@ -60,6 +60,10 @@ class Asset
     legacy_url_path || "/media/#{id}/#{filename}"
   end
 
+  def mainstream?
+    legacy_url_path.blank?
+  end
+
   def file=(file)
     old_filename = filename
     super(file).tap {

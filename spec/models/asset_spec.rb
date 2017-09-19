@@ -570,4 +570,24 @@ RSpec.describe Asset, type: :model do
       expect(asset.md5_hexdigest).to eq(md5_hexdigest)
     end
   end
+
+  describe '#mainstream?' do
+    let(:asset) { Asset.new(legacy_url_path: legacy_url_path) }
+
+    context 'when legacy_url_path is not set' do
+      let(:legacy_url_path) { nil }
+
+      it 'returns truth-y' do
+        expect(asset).to be_mainstream
+      end
+    end
+
+    context 'when legacy_url_path is set' do
+      let(:legacy_url_path) { '/government/uploads/asset.png' }
+
+      it 'returns false-y' do
+        expect(asset).not_to be_mainstream
+      end
+    end
+  end
 end

@@ -53,7 +53,8 @@ protected
   def asset_servable?
     asset.filename_valid?(params[:filename]) &&
       asset.clean? &&
-      asset.accessible_by?(current_user)
+      asset.accessible_by?(current_user) &&
+      asset.mainstream?
   end
 
   def authenticate_if_private
