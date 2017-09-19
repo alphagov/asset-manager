@@ -18,7 +18,8 @@ class Asset
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
-  validates :uuid, presence: true
+  validates :uuid, presence: true,
+                   uniqueness: true
 
   mount_uploader :file, AssetUploader
 

@@ -50,6 +50,13 @@ RSpec.describe Asset, type: :model do
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("can't be blank")
     end
+
+    it 'must be unique' do
+      FactoryGirl.create(:asset, uuid: 'uuid')
+      asset = FactoryGirl.build(:asset, uuid: 'uuid')
+      expect(asset).not_to be_valid
+      expect(asset.errors[:uuid]).to include("is already taken")
+    end
   end
 
   describe "#filename" do
