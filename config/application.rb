@@ -43,6 +43,7 @@ module AssetManager
   mattr_accessor :redirect_all_asset_requests_to_s3
 
   mattr_accessor :cache_control
+  mattr_accessor :whitehall_cache_control
   mattr_accessor :content_disposition
   mattr_accessor :default_content_type
 end

@@ -25,6 +25,10 @@ RSpec.describe 'Whitehall media requests', type: :request do
     it 'redirects to placeholder image' do
       expect(response).to redirect_to('/images/thumbnail-placeholder.png')
     end
+
+    it 'sets the Cache-Control response header to 1 minute' do
+      expect(response.headers['Cache-Control']).to eq('max-age=60, public')
+    end
   end
 
   describe 'request for an unscanned non-image asset' do
@@ -42,6 +46,10 @@ RSpec.describe 'Whitehall media requests', type: :request do
 
     it 'redirects to government placeholder page' do
       expect(response).to redirect_to('/government/placeholder')
+    end
+
+    it 'sets the Cache-Control response header to 1 minute' do
+      expect(response.headers['Cache-Control']).to eq('max-age=60, public')
     end
   end
 
@@ -71,6 +79,10 @@ RSpec.describe 'Whitehall media requests', type: :request do
 
     it 'sets the Content-Disposition response header' do
       expect(response.headers['Content-Disposition']).to eq('inline; filename="asset.png"')
+    end
+
+    it 'sets the Cache-Control response header to 4 hours' do
+      expect(response.headers['Cache-Control']).to eq('max-age=14400, public')
     end
   end
 end
