@@ -39,10 +39,11 @@ RSpec.describe Asset, type: :model do
     end
 
     it 'cannot be changed after creation' do
-      asset = FactoryGirl.create(:asset, uuid: 'uuid')
-      asset.uuid = 'new-uuid'
+      uuid = '11111111-1111-1111-1111-11111111111111'
+      asset = FactoryGirl.create(:asset, uuid: uuid)
+      asset.uuid = '22222222-2222-2222-2222-222222222222'
       asset.save!
-      expect(asset.reload.uuid).to eq('uuid')
+      expect(asset.reload.uuid).to eq(uuid)
     end
 
     it 'cannot be empty' do
@@ -52,10 +53,17 @@ RSpec.describe Asset, type: :model do
     end
 
     it 'must be unique' do
-      FactoryGirl.create(:asset, uuid: 'uuid')
-      asset = FactoryGirl.build(:asset, uuid: 'uuid')
+      uuid = '11111111-1111-1111-1111-11111111111111'
+      FactoryGirl.create(:asset, uuid: uuid)
+      asset = FactoryGirl.build(:asset, uuid: uuid)
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("is already taken")
+    end
+
+    it 'must be in the format defined in rfc4122' do
+      asset = FactoryGirl.build(:asset, uuid: 'uuid')
+      expect(asset).not_to be_valid
+      expect(asset.errors[:uuid]).to include('must match the format defined in rfc4122')
     end
   end
 

@@ -18,8 +18,13 @@ class Asset
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
+
   validates :uuid, presence: true,
-                   uniqueness: true
+                   uniqueness: true,
+                   format: {
+                     with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
+                     message: 'must match the format defined in rfc4122'
+                   }
 
   mount_uploader :file, AssetUploader
 
