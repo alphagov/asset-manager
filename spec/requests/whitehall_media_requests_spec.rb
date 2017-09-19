@@ -9,6 +9,42 @@ RSpec.describe 'Whitehall media requests', type: :request do
     end
   end
 
+  describe 'request for an unscanned image asset' do
+    let(:path) { '/government/uploads/asset.png' }
+
+    before do
+      FactoryGirl.create(
+        :asset,
+        file: load_fixture_file('asset.png'),
+        legacy_url_path: path
+      )
+
+      get path
+    end
+
+    it 'redirects to placeholder image' do
+      expect(response).to redirect_to('/images/thumbnail-placeholder.png')
+    end
+  end
+
+  describe 'request for an unscanned non-image asset' do
+    let(:path) { '/government/uploads/lorem.txt' }
+
+    before do
+      FactoryGirl.create(
+        :asset,
+        file: load_fixture_file('lorem.txt'),
+        legacy_url_path: path
+      )
+
+      get path
+    end
+
+    it 'redirects to government placeholder page' do
+      expect(response).to redirect_to('/government/placeholder')
+    end
+  end
+
   describe 'request for a clean asset' do
     let(:path) { '/government/uploads/asset.png' }
     let!(:asset) { FactoryGirl.create(:clean_asset, legacy_url_path: path) }

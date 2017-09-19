@@ -468,6 +468,30 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe '#image?' do
+    let(:asset) { Asset.new }
+
+    before do
+      allow(asset).to receive(:extension).and_return(extension)
+    end
+
+    context 'when asset is an image' do
+      let(:extension) { 'png' }
+
+      it 'returns a truth-y value' do
+        expect(asset).to be_image
+      end
+    end
+
+    context 'when asset is not an image' do
+      let(:extension) { 'pdf' }
+
+      it 'returns a false-y value' do
+        expect(asset).not_to be_image
+      end
+    end
+  end
+
   describe "#etag" do
     let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 

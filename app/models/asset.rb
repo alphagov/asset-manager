@@ -81,6 +81,10 @@ class Asset
     mime_type ? mime_type.to_s : AssetManager.default_content_type
   end
 
+  def image?
+    %w(jpg jpeg png gif).include?(extension)
+  end
+
   def etag
     '%x-%x' % [last_modified, file_stat.size]
   end

@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe WhitehallMediaController, type: :controller do
+  include ActionView::Helpers::AssetUrlHelper
+
   describe '#download' do
     let(:path) { 'path/to/asset' }
     let(:format) { 'png' }
@@ -34,13 +36,31 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
     end
 
-    context 'when asset is unscanned' do
+    context 'when asset is unscanned image' do
       let(:asset) { FactoryGirl.build(:asset, state: 'unscanned') }
 
-      it 'responds with 404 Not Found' do
+      before do
+        allow(asset).to receive(:image?).and_return(true)
+      end
+
+      it 'redirects to thumbnail-placeholder image' do
         get :download, path: path, format: format
 
-        expect(response).to have_http_status(:not_found)
+        expect(controller).to redirect_to(image_path('thumbnail-placeholder.png'))
+      end
+    end
+
+    context 'when asset is unscanned non-image' do
+      let(:asset) { FactoryGirl.build(:asset, state: 'unscanned') }
+
+      before do
+        allow(asset).to receive(:image?).and_return(false)
+      end
+
+      it 'redirects to government placeholder page' do
+        get :download, path: path, format: format
+
+        expect(controller).to redirect_to('/government/placeholder')
       end
     end
 
