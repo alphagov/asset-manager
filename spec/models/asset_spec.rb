@@ -44,6 +44,12 @@ RSpec.describe Asset, type: :model do
       asset.save!
       expect(asset.reload.uuid).to eq('uuid')
     end
+
+    it 'cannot be empty' do
+      asset = FactoryGirl.build(:asset, uuid: '')
+      expect(asset).not_to be_valid
+      expect(asset.errors[:uuid]).to include("can't be blank")
+    end
   end
 
   describe "#filename" do
