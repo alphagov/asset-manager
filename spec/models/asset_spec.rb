@@ -67,6 +67,109 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe 'validation' do
+    subject(:asset) { FactoryGirl.build(:asset) }
+
+    context 'when legacy_url_path is not set' do
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+
+      context 'and legacy_url_path is not unique' do
+        let(:existing_asset) { FactoryGirl.create(:asset, legacy_url_path: nil) }
+
+        before do
+          asset.legacy_url_path = existing_asset.legacy_url_path
+        end
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
+    end
+
+    context 'when legacy_url_path is set' do
+      context 'and legacy_url_path starts with /government/uploads' do
+        before do
+          asset.legacy_url_path = '/government/uploads/asset.png'
+        end
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
+
+      context 'and legacy_url_path does not start with /government/uploads' do
+        before do
+          asset.legacy_url_path = '/not-government/uploads/asset.png'
+        end
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+          expect(asset.errors[:legacy_url_path]).to include('must start with /government/uploads')
+        end
+      end
+
+      context 'and legacy_url_path is not unique' do
+        let(:valid_path) { '/government/uploads/asset.png' }
+        let(:existing_asset) { FactoryGirl.create(:asset, legacy_url_path: valid_path) }
+
+        before do
+          asset.legacy_url_path = existing_asset.legacy_url_path
+        end
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+          expect(asset.errors[:legacy_url_path]).to include('is already taken')
+        end
+      end
+    end
+  end
+
+  describe '#legacy_url_path' do
+    subject(:asset) { FactoryGirl.build(:asset) }
+
+    before do
+      asset.legacy_url_path = '/government/uploads/asset.png'
+      asset.save!
+    end
+
+    context 'when creating asset' do
+      it 'can be set' do
+        expect(asset.reload.legacy_url_path).to eq('/government/uploads/asset.png')
+      end
+    end
+
+    context 'when updating asset' do
+      it 'cannot be set' do
+        asset.legacy_url_path = '/government/uploads/another-asset.png'
+        asset.save!
+        expect(asset.reload.legacy_url_path).to eq('/government/uploads/asset.png')
+      end
+    end
+  end
+
+  describe '#public_url_path' do
+    subject(:asset) { Asset.new }
+
+    context 'when legacy_url_path is not set' do
+      it 'returns public URL path for mainstream asset' do
+        expected_path = "/media/#{asset.id}/#{asset.filename}"
+        expect(asset.public_url_path).to eq(expected_path)
+      end
+    end
+
+    context 'when legacy_url_path is set' do
+      before do
+        asset.legacy_url_path = '/legacy-url-path'
+      end
+
+      it 'returns legacy URL path for whitehall asset' do
+        expect(asset.public_url_path).to eq('/legacy-url-path')
+      end
+    end
+  end
+
   describe "#filename" do
     let(:asset) {
       Asset.new(file: load_fixture_file("asset.png"))
@@ -391,6 +494,30 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe '#image?' do
+    let(:asset) { Asset.new }
+
+    before do
+      allow(asset).to receive(:extension).and_return(extension)
+    end
+
+    context 'when asset is an image' do
+      let(:extension) { 'png' }
+
+      it 'returns a truth-y value' do
+        expect(asset).to be_image
+      end
+    end
+
+    context 'when asset is not an image' do
+      let(:extension) { 'pdf' }
+
+      it 'returns a false-y value' do
+        expect(asset).not_to be_image
+      end
+    end
+  end
+
   describe "#etag" do
     let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
@@ -441,6 +568,26 @@ RSpec.describe Asset, type: :model do
 
     it "returns MD5 hex digest for asset file content" do
       expect(asset.md5_hexdigest).to eq(md5_hexdigest)
+    end
+  end
+
+  describe '#mainstream?' do
+    let(:asset) { Asset.new(legacy_url_path: legacy_url_path) }
+
+    context 'when legacy_url_path is not set' do
+      let(:legacy_url_path) { nil }
+
+      it 'returns truth-y' do
+        expect(asset).to be_mainstream
+      end
+    end
+
+    context 'when legacy_url_path is set' do
+      let(:legacy_url_path) { '/government/uploads/asset.png' }
+
+      it 'returns false-y' do
+        expect(asset).not_to be_mainstream
+      end
     end
   end
 end

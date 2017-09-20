@@ -275,6 +275,16 @@ RSpec.describe MediaController, type: :controller do
       end
     end
 
+    context "with an otherwise servable whitehall asset" do
+      let(:path) { '/government/uploads/asset.png' }
+      let(:asset) { FactoryGirl.create(:clean_asset, legacy_url_path: path) }
+
+      it "responds with 404 Not Found" do
+        get :download, id: asset, filename: asset.filename
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
     context "with an infected file" do
       let(:asset) { FactoryGirl.create(:infected_asset) }
 

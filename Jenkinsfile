@@ -5,6 +5,7 @@ node ('mongodb-2.4') {
   govuk.buildProject(
     beforeTest: {
       govuk.setEnvar('TEST_COVERAGE', 'true')
-    }
+    },
+    sassLint: false
   )
 }
