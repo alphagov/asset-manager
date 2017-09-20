@@ -36,7 +36,7 @@ class Asset
     end
 
     after_transition to: :clean do |asset, _|
-      SaveToCloudStorageWorker.perform_async(asset)
+      SaveToCloudStorageWorker.perform_async(asset.id)
     end
 
     event :scanned_infected do
@@ -113,7 +113,7 @@ class Asset
   end
 
   def save_to_cloud_storage
-    SaveToCloudStorageWorker.new.perform(self)
+    SaveToCloudStorageWorker.new.perform(self.id)
   end
 
 protected

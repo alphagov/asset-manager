@@ -166,7 +166,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it 'schedules saving the asset to cloud storage' do
-      expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset)
+      expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
 
       asset.scan_for_viruses
     end
@@ -181,7 +181,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it 'synchronously calls SaveToCloudStorageWorker' do
-      expect(worker).to receive(:perform).with(asset)
+      expect(worker).to receive(:perform).with(asset.id)
       asset.save_to_cloud_storage
     end
   end
