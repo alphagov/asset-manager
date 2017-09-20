@@ -11,12 +11,20 @@ class Asset
   protected :filename_history=
 
   field :uuid, type: String, default: -> { SecureRandom.uuid }
+  attr_readonly :uuid
 
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
+
+  validates :uuid, presence: true,
+                   uniqueness: true,
+                   format: {
+                     with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
+                     message: 'must match the format defined in rfc4122'
+                   }
 
   mount_uploader :file, AssetUploader
 
