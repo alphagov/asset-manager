@@ -17,7 +17,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     get "/media/#{asset.id}/lorem.txt"
     expect(response).to have_http_status(:not_found)
 
-    run_all_delayed_jobs
+    VirusScanWorker.drain
 
     get "/media/#{asset.id}/lorem.txt"
     expect(response).to have_http_status(:success)
@@ -56,7 +56,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     get "/media/#{asset.id}/eicar.com"
     expect(response).to have_http_status(:not_found)
 
-    run_all_delayed_jobs
+    VirusScanWorker.drain
 
     get "/media/#{asset.id}/eicar.com"
     expect(response).to have_http_status(:not_found)

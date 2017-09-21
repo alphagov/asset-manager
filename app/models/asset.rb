@@ -120,7 +120,7 @@ protected
   end
 
   def schedule_virus_scan
-    self.delay.scan_for_viruses if self.unscanned?
+    VirusScanWorker.perform_async(self.id) if self.unscanned?
   end
 
   def file_stat

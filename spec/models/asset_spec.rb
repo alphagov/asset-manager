@@ -132,43 +132,38 @@ RSpec.describe Asset, type: :model do
   describe "scheduling a virus scan" do
     it "schedules a scan after create" do
       a = Asset.new(file: load_fixture_file("asset.png"))
-      expect {
-        a.save!
-      }.to change(Delayed::Job, :count).by(1)
 
-      expect(most_recently_enqueued_job).to have_payload(a)
-      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+
+      a.save!
     end
 
     it "schedules a scan after save if the file is changed" do
       a = FactoryGirl.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
-      expect {
-        a.save!
-      }.to change(Delayed::Job, :count).by(1)
 
-      expect(most_recently_enqueued_job).to have_payload(a)
-      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+
+      a.save!
     end
 
     it "schedules a scan after save if the file is changed even if filename is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
-      expect {
-        a.save!
-      }.to change(Delayed::Job, :count).by(1)
 
-      expect(most_recently_enqueued_job).to have_payload(a)
-      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+
+      a.save!
     end
 
     it "does not schedule a scan after update if the file is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       a.created_at = 5.days.ago
-      expect {
-        a.save!
-      }.not_to change(Delayed::Job, :count)
+
+      expect(VirusScanWorker).not_to receive(:perform_async)
+
+      a.save!
     end
   end
 
