@@ -18,6 +18,12 @@ FactoryGirl.define do
     deleted_at { Time.now }
   end
 
+  factory :whitehall_asset, parent: :asset, class: WhitehallAsset
+
+  factory :clean_whitehall_asset, parent: :whitehall_asset do
+    after :create, &:scanned_clean!
+  end
+
   factory :user do
     sequence(:name) { |n| "Winston #{n}" }
     permissions { ["signin"] }
