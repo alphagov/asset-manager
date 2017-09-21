@@ -89,6 +89,8 @@ See the `AssetPresenter` class for the return format for the above API calls. Al
 
 `GET /media/:id/:filename` serves the file to the user if it is marked as clean.
 
+`POST /whitehall_assets` expects a single file uploaded via the `asset[file]` parameter and a path set in `asset[legacy_url_path]`. The latter tells Asset Manager the URL path at which the asset should be served. Note that this is intended as a transitional measure while we move Whitehall assets into Asset Manager. The idea is that eventually all asset URLs will be rationalised and consolidated and at that point Asset Manager will tell Whitehall the URL at which the asset will be served as it currently does for Mainstream assets. **Note** this endpoint should only be used from the Whitehall Admin app; not from any other publishing apps.
+
 ### API examples
 
 __NOTE.__ These examples assume you're using the [Development VM](https://github.com/alphagov/govuk-puppet/tree/master/development-vm).
@@ -171,6 +173,17 @@ $ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96/restore \
 # Confirm that it's been restored
 $ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
 {"_response_info":{"status":"ok"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+```
+
+#### Create a Whitehall asset
+
+```
+# Create a temporary file
+$ echo `date` > tmp.txt
+
+# Upload file to Asset Manager
+$ curl http://asset-manager.dev.gov.uk/whitehall_assets --form "asset[file]=@tmp.txt" --form "asset[legacy_url_path]=/government/uploads/path/to/tmp.txt"
+{"_response_info":{"status":"created"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/government/uploads/path/to/tmp.txt","state":"unscanned"}
 ```
 
 ## Licence
