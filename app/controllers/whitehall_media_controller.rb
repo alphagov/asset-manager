@@ -5,7 +5,7 @@ class WhitehallMediaController < ApplicationController
 
   def download
     path = "/government/uploads/#{params[:path]}.#{params[:format]}"
-    asset = Asset.find_by(legacy_url_path: path)
+    asset = WhitehallAsset.find_by(legacy_url_path: path)
 
     if asset.unscanned?
       set_expiry(1.minute)

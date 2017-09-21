@@ -13,22 +13,10 @@ class Asset
   field :uuid, type: String, default: -> { SecureRandom.uuid }
   attr_readonly :uuid
 
-  field :legacy_url_path, type: String
-  attr_readonly :legacy_url_path
-
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
 
   validates :file, presence: true
-  validates :legacy_url_path,
-    uniqueness: {
-      allow_blank: true
-    },
-    format: {
-      with: %r{\A/government/uploads},
-      allow_blank: true,
-      message: 'must start with /government/uploads'
-    }
   validates :organisation_slug, presence: true, if: :access_limited?
 
   validates :uuid, presence: true,
@@ -57,11 +45,11 @@ class Asset
   end
 
   def public_url_path
-    legacy_url_path || "/media/#{id}/#{filename}"
+    "/media/#{id}/#{filename}"
   end
 
   def mainstream?
-    legacy_url_path.blank?
+    true
   end
 
   def file=(file)

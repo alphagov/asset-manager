@@ -1,6 +1,6 @@
 class WhitehallAssetsController < ApplicationController
   def create
-    @asset = Asset.new(asset_params)
+    @asset = WhitehallAsset.new(asset_params)
 
     if @asset.save
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :created), status: :created

@@ -9,11 +9,11 @@ RSpec.describe WhitehallMediaController, type: :controller do
     let(:legacy_url_path) { "/government/uploads/#{path}.#{format}" }
 
     before do
-      allow(Asset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(asset)
+      allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(asset)
     end
 
     context 'when asset is clean' do
-      let(:asset) { FactoryGirl.build(:asset, legacy_url_path: legacy_url_path, state: 'clean') }
+      let(:asset) { FactoryGirl.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
       let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
 
       before do
@@ -37,7 +37,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is unscanned image' do
-      let(:asset) { FactoryGirl.build(:asset, state: 'unscanned') }
+      let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'unscanned') }
 
       before do
         allow(asset).to receive(:image?).and_return(true)
@@ -51,7 +51,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is unscanned non-image' do
-      let(:asset) { FactoryGirl.build(:asset, state: 'unscanned') }
+      let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'unscanned') }
 
       before do
         allow(asset).to receive(:image?).and_return(false)
@@ -65,7 +65,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is infected' do
-      let(:asset) { FactoryGirl.build(:asset, state: 'infected') }
+      let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'infected') }
 
       it 'responds with 404 Not Found' do
         get :download, path: path, format: format
