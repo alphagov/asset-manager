@@ -94,7 +94,7 @@ class Asset
   end
 
   def scan_for_viruses
-    VirusScanWorker.new.perform(self)
+    VirusScanWorker.new.perform(self.id)
   end
 
   def accessible_by?(user)

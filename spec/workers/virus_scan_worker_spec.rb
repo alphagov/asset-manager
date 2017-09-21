@@ -9,13 +9,13 @@ RSpec.describe VirusScanWorker do
     expect(VirusScanner).to receive(:new).with(asset.file.path).and_return(scanner)
     expect(scanner).to receive(:clean?).and_return(true)
 
-    worker.perform(asset)
+    worker.perform(asset.id)
   end
 
   it "sets the state to clean if the file is clean" do
     allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
 
-    worker.perform(asset)
+    worker.perform(asset.id)
 
     asset.reload
     expect(asset.state).to eq('clean')
@@ -28,7 +28,7 @@ RSpec.describe VirusScanWorker do
     end
 
     it "sets the state to infected if a virus is found" do
-      worker.perform(asset)
+      worker.perform(asset.id)
 
       asset.reload
       expect(asset.state).to eq('infected')
@@ -38,7 +38,7 @@ RSpec.describe VirusScanWorker do
       expect(Airbrake).to receive(:notify_or_ignore).
         with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: asset.id, filename: asset.filename })
 
-      worker.perform(asset)
+      worker.perform(asset.id)
     end
 
     context "when there is an error scanning" do
@@ -50,7 +50,7 @@ RSpec.describe VirusScanWorker do
 
       it "does not change the state, and pass through the error if there is an error scanning" do
         expect {
-          worker.perform(asset)
+          worker.perform(asset.id)
         }.to raise_error(VirusScanner::Error, "Boom!")
 
         asset.reload
@@ -61,7 +61,7 @@ RSpec.describe VirusScanWorker do
         expect(Airbrake).to receive(:notify_or_ignore).
           with(error, params: { id: asset.id, filename: asset.filename })
 
-        worker.perform(asset) rescue VirusScanner::Error
+        worker.perform(asset.id) rescue VirusScanner::Error
       end
     end
   end
