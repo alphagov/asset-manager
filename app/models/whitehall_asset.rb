@@ -3,12 +3,10 @@ class WhitehallAsset < Asset
   attr_readonly :legacy_url_path
 
   validates :legacy_url_path,
-    uniqueness: {
-      allow_blank: true
-    },
+    presence: true,
+    uniqueness: true,
     format: {
       with: %r{\A/government/uploads},
-      allow_blank: true,
       message: 'must start with /government/uploads'
     }
 

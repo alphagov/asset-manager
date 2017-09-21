@@ -2,23 +2,12 @@ require 'rails_helper'
 
 RSpec.describe WhitehallAsset, type: :model do
   describe 'validation' do
-    subject(:asset) { FactoryGirl.build(:whitehall_asset) }
+    subject(:asset) { FactoryGirl.build(:whitehall_asset, legacy_url_path: nil) }
 
     context 'when legacy_url_path is not set' do
-      it 'is valid' do
-        expect(asset).to be_valid
-      end
-
-      context 'and legacy_url_path is not unique' do
-        let(:existing_asset) { FactoryGirl.create(:whitehall_asset, legacy_url_path: nil) }
-
-        before do
-          asset.legacy_url_path = existing_asset.legacy_url_path
-        end
-
-        it 'is valid' do
-          expect(asset).to be_valid
-        end
+      it 'is not valid' do
+        expect(asset).not_to be_valid
+        expect(asset.errors[:legacy_url_path]).to include("can't be blank")
       end
     end
 
@@ -45,8 +34,7 @@ RSpec.describe WhitehallAsset, type: :model do
       end
 
       context 'and legacy_url_path is not unique' do
-        let(:valid_path) { '/government/uploads/asset.png' }
-        let(:existing_asset) { FactoryGirl.create(:whitehall_asset, legacy_url_path: valid_path) }
+        let(:existing_asset) { FactoryGirl.create(:whitehall_asset) }
 
         before do
           asset.legacy_url_path = existing_asset.legacy_url_path

@@ -18,7 +18,9 @@ FactoryGirl.define do
     deleted_at { Time.now }
   end
 
-  factory :whitehall_asset, parent: :asset, class: WhitehallAsset
+  factory :whitehall_asset, parent: :asset, class: WhitehallAsset do
+    sequence(:legacy_url_path) { |n| "/government/uploads/asset-#{n}.png" }
+  end
 
   factory :clean_whitehall_asset, parent: :whitehall_asset do
     after :create, &:scanned_clean!
