@@ -114,46 +114,56 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#scan_for_viruses" do
+    let(:asset) { FactoryGirl.create(:asset) }
+    let(:worker) { instance_double("VirusScanWorker") }
+
+    before do
+      allow(VirusScanWorker).to receive(:new).and_return(worker)
+    end
+
+    it "delegates to VirusScanWorker syncronously" do
+      expect(worker).to receive(:perform).with(asset.id)
+
+      asset.scan_for_viruses
+    end
+  end
+
   describe "scheduling a virus scan" do
     it "schedules a scan after create" do
       a = Asset.new(file: load_fixture_file("asset.png"))
-      expect {
-        a.save!
-      }.to change(Delayed::Job, :count).by(1)
 
-      expect(most_recently_enqueued_job).to have_payload(a)
-      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+
+      a.save!
     end
 
     it "schedules a scan after save if the file is changed" do
       a = FactoryGirl.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
-      expect {
-        a.save!
-      }.to change(Delayed::Job, :count).by(1)
 
-      expect(most_recently_enqueued_job).to have_payload(a)
-      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+
+      a.save!
     end
 
     it "schedules a scan after save if the file is changed even if filename is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
-      expect {
-        a.save!
-      }.to change(Delayed::Job, :count).by(1)
 
-      expect(most_recently_enqueued_job).to have_payload(a)
-      expect(most_recently_enqueued_job).to have_method_name(:scan_for_viruses)
+      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+
+      a.save!
     end
 
     it "does not schedule a scan after update if the file is unchanged" do
       a = FactoryGirl.create(:clean_asset)
       a.created_at = 5.days.ago
-      expect {
-        a.save!
-      }.not_to change(Delayed::Job, :count)
+
+      expect(VirusScanWorker).not_to receive(:perform_async)
+
+      a.save!
     end
   end
 
@@ -183,72 +193,6 @@ RSpec.describe Asset, type: :model do
     it 'synchronously calls SaveToCloudStorageWorker' do
       expect(worker).to receive(:perform).with(asset.id)
       asset.save_to_cloud_storage
-    end
-  end
-
-  describe "virus_scanning the attached file" do
-    let(:asset) { FactoryGirl.create(:asset) }
-
-    it "calls out to the VirusScanner to scan the file" do
-      scanner = double("VirusScanner")
-      expect(VirusScanner).to receive(:new).with(asset.file.path).and_return(scanner)
-      expect(scanner).to receive(:clean?).and_return(true)
-
-      asset.scan_for_viruses
-    end
-
-    it "sets the state to clean if the file is clean" do
-      allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
-
-      asset.scan_for_viruses
-
-      asset.reload
-      expect(asset.state).to eq('clean')
-    end
-
-    context "when a virus is found" do
-      before do
-        allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(false)
-        allow_any_instance_of(VirusScanner).to receive(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
-      end
-
-      it "sets the state to infected if a virus is found" do
-        asset.scan_for_viruses
-
-        asset.reload
-        expect(asset.state).to eq('infected')
-      end
-
-      it "sends an exception notification" do
-        expect(Airbrake).to receive(:notify_or_ignore).
-          with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: asset.id, filename: asset.filename })
-
-        asset.scan_for_viruses
-      end
-    end
-
-    context "when there is an error scanning" do
-      let(:error) { VirusScanner::Error.new("Boom!") }
-
-      before do
-        allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(error)
-      end
-
-      it "does not change the state, and pass through the error if there is an error scanning" do
-        expect {
-          asset.scan_for_viruses
-        }.to raise_error(VirusScanner::Error, "Boom!")
-
-        asset.reload
-        expect(asset.state).to eq("unscanned")
-      end
-
-      it "sends an exception notification" do
-        expect(Airbrake).to receive(:notify_or_ignore).
-          with(error, params: { id: asset.id, filename: asset.filename })
-
-        asset.scan_for_viruses rescue VirusScanner::Error
-      end
     end
   end
 

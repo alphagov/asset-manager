@@ -94,16 +94,7 @@ class Asset
   end
 
   def scan_for_viruses
-    scanner = VirusScanner.new(self.file.current_path)
-    if scanner.clean?
-      self.scanned_clean
-    else
-      Airbrake.notify_or_ignore(VirusScanner::InfectedFile.new, error_message: scanner.virus_info, params: { id: self.id, filename: self.filename })
-      self.scanned_infected
-    end
-  rescue => e
-    Airbrake.notify_or_ignore(e, params: { id: self.id, filename: self.filename })
-    raise
+    VirusScanWorker.new.perform(self.id)
   end
 
   def accessible_by?(user)
@@ -129,7 +120,7 @@ protected
   end
 
   def schedule_virus_scan
-    self.delay.scan_for_viruses if self.unscanned?
+    VirusScanWorker.perform_async(self.id) if self.unscanned?
   end
 
   def file_stat
