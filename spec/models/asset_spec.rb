@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Asset, type: :model do
-  include DelayedJobHelpers
-
   describe "creating an asset" do
     it "is valid given a file" do
       a = Asset.new(file: load_fixture_file("asset.png"))
