@@ -171,14 +171,13 @@ RSpec.describe Asset, type: :model do
     let!(:asset) { FactoryGirl.create(:asset) }
 
     before do
-      allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
     end
 
     it 'schedules saving the asset to cloud storage' do
       expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
 
-      asset.scan_for_viruses
+      asset.scanned_clean
     end
   end
 
