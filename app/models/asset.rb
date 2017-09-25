@@ -99,10 +99,6 @@ class Asset
     user && user.organisation_slug == self.organisation_slug
   end
 
-  def save_to_cloud_storage
-    SaveToCloudStorageWorker.new.perform(self.id)
-  end
-
 protected
 
   def valid_filenames

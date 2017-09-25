@@ -166,20 +166,6 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#save_to_cloud_storage" do
-    let(:asset) { FactoryGirl.create(:asset) }
-    let(:worker) { double(:save_to_cloud_storage_worker) }
-
-    before do
-      allow(SaveToCloudStorageWorker).to receive(:new).and_return(worker)
-    end
-
-    it 'synchronously calls SaveToCloudStorageWorker' do
-      expect(worker).to receive(:perform).with(asset.id)
-      asset.save_to_cloud_storage
-    end
-  end
-
   describe "#accessible_by?(user)" do
     let(:user) { FactoryGirl.build(:user, organisation_slug: 'example-organisation') }
 
