@@ -114,21 +114,6 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#scan_for_viruses" do
-    let(:asset) { FactoryGirl.create(:asset) }
-    let(:worker) { instance_double("VirusScanWorker") }
-
-    before do
-      allow(VirusScanWorker).to receive(:new).and_return(worker)
-    end
-
-    it "delegates to VirusScanWorker syncronously" do
-      expect(worker).to receive(:perform).with(asset.id)
-
-      asset.scan_for_viruses
-    end
-  end
-
   describe "scheduling a virus scan" do
     it "schedules a scan after create" do
       a = Asset.new(file: load_fixture_file("asset.png"))
