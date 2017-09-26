@@ -35,8 +35,8 @@ RSpec.describe VirusScanWorker do
     end
 
     it "sends an exception notification" do
-      expect(Airbrake).to receive(:notify_or_ignore).
-        with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: asset.id, filename: asset.filename })
+      expect(GovukError).to receive(:notify).
+        with(VirusScanner::InfectedFile.new, extra: { error_message: "/path/to/file: Eicar-Test-Signature FOUND", id: asset.id, filename: asset.filename })
 
       worker.perform(asset.id)
     end
