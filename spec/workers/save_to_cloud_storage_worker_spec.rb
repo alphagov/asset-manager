@@ -33,7 +33,7 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
           worker.perform(asset) rescue exception_class
         end
 
-        it 're-raises the exception so Delayed::Job will re-try it' do
+        it 're-raises the exception so sidekiq will re-try it' do
           allow(Airbrake).to receive(:notify_or_ignore)
 
           expect {

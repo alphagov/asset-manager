@@ -6,12 +6,12 @@ Manages uploaded assets (images, PDFs etc.) for applications in the GOV.UK Publi
 
 This is a small Rails application that receives uploaded files from publishing applications and returns the URLs that they will be made available at. Before an asset is available to the public, it is virus scanned. Once a file is found to be clean, Asset Manager serves it at the previously generated URL. Unscanned or Infected files return a 404 Not Found error.
 
-Scanning uses [ClamAV][clamav] and occurs asynchronously via [Delayed Job][delayed_job].
+Scanning uses [ClamAV][clamav] and occurs asynchronously via [govuk_sidekiq][sidekiq].
 
 ### Dependencies
 
 - [MongoDB][mongodb] via [Mongoid][mongoid]
-- [Delayed Job][delayed_job]
+- [govuk_sidekiq][sidekiq]
 - govuk_clamscan
 
 Virus scanning expects `govuk_clamscan` to exist on the PATH,
@@ -30,10 +30,10 @@ It can also be run via bowl on the GDS dev VM:
 bowl asset_manager
 ```
 
-Newly uploaded assets return 404 until they've been scanned for viruses. Scanning for viruses is done asynchronously via Delayed Job. Run Delayed Job queue processor:
+Newly uploaded assets return 404 until they've been scanned for viruses. Scanning for viruses is done asynchronously via govuk_sidekiq. Run the queue processor:
 
 ```
-bundle exec rake jobs:work
+bundle exec sidekiq
 ```
 
 ### Assets on S3
@@ -42,7 +42,7 @@ See the ["Migrating Asset Manager assets to S3" document](docs/migrating-assets-
 
 This functionality is *very* experimental and should not be switched on in production until performance tests have been carried out to ensure there has been no degradation in performance.
 
-As long as the S3 bucket is configured, all assets are uploaded to the S3 bucket via a separate `Delayed::Job` triggered if virus scanning succeeds. Assets are still saved to the NFS mount as per the original behaviour.
+As long as the S3 bucket is configured, all assets are uploaded to the S3 bucket via a separate govuk_sidekiq job triggered if virus scanning succeeds. Assets are still saved to the NFS mount as per the original behaviour.
 
 #### Standard AWS environment variables (required in production)
 
@@ -193,5 +193,5 @@ $ curl http://asset-manager.dev.gov.uk/whitehall_assets --form "asset[file]=@tmp
 [clamav]:https://www.clamav.net/
 [mongodb]:https://www.mongodb.org/
 [mongoid]:https://github.com/mongodb/mongoid
-[delayed_job]:https://github.com/collectiveidea/delayed_job
+[sidekiq]:https://github.com/alphagov/govuk_sidekiq
 [govuk-puppet]:https://github.com/alphagov/govuk-puppet/blob/master/modules/clamav/manifests/package.pp

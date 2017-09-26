@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Asset, type: :model do
-  include DelayedJobHelpers
-
   describe "creating an asset" do
     it "is valid given a file" do
       a = Asset.new(file: load_fixture_file("asset.png"))
@@ -114,21 +112,6 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#scan_for_viruses" do
-    let(:asset) { FactoryGirl.create(:asset) }
-    let(:worker) { instance_double("VirusScanWorker") }
-
-    before do
-      allow(VirusScanWorker).to receive(:new).and_return(worker)
-    end
-
-    it "delegates to VirusScanWorker syncronously" do
-      expect(worker).to receive(:perform).with(asset.id)
-
-      asset.scan_for_viruses
-    end
-  end
-
   describe "scheduling a virus scan" do
     it "schedules a scan after create" do
       a = Asset.new(file: load_fixture_file("asset.png"))
@@ -171,28 +154,13 @@ RSpec.describe Asset, type: :model do
     let!(:asset) { FactoryGirl.create(:asset) }
 
     before do
-      allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
     end
 
     it 'schedules saving the asset to cloud storage' do
       expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
 
-      asset.scan_for_viruses
-    end
-  end
-
-  describe "#save_to_cloud_storage" do
-    let(:asset) { FactoryGirl.create(:asset) }
-    let(:worker) { double(:save_to_cloud_storage_worker) }
-
-    before do
-      allow(SaveToCloudStorageWorker).to receive(:new).and_return(worker)
-    end
-
-    it 'synchronously calls SaveToCloudStorageWorker' do
-      expect(worker).to receive(:perform).with(asset.id)
-      asset.save_to_cloud_storage
+      asset.scanned_clean
     end
   end
 

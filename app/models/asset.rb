@@ -93,18 +93,10 @@ class Asset
     @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
   end
 
-  def scan_for_viruses
-    VirusScanWorker.new.perform(self.id)
-  end
-
   def accessible_by?(user)
     return true unless access_limited?
 
     user && user.organisation_slug == self.organisation_slug
-  end
-
-  def save_to_cloud_storage
-    SaveToCloudStorageWorker.new.perform(self.id)
   end
 
 protected
