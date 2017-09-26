@@ -17,30 +17,6 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
 
         worker.perform(asset)
       end
-
-      context 'when an exception is raised' do
-        let(:exception_class) { Class.new(StandardError) }
-        let(:exception) { exception_class.new }
-
-        before do
-          allow(cloud_storage).to receive(:save).and_raise(exception)
-        end
-
-        it 'reports the exception to Errbit via Airbrake' do
-          expect(Airbrake).to receive(:notify_or_ignore)
-          .with(exception, params: { id: asset.id, filename: asset.filename })
-
-          worker.perform(asset) rescue exception_class
-        end
-
-        it 're-raises the exception so sidekiq will re-try it' do
-          allow(Airbrake).to receive(:notify_or_ignore)
-
-          expect {
-            worker.perform(asset)
-          }.to raise_error(exception)
-        end
-      end
     end
 
     context 'when S3 bucket is not configured' do
