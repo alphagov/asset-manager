@@ -35,34 +35,10 @@ RSpec.describe VirusScanWorker do
     end
 
     it "sends an exception notification" do
-      expect(Airbrake).to receive(:notify_or_ignore).
-        with(VirusScanner::InfectedFile.new, error_message: "/path/to/file: Eicar-Test-Signature FOUND", params: { id: asset.id, filename: asset.filename })
+      expect(GovukError).to receive(:notify).
+        with(VirusScanner::InfectedFile.new, extra: { error_message: "/path/to/file: Eicar-Test-Signature FOUND", id: asset.id, filename: asset.filename })
 
       worker.perform(asset.id)
-    end
-
-    context "when there is an error scanning" do
-      let(:error) { VirusScanner::Error.new("Boom!") }
-
-      before do
-        allow_any_instance_of(VirusScanner).to receive(:clean?).and_raise(error)
-      end
-
-      it "does not change the state, and pass through the error if there is an error scanning" do
-        expect {
-          worker.perform(asset.id)
-        }.to raise_error(VirusScanner::Error, "Boom!")
-
-        asset.reload
-        expect(asset.state).to eq("unscanned")
-      end
-
-      it "sends an exception notification" do
-        expect(Airbrake).to receive(:notify_or_ignore).
-          with(error, params: { id: asset.id, filename: asset.filename })
-
-        worker.perform(asset.id) rescue VirusScanner::Error
-      end
     end
   end
 end
