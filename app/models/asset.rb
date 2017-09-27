@@ -16,6 +16,8 @@ class Asset
   field :access_limited, type: Boolean, default: false
   field :organisation_slug, type: String
 
+  field :etag, type: String
+
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
 
@@ -28,6 +30,7 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
+  after_create :store_metadata
   after_save :schedule_virus_scan
 
   state_machine :state, initial: :unscanned do
@@ -82,6 +85,10 @@ class Asset
   end
 
   def etag
+    self[:etag] || etag_from_file
+  end
+
+  def etag_from_file
     '%x-%x' % [last_modified, file_stat.size]
   end
 
@@ -100,6 +107,10 @@ class Asset
   end
 
 protected
+
+  def store_metadata
+    self[:etag] ||= etag_from_file
+  end
 
   def valid_filenames
     filename_history + [filename]
