@@ -357,7 +357,7 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#last_modified" do
+  describe "#last_modified_from_file" do
     let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
     let(:mtime) { Time.zone.parse('2017-01-01') }
@@ -368,7 +368,44 @@ RSpec.describe Asset, type: :model do
     end
 
     it "returns time file was last modified" do
-      expect(asset.last_modified).to eq(mtime)
+      expect(asset.last_modified_from_file).to eq(mtime)
+    end
+  end
+
+  describe "#last_modified" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
+
+    let(:time_from_file) { Time.parse('2001-01-01 01:01') }
+    let(:time_from_db) { Time.parse('2002-02-02 02:02') }
+
+    before do
+      allow(asset).to receive(:last_modified_from_file).and_return(time_from_file)
+    end
+
+    context "when last_modified is stored in database" do
+      let(:last_modified) { time_from_db }
+
+      it "returns value from database" do
+        expect(asset.last_modified).to eq(time_from_db)
+      end
+    end
+
+    context "when last_modified is not stored in database" do
+      let(:last_modified) { nil }
+
+      it "returns value generated from file metadata" do
+        expect(asset.last_modified).to eq(time_from_file)
+      end
+
+      context "and asset is saved" do
+        before do
+          asset.save!
+        end
+
+        it "stores the value generated from the file in the database" do
+          expect(asset[:last_modified]).to eq(time_from_file)
+        end
+      end
     end
   end
 

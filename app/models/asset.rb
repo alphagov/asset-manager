@@ -17,6 +17,7 @@ class Asset
   field :organisation_slug, type: String
 
   field :etag, type: String
+  field :last_modified, type: Time
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
@@ -93,6 +94,10 @@ class Asset
   end
 
   def last_modified
+    self[:last_modified] || last_modified_from_file
+  end
+
+  def last_modified_from_file
     file_stat.mtime
   end
 
@@ -110,6 +115,7 @@ protected
 
   def store_metadata
     self[:etag] ||= etag_from_file
+    self[:last_modified] ||= last_modified_from_file
   end
 
   def valid_filenames
