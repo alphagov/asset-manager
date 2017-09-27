@@ -8,6 +8,7 @@ ENV GOVUK_APP_NAME asset-manager
 ENV GOVUK_ASSET_ROOT http://assets-origin.dev.gov.uk
 ENV MONGODB_URI mongodb://mongo/asset-manager
 ENV PORT 3037
+ENV REDIS_HOST redis
 ENV TEST_MONGODB_URI mongodb://mongo/asset-manager-test
 
 ENV APP_HOME /app
