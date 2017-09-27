@@ -409,12 +409,46 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#md5_hexdigest" do
+  describe "#md5_hexdigest_from_file" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
 
     it "returns MD5 hex digest for asset file content" do
-      expect(asset.md5_hexdigest).to eq(md5_hexdigest)
+      expect(asset.md5_hexdigest_from_file).to eq(md5_hexdigest)
+    end
+  end
+
+  describe "#md5_hexdigest" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), md5_hexdigest: md5_hexdigest) }
+
+    before do
+      allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-file')
+    end
+
+    context "when md5_hexdigest is stored in database" do
+      let(:md5_hexdigest) { 'md5-from-db' }
+
+      it "returns value from database" do
+        expect(asset.md5_hexdigest).to eq('md5-from-db')
+      end
+    end
+
+    context "when md5_hexdigest is not stored in database" do
+      let(:md5_hexdigest) { nil }
+
+      it "returns value generated from file metadata" do
+        expect(asset.md5_hexdigest).to eq('md5-from-file')
+      end
+
+      context "and asset is saved" do
+        before do
+          asset.save!
+        end
+
+        it "stores the value generated from the file in the database" do
+          expect(asset[:md5_hexdigest]).to eq('md5-from-file')
+        end
+      end
     end
   end
 

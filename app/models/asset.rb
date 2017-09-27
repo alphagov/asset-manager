@@ -18,6 +18,7 @@ class Asset
 
   field :etag, type: String
   field :last_modified, type: Time
+  field :md5_hexdigest, type: String
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
@@ -102,6 +103,10 @@ class Asset
   end
 
   def md5_hexdigest
+    self[:md5_hexdigest] || md5_hexdigest_from_file
+  end
+
+  def md5_hexdigest_from_file
     @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
   end
 
@@ -116,6 +121,7 @@ protected
   def store_metadata
     self[:etag] ||= etag_from_file
     self[:last_modified] ||= last_modified_from_file
+    self[:md5_hexdigest] ||= md5_hexdigest_from_file
   end
 
   def valid_filenames
