@@ -12,6 +12,8 @@ class WhitehallAssetsController < ApplicationController
 private
 
   def asset_params
-    params.require(:asset).permit(:file, :legacy_url_path, :legacy_etag)
+    params
+      .require(:asset)
+      .permit(:file, :legacy_url_path, :legacy_etag, :legacy_last_modified)
   end
 end

@@ -21,8 +21,9 @@ FactoryGirl.define do
   factory :whitehall_asset, parent: :asset, class: WhitehallAsset do
     sequence(:legacy_url_path) { |n| "/government/uploads/asset-#{n}.png" }
 
-    trait :with_legacy_etag do
+    trait :with_legacy_metadata do
       sequence(:legacy_etag) { |n| "legacy-etag-#{n}" }
+      sequence(:legacy_last_modified) { |n| Time.parse('2000-01-01') + n.days }
     end
   end
 

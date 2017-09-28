@@ -9,7 +9,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
   describe "POST create" do
     context "a valid asset" do
-      let(:attributes) { FactoryGirl.attributes_for(:whitehall_asset, :with_legacy_etag) }
+      let(:attributes) { FactoryGirl.attributes_for(:whitehall_asset, :with_legacy_metadata) }
 
       it "is persisted" do
         post :create, asset: attributes
@@ -33,6 +33,12 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         post :create, asset: attributes
 
         expect(assigns(:asset).etag).to eq(attributes[:legacy_etag])
+      end
+
+      it "stores legacy_last_modified as last_modified on asset" do
+        post :create, asset: attributes
+
+        expect(assigns(:asset).last_modified).to eq(attributes[:legacy_last_modified])
       end
 
       it "returns a created status" do
