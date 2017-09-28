@@ -3,7 +3,8 @@ class WhitehallAssetsController < ApplicationController
     @asset = WhitehallAsset.new(asset_params)
 
     if @asset.save
-      render json: AssetPresenter.new(@asset, view_context).as_json(status: :created), status: :created
+      presenter = AssetPresenter.new(@asset, view_context)
+      render json: presenter.as_json(status: :created), status: :created
     else
       error 422, @asset.errors.full_messages
     end
