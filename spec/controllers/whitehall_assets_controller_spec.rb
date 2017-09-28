@@ -15,7 +15,18 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         post :create, asset: attributes
 
         expect(assigns(:asset)).to be_persisted
+      end
+
+      it "stores file on asset" do
+        post :create, asset: attributes
+
         expect(assigns(:asset).file.current_path).to match(/asset\.png$/)
+      end
+
+      it "stores legacy_url_path on asset" do
+        post :create, asset: attributes
+
+        expect(assigns(:asset).legacy_url_path).to eq(attributes[:legacy_url_path])
       end
 
       it "returns a created status" do
