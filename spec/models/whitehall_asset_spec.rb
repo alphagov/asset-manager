@@ -79,6 +79,15 @@ RSpec.describe WhitehallAsset, type: :model do
     end
   end
 
+  describe '#legacy_etag=' do
+    subject(:asset) { FactoryGirl.build(:whitehall_asset) }
+
+    it 'is aliased to Asset#etag=' do
+      asset.legacy_etag = 'legacy-etag'
+      expect(asset.etag).to eq('legacy-etag')
+    end
+  end
+
   describe '#mainstream?' do
     let(:asset) { WhitehallAsset.new }
 

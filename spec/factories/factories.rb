@@ -20,6 +20,10 @@ FactoryGirl.define do
 
   factory :whitehall_asset, parent: :asset, class: WhitehallAsset do
     sequence(:legacy_url_path) { |n| "/government/uploads/asset-#{n}.png" }
+
+    trait :with_legacy_etag do
+      sequence(:legacy_etag) { |n| "legacy-etag-#{n}" }
+    end
   end
 
   factory :clean_whitehall_asset, parent: :whitehall_asset do
