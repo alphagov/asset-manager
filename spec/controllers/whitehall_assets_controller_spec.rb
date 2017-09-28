@@ -9,13 +9,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
   describe "POST create" do
     context "a valid asset" do
-      let(:legacy_url_path) { "/government/uploads/asset.png" }
-      let(:attributes) {
-        {
-          file: load_fixture_file("asset.png"),
-          legacy_url_path: legacy_url_path
-        }
-      }
+      let(:attributes) { FactoryGirl.attributes_for(:whitehall_asset) }
 
       it "is persisted" do
         post :create, asset: attributes
@@ -56,7 +50,8 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         post :create, asset: attributes
 
         body = JSON.parse(response.body)
-        expect(body['file_url']).to eq("#{Plek.new.asset_root}#{legacy_url_path}")
+        expected_path = "#{Plek.new.asset_root}#{attributes[:legacy_url_path]}"
+        expect(body['file_url']).to eq(expected_path)
       end
     end
 
