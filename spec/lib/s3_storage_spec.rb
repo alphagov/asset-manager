@@ -102,7 +102,7 @@ RSpec.describe S3Storage do
       it 'raises NotConfiguredError exception' do
         expect {
           subject.load(asset)
-        }.to raise_error(S3Storage::NotConfiguredError, 'AWS S3 bucket not correctly configured')
+        }.to raise_error(S3Storage::NotConfiguredError)
       end
     end
   end
@@ -138,7 +138,7 @@ RSpec.describe S3Storage do
       it 'raises NotConfiguredError exception' do
         expect {
           subject.public_url_for(asset)
-        }.to raise_error(S3Storage::NotConfiguredError, 'AWS S3 bucket not correctly configured')
+        }.to raise_error(S3Storage::NotConfiguredError)
       end
     end
   end
@@ -167,7 +167,7 @@ RSpec.describe S3Storage do
         it 'raises NotConfiguredError exception' do
           expect {
             subject.presigned_url_for(asset)
-          }.to raise_error(S3Storage::NotConfiguredError, 'AWS S3 bucket not correctly configured')
+          }.to raise_error(S3Storage::NotConfiguredError)
         end
       end
     end
