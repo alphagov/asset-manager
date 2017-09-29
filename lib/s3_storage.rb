@@ -9,6 +9,14 @@ class S3Storage
     def load(_asset)
       raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
     end
+
+    def public_url_for(_asset)
+      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
+    end
+
+    def presigned_url_for(_asset, _http_method: 'GET')
+      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
+    end
   end
 
   def self.build(bucket_name)
