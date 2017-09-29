@@ -3,19 +3,21 @@ require 'cloud_storage'
 class S3Storage
   NotConfiguredError = Class.new(CloudStorage::NotConfiguredError)
 
+  NOT_CONFIGURED_ERROR_MESSAGE = 'AWS S3 bucket not correctly configured'.freeze
+
   class Null
     def save(_asset, _options = {}); end
 
     def load(_asset)
-      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
 
     def public_url_for(_asset)
-      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
 
     def presigned_url_for(_asset, _http_method: 'GET')
-      raise NotConfiguredError.new('AWS S3 bucket not correctly configured')
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
   end
 
