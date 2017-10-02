@@ -16,6 +16,7 @@ class MediaController < ApplicationController
     respond_to do |format|
       format.any do
         set_expiry(AssetManager.cache_control.max_age)
+        headers['X-Frame-Options'] = AssetManager.frame_options
         if redirect_to_s3?
           redirect_to Services.cloud_storage.public_url_for(asset)
         elsif proxy_to_s3_via_nginx?
