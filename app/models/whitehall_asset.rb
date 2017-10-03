@@ -2,6 +2,9 @@ class WhitehallAsset < Asset
   field :legacy_url_path, type: String
   attr_readonly :legacy_url_path
 
+  alias_method :legacy_etag=, :etag=
+  alias_method :legacy_last_modified=, :last_modified=
+
   validates :legacy_url_path,
     presence: true,
     uniqueness: true,

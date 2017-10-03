@@ -79,6 +79,26 @@ RSpec.describe WhitehallAsset, type: :model do
     end
   end
 
+  describe '#legacy_etag=' do
+    subject(:asset) { FactoryGirl.build(:whitehall_asset) }
+
+    it 'is aliased to Asset#etag=' do
+      asset.legacy_etag = 'legacy-etag'
+      expect(asset.etag).to eq('legacy-etag')
+    end
+  end
+
+  describe '#legacy_last_modified=' do
+    subject(:asset) { FactoryGirl.build(:whitehall_asset) }
+
+    let(:example_time) { Time.parse('2001-01-01 01:01') }
+
+    it 'is aliased to Asset#last_modified=' do
+      asset.legacy_last_modified = example_time
+      expect(asset.last_modified).to eq(example_time)
+    end
+  end
+
   describe '#mainstream?' do
     let(:asset) { WhitehallAsset.new }
 
