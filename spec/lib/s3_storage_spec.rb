@@ -102,12 +102,14 @@ RSpec.describe S3Storage do
       it 'raises NotConfiguredError exception' do
         expect {
           subject.load(asset)
-        }.to raise_error(S3Storage::NotConfiguredError, 'AWS S3 bucket not correctly configured')
+        }.to raise_error(S3Storage::NotConfiguredError)
       end
     end
   end
 
   describe '#public_url_for' do
+    let(:use_virtual_host) { nil }
+
     before do
       allow(AssetManager).to receive(:aws_s3_use_virtual_host).and_return(use_virtual_host)
     end
@@ -129,6 +131,16 @@ RSpec.describe S3Storage do
         expect(subject.public_url_for(asset)).to eq('public-url')
       end
     end
+
+    context 'when bucket name is blank' do
+      let(:bucket_name) { '' }
+
+      it 'raises NotConfiguredError exception' do
+        expect {
+          subject.public_url_for(asset)
+        }.to raise_error(S3Storage::NotConfiguredError)
+      end
+    end
   end
 
   describe '#presigned_url_for' do
@@ -148,6 +160,16 @@ RSpec.describe S3Storage do
         allow(s3_object).to receive(:presigned_url).with('HEAD', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
         expect(subject.presigned_url_for(asset, http_method: 'HEAD')).to eq('presigned-url')
       end
+
+      context 'when bucket name is blank' do
+        let(:bucket_name) { '' }
+
+        it 'raises NotConfiguredError exception' do
+          expect {
+            subject.presigned_url_for(asset)
+          }.to raise_error(S3Storage::NotConfiguredError)
+        end
+      end
     end
 
     context 'when configured to use virtual host' do
@@ -157,6 +179,13 @@ RSpec.describe S3Storage do
         allow(s3_object).to receive(:presigned_url).with('GET', expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
       end
+    end
+  end
+
+  describe 'S3Storage::Null' do
+    it 'implements all public methods defined on S3Storage' do
+      methods = described_class.public_instance_methods(false)
+      expect(S3Storage::Null.public_instance_methods(false)).to include(*methods)
     end
   end
 end
