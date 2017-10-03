@@ -84,5 +84,9 @@ RSpec.describe 'Whitehall media requests', type: :request do
     it 'sets the Cache-Control response header to 4 hours' do
       expect(response.headers['Cache-Control']).to eq('max-age=14400, public')
     end
+
+    it 'sets the X-Frame-Options response header to SAMEORIGIN' do
+      expect(response.headers['X-Frame-Options']).to eq('SAMEORIGIN')
+    end
   end
 end
