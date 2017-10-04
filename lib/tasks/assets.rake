@@ -1,6 +1,7 @@
 namespace :assets do
   desc 'Store values generated from file metadata for all assets'
   task store_values_generated_from_file_metadata: :environment do
+    STDOUT.sync = true
     total = Asset.count
     Asset.all.each_with_index do |asset, index|
       percent = "%0.0f" % (index / total.to_f * 100)
