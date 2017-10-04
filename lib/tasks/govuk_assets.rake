@@ -1,5 +1,5 @@
-namespace :assets do
-  desc 'Store values generated from file metadata for all assets'
+namespace :govuk_assets do
+  desc 'Store values generated from file metadata for all GOV.UK assets'
   task store_values_generated_from_file_metadata: :environment do
     STDOUT.sync = true
     assets = Asset.all
