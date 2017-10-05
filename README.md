@@ -91,9 +91,9 @@ See the `AssetPresenter` class for the return format for the above API calls. Al
 
 `POST /whitehall_assets` expects a single file uploaded via the `asset[file]` parameter and a path set in `asset[legacy_url_path]`. The latter tells Asset Manager the URL path at which the asset should be served. Note that this is intended as a transitional measure while we move Whitehall assets into Asset Manager. The idea is that eventually all asset URLs will be rationalised and consolidated and at that point Asset Manager will tell Whitehall the URL at which the asset will be served as it currently does for Mainstream assets. This endpoint also accepts two optional parameters, `asset[legacy_etag]` & `asset[legacy_last_modified]`. These are only intended for use when we move *existing* Whitehall assets into Asset Manager so that we can avoid wholesale cache invalidation. **Note** this endpoint should only be used from the Whitehall Admin app; not from any other publishing apps.
 
-### API examples
+### API examples (development VM)
 
-__NOTE.__ These examples assume you're using the [Development VM](https://github.com/alphagov/govuk-puppet/tree/master/development-vm).
+These examples assume you're using the [Development VM](https://github.com/alphagov/govuk-puppet/tree/master/development-vm).
 
 #### Create an asset
 
@@ -244,6 +244,68 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/whitehall_assets --fo
   "file_url":"http://assets-origin.dev.gov.uk/government/uploads/path/to/tmp.txt",
   "state":"unscanned"
 }
+```
+
+### API examples (integration)
+
+These examples assume you're running on a machine with access to the integration environment. You need to set two extra headers on all API requests:
+
+* `Authorization: Bearer <bearer-token>`
+* `Accept: application/json`
+
+Note that the value of the bearer token is stored in `/etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`.
+
+#### Create an asset
+
+```
+deploy@integration-backend-1:$ echo `date` > tmp.txt
+
+deploy@integration-backend-1:$ cat tmp.txt
+Wed Sep 20 14:42:54 UTC 2017
+
+deploy@integration-backend-1:$ cat /etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN
+<bearer-token>
+
+deploy@integration-backend-1:$ curl \
+  -H"Authorization: Bearer <bearer-token>" \
+  -H"Accept: application/json" \
+  https://asset-manager.integration.publishing.service.gov.uk/assets \
+  --form "asset[file]=@tmp.txt"
+
+{
+  "_response_info":{"status":"created"},
+  "id":"https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"unscanned"
+}
+```
+
+#### Get asset info
+
+```
+deploy@integration-backend-1:$ curl \
+  -H"Authorization: Bearer <bearer-token>" \
+  -H"Accept: application/json" \
+  https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92
+{
+  "_response_info":{"status":"ok"},
+  "id":"https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"clean"
+}
+```
+
+#### Get asset
+
+Note that the extra request headers are not required for public asset URLs.
+
+```
+deploy@integration-backend-1:$ curl https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
+Wed Sep 20 14:42:54 UTC 2017
 ```
 
 ## Licence
