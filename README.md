@@ -103,7 +103,14 @@ vagrant@development:$ echo `date` > tmp.txt
 
 # Upload file to Asset Manager
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets --form "asset[file]=@tmp.txt"
-{"_response_info":{"status":"created"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"unscanned"}
+{
+  "_response_info":{"status":"created"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"unscanned"
+}
 ```
 
 #### Get asset info
@@ -111,11 +118,25 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets --form "asset[
 ```
 # Before virus scanning
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
-{"_response_info":{"status":"ok"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"unscanned"}
+{
+  "_response_info":{"status":"ok"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"unscanned"
+}
 
 # After virus scanning
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
-{"_response_info":{"status":"ok"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+{
+  "_response_info":{"status":"ok"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"clean"
+}
 ```
 
 #### Get asset
@@ -123,7 +144,9 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 ```
 # Before virus scanning
 vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
-{"_response_info":{"status":"not found"}}
+{
+  "_response_info":{"status":"not found"}
+}
 
 # After virus scanning
 vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
@@ -138,7 +161,14 @@ vagrant@development:$ echo `date` > tmp123.txt
 
 # Update the file on asset-manager
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 --request PUT --form "asset[file]=@tmp123.txt"
-{"_response_info":{"status":"success"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp123.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt","state":"unscanned"}
+{
+  "_response_info":{"status":"success"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp123.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt",
+  "state":"unscanned"
+}
 
 # Request asset using original filename
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
@@ -155,11 +185,20 @@ Tue 18 Jul 2017 17:06:41 BST
 # Delete the asset
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
   --request DELETE
-{"_response_info":{"status":"success"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+{
+  "_response_info":{"status":"success"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"clean"
+}
 
 # Confirm that it's been deleted
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
-{"_response_info":{"status":"not found"}}
+{
+  "_response_info":{"status":"not found"}
+}
 ```
 
 #### Restore asset
@@ -168,11 +207,25 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 # This assumes the asset has been deleted
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96/restore \
   --request POST
-{"_response_info":{"status":"success"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+{
+  "_response_info":{"status":"success"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"clean"
+}
 
 # Confirm that it's been restored
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
-{"_response_info":{"status":"ok"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt","state":"clean"}
+{
+  "_response_info":{"status":"ok"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
+  "state":"clean"
+}
 ```
 
 #### Create a Whitehall asset
@@ -183,7 +236,14 @@ vagrant@development:$ echo `date` > tmp.txt
 
 # Upload file to Asset Manager
 vagrant@development:$ curl http://asset-manager.dev.gov.uk/whitehall_assets --form "asset[file]=@tmp.txt" --form "asset[legacy_url_path]=/government/uploads/path/to/tmp.txt"
-{"_response_info":{"status":"created"},"id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96","name":"tmp.txt","content_type":"text/plain","file_url":"http://assets-origin.dev.gov.uk/government/uploads/path/to/tmp.txt","state":"unscanned"}
+{
+  "_response_info":{"status":"created"},
+  "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
+  "name":"tmp.txt",
+  "content_type":"text/plain",
+  "file_url":"http://assets-origin.dev.gov.uk/government/uploads/path/to/tmp.txt",
+  "state":"unscanned"
+}
 ```
 
 ## Licence
