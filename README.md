@@ -122,11 +122,11 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 
 ```
 # Before virus scanning
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
+vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 {"_response_info":{"status":"not found"}}
 
 # After virus scanning
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
+vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 Tue 18 Jul 2017 16:18:38 BST
 ```
 
