@@ -6,6 +6,7 @@ node ('mongodb-2.4') {
     beforeTest: {
       govuk.setEnvar('TEST_COVERAGE', 'true')
     },
-    sassLint: false
+    sassLint: false,
+    publishingE2ETests: true
   )
 }
