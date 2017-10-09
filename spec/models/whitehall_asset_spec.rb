@@ -79,23 +79,45 @@ RSpec.describe WhitehallAsset, type: :model do
     end
   end
 
-  describe '#legacy_etag=' do
-    subject(:asset) { FactoryGirl.build(:whitehall_asset) }
+  describe '#etag' do
+    let(:etag) { 'etag-value' }
+    let(:asset) { WhitehallAsset.new(etag: etag, legacy_etag: legacy_etag) }
 
-    it 'is aliased to Asset#etag=' do
-      asset.legacy_etag = 'legacy-etag'
-      expect(asset.etag).to eq('legacy-etag')
+    context "when legacy_etag attribute is set" do
+      let(:legacy_etag) { 'legacy-etag-value' }
+
+      it "returns legacy_etag attribute value" do
+        expect(asset.etag).to eq(legacy_etag)
+      end
+    end
+
+    context "when legacy_etag attribute is not set" do
+      let(:legacy_etag) { nil }
+
+      it "returns Asset#etag attribute value" do
+        expect(asset.etag).to eq(etag)
+      end
     end
   end
 
-  describe '#legacy_last_modified=' do
-    subject(:asset) { FactoryGirl.build(:whitehall_asset) }
+  describe '#last_modified' do
+    let(:asset) { WhitehallAsset.new(last_modified: last_modified, legacy_last_modified: legacy_last_modified) }
+    let(:last_modified) { Time.parse('2001-01-01 01:01') }
 
-    let(:example_time) { Time.parse('2001-01-01 01:01') }
+    context "when legacy_last_modified attribute is set" do
+      let(:legacy_last_modified) { Time.parse('2002-02-02 02:02') }
 
-    it 'is aliased to Asset#last_modified=' do
-      asset.legacy_last_modified = example_time
-      expect(asset.last_modified).to eq(example_time)
+      it "returns legacy_last_modified attribute value" do
+        expect(asset.last_modified).to eq(legacy_last_modified)
+      end
+    end
+
+    context "when legacy_last_modified attribute is not set" do
+      let(:legacy_last_modified) { nil }
+
+      it "returns Asset#last_modified attribute value" do
+        expect(asset.last_modified).to eq(last_modified)
+      end
     end
   end
 
