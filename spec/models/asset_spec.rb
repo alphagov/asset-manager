@@ -330,29 +330,43 @@ RSpec.describe Asset, type: :model do
       allow(asset).to receive(:etag_from_file).and_return('etag-from-file')
     end
 
-    context "when etag is stored in database" do
-      let(:etag) { 'etag-from-db' }
+    context "when etag attribute is explicitly set" do
+      let(:etag) { 'etag-attribute-value' }
 
-      it "returns value from database" do
-        expect(asset.etag).to eq('etag-from-db')
+      it "returns attribute value" do
+        expect(asset.etag).to eq('etag-attribute-value')
       end
     end
 
-    context "when etag is not stored in database" do
+    context "when etag attribute is not explicitly set" do
       let(:etag) { nil }
 
       it "returns value generated from file metadata" do
         expect(asset.etag).to eq('etag-from-file')
       end
+    end
 
-      context "and asset is saved" do
-        before do
-          asset.save!
-        end
+    context "when asset is created with an explicit etag" do
+      let(:etag) { 'etag-attribute-value' }
 
-        it "stores the value generated from the file in the database" do
-          expect(asset[:etag]).to eq('etag-from-file')
-        end
+      before do
+        asset.save!
+      end
+
+      it "stores the etag attribute value in the database" do
+        expect(asset.reload.etag).to eq('etag-attribute-value')
+      end
+    end
+
+    context "when asset is created without an explicit etag" do
+      let(:etag) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.etag).to eq('etag-from-file')
       end
     end
   end
@@ -375,36 +389,50 @@ RSpec.describe Asset, type: :model do
   describe "#last_modified" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
 
+    let(:time) { Time.parse('2002-02-02 02:02') }
     let(:time_from_file) { Time.parse('2001-01-01 01:01') }
-    let(:time_from_db) { Time.parse('2002-02-02 02:02') }
 
     before do
       allow(asset).to receive(:last_modified_from_file).and_return(time_from_file)
     end
 
-    context "when last_modified is stored in database" do
-      let(:last_modified) { time_from_db }
+    context "when last_modified attribute is explicitly set" do
+      let(:last_modified) { time }
 
-      it "returns value from database" do
-        expect(asset.last_modified).to eq(time_from_db)
+      it "returns attribute value" do
+        expect(asset.last_modified).to eq(time)
       end
     end
 
-    context "when last_modified is not stored in database" do
+    context "when last_modified attribute is not explicitly set" do
       let(:last_modified) { nil }
 
       it "returns value generated from file metadata" do
         expect(asset.last_modified).to eq(time_from_file)
       end
+    end
 
-      context "and asset is saved" do
-        before do
-          asset.save!
-        end
+    context "when asset is created with an explicit last_modified" do
+      let(:last_modified) { time }
 
-        it "stores the value generated from the file in the database" do
-          expect(asset[:last_modified]).to eq(time_from_file)
-        end
+      before do
+        asset.save!
+      end
+
+      it "stores the last_modified attribute value in the database" do
+        expect(asset.reload.last_modified).to eq(time)
+      end
+    end
+
+    context "when asset is created without an explicit last_modified" do
+      let(:last_modified) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.last_modified).to eq(time_from_file)
       end
     end
   end
@@ -425,29 +453,43 @@ RSpec.describe Asset, type: :model do
       allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-file')
     end
 
-    context "when md5_hexdigest is stored in database" do
-      let(:md5_hexdigest) { 'md5-from-db' }
+    context "when md5_hexdigest attribute is explicitly set" do
+      let(:md5_hexdigest) { 'md5-attribute-value' }
 
-      it "returns value from database" do
-        expect(asset.md5_hexdigest).to eq('md5-from-db')
+      it "returns attribute value" do
+        expect(asset.md5_hexdigest).to eq('md5-attribute-value')
       end
     end
 
-    context "when md5_hexdigest is not stored in database" do
+    context "when md5_hexdigest attribute is not explicitly set" do
       let(:md5_hexdigest) { nil }
 
       it "returns value generated from file metadata" do
         expect(asset.md5_hexdigest).to eq('md5-from-file')
       end
+    end
 
-      context "and asset is saved" do
-        before do
-          asset.save!
-        end
+    context "when asset is created with an explicit md5_hexdigest" do
+      let(:md5_hexdigest) { 'md5-attribute-value' }
 
-        it "stores the value generated from the file in the database" do
-          expect(asset[:md5_hexdigest]).to eq('md5-from-file')
-        end
+      before do
+        asset.save!
+      end
+
+      it "stores the md5_hexdigest attribute value in the database" do
+        expect(asset.reload.md5_hexdigest).to eq('md5-attribute-value')
+      end
+    end
+
+    context "when asset is created without an explicit md5_hexdigest" do
+      let(:md5_hexdigest) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.md5_hexdigest).to eq('md5-from-file')
       end
     end
   end
