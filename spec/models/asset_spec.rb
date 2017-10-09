@@ -356,6 +356,19 @@ RSpec.describe Asset, type: :model do
       it "stores the value generated from the file in the database" do
         expect(asset.reload.etag).to eq('etag-from-file')
       end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+
+        before do
+          allow(asset).to receive(:etag_from_file).and_return('etag-from-new-file')
+          asset.update_attributes!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.etag).to eq('etag-from-new-file')
+        end
+      end
     end
   end
 
@@ -410,6 +423,20 @@ RSpec.describe Asset, type: :model do
       it "stores the value generated from the file in the database" do
         expect(asset.reload.last_modified).to eq(time_from_file)
       end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+        let(:time_from_new_file) { Time.parse('2003-03-03 03:03') }
+
+        before do
+          allow(asset).to receive(:last_modified_from_file).and_return(time_from_new_file)
+          asset.update_attributes!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.last_modified).to eq(time_from_new_file)
+        end
+      end
     end
   end
 
@@ -454,6 +481,19 @@ RSpec.describe Asset, type: :model do
 
       it "stores the value generated from the file in the database" do
         expect(asset.reload.md5_hexdigest).to eq('md5-from-file')
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+
+        before do
+          allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-new-file')
+          asset.update_attributes!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.md5_hexdigest).to eq('md5-from-new-file')
+        end
       end
     end
   end

@@ -32,7 +32,7 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
-  before_create :store_metadata
+  before_save :store_metadata
   after_save :schedule_virus_scan
 
   state_machine :state, initial: :unscanned do
