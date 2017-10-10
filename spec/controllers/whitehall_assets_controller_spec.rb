@@ -29,16 +29,16 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).legacy_url_path).to eq(attributes[:legacy_url_path])
       end
 
-      it "stores legacy_etag as etag on asset" do
+      it "stores legacy_etag on asset" do
         post :create, asset: attributes
 
-        expect(assigns(:asset).etag).to eq(attributes[:legacy_etag])
+        expect(assigns(:asset).legacy_etag).to eq(attributes[:legacy_etag])
       end
 
-      it "stores legacy_last_modified as last_modified on asset" do
+      it "stores legacy_last_modified on asset" do
         post :create, asset: attributes
 
-        expect(assigns(:asset).last_modified).to eq(attributes[:legacy_last_modified])
+        expect(assigns(:asset).legacy_last_modified).to eq(attributes[:legacy_last_modified])
       end
 
       it "returns a created status" do

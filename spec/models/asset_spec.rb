@@ -330,30 +330,53 @@ RSpec.describe Asset, type: :model do
       allow(asset).to receive(:etag_from_file).and_return('etag-from-file')
     end
 
-    context "when etag is stored in database" do
-      let(:etag) { 'etag-from-db' }
+    context "when etag attribute is set" do
+      let(:etag) { 'etag-value' }
 
-      it "returns value from database" do
-        expect(asset.etag).to eq('etag-from-db')
+      it "returns etag attribute value" do
+        expect(asset.etag).to eq('etag-value')
       end
     end
 
-    context "when etag is not stored in database" do
+    context "when etag attribute is not set" do
       let(:etag) { nil }
 
       it "returns value generated from file metadata" do
         expect(asset.etag).to eq('etag-from-file')
       end
+    end
 
-      context "and asset is saved" do
+    context "when asset is created" do
+      let(:etag) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.etag).to eq('etag-from-file')
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+
         before do
-          asset.save!
+          allow(asset).to receive(:etag_from_file).and_return('etag-from-new-file')
+          asset.update_attributes!(file: new_file)
         end
 
-        it "stores the value generated from the file in the database" do
-          expect(asset[:etag]).to eq('etag-from-file')
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.etag).to eq('etag-from-new-file')
         end
       end
+    end
+  end
+
+  describe "#etag=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.etag = 'etag-value' }.to raise_error(NoMethodError)
     end
   end
 
@@ -375,37 +398,61 @@ RSpec.describe Asset, type: :model do
   describe "#last_modified" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
 
+    let(:time) { Time.parse('2002-02-02 02:02') }
     let(:time_from_file) { Time.parse('2001-01-01 01:01') }
-    let(:time_from_db) { Time.parse('2002-02-02 02:02') }
 
     before do
       allow(asset).to receive(:last_modified_from_file).and_return(time_from_file)
     end
 
-    context "when last_modified is stored in database" do
-      let(:last_modified) { time_from_db }
+    context "when last_modified attribute is set" do
+      let(:last_modified) { time }
 
-      it "returns value from database" do
-        expect(asset.last_modified).to eq(time_from_db)
+      it "returns last_modified attribute value" do
+        expect(asset.last_modified).to eq(time)
       end
     end
 
-    context "when last_modified is not stored in database" do
+    context "when last_modified attribute is not set" do
       let(:last_modified) { nil }
 
       it "returns value generated from file metadata" do
         expect(asset.last_modified).to eq(time_from_file)
       end
+    end
 
-      context "and asset is saved" do
+    context "when asset is created" do
+      let(:last_modified) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.last_modified).to eq(time_from_file)
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+        let(:time_from_new_file) { Time.parse('2003-03-03 03:03') }
+
         before do
-          asset.save!
+          allow(asset).to receive(:last_modified_from_file).and_return(time_from_new_file)
+          asset.update_attributes!(file: new_file)
         end
 
-        it "stores the value generated from the file in the database" do
-          expect(asset[:last_modified]).to eq(time_from_file)
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.last_modified).to eq(time_from_new_file)
         end
       end
+    end
+  end
+
+  describe "#last_modified=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.last_modified = Time.now }.to raise_error(NoMethodError)
     end
   end
 
@@ -425,30 +472,53 @@ RSpec.describe Asset, type: :model do
       allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-file')
     end
 
-    context "when md5_hexdigest is stored in database" do
-      let(:md5_hexdigest) { 'md5-from-db' }
+    context "when md5_hexdigest attribute is set" do
+      let(:md5_hexdigest) { 'md5-value' }
 
-      it "returns value from database" do
-        expect(asset.md5_hexdigest).to eq('md5-from-db')
+      it "returns md5_hexdigest attribute value" do
+        expect(asset.md5_hexdigest).to eq('md5-value')
       end
     end
 
-    context "when md5_hexdigest is not stored in database" do
+    context "when md5_hexdigest attribute is not set" do
       let(:md5_hexdigest) { nil }
 
       it "returns value generated from file metadata" do
         expect(asset.md5_hexdigest).to eq('md5-from-file')
       end
+    end
 
-      context "and asset is saved" do
+    context "when asset is created" do
+      let(:md5_hexdigest) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.md5_hexdigest).to eq('md5-from-file')
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+
         before do
-          asset.save!
+          allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-new-file')
+          asset.update_attributes!(file: new_file)
         end
 
-        it "stores the value generated from the file in the database" do
-          expect(asset[:md5_hexdigest]).to eq('md5-from-file')
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.md5_hexdigest).to eq('md5-from-new-file')
         end
       end
+    end
+  end
+
+  describe "#md5_hexdigest=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.md5_hexdigest = 'md5-value' }.to raise_error(NoMethodError)
     end
   end
 

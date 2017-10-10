@@ -17,8 +17,13 @@ class Asset
   field :organisation_slug, type: String
 
   field :etag, type: String
+  protected :etag=
+
   field :last_modified, type: Time
+  protected :last_modified=
+
   field :md5_hexdigest, type: String
+  protected :md5_hexdigest=
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?
@@ -32,7 +37,7 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
-  after_create :store_metadata
+  before_save :store_metadata
   after_save :schedule_virus_scan
 
   state_machine :state, initial: :unscanned do
@@ -119,9 +124,9 @@ class Asset
 protected
 
   def store_metadata
-    self[:etag] ||= etag_from_file
-    self[:last_modified] ||= last_modified_from_file
-    self[:md5_hexdigest] ||= md5_hexdigest_from_file
+    self.etag = etag_from_file
+    self.last_modified = last_modified_from_file
+    self.md5_hexdigest = md5_hexdigest_from_file
   end
 
   def valid_filenames
