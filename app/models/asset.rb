@@ -17,8 +17,13 @@ class Asset
   field :organisation_slug, type: String
 
   field :etag, type: String
+  protected :etag=
+
   field :last_modified, type: Time
+  protected :last_modified=
+
   field :md5_hexdigest, type: String
+  protected :md5_hexdigest=
 
   validates :file, presence: true
   validates :organisation_slug, presence: true, if: :access_limited?

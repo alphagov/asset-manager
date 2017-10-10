@@ -372,6 +372,14 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#etag=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.etag = 'etag-value' }.to raise_error(NoMethodError)
+    end
+  end
+
   describe "#last_modified_from_file" do
     let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
@@ -440,6 +448,14 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#last_modified=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.last_modified = Time.now }.to raise_error(NoMethodError)
+    end
+  end
+
   describe "#md5_hexdigest_from_file" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
@@ -495,6 +511,14 @@ RSpec.describe Asset, type: :model do
           expect(asset.reload.md5_hexdigest).to eq('md5-from-new-file')
         end
       end
+    end
+  end
+
+  describe "#md5_hexdigest=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.md5_hexdigest = 'md5-value' }.to raise_error(NoMethodError)
     end
   end
 
