@@ -17,13 +17,7 @@ class MediaController < BaseMediaController
         set_expiry(AssetManager.cache_control.max_age)
         headers['X-Frame-Options'] = AssetManager.frame_options
         if proxy_to_s3_via_nginx?
-          url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
-          headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
-          headers['ETag'] = %{"#{asset.etag}"}
-          headers['Last-Modified'] = asset.last_modified.httpdate
-          headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
-          headers['Content-Type'] = asset.content_type
-          render nothing: true
+          proxy_to_s3_via_nginx(asset)
         else
           serve_from_nfs_via_nginx(asset)
         end
@@ -38,6 +32,16 @@ protected
     percentage = AssetManager.proxy_percentage_of_asset_requests_to_s3_via_nginx
     proxy_to_s3_via_nginx = random_number_generator.rand(100) < percentage
     proxy_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
+  end
+
+  def proxy_to_s3_via_nginx(asset)
+    url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
+    headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
+    headers['ETag'] = %{"#{asset.etag}"}
+    headers['Last-Modified'] = asset.last_modified.httpdate
+    headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
+    headers['Content-Type'] = asset.content_type
+    render nothing: true
   end
 
   def filename_current?
