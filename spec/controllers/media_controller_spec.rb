@@ -94,8 +94,8 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
-      def do_get(extra_params = {})
-        get :download, params.merge(extra_params)
+      def do_get
+        get :download, params
       end
 
       it "responds with 200 OK" do
