@@ -1,4 +1,4 @@
-class MediaController < ApplicationController
+class MediaController < BaseMediaController
   skip_before_filter :require_signin_permission!
   before_filter :authenticate_if_private
 

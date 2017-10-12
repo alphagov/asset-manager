@@ -1,4 +1,4 @@
-class WhitehallMediaController < ApplicationController
+class WhitehallMediaController < BaseMediaController
   include ActionView::Helpers::AssetUrlHelper
 
   skip_before_filter :require_signin_permission!
