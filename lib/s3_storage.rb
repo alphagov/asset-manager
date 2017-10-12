@@ -12,10 +12,6 @@ class S3Storage
       raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
 
-    def public_url_for(_asset)
-      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
-    end
-
     def presigned_url_for(_asset, _http_method: 'GET')
       raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
@@ -38,10 +34,6 @@ class S3Storage
 
   def load(asset)
     object_for(asset).get.body
-  end
-
-  def public_url_for(asset)
-    object_for(asset).public_url(virtual_host: AssetManager.aws_s3_use_virtual_host)
   end
 
   def presigned_url_for(asset, http_method: 'GET')

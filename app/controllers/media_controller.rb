@@ -17,9 +17,7 @@ class MediaController < ApplicationController
       format.any do
         set_expiry(AssetManager.cache_control.max_age)
         headers['X-Frame-Options'] = AssetManager.frame_options
-        if redirect_to_s3?
-          redirect_to Services.cloud_storage.public_url_for(asset)
-        elsif proxy_to_s3_via_nginx?
+        if proxy_to_s3_via_nginx?
           url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
           headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
           headers['ETag'] = %{"#{asset.etag}"}
@@ -35,10 +33,6 @@ class MediaController < ApplicationController
   end
 
 protected
-
-  def redirect_to_s3?
-    AssetManager.redirect_all_asset_requests_to_s3 || params[:redirect_to_s3].present?
-  end
 
   def proxy_to_s3_via_nginx?
     random_number_generator = Random.new
