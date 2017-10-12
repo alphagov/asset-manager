@@ -94,27 +94,23 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
-      it "responds with 200 OK" do
-        get :download, params
-        expect(response).to have_http_status(:ok)
-      end
+      context "when proxy_to_s3_via_nginx? is falsey (default)" do
+        before do
+          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
+          allow(controller).to receive(:render)
+        end
 
-      it "sends the file using send_file" do
-        expect(controller).to receive(:send_file).with(asset.file.path, disposition: "inline")
-        allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
+        it "serves asset from NFS via Nginx" do
+          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
 
-        get :download, params
-      end
+          get :download, params
+        end
 
-      it "sets the Content-Type header based on the file extension" do
-        get :download, params
-        expect(response.headers["Content-Type"]).to eq("image/png")
-      end
+        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
+          get :download, params
 
-      it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-        get :download, params
-
-        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+        end
       end
 
       context "when proxy_to_s3_via_nginx? is truthy" do
