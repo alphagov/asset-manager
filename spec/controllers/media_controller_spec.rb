@@ -94,12 +94,8 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
-      def do_get
-        get :download, params
-      end
-
       it "responds with 200 OK" do
-        do_get
+        get :download, params
         expect(response).to have_http_status(:ok)
       end
 
@@ -107,16 +103,16 @@ RSpec.describe MediaController, type: :controller do
         expect(controller).to receive(:send_file).with(asset.file.path, disposition: "inline")
         allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
 
-        do_get
+        get :download, params
       end
 
       it "sets the Content-Type header based on the file extension" do
-        do_get
+        get :download, params
         expect(response.headers["Content-Type"]).to eq("image/png")
       end
 
       it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-        do_get
+        get :download, params
 
         expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
       end
@@ -142,32 +138,32 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "responds with 200 OK" do
-          do_get
+          get :download, params
           expect(response).to have_http_status(:ok)
         end
 
         it "sends ETag response header with quoted value" do
-          do_get
+          get :download, params
           expect(response.headers["ETag"]).to eq(%{"599ffda8-e169"})
         end
 
         it "sends Last-Modified response header in HTTP time format" do
-          do_get
+          get :download, params
           expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
         end
 
         it "sends Content-Disposition response header based on asset filename" do
-          do_get
+          get :download, params
           expect(response.headers["Content-Disposition"]).to eq("content-disposition")
         end
 
         it "sends Content-Type response header based on asset file extension" do
-          do_get
+          get :download, params
           expect(response.headers["Content-Type"]).to eq("content-type")
         end
 
         it "instructs nginx to proxy the request to S3" do
-          do_get
+          get :download, params
           expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
         end
 
