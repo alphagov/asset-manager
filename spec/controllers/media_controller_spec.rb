@@ -85,6 +85,8 @@ RSpec.describe MediaController, type: :controller do
   end
 
   describe "GET 'download'" do
+    let(:params) { { id: asset, filename: asset.filename } }
+
     before do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
     end
@@ -93,7 +95,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
       def do_get(extra_params = {})
-        get :download, { id: asset, filename: asset.filename }.merge(extra_params)
+        get :download, params.merge(extra_params)
       end
 
       it "responds with 200 OK" do
@@ -173,7 +175,7 @@ RSpec.describe MediaController, type: :controller do
           let(:http_method) { 'HEAD' }
 
           it "responds with 200 OK" do
-            head :download, id: asset, filename: asset.filename
+            head :download, params
             expect(response).to have_http_status(:ok)
           end
         end
@@ -209,7 +211,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -219,7 +221,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:clean_whitehall_asset, legacy_url_path: path) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -228,7 +230,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:infected_asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -291,7 +293,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:deleted_asset) }
 
       before do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
       end
 
       it "responds with not found status" do
