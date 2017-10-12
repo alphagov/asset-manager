@@ -1,47 +1,6 @@
 require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
-  describe "#redirect_to_s3?" do
-    before do
-      allow(AssetManager).to receive(:redirect_all_asset_requests_to_s3)
-        .and_return(redirect_all_asset_requests_to_s3)
-      allow(controller).to receive(:params)
-        .and_return(redirect_to_s3: redirect_to_s3)
-    end
-
-    context "when redirect_all_asset_requests_to_s3 is not set" do
-      let(:redirect_all_asset_requests_to_s3) { false }
-
-      context "when redirect_to_s3 is not set" do
-        let(:redirect_to_s3) { false }
-
-        it "returns falsey" do
-          expect(controller.send(:redirect_to_s3?)).to be_falsey
-        end
-      end
-
-      context "when redirect_to_s3 is set" do
-        let(:redirect_to_s3) { true }
-
-        it "returns truthy" do
-          expect(controller.send(:redirect_to_s3?)).to be_truthy
-        end
-      end
-    end
-
-    context "when redirect_all_asset_requests_to_s3 is set" do
-      let(:redirect_all_asset_requests_to_s3) { true }
-
-      context "even when redirect_to_s3 is not set" do
-        let(:redirect_to_s3) { false }
-
-        it "returns truthy" do
-          expect(controller.send(:redirect_to_s3?)).to be_truthy
-        end
-      end
-    end
-  end
-
   describe "#proxy_to_s3_via_nginx?" do
     let(:proxy_to_s3_via_nginx) { false }
     let(:random_number_generator) { instance_double(Random) }
@@ -217,26 +176,6 @@ RSpec.describe MediaController, type: :controller do
             head :download, id: asset, filename: asset.filename
             expect(response).to have_http_status(:ok)
           end
-        end
-      end
-
-      context "when redirect_to_s3? is truthy" do
-        let(:cloud_storage) { double(:cloud_storage) }
-
-        before do
-          allow(controller).to receive(:redirect_to_s3?).and_return(true)
-          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-          allow(cloud_storage).to receive(:public_url_for).with(asset).and_return('public-url')
-        end
-
-        it "responds with 302 Found (temporary redirect)" do
-          do_get
-          expect(response).to have_http_status(:found)
-        end
-
-        it "redirects to the public URL of the asset" do
-          do_get
-          expect(response).to redirect_to('public-url')
         end
       end
 

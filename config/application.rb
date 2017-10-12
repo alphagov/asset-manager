@@ -40,7 +40,6 @@ module AssetManager
   mattr_accessor :aws_s3_use_virtual_host
 
   mattr_accessor :proxy_percentage_of_asset_requests_to_s3_via_nginx
-  mattr_accessor :redirect_all_asset_requests_to_s3
 
   mattr_accessor :cache_control
   mattr_accessor :whitehall_cache_control
