@@ -19,7 +19,6 @@ RSpec.describe WhitehallMediaController, type: :controller do
       before do
         allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
         allow(content_disposition).to receive(:type).and_return('content-disposition')
-        allow(asset).to receive(:content_type).and_return('content-type')
         allow(controller).to receive(:render)
       end
 
