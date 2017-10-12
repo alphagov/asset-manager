@@ -26,7 +26,7 @@ class MediaController < ApplicationController
           headers['Content-Type'] = asset.content_type
           render nothing: true
         else
-          send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
+          serve_from_nfs_via_nginx(asset)
         end
       end
     end
@@ -39,6 +39,10 @@ protected
     percentage = AssetManager.proxy_percentage_of_asset_requests_to_s3_via_nginx
     proxy_to_s3_via_nginx = random_number_generator.rand(100) < percentage
     proxy_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
+  end
+
+  def serve_from_nfs_via_nginx(asset)
+    send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
   end
 
   def filename_current?

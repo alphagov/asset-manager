@@ -22,6 +22,12 @@ class WhitehallMediaController < ApplicationController
 
     set_expiry(AssetManager.whitehall_cache_control.max_age)
     headers['X-Frame-Options'] = AssetManager.whitehall_frame_options
+    serve_from_nfs_via_nginx(asset)
+  end
+
+protected
+
+  def serve_from_nfs_via_nginx(asset)
     send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
   end
 end
