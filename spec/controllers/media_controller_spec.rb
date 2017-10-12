@@ -114,62 +114,21 @@ RSpec.describe MediaController, type: :controller do
       end
 
       context "when proxy_to_s3_via_nginx? is truthy" do
-        let(:cloud_storage) { double(:cloud_storage) }
-        let(:presigned_url) { 'https://s3-host.test/presigned-url' }
-        let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
-        let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
-        let(:http_method) { 'GET' }
-
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-          allow(cloud_storage).to receive(:presigned_url_for)
-            .with(asset, http_method: http_method).and_return(presigned_url)
-          allow(controller).to receive(:asset).and_return(asset)
-          allow(asset).to receive(:etag).and_return("599ffda8-e169")
-          allow(asset).to receive(:last_modified).and_return(last_modified)
-          allow(asset).to receive(:content_type).and_return('content-type')
-          allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
-          allow(content_disposition).to receive(:header_for).with(asset).and_return("content-disposition")
+          allow(controller).to receive(:render)
         end
 
-        it "responds with 200 OK" do
+        it "proxies asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
           get :download, params
-          expect(response).to have_http_status(:ok)
         end
 
-        it "sends ETag response header with quoted value" do
+        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
           get :download, params
-          expect(response.headers["ETag"]).to eq(%{"599ffda8-e169"})
-        end
 
-        it "sends Last-Modified response header in HTTP time format" do
-          get :download, params
-          expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
-        end
-
-        it "sends Content-Disposition response header based on asset filename" do
-          get :download, params
-          expect(response.headers["Content-Disposition"]).to eq("content-disposition")
-        end
-
-        it "sends Content-Type response header based on asset file extension" do
-          get :download, params
-          expect(response.headers["Content-Type"]).to eq("content-type")
-        end
-
-        it "instructs nginx to proxy the request to S3" do
-          get :download, params
-          expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
-        end
-
-        context "and HTTP method is HEAD" do
-          let(:http_method) { 'HEAD' }
-
-          it "responds with 200 OK" do
-            head :download, params
-            expect(response).to have_http_status(:ok)
-          end
+          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
         end
       end
 
