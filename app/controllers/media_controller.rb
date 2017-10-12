@@ -40,10 +40,6 @@ protected
     proxy_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
   end
 
-  def serve_from_nfs_via_nginx(asset)
-    send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
-  end
-
   def filename_current?
     asset.filename == params[:filename]
   end
