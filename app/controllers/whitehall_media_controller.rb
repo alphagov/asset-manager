@@ -1,8 +1,6 @@
 class WhitehallMediaController < BaseMediaController
   include ActionView::Helpers::AssetUrlHelper
 
-  skip_before_filter :require_signin_permission!
-
   def download
     path = "/government/uploads/#{params[:path]}.#{params[:format]}"
     asset = WhitehallAsset.find_by(legacy_url_path: path)
