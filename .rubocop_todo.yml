@@ -51,6 +51,7 @@ RSpec/NamedSubject:
 RSpec/NestedGroups:
   Exclude:
     - 'spec/controllers/assets_controller_spec.rb'
+    - 'spec/controllers/base_media_controller_spec.rb'
     - 'spec/controllers/media_controller_spec.rb'
     - 'spec/lib/s3_storage_spec.rb'
     - 'spec/models/asset_spec.rb'
