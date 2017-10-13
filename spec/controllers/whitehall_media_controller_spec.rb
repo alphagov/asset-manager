@@ -15,14 +15,30 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is clean' do
       let(:asset) { FactoryGirl.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
 
-      before do
-        allow(controller).to receive(:render)
+      context "when proxy_to_s3_via_nginx? is falsey (default)" do
+        before do
+          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
+          allow(controller).to receive(:render)
+        end
+
+        it "serves asset from NFS via Nginx" do
+          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
+
+          get :download, path: path, format: format
+        end
       end
 
-      it 'serves asset from NFS via Nginx' do
-        expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
+      context "when proxy_to_s3_via_nginx? is truthy" do
+        before do
+          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
+          allow(controller).to receive(:render)
+        end
 
-        get :download, path: path, format: format
+        it "proxies asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, path: path, format: format
+        end
       end
     end
 
