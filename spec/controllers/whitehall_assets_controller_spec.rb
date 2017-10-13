@@ -95,4 +95,46 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       end
     end
   end
+
+  describe 'GET show' do
+    let(:asset) { FactoryGirl.create(:whitehall_asset, legacy_url_path: '/government/uploads/image.png') }
+    let(:presenter) { instance_double(AssetPresenter) }
+
+    before do
+      allow(AssetPresenter).to receive(:new).with(asset, anything).and_return(presenter)
+      allow(presenter).to receive(:as_json).and_return('asset-as-json')
+    end
+
+    it 'returns a 200 response' do
+      get :show, path: 'government/uploads/image', format: 'png'
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'returns a 404 response if the asset cannot be found' do
+      get :show, path: 'government/uploads/non-existent-image', format: 'png'
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'renders the asset using the AssetPresenter' do
+      get :show, path: 'government/uploads/image', format: 'png'
+
+      expect(response.body).to eq('"asset-as-json"')
+    end
+
+    it 'sets the cache expiry to 0 if the asset is unscanned' do
+      get :show, path: 'government/uploads/image', format: 'png'
+
+      expect(response.headers['Cache-Control']).to match('max-age=0')
+    end
+
+    it 'sets the cache expiry to 30 minutes if the asset is scanned' do
+      asset.scanned_clean!
+
+      get :show, path: 'government/uploads/image', format: 'png'
+
+      expect(response.headers['Cache-Control']).to match("max-age=#{30.minutes}")
+    end
+  end
 end
