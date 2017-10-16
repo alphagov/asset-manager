@@ -144,6 +144,6 @@ protected
   end
 
   def file_stat
-    @file_stat ||= File.stat(file.path)
+    File.stat(file.path)
   end
 end

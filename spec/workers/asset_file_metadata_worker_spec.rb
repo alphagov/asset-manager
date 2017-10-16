@@ -18,7 +18,7 @@ RSpec.describe AssetFileMetadataWorker, type: :worker do
 
     worker.perform(asset.id.to_s)
 
-    expect(asset.reload.last_modified.to_i).to eq(asset.last_modified_from_file.to_i)
+    expect(asset.reload.last_modified).to be_within_a_millisecond_of(asset.last_modified_from_file)
   end
 
   it 'sets Asset#md5_hexdigest to Asset#md5_hexdigest_from_file in database' do
