@@ -1,7 +1,5 @@
-class WhitehallMediaController < ApplicationController
+class WhitehallMediaController < BaseMediaController
   include ActionView::Helpers::AssetUrlHelper
-
-  skip_before_filter :require_signin_permission!
 
   def download
     path = "/government/uploads/#{params[:path]}.#{params[:format]}"
@@ -22,6 +20,10 @@ class WhitehallMediaController < ApplicationController
 
     set_expiry(AssetManager.whitehall_cache_control.max_age)
     headers['X-Frame-Options'] = AssetManager.whitehall_frame_options
-    send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
+    if proxy_to_s3_via_nginx?
+      proxy_to_s3_via_nginx(asset)
+    else
+      serve_from_nfs_via_nginx(asset)
+    end
   end
 end

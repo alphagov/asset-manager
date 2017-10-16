@@ -1,90 +1,9 @@
 require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
-  describe "#proxy_to_s3_via_nginx?" do
-    let(:proxy_to_s3_via_nginx) { false }
-    let(:random_number_generator) { instance_double(Random) }
-    let(:random_number) { 50 }
-
-    before do
-      allow(AssetManager).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-        .and_return(proxy_percentage_of_asset_requests_to_s3_via_nginx)
-      allow(controller).to receive(:params)
-        .and_return(proxy_to_s3_via_nginx: proxy_to_s3_via_nginx)
-      allow(Random).to receive(:new).and_return(random_number_generator)
-      allow(random_number_generator).to receive(:rand).with(100).and_return(random_number)
-    end
-
-    context "when proxy_percentage_of_asset_requests_to_s3_via_nginx is not set" do
-      let(:proxy_percentage_of_asset_requests_to_s3_via_nginx) { 0 }
-
-      context "when proxy_to_s3_via_nginx is not set" do
-        let(:proxy_to_s3_via_nginx) { false }
-
-        it "returns falsey" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-        end
-      end
-
-      context "when proxy_to_s3_via_nginx is set" do
-        let(:proxy_to_s3_via_nginx) { true }
-
-        it "returns truthy" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-        end
-      end
-
-      context "even when random number generator returns its minimum value" do
-        let(:random_number) { 0 }
-
-        it "returns falsey" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-        end
-      end
-    end
-
-    context "when proxy_percentage_of_asset_requests_to_s3_via_nginx is set to 25%" do
-      let(:proxy_percentage_of_asset_requests_to_s3_via_nginx) { 25 }
-
-      context "when random number generator returns a number less than 25" do
-        let(:random_number) { 24 }
-
-        it "returns truthy" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-        end
-      end
-
-      context "when random number generator returns a number equal to or more than 25" do
-        let(:random_number) { 25 }
-
-        it "returns falsey" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-        end
-      end
-    end
-
-    context "when proxy_percentage_of_asset_requests_to_s3_via_nginx is set to 100%" do
-      let(:proxy_percentage_of_asset_requests_to_s3_via_nginx) { 100 }
-
-      context "even when proxy_to_s3_via_nginx is not set" do
-        let(:proxy_to_s3_via_nginx) { false }
-
-        it "returns truthy" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-        end
-      end
-
-      context "even when random number generator returns its maximum value" do
-        let(:random_number) { 99 }
-
-        it "returns truthy" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-        end
-      end
-    end
-  end
-
   describe "GET 'download'" do
+    let(:params) { { id: asset, filename: asset.filename } }
+
     before do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
     end
@@ -92,90 +11,41 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryGirl.create(:clean_asset) }
 
-      def do_get(extra_params = {})
-        get :download, { id: asset, filename: asset.filename }.merge(extra_params)
-      end
+      context "when proxy_to_s3_via_nginx? is falsey (default)" do
+        before do
+          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
+          allow(controller).to receive(:render)
+        end
 
-      it "responds with 200 OK" do
-        do_get
-        expect(response).to have_http_status(:ok)
-      end
+        it "serves asset from NFS via Nginx" do
+          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
 
-      it "sends the file using send_file" do
-        expect(controller).to receive(:send_file).with(asset.file.path, disposition: "inline")
-        allow(controller).to receive(:render) # prevent template_not_found errors because we intercepted send_file
+          get :download, params
+        end
 
-        do_get
-      end
+        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
+          get :download, params
 
-      it "sets the Content-Type header based on the file extension" do
-        do_get
-        expect(response.headers["Content-Type"]).to eq("image/png")
-      end
-
-      it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-        do_get
-
-        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+        end
       end
 
       context "when proxy_to_s3_via_nginx? is truthy" do
-        let(:cloud_storage) { double(:cloud_storage) }
-        let(:presigned_url) { 'https://s3-host.test/presigned-url' }
-        let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
-        let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
-        let(:http_method) { 'GET' }
-
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-          allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-          allow(cloud_storage).to receive(:presigned_url_for)
-            .with(asset, http_method: http_method).and_return(presigned_url)
-          allow(controller).to receive(:asset).and_return(asset)
-          allow(asset).to receive(:etag).and_return("599ffda8-e169")
-          allow(asset).to receive(:last_modified).and_return(last_modified)
-          allow(asset).to receive(:content_type).and_return('content-type')
-          allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
-          allow(content_disposition).to receive(:header_for).with(asset).and_return("content-disposition")
+          allow(controller).to receive(:render)
         end
 
-        it "responds with 200 OK" do
-          do_get
-          expect(response).to have_http_status(:ok)
+        it "proxies asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params
         end
 
-        it "sends ETag response header with quoted value" do
-          do_get
-          expect(response.headers["ETag"]).to eq(%{"599ffda8-e169"})
-        end
+        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
+          get :download, params
 
-        it "sends Last-Modified response header in HTTP time format" do
-          do_get
-          expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
-        end
-
-        it "sends Content-Disposition response header based on asset filename" do
-          do_get
-          expect(response.headers["Content-Disposition"]).to eq("content-disposition")
-        end
-
-        it "sends Content-Type response header based on asset file extension" do
-          do_get
-          expect(response.headers["Content-Type"]).to eq("content-type")
-        end
-
-        it "instructs nginx to proxy the request to S3" do
-          do_get
-          expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
-        end
-
-        context "and HTTP method is HEAD" do
-          let(:http_method) { 'HEAD' }
-
-          it "responds with 200 OK" do
-            head :download, id: asset, filename: asset.filename
-            expect(response).to have_http_status(:ok)
-          end
+          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
         end
       end
 
@@ -209,7 +79,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -219,7 +89,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:clean_whitehall_asset, legacy_url_path: path) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -228,7 +98,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:infected_asset) }
 
       it "responds with 404 Not Found" do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -291,7 +161,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryGirl.create(:deleted_asset) }
 
       before do
-        get :download, id: asset, filename: asset.filename
+        get :download, params
       end
 
       it "responds with not found status" do

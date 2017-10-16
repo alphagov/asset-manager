@@ -51,7 +51,9 @@ RSpec/NamedSubject:
 RSpec/NestedGroups:
   Exclude:
     - 'spec/controllers/assets_controller_spec.rb'
+    - 'spec/controllers/base_media_controller_spec.rb'
     - 'spec/controllers/media_controller_spec.rb'
+    - 'spec/controllers/whitehall_media_controller_spec.rb'
     - 'spec/lib/s3_storage_spec.rb'
     - 'spec/models/asset_spec.rb'
     - 'spec/models/whitehall_asset_spec.rb'
@@ -68,7 +70,7 @@ RSpec/PredicateMatcher:
 # Configuration parameters: IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Exclude:
-    - 'spec/controllers/media_controller_spec.rb'
+    - 'spec/controllers/base_media_controller_spec.rb'
     - 'spec/lib/virus_scanner_spec.rb'
     - 'spec/models/asset_spec.rb'
     - 'spec/workers/virus_scan_worker_spec.rb'
