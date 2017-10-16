@@ -59,13 +59,15 @@ As long as the S3 bucket is configured, all assets are uploaded to the S3 bucket
 
 ##### Feature flags
 
-At most *one* of these should be used in any given environment. If none of them are set then the default behaviour is for the Rails app to instruct Nginx to serve the assets from the NFS mount.
+* `PROXY_PERCENTAGE_OF_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *a percentage of* Mainstream asset requests to be proxied to S3 via Nginx - the percentage should be an integer between 0 and 100. The remaining Mainstream asset requests will be served from NFS via Nginx. The default is to serve all Mainstream asset requests from NFS via Nginx.
 
-* `PROXY_PERCENTAGE_OF_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *a percentage of* asset requests to be proxied to S3 via Nginx - the percentage should be an integer between 0 and 100
+* `PROXY_PERCENTAGE_OF_WHITEHALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *a percentage of* Whitehall asset requests to be proxied to S3 via Nginx - the percentage should be an integer between 0 and 100. The remaining Whitehall asset requests will be served from NFS via Nginx. The default is to serve all Whitehall asset requests from NFS via Nginx.
 
 #### Request parameters
 
-* Asset requests can be proxied to S3 via Nginx even if `PROXY_PERCENTAGE_OF_ASSET_REQUESTS_TO_S3_VIA_NGINX` is not set by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
+* Mainstream asset requests can be proxied to S3 via Nginx even if `PROXY_PERCENTAGE_OF_ASSET_REQUESTS_TO_S3_VIA_NGINX` is not set by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
+
+* Whitehall asset requests can be proxied to S3 via Nginx even if `PROXY_PERCENTAGE_OF_WHITEHALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` is not set by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
 
 ### Testing
 

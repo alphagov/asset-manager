@@ -26,4 +26,10 @@ class WhitehallMediaController < BaseMediaController
       serve_from_nfs_via_nginx(asset)
     end
   end
+
+protected
+
+  def proxy_percentage_of_asset_requests_to_s3_via_nginx
+    AssetManager.proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx
+  end
 end

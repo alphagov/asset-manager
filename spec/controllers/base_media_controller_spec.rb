@@ -29,13 +29,21 @@ RSpec.describe BaseMediaController, type: :controller do
     get :anything
   end
 
+  describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
+    it 'raises NotImplementedError' do
+      expect {
+        controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
+      }.to raise_error(NotImplementedError)
+    end
+  end
+
   describe "#proxy_to_s3_via_nginx?" do
     let(:proxy_to_s3_via_nginx) { false }
     let(:random_number_generator) { instance_double(Random) }
     let(:random_number) { 50 }
 
     before do
-      allow(AssetManager).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
+      allow(controller).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
         .and_return(proxy_percentage_of_asset_requests_to_s3_via_nginx)
       allow(controller).to receive(:params)
         .and_return(proxy_to_s3_via_nginx: proxy_to_s3_via_nginx)
