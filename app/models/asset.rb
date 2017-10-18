@@ -91,24 +91,12 @@ class Asset
     %w(jpg jpeg png gif).include?(extension)
   end
 
-  def etag
-    self[:etag] || etag_from_file
-  end
-
   def etag_from_file
     '%x-%x' % [last_modified_from_file, file_stat.size]
   end
 
-  def last_modified
-    self[:last_modified] || last_modified_from_file
-  end
-
   def last_modified_from_file
     file_stat.mtime
-  end
-
-  def md5_hexdigest
-    self[:md5_hexdigest] || md5_hexdigest_from_file
   end
 
   def md5_hexdigest_from_file
