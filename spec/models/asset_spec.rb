@@ -1,24 +1,41 @@
 require "rails_helper"
 
 RSpec.describe Asset, type: :model do
+  describe 'validation' do
+    subject(:asset) { FactoryGirl.build(:asset) }
+
+    it 'is valid when built from factory' do
+      expect(asset).to be_valid
+    end
+
+    context 'when file is not specified' do
+      subject(:asset) { FactoryGirl.build(:asset, file: nil) }
+
+      it 'is not valid' do
+        expect(asset).not_to be_valid
+      end
+    end
+
+    it 'is valid without an organisation slug' do
+      asset.organisation_slug = nil
+      expect(asset).to be_valid
+    end
+
+    context 'when access-limited' do
+      subject(:asset) { FactoryGirl.build(:access_limited_asset) }
+
+      it 'is valid when built from factory' do
+        expect(asset).to be_valid
+      end
+
+      it 'is not valid without an organisation slug' do
+        asset.organisation_slug = nil
+        expect(asset).not_to be_valid
+      end
+    end
+  end
+
   describe "creating an asset" do
-    it "is valid given a file" do
-      a = Asset.new(file: load_fixture_file("asset.png"))
-      expect(a).to be_valid
-    end
-
-    it "is not valid without a file" do
-      a = Asset.new(file: nil)
-      expect(a).not_to be_valid
-    end
-
-    it "is not valid without an organisation id if it is access limited" do
-      expect(Asset.new(file: load_fixture_file("asset.png"))).to be_valid
-      expect(Asset.new(file: load_fixture_file("asset.png"), organisation_slug: 'example-organisation')).to be_valid
-      expect(Asset.new(file: load_fixture_file("asset.png"), access_limited: true)).not_to be_valid
-      expect(Asset.new(file: load_fixture_file("asset.png"), access_limited: true, organisation_slug: 'example-organisation')).to be_valid
-    end
-
     it "is persisted" do
       expect_any_instance_of(CarrierWave::Mount::Mounter).to receive(:store!)
 
