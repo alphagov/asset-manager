@@ -4,7 +4,11 @@ class S3Storage
   NotConfiguredError = Class.new(StandardError)
 
   def self.build(bucket_name)
-    bucket_name.present? ? new(bucket_name) : Null.new
+    if bucket_name.present?
+      new(bucket_name)
+    else
+      Null.new
+    end
   end
 
   def initialize(bucket_name)
