@@ -1,7 +1,5 @@
-require 'cloud_storage'
-
 class S3Storage
-  NotConfiguredError = Class.new(CloudStorage::NotConfiguredError)
+  NotConfiguredError = Class.new(StandardError)
 
   NOT_CONFIGURED_ERROR_MESSAGE = 'AWS S3 bucket not correctly configured'.freeze
 
