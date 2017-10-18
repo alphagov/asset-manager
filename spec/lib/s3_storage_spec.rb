@@ -131,21 +131,4 @@ RSpec.describe S3Storage do
       end
     end
   end
-
-  describe 'S3Storage::Null' do
-    subject { S3Storage::Null.new }
-
-    it 'implements all public methods defined on S3Storage' do
-      methods = described_class.public_instance_methods(false)
-      expect(S3Storage::Null.public_instance_methods(false)).to include(*methods)
-    end
-
-    (described_class.public_instance_methods(false) - %i(save)).each do |method|
-      it "raises NotConfiguredError exception when #{method} is called" do
-        expect {
-          subject.send(method, asset)
-        }.to raise_error(S3Storage::NotConfiguredError)
-      end
-    end
-  end
 end
