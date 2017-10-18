@@ -7,7 +7,9 @@ class WhitehallAsset < Asset
 
   validates :legacy_url_path,
     presence: true,
-    uniqueness: true,
+    uniqueness: {
+      conditions: -> { where(deleted_at: nil) }
+    },
     format: {
       with: %r{\A/government/uploads},
       message: 'must start with /government/uploads'

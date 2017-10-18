@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   end
 
   resources :whitehall_assets, only: %i(create)
+  get '/whitehall_assets/*path' => 'whitehall_assets#show'
 
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }
   get "/government/uploads/*path" => "whitehall_media#download"
