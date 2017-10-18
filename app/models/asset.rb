@@ -96,7 +96,7 @@ class Asset
   end
 
   def etag_from_file
-    '%x-%x' % [last_modified, file_stat.size]
+    '%x-%x' % [last_modified_from_file, file_stat.size]
   end
 
   def last_modified
