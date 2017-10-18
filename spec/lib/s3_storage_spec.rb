@@ -89,20 +89,6 @@ RSpec.describe S3Storage do
     end
   end
 
-  describe '#load' do
-    let(:get_object_output) { instance_double(Aws::S3::Types::GetObjectOutput) }
-    let(:io) { StringIO.new('s3-object-data') }
-
-    before do
-      allow(s3_object).to receive(:get).and_return(get_object_output)
-      allow(get_object_output).to receive(:body).and_return(io)
-    end
-
-    it 'downloads file from S3 bucket' do
-      expect(subject.load(asset)).to eq(io)
-    end
-  end
-
   describe '#presigned_url_for' do
     before do
       allow(AssetManager).to receive(:aws_s3_use_virtual_host).and_return(use_virtual_host)

@@ -18,10 +18,6 @@ class S3Storage
     end
   end
 
-  def load(asset)
-    object_for(asset).get.body
-  end
-
   def presigned_url_for(asset, http_method: 'GET')
     object_for(asset).presigned_url(http_method, expires_in: 1.minute, virtual_host: AssetManager.aws_s3_use_virtual_host)
   end
