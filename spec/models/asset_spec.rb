@@ -35,14 +35,19 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "creating an asset" do
-    it "is persisted" do
-      expect_any_instance_of(CarrierWave::Mount::Mounter).to receive(:store!)
+  describe 'creation' do
+    subject(:asset) { FactoryGirl.build(:asset) }
 
-      a = Asset.new(file: load_fixture_file("asset.png"))
-      a.save
+    before do
+      asset.save!
+    end
 
-      expect(a).to be_persisted
+    it 'is persisted' do
+      expect(asset).to be_persisted
+    end
+
+    it 'writes file to filesystem' do
+      expect(File.exist?(asset.file.path)).to be_truthy
     end
   end
 
