@@ -330,22 +330,6 @@ RSpec.describe Asset, type: :model do
       allow(asset).to receive(:etag_from_file).and_return('etag-from-file')
     end
 
-    context "when etag attribute is set" do
-      let(:etag) { 'etag-value' }
-
-      it "returns etag attribute value" do
-        expect(asset.etag).to eq('etag-value')
-      end
-    end
-
-    context "when etag attribute is not set" do
-      let(:etag) { nil }
-
-      it "returns value generated from file metadata" do
-        expect(asset.etag).to eq('etag-from-file')
-      end
-    end
-
     context "when asset is created" do
       let(:etag) { nil }
 
@@ -405,22 +389,6 @@ RSpec.describe Asset, type: :model do
       allow(asset).to receive(:last_modified_from_file).and_return(time_from_file)
     end
 
-    context "when last_modified attribute is set" do
-      let(:last_modified) { time }
-
-      it "returns last_modified attribute value" do
-        expect(asset.last_modified).to eq(time)
-      end
-    end
-
-    context "when last_modified attribute is not set" do
-      let(:last_modified) { nil }
-
-      it "returns value generated from file metadata" do
-        expect(asset.last_modified).to eq(time_from_file)
-      end
-    end
-
     context "when asset is created" do
       let(:last_modified) { nil }
 
@@ -470,22 +438,6 @@ RSpec.describe Asset, type: :model do
 
     before do
       allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-file')
-    end
-
-    context "when md5_hexdigest attribute is set" do
-      let(:md5_hexdigest) { 'md5-value' }
-
-      it "returns md5_hexdigest attribute value" do
-        expect(asset.md5_hexdigest).to eq('md5-value')
-      end
-    end
-
-    context "when md5_hexdigest attribute is not set" do
-      let(:md5_hexdigest) { nil }
-
-      it "returns value generated from file metadata" do
-        expect(asset.md5_hexdigest).to eq('md5-from-file')
-      end
     end
 
     context "when asset is created" do
