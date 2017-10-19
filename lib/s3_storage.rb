@@ -1,3 +1,4 @@
+require 's3_storage/fake'
 require 's3_storage/null'
 
 class S3Storage
