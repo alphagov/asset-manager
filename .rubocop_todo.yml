@@ -6,6 +6,10 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+Style/ConditionalAssignment:
+  Exclude:
+    - 'config/initializers/carrier_wave.rb'
+
 # Offense count: 11
 RSpec/AnyInstance:
   Exclude:
