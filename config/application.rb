@@ -36,6 +36,8 @@ module AssetManager
     config.assets.prefix = '/asset-manager'
   end
 
+  mattr_accessor :app_host
+
   mattr_accessor :aws_s3_bucket_name
   mattr_accessor :aws_s3_use_virtual_host
 
