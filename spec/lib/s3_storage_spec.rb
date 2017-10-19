@@ -26,9 +26,27 @@ RSpec.describe S3Storage do
 
     context 'when bucket_name is blank' do
       let(:bucket_name) { '' }
+      let(:rails_env) { double('rails-env') }
 
-      it 'builds an instance of S3Storage::Null' do
-        expect(subject).to be_instance_of(S3Storage::Null)
+      before do
+        allow(Rails).to receive(:env).and_return(rails_env)
+        allow(rails_env).to receive(:development?).and_return(is_development)
+      end
+
+      context 'and Rails environment is development' do
+        let(:is_development) { true }
+
+        it 'builds an instance of S3Storage::Fake' do
+          expect(subject).to be_instance_of(S3Storage::Fake)
+        end
+      end
+
+      context 'and Rails environment is not development' do
+        let(:is_development) { false }
+
+        it 'builds an instance of S3Storage::Null' do
+          expect(subject).to be_instance_of(S3Storage::Null)
+        end
       end
     end
   end

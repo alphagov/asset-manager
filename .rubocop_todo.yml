@@ -82,3 +82,5 @@ RSpec/VerifiedDoubles:
     - 'spec/support/authentication.rb'
     - 'spec/support/cloud_storage.rb'
     - 'spec/workers/save_to_cloud_storage_worker_spec.rb'
+    - 'spec/lib/s3_storage_spec.rb'
+    - 'spec/routing/fake_s3_route_spec.rb'
