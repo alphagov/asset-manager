@@ -1,24 +1,17 @@
-require 'cloud_storage'
+require 's3_storage/fake'
+require 's3_storage/null'
 
 class S3Storage
-  NotConfiguredError = Class.new(CloudStorage::NotConfiguredError)
-
-  NOT_CONFIGURED_ERROR_MESSAGE = 'AWS S3 bucket not correctly configured'.freeze
-
-  class Null
-    def save(_asset, _options = {}); end
-
-    def load(_asset)
-      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
-    end
-
-    def presigned_url_for(_asset, _http_method: 'GET')
-      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
-    end
-  end
+  NotConfiguredError = Class.new(StandardError)
 
   def self.build(bucket_name)
-    bucket_name.present? ? new(bucket_name) : Null.new
+    if bucket_name.present?
+      new(bucket_name)
+    elsif Rails.env.development?
+      Fake.new(AssetManager.fake_s3_root)
+    else
+      Null.new
+    end
   end
 
   def initialize(bucket_name)
@@ -30,10 +23,6 @@ class S3Storage
       s3_options = { metadata: { 'md5-hexdigest' => asset.md5_hexdigest } }.merge(options)
       object_for(asset).upload_file(asset.file.path, s3_options)
     end
-  end
-
-  def load(asset)
-    object_for(asset).get.body
   end
 
   def presigned_url_for(asset, http_method: 'GET')

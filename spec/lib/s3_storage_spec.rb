@@ -2,7 +2,7 @@ require 'rails_helper'
 require 's3_storage'
 
 RSpec.describe S3Storage do
-  subject { described_class.build(bucket_name) }
+  subject { described_class.new(bucket_name) }
 
   let(:bucket_name) { 'bucket-name' }
   let(:s3_client) { instance_double(Aws::S3::Client) }
@@ -15,6 +15,40 @@ RSpec.describe S3Storage do
   before do
     allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
     allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)
+  end
+
+  describe '.build' do
+    subject { described_class.build(bucket_name) }
+
+    it 'builds an instance of S3Storage' do
+      expect(subject).to be_instance_of(described_class)
+    end
+
+    context 'when bucket_name is blank' do
+      let(:bucket_name) { '' }
+      let(:rails_env) { double('rails-env') }
+
+      before do
+        allow(Rails).to receive(:env).and_return(rails_env)
+        allow(rails_env).to receive(:development?).and_return(is_development)
+      end
+
+      context 'and Rails environment is development' do
+        let(:is_development) { true }
+
+        it 'builds an instance of S3Storage::Fake' do
+          expect(subject).to be_instance_of(S3Storage::Fake)
+        end
+      end
+
+      context 'and Rails environment is not development' do
+        let(:is_development) { false }
+
+        it 'builds an instance of S3Storage::Null' do
+          expect(subject).to be_instance_of(S3Storage::Null)
+        end
+      end
+    end
   end
 
   describe '#save' do
@@ -71,40 +105,6 @@ RSpec.describe S3Storage do
         end
       end
     end
-
-    context 'when bucket name is blank' do
-      let(:bucket_name) { '' }
-
-      it 'does not upload file to S3 bucket' do
-        expect(Aws::S3::Object).not_to receive(:new)
-
-        subject.save(asset)
-      end
-    end
-  end
-
-  describe '#load' do
-    let(:get_object_output) { instance_double(Aws::S3::Types::GetObjectOutput) }
-    let(:io) { StringIO.new('s3-object-data') }
-
-    before do
-      allow(s3_object).to receive(:get).and_return(get_object_output)
-      allow(get_object_output).to receive(:body).and_return(io)
-    end
-
-    it 'downloads file from S3 bucket' do
-      expect(subject.load(asset)).to eq(io)
-    end
-
-    context 'when bucket name is blank' do
-      let(:bucket_name) { '' }
-
-      it 'raises NotConfiguredError exception' do
-        expect {
-          subject.load(asset)
-        }.to raise_error(S3Storage::NotConfiguredError)
-      end
-    end
   end
 
   describe '#presigned_url_for' do
@@ -124,16 +124,6 @@ RSpec.describe S3Storage do
         allow(s3_object).to receive(:presigned_url).with('HEAD', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
         expect(subject.presigned_url_for(asset, http_method: 'HEAD')).to eq('presigned-url')
       end
-
-      context 'when bucket name is blank' do
-        let(:bucket_name) { '' }
-
-        it 'raises NotConfiguredError exception' do
-          expect {
-            subject.presigned_url_for(asset)
-          }.to raise_error(S3Storage::NotConfiguredError)
-        end
-      end
     end
 
     context 'when configured to use virtual host' do
@@ -143,13 +133,6 @@ RSpec.describe S3Storage do
         allow(s3_object).to receive(:presigned_url).with('GET', expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
       end
-    end
-  end
-
-  describe 'S3Storage::Null' do
-    it 'implements all public methods defined on S3Storage' do
-      methods = described_class.public_instance_methods(false)
-      expect(S3Storage::Null.public_instance_methods(false)).to include(*methods)
     end
   end
 end

@@ -36,8 +36,12 @@ module AssetManager
     config.assets.prefix = '/asset-manager'
   end
 
+  mattr_accessor :app_host
+
   mattr_accessor :aws_s3_bucket_name
   mattr_accessor :aws_s3_use_virtual_host
+
+  mattr_accessor :carrier_wave_store_base_dir
 
   mattr_accessor :proxy_percentage_of_asset_requests_to_s3_via_nginx
   mattr_accessor :proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx
@@ -48,4 +52,7 @@ module AssetManager
   mattr_accessor :default_content_type
   mattr_accessor :frame_options
   mattr_accessor :whitehall_frame_options
+
+  mattr_accessor :fake_s3_root
+  mattr_accessor :fake_s3_path_prefix
 end

@@ -6,6 +6,10 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+Style/ConditionalAssignment:
+  Exclude:
+    - 'config/initializers/carrier_wave.rb'
+
 # Offense count: 11
 RSpec/AnyInstance:
   Exclude:
@@ -65,6 +69,7 @@ RSpec/NestedGroups:
 RSpec/PredicateMatcher:
   Exclude:
     - 'spec/models/asset_spec.rb'
+    - 'spec/lib/s3_storage/fake_spec.rb'
 
 # Offense count: 12
 # Configuration parameters: IgnoreSymbolicNames.
@@ -77,3 +82,5 @@ RSpec/VerifiedDoubles:
     - 'spec/support/authentication.rb'
     - 'spec/support/cloud_storage.rb'
     - 'spec/workers/save_to_cloud_storage_worker_spec.rb'
+    - 'spec/lib/s3_storage_spec.rb'
+    - 'spec/routing/fake_s3_route_spec.rb'
