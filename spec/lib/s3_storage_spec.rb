@@ -14,7 +14,8 @@ RSpec.describe S3Storage do
 
   before do
     allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
-    allow(Aws::S3::Object).to receive(:new).with(s3_object_params).and_return(s3_object)
+    allow(Aws::S3::Object).to receive(:new)
+      .with(s3_object_params).and_return(s3_object)
   end
 
   describe '.build' do
@@ -55,7 +56,8 @@ RSpec.describe S3Storage do
     let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
 
     before do
-      allow(s3_client).to receive(:head_object).with(s3_head_object_params).and_raise(not_found_error)
+      allow(s3_client).to receive(:head_object)
+        .with(s3_head_object_params).and_raise(not_found_error)
     end
 
     it 'uploads file to S3 bucket' do
@@ -65,8 +67,9 @@ RSpec.describe S3Storage do
     end
 
     it 'sets md5-hexdigest custom metadata on S3 object' do
-      expected_metadata = include(metadata: include('md5-hexdigest' => asset.md5_hexdigest))
-      expect(s3_object).to receive(:upload_file).with(anything, expected_metadata)
+      expected_metadata = { 'md5-hexdigest' => asset.md5_hexdigest }
+      expect(s3_object).to receive(:upload_file)
+        .with(anything, include(metadata: include(expected_metadata)))
 
       subject.save(asset)
     end
@@ -78,7 +81,8 @@ RSpec.describe S3Storage do
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
-        allow(s3_client).to receive(:head_object).with(s3_head_object_params).and_return(s3_result)
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_return(s3_result)
       end
 
       context 'and MD5 hex digest does match' do
@@ -124,12 +128,14 @@ RSpec.describe S3Storage do
       let(:use_virtual_host) { false }
 
       it 'returns presigned URL for GET request to asset on S3 by default' do
-        allow(s3_object).to receive(:presigned_url).with('GET', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
+        allow(s3_object).to receive(:presigned_url)
+          .with('GET', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
       end
 
       it 'returns presigned URL for HEAD request to asset on S3 when http_method specified' do
-        allow(s3_object).to receive(:presigned_url).with('HEAD', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
+        allow(s3_object).to receive(:presigned_url)
+          .with('HEAD', expires_in: 1.minute, virtual_host: false).and_return('presigned-url')
         expect(subject.presigned_url_for(asset, http_method: 'HEAD')).to eq('presigned-url')
       end
     end
@@ -138,7 +144,8 @@ RSpec.describe S3Storage do
       let(:use_virtual_host) { true }
 
       it 'returns presigned URL for asset on S3 using virtual host' do
-        allow(s3_object).to receive(:presigned_url).with('GET', expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
+        allow(s3_object).to receive(:presigned_url)
+          .with('GET', expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
       end
     end
