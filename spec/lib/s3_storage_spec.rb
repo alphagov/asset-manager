@@ -71,12 +71,6 @@ RSpec.describe S3Storage do
       subject.save(asset)
     end
 
-    it 'passes options to Aws::S3::Object#upload_file' do
-      expect(s3_object).to receive(:upload_file).with(anything, include(cache_control: 'cache-control-header'))
-
-      subject.save(asset, cache_control: 'cache-control-header')
-    end
-
     context 'when S3 object already exists' do
       let(:attributes) { { metadata: { 'md5-hexdigest' => md5_hexdigest } } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }

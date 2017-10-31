@@ -18,10 +18,10 @@ class S3Storage
     @bucket_name = bucket_name
   end
 
-  def save(asset, options = {})
+  def save(asset)
     metadata = metadata_for(asset)
     unless metadata['md5-hexdigest'] == asset.md5_hexdigest
-      s3_options = { metadata: { 'md5-hexdigest' => asset.md5_hexdigest } }.merge(options)
+      s3_options = { metadata: { 'md5-hexdigest' => asset.md5_hexdigest } }
       object_for(asset).upload_file(asset.file.path, s3_options)
     end
   end
