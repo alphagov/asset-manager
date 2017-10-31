@@ -72,7 +72,9 @@ RSpec.describe S3Storage do
     end
 
     context 'when S3 object already exists' do
-      let(:attributes) { { metadata: { 'md5-hexdigest' => md5_hexdigest } } }
+      let(:default_metadata) { { 'md5-hexdigest' => md5_hexdigest } }
+      let(:metadata) { default_metadata }
+      let(:attributes) { { metadata: metadata } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
@@ -96,6 +98,18 @@ RSpec.describe S3Storage do
           expect(s3_object).to receive(:upload_file)
 
           subject.save(asset)
+        end
+
+        context 'and object has existing metadata' do
+          let(:existing_metadata) { { 'existing-key' => 'existing-value' } }
+          let(:metadata) { default_metadata.merge(existing_metadata) }
+
+          it 'uploads file to S3 with existing metadata' do
+            expect(s3_object).to receive(:upload_file)
+              .with(anything, include(metadata: include(existing_metadata)))
+
+            subject.save(asset)
+          end
         end
       end
     end
