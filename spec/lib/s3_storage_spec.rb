@@ -169,6 +169,39 @@ RSpec.describe S3Storage do
     end
   end
 
+  describe '#set_metadata_for' do
+    let(:metadata) { { 'key' => 'value' } }
+
+    before do
+      allow(s3_object).to receive(:exists?).and_return(exists_on_s3)
+    end
+
+    context 'when asset does not exist on S3' do
+      let(:exists_on_s3) { false }
+
+      it 'does not attempt to set metadata on S3 object' do
+        expect(s3_object).to receive(:put).never
+
+        subject.set_metadata_for(asset, metadata) rescue nil
+      end
+
+      it 'raises exception' do
+        expect { subject.set_metadata_for(asset, metadata) }
+          .to raise_error(S3Storage::ObjectNotFoundError)
+      end
+    end
+
+    context 'when asset does exist on S3' do
+      let(:exists_on_s3) { true }
+
+      it 'overwrites metadata on S3 object' do
+        expect(s3_object).to receive(:put).with(metadata: metadata)
+
+        subject.set_metadata_for(asset, metadata)
+      end
+    end
+  end
+
   describe '#metadata_for' do
     context 'when S3 object does not exist' do
       let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }

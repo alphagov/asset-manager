@@ -39,6 +39,14 @@ class S3Storage
     object_for(asset).exists?
   end
 
+  def set_metadata_for(asset, new_metadata)
+    if exists?(asset)
+      object_for(asset).put(metadata: new_metadata)
+    else
+      raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+    end
+  end
+
   def metadata_for(asset)
     result = head_object_for(asset)
     result.metadata
