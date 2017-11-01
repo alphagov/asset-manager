@@ -74,13 +74,11 @@ RSpec.describe S3Storage do
     context 'when S3 object already exists' do
       let(:default_metadata) { { 'md5-hexdigest' => md5_hexdigest } }
       let(:metadata) { default_metadata }
-      let(:attributes) { { metadata: metadata } }
-      let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
         allow(s3_object).to receive(:exists?).and_return(true)
-        allow(s3_client).to receive(:head_object)
-          .with(s3_head_object_params).and_return(s3_result)
+        allow(subject).to receive(:metadata_for)
+          .with(asset).and_return(metadata)
       end
 
       context 'and MD5 hex digest does match' do
@@ -183,6 +181,21 @@ RSpec.describe S3Storage do
       it 'raises exception' do
         expect { subject.metadata_for(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
+      end
+    end
+
+    context 'when S3 object does exist' do
+      let(:metadata) { { 'key' => 'value' } }
+      let(:attributes) { { metadata: metadata } }
+      let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
+
+      before do
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_return(s3_result)
+      end
+
+      it 'returns metadata from S3 object' do
+        expect(subject.metadata_for(asset)).to eq(metadata)
       end
     end
   end
