@@ -75,4 +75,10 @@ RSpec.describe S3Storage::Fake do
       end
     end
   end
+
+  describe '#metadata_for' do
+    it 'raises exception to indicate method not implemented' do
+      expect { storage.metadata_for(asset) }.to raise_error(NotImplementedError)
+    end
+  end
 end
