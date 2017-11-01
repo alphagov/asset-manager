@@ -53,11 +53,8 @@ RSpec.describe S3Storage do
   end
 
   describe '#save' do
-    let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
-
     before do
-      allow(s3_client).to receive(:head_object)
-        .with(s3_head_object_params).and_raise(not_found_error)
+      allow(s3_object).to receive(:exists?).and_return(false)
     end
 
     it 'uploads file to S3 bucket' do
@@ -81,6 +78,7 @@ RSpec.describe S3Storage do
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
+        allow(s3_object).to receive(:exists?).and_return(true)
         allow(s3_client).to receive(:head_object)
           .with(s3_head_object_params).and_return(s3_result)
       end
@@ -169,6 +167,22 @@ RSpec.describe S3Storage do
 
       it 'returns truthy' do
         expect(subject.exists?(asset)).to be_truthy
+      end
+    end
+  end
+
+  describe '#metadata_for' do
+    context 'when S3 object does not exist' do
+      let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
+
+      before do
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_raise(not_found_error)
+      end
+
+      it 'raises exception' do
+        expect { subject.send(:metadata_for, asset) }
+          .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
   end
