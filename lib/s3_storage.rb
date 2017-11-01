@@ -3,6 +3,7 @@ require 's3_storage/null'
 
 class S3Storage
   NotConfiguredError = Class.new(StandardError)
+  ObjectNotFoundError = Class.new(StandardError)
 
   def self.build(bucket_name)
     if bucket_name.present?
@@ -19,7 +20,7 @@ class S3Storage
   end
 
   def save(asset)
-    metadata = metadata_for(asset)
+    metadata = exists?(asset) ? metadata_for(asset) : {}
     unless metadata['md5-hexdigest'] == asset.md5_hexdigest
       metadata['md5-hexdigest'] = asset.md5_hexdigest
       object_for(asset).upload_file(asset.file.path, metadata: metadata)
@@ -52,7 +53,7 @@ private
     result = head_object_for(asset)
     result.metadata
   rescue Aws::S3::Errors::NotFound
-    {}
+    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
   end
 
   def client
