@@ -181,7 +181,7 @@ RSpec.describe S3Storage do
       end
 
       it 'raises exception' do
-        expect { subject.send(:metadata_for, asset) }
+        expect { subject.metadata_for(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end

@@ -39,6 +39,13 @@ class S3Storage
     object_for(asset).exists?
   end
 
+  def metadata_for(asset)
+    result = head_object_for(asset)
+    result.metadata
+  rescue Aws::S3::Errors::NotFound
+    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+  end
+
 private
 
   def object_for(asset)
@@ -47,13 +54,6 @@ private
 
   def head_object_for(asset)
     client.head_object(bucket: @bucket_name, key: asset.uuid)
-  end
-
-  def metadata_for(asset)
-    result = head_object_for(asset)
-    result.metadata
-  rescue Aws::S3::Errors::NotFound
-    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
   end
 
   def client
