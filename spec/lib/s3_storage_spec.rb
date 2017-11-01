@@ -232,4 +232,56 @@ RSpec.describe S3Storage do
       end
     end
   end
+
+  describe '#add_metadata_to' do
+    let(:existing_metadata) { { 'key' => 'value' } }
+    let(:new_key) { 'new-key' }
+    let(:new_value) { 'new-value' }
+    let(:new_metadata) { { new_key => new_value } }
+
+    before do
+      allow(subject).to receive(:metadata_for)
+        .with(asset).and_return(existing_metadata)
+    end
+
+    it 'adds new key/value pair to metadata' do
+      expect(subject).to receive(:set_metadata_for)
+        .with(asset, include(new_metadata))
+
+      subject.add_metadata_to(asset, key: new_key, value: new_value)
+    end
+
+    it 'retains existing metadata' do
+      expect(subject).to receive(:set_metadata_for)
+        .with(asset, include(existing_metadata))
+
+      subject.add_metadata_to(asset, key: new_key, value: new_value)
+    end
+  end
+
+  describe '#remove_metadata_from' do
+    let(:key_to_remove) { 'key-1' }
+    let(:metadata_to_remove) { { key_to_remove => 'value-1' } }
+    let(:other_metadata) { { 'key-2' => 'value-2' } }
+    let(:existing_metadata) { metadata_to_remove.merge(other_metadata) }
+
+    before do
+      allow(subject).to receive(:metadata_for)
+        .with(asset).and_return(existing_metadata)
+    end
+
+    it 'removes key/value pair from metadata' do
+      expect(subject).to receive(:set_metadata_for)
+        .with(asset, exclude(metadata_to_remove))
+
+      subject.remove_metadata_from(asset, key: key_to_remove)
+    end
+
+    it 'retains other metadata' do
+      expect(subject).to receive(:set_metadata_for)
+        .with(asset, include(other_metadata))
+
+      subject.remove_metadata_from(asset, key: key_to_remove)
+    end
+  end
 end

@@ -39,6 +39,18 @@ class S3Storage
     object_for(asset).exists?
   end
 
+  def add_metadata_to(asset, key:, value:)
+    existing_metadata = metadata_for(asset)
+    new_metadata = existing_metadata.merge(key => value)
+    set_metadata_for(asset, new_metadata)
+  end
+
+  def remove_metadata_from(asset, key:)
+    existing_metadata = metadata_for(asset)
+    new_metadata = existing_metadata.reject { |k, _| k == key }
+    set_metadata_for(asset, new_metadata)
+  end
+
   def set_metadata_for(asset, new_metadata)
     if exists?(asset)
       object_for(asset).put(metadata: new_metadata)

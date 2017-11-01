@@ -24,6 +24,14 @@ class S3Storage
       File.exist?(target_path)
     end
 
+    def add_metadata_to(*)
+      raise NotImplementedError
+    end
+
+    def remove_metadata_from(*)
+      raise NotImplementedError
+    end
+
     def set_metadata_for(_asset, _new_metadata)
       raise NotImplementedError
     end
