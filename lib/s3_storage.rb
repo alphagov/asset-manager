@@ -34,6 +34,10 @@ class S3Storage
     object_for(asset).presigned_url(http_method, options)
   end
 
+  def exists?(asset)
+    object_for(asset).exists?
+  end
+
 private
 
   def object_for(asset)

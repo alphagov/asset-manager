@@ -150,4 +150,26 @@ RSpec.describe S3Storage do
       end
     end
   end
+
+  describe '#exists?' do
+    before do
+      allow(s3_object).to receive(:exists?).and_return(exists_on_s3)
+    end
+
+    context 'when asset does not exist on S3' do
+      let(:exists_on_s3) { false }
+
+      it 'returns falsey' do
+        expect(subject.exists?(asset)).to be_falsey
+      end
+    end
+
+    context 'when asset does exist on S3' do
+      let(:exists_on_s3) { true }
+
+      it 'returns truthy' do
+        expect(subject.exists?(asset)).to be_truthy
+      end
+    end
+  end
 end
