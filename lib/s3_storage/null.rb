@@ -7,5 +7,9 @@ class S3Storage
     def presigned_url_for(_asset, _http_method: 'GET')
       raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
+
+    def exists?(_asset)
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
+    end
   end
 end

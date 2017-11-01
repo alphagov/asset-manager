@@ -20,6 +20,12 @@ class S3Storage
       "#{AssetManager.app_host}#{url_path}"
     end
 
+    def exists?(asset)
+      relative_path = relative_path_for(asset)
+      target_path = @target_root.join(relative_path)
+      File.exist?(target_path)
+    end
+
     def source_path_for(asset)
       Pathname.new(asset.file.path)
     end
