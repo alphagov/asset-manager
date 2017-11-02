@@ -26,10 +26,29 @@ RSpec.describe AssetTriggerReplicationWorker, type: :worker do
   context 'when asset has corresponding S3 object' do
     let(:exists_on_s3) { true }
 
-    it 're-saves S3 object to trigger replication' do
-      expect(s3_storage).to receive(:save).with(asset, force: true)
+    before do
+      allow(s3_storage).to receive(:never_replicated?)
+        .with(asset).and_return(never_replicated)
+    end
 
-      worker.perform(asset.id.to_s)
+    context 'and asset has never been replicated' do
+      let(:never_replicated) { true }
+
+      it 're-saves S3 object to trigger replication' do
+        expect(s3_storage).to receive(:save).with(asset, force: true)
+
+        worker.perform(asset.id.to_s)
+      end
+    end
+
+    context 'and asset has been replicated' do
+      let(:never_replicated) { false }
+
+      it 'does not re-save S3 object' do
+        expect(s3_storage).to receive(:save).never
+
+        worker.perform(asset.id.to_s)
+      end
     end
   end
 end

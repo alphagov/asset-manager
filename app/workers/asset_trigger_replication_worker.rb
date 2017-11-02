@@ -8,7 +8,7 @@ class AssetTriggerReplicationWorker
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    if @cloud_storage.exists?(asset)
+    if @cloud_storage.exists?(asset) && @cloud_storage.never_replicated?(asset)
       @cloud_storage.save(asset, force: true)
     end
   end
