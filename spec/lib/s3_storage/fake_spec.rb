@@ -55,4 +55,30 @@ RSpec.describe S3Storage::Fake do
       expect(host).to eq(AssetManager.app_host)
     end
   end
+
+  describe '#exists?' do
+    let(:asset_path) { root_path.join(relative_path_to_asset) }
+
+    context 'when file is not saved in storage' do
+      it 'returns falsey' do
+        expect(storage.exists?(asset)).to be_falsey
+      end
+    end
+
+    context 'when file is saved in storage' do
+      before do
+        storage.save(asset)
+      end
+
+      it 'returns truthy' do
+        expect(storage.exists?(asset)).to be_truthy
+      end
+    end
+  end
+
+  describe '#metadata_for' do
+    it 'raises exception to indicate method not implemented' do
+      expect { storage.metadata_for(asset) }.to raise_error(NotImplementedError)
+    end
+  end
 end

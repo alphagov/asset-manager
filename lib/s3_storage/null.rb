@@ -2,9 +2,17 @@ class S3Storage
   NOT_CONFIGURED_ERROR_MESSAGE = 'AWS S3 bucket not correctly configured'.freeze
 
   class Null
-    def save(_asset, _options = {}); end
+    def save(*); end
 
-    def presigned_url_for(_asset, _http_method: 'GET')
+    def presigned_url_for(*)
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
+    end
+
+    def exists?(*)
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
+    end
+
+    def metadata_for(*)
       raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
   end

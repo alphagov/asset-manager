@@ -53,11 +53,8 @@ RSpec.describe S3Storage do
   end
 
   describe '#save' do
-    let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
-
     before do
-      allow(s3_client).to receive(:head_object)
-        .with(s3_head_object_params).and_raise(not_found_error)
+      allow(s3_object).to receive(:exists?).and_return(false)
     end
 
     it 'uploads file to S3 bucket' do
@@ -77,12 +74,11 @@ RSpec.describe S3Storage do
     context 'when S3 object already exists' do
       let(:default_metadata) { { 'md5-hexdigest' => md5_hexdigest } }
       let(:metadata) { default_metadata }
-      let(:attributes) { { metadata: metadata } }
-      let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
-        allow(s3_client).to receive(:head_object)
-          .with(s3_head_object_params).and_return(s3_result)
+        allow(s3_object).to receive(:exists?).and_return(true)
+        allow(subject).to receive(:metadata_for)
+          .with(asset).and_return(metadata)
       end
 
       context 'and MD5 hex digest does match' do
@@ -147,6 +143,59 @@ RSpec.describe S3Storage do
         allow(s3_object).to receive(:presigned_url)
           .with('GET', expires_in: 1.minute, virtual_host: true).and_return('presigned-url')
         expect(subject.presigned_url_for(asset)).to eq('presigned-url')
+      end
+    end
+  end
+
+  describe '#exists?' do
+    before do
+      allow(s3_object).to receive(:exists?).and_return(exists_on_s3)
+    end
+
+    context 'when asset does not exist on S3' do
+      let(:exists_on_s3) { false }
+
+      it 'returns falsey' do
+        expect(subject.exists?(asset)).to be_falsey
+      end
+    end
+
+    context 'when asset does exist on S3' do
+      let(:exists_on_s3) { true }
+
+      it 'returns truthy' do
+        expect(subject.exists?(asset)).to be_truthy
+      end
+    end
+  end
+
+  describe '#metadata_for' do
+    context 'when S3 object does not exist' do
+      let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
+
+      before do
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_raise(not_found_error)
+      end
+
+      it 'raises exception' do
+        expect { subject.metadata_for(asset) }
+          .to raise_error(S3Storage::ObjectNotFoundError)
+      end
+    end
+
+    context 'when S3 object does exist' do
+      let(:metadata) { { 'key' => 'value' } }
+      let(:attributes) { { metadata: metadata } }
+      let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
+
+      before do
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_return(s3_result)
+      end
+
+      it 'returns metadata from S3 object' do
+        expect(subject.metadata_for(asset)).to eq(metadata)
       end
     end
   end
