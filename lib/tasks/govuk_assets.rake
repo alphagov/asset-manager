@@ -6,6 +6,13 @@ namespace :govuk_assets do
     end
   end
 
+  desc 'Trigger backup for all assets'
+  task trigger_backup_for_all_assets: :environment do
+    process_all_assets_with do |asset_id|
+      AssetTriggerReplicationWorker.perform_async(asset_id)
+    end
+  end
+
   def process_all_assets_with
     STDOUT.sync = true
     asset_ids = Asset.pluck(:id).to_a
