@@ -24,6 +24,10 @@ class S3Storage
       File.exist?(target_path)
     end
 
+    def never_replicated?(_asset)
+      raise NotImplementedError
+    end
+
     def metadata_for(_asset)
       raise NotImplementedError
     end
