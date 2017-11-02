@@ -16,6 +16,10 @@ class S3Storage
       raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end
 
+    def replicated?(*)
+      raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
+    end
+
     def metadata_for(*)
       raise NotConfiguredError.new(NOT_CONFIGURED_ERROR_MESSAGE)
     end

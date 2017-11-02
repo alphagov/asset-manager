@@ -28,6 +28,10 @@ class S3Storage
       raise NotImplementedError
     end
 
+    def replicated?(_asset)
+      raise NotImplementedError
+    end
+
     def metadata_for(_asset)
       raise NotImplementedError
     end

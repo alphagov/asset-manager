@@ -40,9 +40,12 @@ class S3Storage
   end
 
   def never_replicated?(asset)
-    head_object_for(asset).replication_status.nil?
-  rescue Aws::S3::Errors::NotFound
-    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+    replication_status(asset).nil?
+  end
+
+  def replicated?(asset)
+    status = replication_status(asset)
+    status && (status == 'COMPLETED')
   end
 
   def metadata_for(asset)
@@ -53,6 +56,12 @@ class S3Storage
   end
 
 private
+
+  def replication_status(asset)
+    head_object_for(asset).replication_status
+  rescue Aws::S3::Errors::NotFound
+    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+  end
 
   def object_for(asset)
     Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.uuid)
