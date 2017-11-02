@@ -27,7 +27,7 @@ RSpec.describe AssetTriggerReplicationWorker, type: :worker do
     let(:exists_on_s3) { true }
 
     it 're-saves S3 object to trigger replication' do
-      expect(s3_storage).to receive(:save).with(asset)
+      expect(s3_storage).to receive(:save).with(asset, force: true)
 
       worker.perform(asset.id.to_s)
     end

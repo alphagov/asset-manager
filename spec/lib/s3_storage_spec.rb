@@ -89,6 +89,14 @@ RSpec.describe S3Storage do
 
           subject.save(asset)
         end
+
+        context 'but force options is set' do
+          it 'uploads file to S3' do
+            expect(s3_object).to receive(:upload_file)
+
+            subject.save(asset, force: true)
+          end
+        end
       end
 
       context 'and MD5 hex digest does not match' do

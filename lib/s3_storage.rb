@@ -19,9 +19,9 @@ class S3Storage
     @bucket_name = bucket_name
   end
 
-  def save(asset)
+  def save(asset, force: false)
     metadata = exists?(asset) ? metadata_for(asset) : {}
-    unless metadata['md5-hexdigest'] == asset.md5_hexdigest
+    if force || metadata['md5-hexdigest'] != asset.md5_hexdigest
       metadata['md5-hexdigest'] = asset.md5_hexdigest
       object_for(asset).upload_file(asset.file.path, metadata: metadata)
     end
