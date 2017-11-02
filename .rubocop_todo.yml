@@ -69,6 +69,7 @@ RSpec/NestedGroups:
 RSpec/PredicateMatcher:
   Exclude:
     - 'spec/models/asset_spec.rb'
+    - 'spec/lib/s3_storage_spec.rb'
     - 'spec/lib/s3_storage/fake_spec.rb'
 
 # Offense count: 12
@@ -84,3 +85,7 @@ RSpec/VerifiedDoubles:
     - 'spec/workers/save_to_cloud_storage_worker_spec.rb'
     - 'spec/lib/s3_storage_spec.rb'
     - 'spec/routing/fake_s3_route_spec.rb'
+
+RSpec/SubjectStub:
+  Exclude:
+      - 'spec/lib/s3_storage_spec.rb'

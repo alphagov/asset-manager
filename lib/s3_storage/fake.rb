@@ -7,8 +7,7 @@ class S3Storage
 
     def save(asset, **_args)
       source_path = source_path_for(asset)
-      relative_path = relative_path_for(asset)
-      target_path = @target_root.join(relative_path)
+      target_path = target_path_for(asset)
       FileUtils.mkdir_p(File.dirname(target_path))
       File.write(target_path, File.read(source_path))
     end
@@ -20,8 +19,38 @@ class S3Storage
       "#{AssetManager.app_host}#{url_path}"
     end
 
+    def exists?(asset)
+      target_path = target_path_for(asset)
+      File.exist?(target_path)
+    end
+
+    def never_replicated?(_asset)
+      raise NotImplementedError
+    end
+
+    def add_metadata_to(*)
+      raise NotImplementedError
+    end
+
+    def remove_metadata_from(*)
+      raise NotImplementedError
+    end
+
+    def set_metadata_for(_asset, _new_metadata)
+      raise NotImplementedError
+    end
+
+    def metadata_for(_asset)
+      raise NotImplementedError
+    end
+
     def source_path_for(asset)
       Pathname.new(asset.file.path)
+    end
+
+    def target_path_for(asset)
+      relative_path = relative_path_for(asset)
+      @target_root.join(relative_path)
     end
 
     def relative_path_for(asset)
