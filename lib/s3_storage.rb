@@ -39,6 +39,12 @@ class S3Storage
     object_for(asset).exists?
   end
 
+  def never_replicated?(asset)
+    head_object_for(asset).replication_status.nil?
+  rescue Aws::S3::Errors::NotFound
+    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+  end
+
   def add_metadata_to(asset, key:, value:)
     existing_metadata = metadata_for(asset)
     new_metadata = existing_metadata.merge(key => value)

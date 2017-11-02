@@ -10,7 +10,7 @@ class AssetTriggerReplicationWorker
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    if @cloud_storage.exists?(asset)
+    if @cloud_storage.exists?(asset) && @cloud_storage.never_replicated?(asset)
       @cloud_storage.add_metadata_to(asset, key: KEY, value: Time.now.httpdate)
       @cloud_storage.remove_metadata_from(asset, key: KEY)
     end

@@ -4,8 +4,8 @@ namespace :govuk_assets do
     process_all_assets_asynchronously_with(AssetFileMetadataWorker)
   end
 
-  desc 'Trigger backup for all assets'
-  task trigger_backup_for_all_assets: :environment do
+  desc 'Trigger replication for all non-replicated GOV.UK assets'
+  task trigger_replication_for_non_replicated_assets: :environment do
     process_all_assets_asynchronously_with(AssetTriggerReplicationWorker)
   end
 

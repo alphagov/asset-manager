@@ -169,6 +169,48 @@ RSpec.describe S3Storage do
     end
   end
 
+  describe '#never_replicated?' do
+    context 'when asset does not exist on S3' do
+      let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
+
+      before do
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_raise(not_found_error)
+      end
+
+      it 'raises exception' do
+        expect { subject.never_replicated?(asset) }
+          .to raise_error(S3Storage::ObjectNotFoundError)
+      end
+    end
+
+    context 'when asset does exist on S3' do
+      let(:attributes) { { replication_status: replication_status } }
+      let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
+
+      before do
+        allow(s3_client).to receive(:head_object)
+          .with(s3_head_object_params).and_return(s3_result)
+      end
+
+      context 'and asset has no replication status' do
+        let(:replication_status) { nil }
+
+        it 'returns truthy' do
+          expect(subject.never_replicated?(asset)).to be_truthy
+        end
+      end
+
+      context 'and asset has replication status' do
+        let(:replication_status) { 'COMPLETED' }
+
+        it 'returns falsey' do
+          expect(subject.never_replicated?(asset)).to be_falsey
+        end
+      end
+    end
+  end
+
   describe '#set_metadata_for' do
     let(:metadata) { { 'key' => 'value' } }
 

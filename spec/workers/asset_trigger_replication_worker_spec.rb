@@ -29,13 +29,33 @@ RSpec.describe AssetTriggerReplicationWorker, type: :worker do
   context 'when asset has corresponding S3 object' do
     let(:exists_on_s3) { true }
 
-    it 'adds and then removes metadata entry to trigger replication' do
-      expect(s3_storage).to receive(:add_metadata_to)
-        .with(asset, key: described_class::KEY, value: now.httpdate).ordered
-      expect(s3_storage).to receive(:remove_metadata_from)
-        .with(asset, key: described_class::KEY).ordered
+    before do
+      allow(s3_storage).to receive(:never_replicated?)
+        .with(asset).and_return(never_replicated)
+    end
 
-      worker.perform(asset.id.to_s)
+    context 'and asset has never been replicated' do
+      let(:never_replicated) { true }
+
+      it 'adds and then removes metadata entry to trigger replication' do
+        expect(s3_storage).to receive(:add_metadata_to)
+          .with(asset, key: described_class::KEY, value: now.httpdate).ordered
+        expect(s3_storage).to receive(:remove_metadata_from)
+          .with(asset, key: described_class::KEY).ordered
+
+        worker.perform(asset.id.to_s)
+      end
+    end
+
+    context 'and asset has been replicated' do
+      let(:never_replicated) { false }
+
+      it 'does not add/remove metadata to/from S3 object' do
+        expect(s3_storage).to receive(:add_metadata_to).never
+        expect(s3_storage).to receive(:remove_metadata_from).never
+
+        worker.perform(asset.id.to_s)
+      end
     end
   end
 end
