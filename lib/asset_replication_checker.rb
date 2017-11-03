@@ -1,3 +1,5 @@
+require 'services'
+
 class AssetReplicationChecker
   def initialize(cloud_storage: Services.cloud_storage)
     @cloud_storage = cloud_storage
