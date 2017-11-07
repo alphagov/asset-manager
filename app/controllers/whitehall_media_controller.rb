@@ -1,6 +1,4 @@
 class WhitehallMediaController < BaseMediaController
-  include ActionView::Helpers::AssetUrlHelper
-
   def download
     path = "/government/uploads/#{params[:path]}.#{params[:format]}"
     asset = WhitehallAsset.find_by(legacy_url_path: path)
@@ -8,7 +6,7 @@ class WhitehallMediaController < BaseMediaController
     if asset.unscanned?
       set_expiry(1.minute)
       if asset.image?
-        redirect_to image_path('thumbnail-placeholder.png')
+        redirect_to self.class.helpers.image_path('thumbnail-placeholder.png')
       else
         redirect_to '/government/placeholder'
       end

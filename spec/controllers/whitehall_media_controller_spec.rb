@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe WhitehallMediaController, type: :controller do
-  include ActionView::Helpers::AssetUrlHelper
-
   describe '#download' do
     let(:path) { 'path/to/asset' }
     let(:format) { 'png' }
@@ -52,7 +50,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       it 'redirects to thumbnail-placeholder image' do
         get :download, path: path, format: format
 
-        expect(controller).to redirect_to(image_path('thumbnail-placeholder.png'))
+        expect(controller).to redirect_to(described_class.helpers.image_path('thumbnail-placeholder.png'))
       end
     end
 
