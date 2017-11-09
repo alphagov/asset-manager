@@ -23,7 +23,7 @@ RSpec.describe 'Whitehall media requests', type: :request do
     end
 
     it 'redirects to placeholder image' do
-      expect(response).to redirect_to('/images/thumbnail-placeholder.png')
+      expect(response).to redirect_to(%r(/asset-manager/thumbnail-placeholder-.*\.png))
     end
 
     it 'sets the Cache-Control response header to 1 minute' do
