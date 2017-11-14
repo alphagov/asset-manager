@@ -25,6 +25,7 @@ protected
   end
 
   def serve_from_nfs_via_nginx(asset)
-    send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
+    send_file asset.file.path, disposition: AssetManager.content_disposition.type
+    head :no_content if response.body.empty?
   end
 end
