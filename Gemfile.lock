@@ -193,6 +193,8 @@ GEM
       bundler (>= 1.3.0, < 2.0)
       railties (= 4.2.10)
       sprockets-rails
+    rails-controller-testing (0.0.3)
+      rails (>= 4.2)
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
     rails-dom-testing (1.0.8)
@@ -325,6 +327,7 @@ DEPENDENCIES
   plek (~> 2.0)
   rack_strip_client_ip (= 0.0.1)
   rails (= 4.2.10)
+  rails-controller-testing
   rspec-rails
   sdoc (~> 0.4.0)
   simplecov-rcov
