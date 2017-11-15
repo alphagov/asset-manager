@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
 
   include GDS::SSO::ControllerMethods
 
-  before_filter :require_signin_permission!
+  before_action :require_signin_permission!
 
   rescue_from Mongoid::Errors::DocumentNotFound, with: :error_404
   rescue_from S3Storage::NotConfiguredError, with: :error_500

@@ -1,5 +1,5 @@
 class MediaController < BaseMediaController
-  before_filter :authenticate_if_private
+  before_action :authenticate_if_private
 
   def download
     unless asset_servable?

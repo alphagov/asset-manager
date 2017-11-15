@@ -1,5 +1,5 @@
 class AssetsController < ApplicationController
-  before_filter :restrict_request_format
+  before_action :restrict_request_format
 
   def show
     @asset = Asset.find(params[:id])
