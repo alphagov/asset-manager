@@ -10,10 +10,10 @@ RSpec.describe 'Asset requests', type: :request do
     let(:legacy_url_path) { '/government/uploads/path/to/asset.png' }
 
     before do
-      post '/whitehall_assets', asset: {
+      post '/whitehall_assets', params: { asset: {
         file: file,
         legacy_url_path: legacy_url_path
-      }
+      } }
     end
 
     it 'responds with 201 Created' do

@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe MediaController, type: :controller do
   describe "GET 'download'" do
-    let(:params) { { id: asset, filename: asset.filename } }
+    let(:params) { { params: { id: asset, filename: asset.filename } } }
 
     before do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
@@ -58,7 +58,7 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "redirects to the new file name" do
-          get :download, id: asset, filename: old_file_name
+          get :download, params: { id: asset, filename: old_file_name }
 
           expect(response.location).to match(%r(\A/media/#{asset.id}/asset.png))
         end
@@ -68,7 +68,7 @@ RSpec.describe MediaController, type: :controller do
         let(:invalid_file_name) { "invalid_file_name.pdf" }
 
         it "responds with 404 Not Found" do
-          get :download, id: asset, filename: invalid_file_name
+          get :download, params: { id: asset, filename: invalid_file_name }
 
           expect(response).to have_http_status(:not_found)
         end
@@ -105,7 +105,7 @@ RSpec.describe MediaController, type: :controller do
 
     context "with a URL containing an invalid ID" do
       it "responds with 404 Not Found" do
-        get :download, id: "1234556678895332452345", filename: "something.jpg"
+        get :download, params: { id: "1234556678895332452345", filename: "something.jpg" }
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -115,12 +115,12 @@ RSpec.describe MediaController, type: :controller do
       let(:unrestricted_asset) { FactoryGirl.create(:clean_asset) }
 
       it "responds with 404 Not Found for access-limited documents" do
-        get :download, id: restricted_asset, filename: 'asset.png'
+        get :download, params: { id: restricted_asset, filename: 'asset.png' }
         expect(response).to have_http_status(:not_found)
       end
 
       it "responds with 200 OK for unrestricted documents" do
-        get :download, id: unrestricted_asset, filename: 'asset.png'
+        get :download, params: { id: unrestricted_asset, filename: 'asset.png' }
         expect(response).to have_http_status(:ok)
       end
     end
@@ -135,14 +135,14 @@ RSpec.describe MediaController, type: :controller do
       it "bounces anonymous users to sign-on" do
         expect(controller).to receive(:require_signin_permission!)
 
-        get :download, id: asset, filename: 'asset.png'
+        get :download, params: { id: asset, filename: 'asset.png' }
       end
 
       it "responds with 404 Not Found for access-limited documents if the user has the wrong organisation" do
         user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
-        get :download, id: asset, filename: 'asset.png'
+        get :download, params: { id: asset, filename: 'asset.png' }
 
         expect(response).to have_http_status(:not_found)
       end
@@ -151,7 +151,7 @@ RSpec.describe MediaController, type: :controller do
         user = FactoryGirl.create(:user, organisation_slug: 'correct-organisation-slug')
         login_as(user)
 
-        get :download, id: asset, filename: 'asset.png'
+        get :download, params: { id: asset, filename: 'asset.png' }
 
         expect(response).to have_http_status(:ok)
       end

@@ -141,37 +141,37 @@ RSpec.describe BaseMediaController, type: :controller do
     end
 
     it 'responds with 200 OK' do
-      get :download, id: asset.id, proxy_to_s3_via_nginx: true
+      get :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
       expect(response).to have_http_status(:ok)
     end
 
     it 'sends ETag response header with quoted value' do
-      get :download, id: asset.id, proxy_to_s3_via_nginx: true
+      get :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
       expect(response.headers['ETag']).to eq(%{"599ffda8-e169"})
     end
 
     it 'sends Last-Modified response header in HTTP time format' do
-      get :download, id: asset.id, proxy_to_s3_via_nginx: true
+      get :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
       expect(response.headers['Last-Modified']).to eq('Sun, 01 Jan 2017 00:00:00 GMT')
     end
 
     it 'sends Content-Disposition response header based on asset filename' do
-      get :download, id: asset.id, proxy_to_s3_via_nginx: true
+      get :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
       expect(response.headers['Content-Disposition']).to eq('content-disposition')
     end
 
     it 'sends Content-Type response header based on asset file extension' do
-      get :download, id: asset.id, proxy_to_s3_via_nginx: true
+      get :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
       expect(response.headers['Content-Type']).to eq('content-type')
     end
 
     it 'instructs Nginx to proxy the request to S3' do
-      get :download, id: asset.id, proxy_to_s3_via_nginx: true
+      get :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
       expect(response.headers['X-Accel-Redirect']).to match("/cloud-storage-proxy/#{presigned_url}")
     end
@@ -180,7 +180,7 @@ RSpec.describe BaseMediaController, type: :controller do
       let(:http_method) { 'HEAD' }
 
       it 'responds with 200 OK' do
-        head :download, id: asset.id, proxy_to_s3_via_nginx: true
+        head :download, params: { id: asset.id, proxy_to_s3_via_nginx: true }
 
         expect(response).to have_http_status(:ok)
       end
@@ -198,23 +198,23 @@ RSpec.describe BaseMediaController, type: :controller do
     end
 
     it 'responds with 200 OK' do
-      get :download, id: asset.id
+      get :download, params: { id: asset.id }
 
       expect(response).to have_http_status(:ok)
     end
 
     it 'uses send_file to instruct Nginx to serve file from NFS' do
       allow(controller).to receive(:render)
-      expect(controller).to receive(:send_file).with(asset.file.path, anything)
+      expect(controller).to receive(:send_file).with(asset.file.path, anything).and_call_original
 
-      get :download, id: asset.id
+      get :download, params: { id: asset.id }
     end
 
     it 'sets Content-Disposition header to value in configuration' do
       allow(controller).to receive(:render)
-      expect(controller).to receive(:send_file).with(anything, include(disposition: 'content-disposition'))
+      expect(controller).to receive(:send_file).with(anything, include(disposition: 'content-disposition')).and_call_original
 
-      get :download, id: asset.id
+      get :download, params: { id: asset.id }
     end
   end
 end
