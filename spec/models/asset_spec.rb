@@ -61,9 +61,7 @@ RSpec.describe Asset, type: :model do
     it 'cannot be changed after creation' do
       uuid = '11111111-1111-1111-1111-11111111111111'
       asset = FactoryGirl.create(:asset, uuid: uuid)
-      asset.uuid = '22222222-2222-2222-2222-222222222222'
-      asset.save!
-      expect(asset.reload.uuid).to eq(uuid)
+      expect { asset.uuid = '22222222-2222-2222-2222-222222222222' }.to raise_error(Mongoid::Errors::ReadonlyAttribute)
     end
 
     it 'cannot be empty' do
