@@ -58,9 +58,10 @@ RSpec.describe 'Whitehall media requests', type: :request do
     let!(:asset) { FactoryGirl.create(:clean_whitehall_asset, legacy_url_path: path) }
 
     before do
-      get path, nil,
+      get path, headers: {
         'HTTP_X_SENDFILE_TYPE' => 'X-Accel-Redirect',
         'HTTP_X_ACCEL_MAPPING' => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
+      }
     end
 
     it 'responds with 200 OK' do
