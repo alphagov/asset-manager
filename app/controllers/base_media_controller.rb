@@ -1,5 +1,5 @@
 class BaseMediaController < ApplicationController
-  skip_before_filter :require_signin_permission!
+  skip_before_action :require_signin_permission!
 
 protected
 
