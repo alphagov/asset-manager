@@ -20,8 +20,7 @@ protected
     headers['ETag'] = %{"#{asset.etag}"}
     headers['Last-Modified'] = asset.last_modified.httpdate
     headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
-    headers['Content-Type'] = asset.content_type
-    render nothing: true
+    head :ok, content_type: asset.content_type
   end
 
   def serve_from_nfs_via_nginx(asset)

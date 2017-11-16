@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe BaseMediaController, type: :controller do
   controller do
     def anything
-      render nothing: true
+      head :ok
     end
 
     def download
