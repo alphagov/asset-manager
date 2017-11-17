@@ -6,7 +6,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
   end
 
   specify "uploading a clean asset, and seeing it available after virus scanning" do
-    post "/assets", asset: { file: load_fixture_file("lorem.txt") }
+    post "/assets", params: { asset: { file: load_fixture_file("lorem.txt") } }
     expect(response).to have_http_status(:created)
 
     asset = Asset.last
@@ -45,7 +45,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
   end
 
   specify "uploading an infected asset, and not seeing it available after virus scanning" do
-    post "/assets", asset: { file: UploadedVirus.new }
+    post "/assets", params: { asset: { file: UploadedVirus.new } }
     expect(response).to have_http_status(:created)
 
     asset = Asset.last

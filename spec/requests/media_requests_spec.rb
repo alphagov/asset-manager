@@ -12,8 +12,10 @@ RSpec.describe "Media requests", type: :request do
     let(:asset) { FactoryGirl.create(:clean_asset) }
 
     before do
-      get "/media/#{asset.id}/asset.png", nil, "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
+      get "/media/#{asset.id}/asset.png", headers: {
+        "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
         "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
+      }
     end
 
     it "sets the X-Accel-Redirect header" do

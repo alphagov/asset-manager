@@ -22,7 +22,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
         it "serves asset from NFS via Nginx" do
           expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
 
-          get :download, path: path, format: format
+          get :download, params: { path: path, format: format }
         end
       end
 
@@ -35,7 +35,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
         it "proxies asset to S3 via Nginx" do
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, path: path, format: format
+          get :download, params: { path: path, format: format }
         end
       end
     end
@@ -48,7 +48,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
 
       it 'redirects to thumbnail-placeholder image' do
-        get :download, path: path, format: format
+        get :download, params: { path: path, format: format }
 
         expect(controller).to redirect_to(described_class.helpers.image_path('thumbnail-placeholder.png'))
       end
@@ -62,7 +62,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
 
       it 'redirects to government placeholder page' do
-        get :download, path: path, format: format
+        get :download, params: { path: path, format: format }
 
         expect(controller).to redirect_to('/government/placeholder')
       end
@@ -72,7 +72,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'infected') }
 
       it 'responds with 404 Not Found' do
-        get :download, path: path, format: format
+        get :download, params: { path: path, format: format }
 
         expect(response).to have_http_status(:not_found)
       end
