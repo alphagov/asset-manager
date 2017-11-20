@@ -38,6 +38,21 @@ RSpec.describe AssetProcessor do
       expect(output_lines[1]).to be_blank
       expect(output_lines[2]).to eq('Finished!')
     end
+
+    context 'and number of assets is not a multiple of 2' do
+      before do
+        FactoryGirl.create(:asset)
+      end
+
+      it 'still reports 100% progress' do
+        processor.process_all_assets_with {}
+
+        expect(output_lines[0]).to eq('2 of 3 (67%) assets')
+        expect(output_lines[1]).to eq('3 of 3 (100%) assets')
+        expect(output_lines[2]).to be_blank
+        expect(output_lines[3]).to eq('Finished!')
+      end
+    end
   end
 
   def output_lines

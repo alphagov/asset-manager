@@ -16,6 +16,9 @@ class AssetProcessor
       end
       yield asset_id.to_s
     end
+    unless (total % @report_progress_every).zero?
+      @output.puts "#{total} of #{total} (100%) assets"
+    end
     @output.puts "\nFinished!"
   end
 end
