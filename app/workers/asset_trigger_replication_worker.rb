@@ -1,3 +1,5 @@
+require 'services'
+
 class AssetTriggerReplicationWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'low_priority'
