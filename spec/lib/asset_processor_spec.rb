@@ -55,6 +55,23 @@ RSpec.describe AssetProcessor do
     end
   end
 
+  context 'when scope is set to deleted assets' do
+    let(:args) { { scope: scope, output: output } }
+    let(:scope) { Asset.deleted }
+
+    before do
+      asset_1.destroy
+    end
+
+    it 'iterates over all deleted assets' do
+      asset_ids = []
+      processor.process_all_assets_with do |asset_id|
+        asset_ids << asset_id
+      end
+      expect(asset_ids).to contain_exactly(asset_1.id.to_s)
+    end
+  end
+
   def output_lines
     @output_lines ||= begin
       output.rewind

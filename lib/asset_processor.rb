@@ -1,12 +1,13 @@
 class AssetProcessor
-  def initialize(output: STDOUT, report_progress_every: 1000)
+  def initialize(scope: Asset, output: STDOUT, report_progress_every: 1000)
+    @scope = scope
     @output = output
     @report_progress_every = report_progress_every
   end
 
   def process_all_assets_with
     @output.sync = true
-    asset_ids = Asset.pluck(:id).to_a
+    asset_ids = @scope.pluck(:id).to_a
     total = asset_ids.count
     asset_ids.each_with_index do |asset_id, index|
       count = index + 1
