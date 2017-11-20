@@ -1,6 +1,6 @@
 require 'services'
 
-class AssetTriggerReplicationWorker
+class DeletedAssetSaveToCloudStorageWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'low_priority'
 
@@ -9,9 +9,7 @@ class AssetTriggerReplicationWorker
   end
 
   def perform(asset_id)
-    asset = Asset.find(asset_id)
-    if @cloud_storage.exists?(asset) && @cloud_storage.never_replicated?(asset)
-      @cloud_storage.save(asset, force: true)
-    end
+    asset = Asset.unscoped.find(asset_id)
+    @cloud_storage.save(asset)
   end
 end

@@ -1,4 +1,5 @@
 require 'rails_helper'
+
 RSpec.describe SaveToCloudStorageWorker, type: :worker do
   let(:worker) { described_class.new }
 

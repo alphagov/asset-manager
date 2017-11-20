@@ -3,13 +3,12 @@ require 'rails_helper'
 RSpec::Matchers.define_negated_matcher :exclude, :include
 
 RSpec.describe AssetTriggerReplicationWorker, type: :worker do
-  subject(:worker) { described_class.new }
+  subject(:worker) { described_class.new(cloud_storage: s3_storage) }
 
   let(:asset) { FactoryGirl.create(:asset) }
   let(:s3_storage) { instance_double(S3Storage) }
 
   before do
-    allow(Services).to receive(:cloud_storage).and_return(s3_storage)
     allow(s3_storage).to receive(:exists?).and_return(exists_on_s3)
   end
 
