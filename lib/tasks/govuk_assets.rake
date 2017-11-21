@@ -40,5 +40,24 @@ namespace :govuk_assets do
       DeletedAssetSaveToCloudStorageWorker.perform_async(asset_id)
     end
   end
+
+  desc 'Permanently delete asset by ID (asset must already be marked as deleted)'
+  task :permanently_delete_asset, [:asset_id] => :environment do |_, args|
+    asset_id = args.fetch(:asset_id) do
+      raise '*** Error: Please supply asset_id argument to Rake task'
+    end
+    asset = Asset.unscoped.where(id: asset_id).first
+    if asset.present?
+      if asset.deleted?
+        print "Permanently deleting asset ID: #{asset_id}..."
+        asset.destroy!
+        puts '[OK]'
+      else
+        raise "*** Error: Asset not marked as deleted: #{asset_id}"
+      end
+    else
+      raise "*** Error: Asset not found: #{asset_id}"
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
