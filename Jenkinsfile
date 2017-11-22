@@ -7,6 +7,9 @@ node ('mongodb-2.4') {
       govuk.setEnvar('TEST_COVERAGE', 'true')
     },
     sassLint: false,
-    publishingE2ETests: true
+    publishingE2ETests: true,
+    afterTest: {
+      govuk.setEnvar('AWS_S3_BUCKET_NAME', 'asset-precompilation-test')
+    }
   )
 }
