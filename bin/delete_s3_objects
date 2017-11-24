@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+xargs -I {} aws s3api delete-object --bucket $1 --key {} --output text
