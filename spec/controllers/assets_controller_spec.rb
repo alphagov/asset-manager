@@ -15,7 +15,7 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(assigns(:asset)).to be_persisted
-        expect(assigns(:asset).file.current_path).to match(/asset\.png$/)
+        expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
       it "returns a created status" do
@@ -44,7 +44,7 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(assigns(:asset)).not_to be_persisted
-        expect(assigns(:asset).file.current_path).to be_nil
+        expect(assigns(:asset).file.path).to be_nil
       end
 
       it "returns an unprocessable entity status" do
@@ -64,7 +64,7 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset)).to be_persisted
-        expect(assigns(:asset).file.current_path).to match(/asset2\.jpg$/)
+        expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
       end
 
       it "returns a success status" do
@@ -93,7 +93,7 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(assigns(:asset)).not_to be_persisted
-        expect(assigns(:asset).file.current_path).to be_nil
+        expect(assigns(:asset).file.path).to be_nil
       end
 
       it "returns an unprocessable entity status" do
