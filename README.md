@@ -14,9 +14,7 @@ Scanning uses [ClamAV][clamav] and occurs asynchronously via [govuk_sidekiq][sid
 - [govuk_sidekiq][sidekiq]
 - govuk_clamscan
 
-Virus scanning expects `govuk_clamscan` to exist on the PATH,
-and to be symlinked to either `clamscan` or `clamdscan`, which are
-part of `clamav`. This is configured by [govuk-puppet][govuk-puppet].
+Virus scanning expects `govuk_clamscan` to exist on the PATH, and to be symlinked to either `clamscan` or `clamdscan`, which are part of `clamav`. This is configured by [govuk-puppet][govuk-puppet].
 
 ### Running the application
 
