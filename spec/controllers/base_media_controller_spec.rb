@@ -30,24 +30,8 @@ RSpec.describe BaseMediaController, type: :controller do
   end
 
   describe "#proxy_to_s3_via_nginx?" do
-    let(:random_number_generator) { instance_double(Random) }
-    let(:random_number) { 50 }
-
-    before do
-      allow(Random).to receive(:new).and_return(random_number_generator)
-      allow(random_number_generator).to receive(:rand).with(100).and_return(random_number)
-    end
-
     it "returns truthy" do
       expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-    end
-
-    context "even when random number generator returns its maximum value" do
-      let(:random_number) { 99 }
-
-      it "returns truthy" do
-        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-      end
     end
   end
 
