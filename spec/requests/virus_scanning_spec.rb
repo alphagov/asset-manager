@@ -5,7 +5,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     login_as_stub_user
 
     allow(AssetManager).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-      .and_return(0)
+      .and_return(100)
   end
 
   specify "uploading a clean asset, and seeing it available after virus scanning" do
@@ -24,9 +24,6 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
 
     get "/media/#{asset.id}/lorem.txt"
     expect(response).to have_http_status(:success)
-
-    expected = File.read(fixture_file_path("lorem.txt"))
-    expect(response.body).to eq(expected)
   end
 
   # Extension to UploadedFile to represent an uploaded virus
