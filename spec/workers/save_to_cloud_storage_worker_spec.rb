@@ -4,7 +4,7 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
   let(:worker) { described_class.new }
 
   describe "#perform" do
-    let(:asset) { FactoryGirl.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:clean_asset) }
 
     context 'when S3 bucket is configured' do
       let(:cloud_storage) { double(:cloud_storage) }

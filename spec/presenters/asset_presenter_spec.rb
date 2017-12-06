@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AssetPresenter do
   subject(:presenter) { described_class.new(asset, view_context) }
 
-  let(:asset) { FactoryGirl.build(:asset) }
+  let(:asset) { FactoryBot.build(:asset) }
   let(:view_context) { instance_double(ActionView::Base) }
 
   context '#as_json' do

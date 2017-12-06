@@ -9,7 +9,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with a valid clean file" do
-      let(:asset) { FactoryGirl.create(:clean_asset) }
+      let(:asset) { FactoryBot.create(:clean_asset) }
 
       context "when proxy_to_s3_via_nginx? is falsey (default)" do
         before do
@@ -76,7 +76,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an unscanned file" do
-      let(:asset) { FactoryGirl.create(:asset) }
+      let(:asset) { FactoryBot.create(:asset) }
 
       it "responds with 404 Not Found" do
         get :download, params
@@ -86,7 +86,7 @@ RSpec.describe MediaController, type: :controller do
 
     context "with an otherwise servable whitehall asset" do
       let(:path) { '/government/uploads/asset.png' }
-      let(:asset) { FactoryGirl.create(:clean_whitehall_asset, legacy_url_path: path) }
+      let(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
 
       it "responds with 404 Not Found" do
         get :download, params
@@ -95,7 +95,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an infected file" do
-      let(:asset) { FactoryGirl.create(:infected_asset) }
+      let(:asset) { FactoryBot.create(:infected_asset) }
 
       it "responds with 404 Not Found" do
         get :download, params
@@ -111,8 +111,8 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "access limiting on the public interface" do
-      let(:restricted_asset) { FactoryGirl.create(:access_limited_asset, organisation_slug: 'example-slug') }
-      let(:unrestricted_asset) { FactoryGirl.create(:clean_asset) }
+      let(:restricted_asset) { FactoryBot.create(:access_limited_asset, organisation_slug: 'example-slug') }
+      let(:unrestricted_asset) { FactoryBot.create(:clean_asset) }
 
       it "responds with 404 Not Found for access-limited documents" do
         get :download, params: { id: restricted_asset, filename: 'asset.png' }
@@ -126,7 +126,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "access limiting on the private interface" do
-      let(:asset) { FactoryGirl.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug') }
+      let(:asset) { FactoryBot.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug') }
 
       before do
         allow(controller).to receive_messages(requested_via_private_vhost?: true)
@@ -139,7 +139,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "responds with 404 Not Found for access-limited documents if the user has the wrong organisation" do
-        user = FactoryGirl.create(:user, organisation_slug: 'incorrect-organisation-slug')
+        user = FactoryBot.create(:user, organisation_slug: 'incorrect-organisation-slug')
         login_as(user)
 
         get :download, params: { id: asset, filename: 'asset.png' }
@@ -148,7 +148,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "responds with 200 OK for access-limited documents if the user has the right organisation" do
-        user = FactoryGirl.create(:user, organisation_slug: 'correct-organisation-slug')
+        user = FactoryBot.create(:user, organisation_slug: 'correct-organisation-slug')
         login_as(user)
 
         get :download, params: { id: asset, filename: 'asset.png' }
@@ -158,7 +158,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with a soft deleted file" do
-      let(:asset) { FactoryGirl.create(:deleted_asset) }
+      let(:asset) { FactoryBot.create(:deleted_asset) }
 
       before do
         get :download, params

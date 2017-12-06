@@ -4,7 +4,7 @@ RSpec.describe ContentDispositionConfiguration do
   subject { described_class.new(type: type) }
 
   let(:type) { 'inline' }
-  let(:asset) { FactoryGirl.build(:asset) }
+  let(:asset) { FactoryBot.build(:asset) }
 
   describe '#type' do
     let(:type) { 'attachment' }

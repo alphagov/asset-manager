@@ -2,14 +2,14 @@ require "rails_helper"
 
 RSpec.describe Asset, type: :model do
   describe 'validation' do
-    subject(:asset) { FactoryGirl.build(:asset) }
+    subject(:asset) { FactoryBot.build(:asset) }
 
     it 'is valid when built from factory' do
       expect(asset).to be_valid
     end
 
     context 'when file is not specified' do
-      subject(:asset) { FactoryGirl.build(:asset, file: nil) }
+      subject(:asset) { FactoryBot.build(:asset, file: nil) }
 
       it 'is not valid' do
         expect(asset).not_to be_valid
@@ -22,7 +22,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context 'when access-limited' do
-      subject(:asset) { FactoryGirl.build(:access_limited_asset) }
+      subject(:asset) { FactoryBot.build(:access_limited_asset) }
 
       it 'is valid when built from factory' do
         expect(asset).to be_valid
@@ -36,7 +36,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe 'creation' do
-    subject(:asset) { FactoryGirl.build(:asset) }
+    subject(:asset) { FactoryBot.build(:asset) }
 
     before do
       asset.save!
@@ -60,26 +60,26 @@ RSpec.describe Asset, type: :model do
 
     it 'cannot be changed after creation' do
       uuid = '11111111-1111-1111-1111-11111111111111'
-      asset = FactoryGirl.create(:asset, uuid: uuid)
+      asset = FactoryBot.create(:asset, uuid: uuid)
       expect { asset.uuid = '22222222-2222-2222-2222-222222222222' }.to raise_error(Mongoid::Errors::ReadonlyAttribute)
     end
 
     it 'cannot be empty' do
-      asset = FactoryGirl.build(:asset, uuid: '')
+      asset = FactoryBot.build(:asset, uuid: '')
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("can't be blank")
     end
 
     it 'must be unique' do
       uuid = '11111111-1111-1111-1111-11111111111111'
-      FactoryGirl.create(:asset, uuid: uuid)
-      asset = FactoryGirl.build(:asset, uuid: uuid)
+      FactoryBot.create(:asset, uuid: uuid)
+      asset = FactoryBot.build(:asset, uuid: uuid)
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("is already taken")
     end
 
     it 'must be in the format defined in rfc4122' do
-      asset = FactoryGirl.build(:asset, uuid: 'uuid')
+      asset = FactoryBot.build(:asset, uuid: 'uuid')
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include('must match the format defined in rfc4122')
     end
@@ -142,7 +142,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules a scan after save if the file is changed" do
-      a = FactoryGirl.create(:clean_asset)
+      a = FactoryBot.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
 
       expect(VirusScanWorker).to receive(:perform_async).with(a.id)
@@ -151,7 +151,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules a scan after save if the file is changed even if filename is unchanged" do
-      a = FactoryGirl.create(:clean_asset)
+      a = FactoryBot.create(:clean_asset)
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
 
@@ -161,7 +161,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "does not schedule a scan after update if the file is unchanged" do
-      a = FactoryGirl.create(:clean_asset)
+      a = FactoryBot.create(:clean_asset)
       a.created_at = 5.days.ago
 
       expect(VirusScanWorker).not_to receive(:perform_async)
@@ -171,7 +171,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "when an asset is marked as clean" do
-    let!(:asset) { FactoryGirl.create(:asset) }
+    let!(:asset) { FactoryBot.create(:asset) }
 
     before do
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
@@ -185,7 +185,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#accessible_by?(user)" do
-    let(:user) { FactoryGirl.build(:user, organisation_slug: 'example-organisation') }
+    let(:user) { FactoryBot.build(:user, organisation_slug: 'example-organisation') }
 
     it "is always true if the asset is not access limited" do
       expect(Asset.new(access_limited: false)).to be_accessible_by(user)
@@ -205,7 +205,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "is false if the asset is access limited and the user has no organisation" do
-      unassociated_user = FactoryGirl.build(:user, organisation_slug: nil)
+      unassociated_user = FactoryBot.build(:user, organisation_slug: nil)
       asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
       expect(asset).not_to be_accessible_by(unassociated_user)
     end

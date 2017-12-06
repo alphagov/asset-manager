@@ -121,7 +121,7 @@ RSpec.describe BaseMediaController, type: :controller do
   end
 
   describe '#proxy_to_s3_via_nginx' do
-    let(:asset) { FactoryGirl.build(:asset, id: '123') }
+    let(:asset) { FactoryBot.build(:asset, id: '123') }
     let(:cloud_storage) { double(:cloud_storage) }
     let(:presigned_url) { 'https://s3-host.test/presigned-url' }
     let(:last_modified) { Time.zone.parse('2017-01-01 00:00') }
@@ -188,7 +188,7 @@ RSpec.describe BaseMediaController, type: :controller do
   end
 
   describe '#serve_from_nfs_via_nginx' do
-    let(:asset) { FactoryGirl.build(:asset, id: '123') }
+    let(:asset) { FactoryBot.build(:asset, id: '123') }
     let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
 
     before do

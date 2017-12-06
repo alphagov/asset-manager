@@ -11,7 +11,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is clean' do
-      let(:asset) { FactoryGirl.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
+      let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
 
       context "when proxy_to_s3_via_nginx? is falsey (default)" do
         before do
@@ -41,7 +41,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is unscanned image' do
-      let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'unscanned') }
+      let(:asset) { FactoryBot.build(:whitehall_asset, state: 'unscanned') }
 
       before do
         allow(asset).to receive(:image?).and_return(true)
@@ -55,7 +55,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is unscanned non-image' do
-      let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'unscanned') }
+      let(:asset) { FactoryBot.build(:whitehall_asset, state: 'unscanned') }
 
       before do
         allow(asset).to receive(:image?).and_return(false)
@@ -69,7 +69,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is infected' do
-      let(:asset) { FactoryGirl.build(:whitehall_asset, state: 'infected') }
+      let(:asset) { FactoryBot.build(:whitehall_asset, state: 'infected') }
 
       it 'responds with 404 Not Found' do
         get :download, params: { path: path, format: format }

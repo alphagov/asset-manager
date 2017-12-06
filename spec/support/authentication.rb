@@ -8,7 +8,7 @@ module AuthenticationControllerHelpers
   end
 
   def stub_user
-    FactoryGirl.create(:user)
+    FactoryBot.create(:user)
   end
 
   def login_as_stub_user
@@ -23,7 +23,7 @@ module AuthenticationFeatureHelpers
   end
 
   def stub_user
-    FactoryGirl.create(:user)
+    FactoryBot.create(:user)
   end
 
   def login_as_stub_user
