@@ -13,12 +13,10 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is clean' do
       let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
 
-      context "when true" do
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+      it "proxies asset to S3 via Nginx" do
+        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params: { path: path, format: format }
-        end
+        get :download, params: { path: path, format: format }
       end
     end
 

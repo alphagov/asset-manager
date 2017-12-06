@@ -11,18 +11,16 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryBot.create(:clean_asset) }
 
-      context "when true" do
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+      it "proxies asset to S3 via Nginx" do
+        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params
-        end
+        get :download, params
+      end
 
-        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          get :download, params
+      it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
+        get :download, params
 
-          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
-        end
+        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
       end
 
       context "when the file name in the URL represents an old version" do
