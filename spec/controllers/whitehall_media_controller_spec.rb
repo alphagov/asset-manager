@@ -80,13 +80,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
   end
 
   describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
-    let(:whitehall_percentage) { 45 }
-
-    before do
-      allow(AssetManager)
-        .to receive(:proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx)
-        .and_return(whitehall_percentage)
-    end
+    let(:whitehall_percentage) { 100 }
 
     it 'returns the percentage of Whitehall requests to proxy to S3' do
       expect(controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx))
