@@ -1,11 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "Media requests", type: :request do
-  before do
-    allow(AssetManager).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-      .and_return(100)
-  end
-
   describe "requesting an asset that doesn't exist" do
     it "responds with not found status" do
       get "/media/34/test.jpg"

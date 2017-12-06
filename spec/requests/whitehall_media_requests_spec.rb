@@ -6,9 +6,6 @@ RSpec.describe 'Whitehall media requests', type: :request do
   let(:presigned_url) { 'https://s3-host.test/presigned-url' }
 
   before do
-    allow(AssetManager).to receive(:proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx)
-      .and_return(100)
-
     allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
   end
 
