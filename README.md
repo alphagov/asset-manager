@@ -14,9 +14,7 @@ Scanning uses [ClamAV][clamav] and occurs asynchronously via [govuk_sidekiq][sid
 - [govuk_sidekiq][sidekiq]
 - govuk_clamscan
 
-Virus scanning expects `govuk_clamscan` to exist on the PATH,
-and to be symlinked to either `clamscan` or `clamdscan`, which are
-part of `clamav`. This is configured by [govuk-puppet][govuk-puppet].
+Virus scanning expects `govuk_clamscan` to exist on the PATH, and to be symlinked to either `clamscan` or `clamdscan`, which are part of `clamav`. This is configured by [govuk-puppet][govuk-puppet].
 
 ### Running the application
 
@@ -38,11 +36,7 @@ bundle exec sidekiq
 
 ### Assets on S3
 
-See the ["Migrating Asset Manager assets to S3" document](docs/migrating-assets-to-s3.md) for an overview of this project.
-
-This functionality is *very* experimental and should not be switched on in production until performance tests have been carried out to ensure there has been no degradation in performance.
-
-As long as the S3 bucket is configured, all assets are uploaded to the S3 bucket via a separate govuk_sidekiq job triggered if virus scanning succeeds. Assets are still saved to the NFS mount as per the original behaviour.
+All assets are uploaded to the S3 bucket via a separate `govuk_sidekiq` job triggered if virus scanning succeeds. Assets are currently still also saved to the NFS mount as per the original behaviour.
 
 #### Standard AWS environment variables (required in production)
 
