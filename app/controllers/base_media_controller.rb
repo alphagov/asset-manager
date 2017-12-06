@@ -3,13 +3,9 @@ class BaseMediaController < ApplicationController
 
 protected
 
-  def proxy_percentage_of_asset_requests_to_s3_via_nginx
-    100
-  end
-
   def proxy_to_s3_via_nginx?
     random_number_generator = Random.new
-    percentage = proxy_percentage_of_asset_requests_to_s3_via_nginx
+    percentage = 100
     random_number_generator.rand(100) < percentage
   end
 

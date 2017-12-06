@@ -29,75 +29,24 @@ RSpec.describe BaseMediaController, type: :controller do
     get :anything
   end
 
-  describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
-    let(:percentage) { 100 }
-
-    it 'returns the percentage of asset requests to proxy to S3' do
-      expect(controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx))
-        .to eq(percentage)
-    end
-  end
-
   describe "#proxy_to_s3_via_nginx?" do
     let(:random_number_generator) { instance_double(Random) }
     let(:random_number) { 50 }
 
     before do
-      allow(controller).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-        .and_return(proxy_percentage_of_asset_requests_to_s3_via_nginx)
       allow(Random).to receive(:new).and_return(random_number_generator)
       allow(random_number_generator).to receive(:rand).with(100).and_return(random_number)
     end
 
-    context "when proxy_percentage_of_asset_requests_to_s3_via_nginx is not set" do
-      let(:proxy_percentage_of_asset_requests_to_s3_via_nginx) { 0 }
-
-      it "returns falsey" do
-        expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-      end
-
-      context "even when random number generator returns its minimum value" do
-        let(:random_number) { 0 }
-
-        it "returns falsey" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-        end
-      end
+    it "returns truthy" do
+      expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
     end
 
-    context "when proxy_percentage_of_asset_requests_to_s3_via_nginx is set to 25%" do
-      let(:proxy_percentage_of_asset_requests_to_s3_via_nginx) { 25 }
-
-      context "when random number generator returns a number less than 25" do
-        let(:random_number) { 24 }
-
-        it "returns truthy" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-        end
-      end
-
-      context "when random number generator returns a number equal to or more than 25" do
-        let(:random_number) { 25 }
-
-        it "returns falsey" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_falsey
-        end
-      end
-    end
-
-    context "when proxy_percentage_of_asset_requests_to_s3_via_nginx is set to 100%" do
-      let(:proxy_percentage_of_asset_requests_to_s3_via_nginx) { 100 }
+    context "even when random number generator returns its maximum value" do
+      let(:random_number) { 99 }
 
       it "returns truthy" do
         expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-      end
-
-      context "even when random number generator returns its maximum value" do
-        let(:random_number) { 99 }
-
-        it "returns truthy" do
-          expect(controller.send(:proxy_to_s3_via_nginx?)).to be_truthy
-        end
       end
     end
   end
