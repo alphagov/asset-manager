@@ -17,13 +17,15 @@ RSpec.describe 'Whitehall media requests', type: :request do
   describe 'request for an unscanned image asset' do
     let(:path) { '/government/uploads/asset.png' }
 
-    before do
+    let!(:asset) {
       FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file('asset.png'),
         legacy_url_path: path
       )
+    }
 
+    before do
       get path
     end
 
@@ -39,13 +41,15 @@ RSpec.describe 'Whitehall media requests', type: :request do
   describe 'request for an unscanned non-image asset' do
     let(:path) { '/government/uploads/lorem.txt' }
 
-    before do
+    let!(:asset) {
       FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file('lorem.txt'),
         legacy_url_path: path
       )
+    }
 
+    before do
       get path
     end
 
