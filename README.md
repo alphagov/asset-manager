@@ -57,12 +57,6 @@ All assets are uploaded to the S3 bucket via a separate `govuk_sidekiq` job trig
 
 * `PROXY_PERCENTAGE_OF_WHITEHALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` - causes *a percentage of* Whitehall asset requests to be proxied to S3 via Nginx - the percentage should be an integer between 0 and 100. The remaining Whitehall asset requests will be served from NFS via Nginx. The default is to serve all Whitehall asset requests from NFS via Nginx.
 
-#### Request parameters
-
-* Mainstream asset requests can be proxied to S3 via Nginx even if `PROXY_PERCENTAGE_OF_ASSET_REQUESTS_TO_S3_VIA_NGINX` is not set by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
-
-* Whitehall asset requests can be proxied to S3 via Nginx even if `PROXY_PERCENTAGE_OF_WHITEHALL_ASSET_REQUESTS_TO_S3_VIA_NGINX` is not set by adding `proxy_to_s3_via_nginx=true` as a request parameter key-value pair to the query string.
-
 ### Testing
 
 `bundle exec rspec`

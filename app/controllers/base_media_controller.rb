@@ -10,8 +10,7 @@ protected
   def proxy_to_s3_via_nginx?
     random_number_generator = Random.new
     percentage = proxy_percentage_of_asset_requests_to_s3_via_nginx
-    proxy_to_s3_via_nginx = random_number_generator.rand(100) < percentage
-    proxy_to_s3_via_nginx || params[:proxy_to_s3_via_nginx].present?
+    random_number_generator.rand(100) < percentage
   end
 
   def proxy_to_s3_via_nginx(asset)
