@@ -119,14 +119,12 @@ RSpec.describe BaseMediaController, type: :controller do
     end
 
     it 'uses send_file to instruct Nginx to serve file from NFS' do
-      allow(controller).to receive(:render)
       expect(controller).to receive(:send_file).with(asset.file.path, anything).and_call_original
 
       get :download, params: { id: asset.id }
     end
 
     it 'sets Content-Disposition header to value in configuration' do
-      allow(controller).to receive(:render)
       expect(controller).to receive(:send_file).with(anything, include(disposition: 'content-disposition')).and_call_original
 
       get :download, params: { id: asset.id }

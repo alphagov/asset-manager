@@ -16,7 +16,6 @@ RSpec.describe WhitehallMediaController, type: :controller do
       context "when proxy_to_s3_via_nginx? is falsey (default)" do
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
-          allow(controller).to receive(:render)
         end
 
         it "serves asset from NFS via Nginx" do
@@ -29,7 +28,6 @@ RSpec.describe WhitehallMediaController, type: :controller do
       context "when proxy_to_s3_via_nginx? is truthy" do
         before do
           allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-          allow(controller).to receive(:render)
         end
 
         it "proxies asset to S3 via Nginx" do
