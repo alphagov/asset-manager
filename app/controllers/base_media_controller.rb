@@ -3,10 +3,6 @@ class BaseMediaController < ApplicationController
 
 protected
 
-  def proxy_to_s3_via_nginx?
-    true
-  end
-
   def proxy_to_s3_via_nginx(asset)
     url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
     headers['X-Accel-Redirect'] = "/cloud-storage-proxy/#{url}"
@@ -14,9 +10,5 @@ protected
     headers['Last-Modified'] = asset.last_modified.httpdate
     headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
     head :ok, content_type: asset.content_type
-  end
-
-  def serve_from_nfs_via_nginx(asset)
-    send_file(asset.file.path, disposition: AssetManager.content_disposition.type)
   end
 end

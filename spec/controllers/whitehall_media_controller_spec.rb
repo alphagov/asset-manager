@@ -13,23 +13,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is clean' do
       let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
 
-      context "when proxy_to_s3_via_nginx? is falsey (default)" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
-        end
-
-        it "serves asset from NFS via Nginx" do
-          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
-
-          get :download, params: { path: path, format: format }
-        end
-      end
-
-      context "when proxy_to_s3_via_nginx? is truthy" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-        end
-
+      context "when true" do
         it "proxies asset to S3 via Nginx" do
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 

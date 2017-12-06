@@ -16,11 +16,7 @@ class MediaController < BaseMediaController
       format.any do
         set_expiry(AssetManager.cache_control.max_age)
         headers['X-Frame-Options'] = AssetManager.frame_options
-        if proxy_to_s3_via_nginx?
-          proxy_to_s3_via_nginx(asset)
-        else
-          serve_from_nfs_via_nginx(asset)
-        end
+        proxy_to_s3_via_nginx(asset)
       end
     end
   end

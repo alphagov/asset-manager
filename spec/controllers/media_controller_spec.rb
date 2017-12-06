@@ -11,29 +11,7 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryBot.create(:clean_asset) }
 
-      context "when proxy_to_s3_via_nginx? is falsey (default)" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
-        end
-
-        it "serves asset from NFS via Nginx" do
-          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
-
-          get :download, params
-        end
-
-        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          get :download, params
-
-          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
-        end
-      end
-
-      context "when proxy_to_s3_via_nginx? is truthy" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-        end
-
+      context "when true" do
         it "proxies asset to S3 via Nginx" do
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
