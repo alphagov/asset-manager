@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe 'Whitehall media requests', type: :request do
+  before do
+    allow(AssetManager).to receive(:proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx)
+      .and_return(0)
+  end
+
   describe 'request for an asset which does not exist' do
     it 'responds with 404 Not Found status' do
       get '/government/uploads/asset.png'
