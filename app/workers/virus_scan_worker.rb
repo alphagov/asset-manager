@@ -5,7 +5,7 @@ class VirusScanWorker
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    scanner = VirusScanner.new(asset.file.current_path)
+    scanner = VirusScanner.new(asset.file.path)
     if scanner.clean?
       asset.scanned_clean
     else
