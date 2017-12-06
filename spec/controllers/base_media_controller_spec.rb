@@ -30,10 +30,11 @@ RSpec.describe BaseMediaController, type: :controller do
   end
 
   describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
-    it 'raises NotImplementedError' do
-      expect {
-        controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-      }.to raise_error(NotImplementedError)
+    let(:percentage) { 100 }
+
+    it 'returns the percentage of asset requests to proxy to S3' do
+      expect(controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx))
+        .to eq(percentage)
     end
   end
 

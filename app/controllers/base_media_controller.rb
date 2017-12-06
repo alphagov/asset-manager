@@ -4,7 +4,7 @@ class BaseMediaController < ApplicationController
 protected
 
   def proxy_percentage_of_asset_requests_to_s3_via_nginx
-    raise NotImplementedError
+    100
   end
 
   def proxy_to_s3_via_nginx?

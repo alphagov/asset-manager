@@ -169,13 +169,4 @@ RSpec.describe MediaController, type: :controller do
       end
     end
   end
-
-  describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
-    let(:mainstream_percentage) { 100 }
-
-    it 'returns the percentage of Mainstream requests to proxy to S3' do
-      expect(controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx))
-        .to eq(mainstream_percentage)
-    end
-  end
 end

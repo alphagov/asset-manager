@@ -27,10 +27,6 @@ class MediaController < BaseMediaController
 
 protected
 
-  def proxy_percentage_of_asset_requests_to_s3_via_nginx
-    100
-  end
-
   def filename_current?
     asset.filename == params[:filename]
   end
