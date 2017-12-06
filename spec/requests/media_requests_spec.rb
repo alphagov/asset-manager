@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Media requests", type: :request do
   before do
     allow(AssetManager).to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-      .and_return(0)
+      .and_return(100)
   end
 
   describe "requesting an asset that doesn't exist" do
@@ -14,9 +14,17 @@ RSpec.describe "Media requests", type: :request do
   end
 
   describe "request an asset that does exist" do
+    let(:cloud_storage) { instance_double(S3Storage) }
+    let(:http_method) { 'GET' }
+    let(:presigned_url) { 'https://s3-host.test/presigned-url' }
+
     let(:asset) { FactoryBot.create(:clean_asset) }
 
     before do
+      allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+      allow(cloud_storage).to receive(:presigned_url_for)
+        .with(asset, http_method: http_method).and_return(presigned_url)
+
       get "/media/#{asset.id}/asset.png", headers: {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
         "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
@@ -25,8 +33,7 @@ RSpec.describe "Media requests", type: :request do
 
     it "sets the X-Accel-Redirect header" do
       expect(response).to be_success
-      id = asset.id.to_s
-      expect(response.headers["X-Accel-Redirect"]).to eq("/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{asset.file.identifier}")
+      expect(response.headers["X-Accel-Redirect"]).to eq("/cloud-storage-proxy/#{presigned_url}")
     end
 
     it "sets the correct content headers" do
