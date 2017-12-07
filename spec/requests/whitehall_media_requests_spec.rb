@@ -13,7 +13,7 @@ RSpec.describe 'Whitehall media requests', type: :request do
     let(:path) { '/government/uploads/asset.png' }
 
     before do
-      FactoryGirl.create(
+      FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file('asset.png'),
         legacy_url_path: path
@@ -35,7 +35,7 @@ RSpec.describe 'Whitehall media requests', type: :request do
     let(:path) { '/government/uploads/lorem.txt' }
 
     before do
-      FactoryGirl.create(
+      FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file('lorem.txt'),
         legacy_url_path: path
@@ -55,7 +55,7 @@ RSpec.describe 'Whitehall media requests', type: :request do
 
   describe 'request for a clean asset' do
     let(:path) { '/government/uploads/asset.png' }
-    let!(:asset) { FactoryGirl.create(:clean_whitehall_asset, legacy_url_path: path) }
+    let!(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
 
     before do
       get path, headers: {

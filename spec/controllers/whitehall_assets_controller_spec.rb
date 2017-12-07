@@ -9,7 +9,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
   describe "POST create" do
     context "a valid asset" do
-      let(:attributes) { FactoryGirl.attributes_for(:whitehall_asset, :with_legacy_metadata) }
+      let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, :with_legacy_metadata) }
 
       it "is persisted" do
         post :create, params: { asset: attributes }
@@ -97,7 +97,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
   end
 
   describe 'GET show' do
-    let(:asset) { FactoryGirl.create(:whitehall_asset, legacy_url_path: '/government/uploads/image.png') }
+    let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: '/government/uploads/image.png') }
     let(:presenter) { instance_double(AssetPresenter) }
 
     before do

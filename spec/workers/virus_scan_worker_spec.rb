@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe VirusScanWorker do
   let(:worker) { described_class.new }
-  let(:asset) { FactoryGirl.create(:asset) }
+  let(:asset) { FactoryBot.create(:asset) }
 
   it "calls out to the VirusScanner to scan the file" do
     scanner = double("VirusScanner")

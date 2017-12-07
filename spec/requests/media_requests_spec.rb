@@ -9,7 +9,7 @@ RSpec.describe "Media requests", type: :request do
   end
 
   describe "request an asset that does exist" do
-    let(:asset) { FactoryGirl.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:clean_asset) }
 
     before do
       get "/media/#{asset.id}/asset.png", headers: {

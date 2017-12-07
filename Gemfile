@@ -22,7 +22,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development, :test do
   gem 'database_cleaner'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'govuk-lint'
   gem 'rspec-rails'
   gem 'simplecov-rcov'

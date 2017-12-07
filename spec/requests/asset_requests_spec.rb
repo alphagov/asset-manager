@@ -60,7 +60,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "retrieving an asset" do
     it "retreives details about an existing asset" do
-      asset = FactoryGirl.create(:clean_asset)
+      asset = FactoryBot.create(:clean_asset)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -76,7 +76,7 @@ RSpec.describe "Asset requests", type: :request do
     end
 
     it "returns details about an infected asset" do
-      asset = FactoryGirl.create(:infected_asset)
+      asset = FactoryBot.create(:infected_asset)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -102,7 +102,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "deleting an asset" do
     it "soft deletes an existing asset" do
-      asset = FactoryGirl.create(:clean_asset)
+      asset = FactoryBot.create(:clean_asset)
 
       delete "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -123,7 +123,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "restoring an asset" do
     it "restores a soft deleted asset" do
-      asset = FactoryGirl.create(:clean_asset)
+      asset = FactoryBot.create(:clean_asset)
 
       post "/assets/#{asset.id}/restore"
 

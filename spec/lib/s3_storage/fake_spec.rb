@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe S3Storage::Fake do
   subject(:storage) { described_class.new(root_path) }
 
-  let(:asset) { FactoryGirl.create(:asset) }
+  let(:asset) { FactoryBot.create(:asset) }
   let(:source_root) { AssetManager.carrier_wave_store_base_dir }
   let(:root_directory) { Dir.mktmpdir }
   let(:root_path) { Pathname.new(root_directory.to_s) }

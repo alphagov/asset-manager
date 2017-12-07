@@ -77,7 +77,7 @@ RSpec.describe 'Asset requests', type: :request do
 
   describe 'requesting an asset' do
     it 'returns a 200 response when the asset is found' do
-      FactoryGirl.create(:whitehall_asset, legacy_url_path: '/government/uploads/asset.png')
+      FactoryBot.create(:whitehall_asset, legacy_url_path: '/government/uploads/asset.png')
 
       get '/whitehall_assets/government/uploads/asset.png'
 

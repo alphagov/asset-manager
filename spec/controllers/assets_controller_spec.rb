@@ -58,7 +58,7 @@ RSpec.describe AssetsController, type: :controller do
   describe "PUT update" do
     context "a valid asset" do
       let(:attributes) { { file: load_fixture_file("asset2.jpg") } }
-      let(:asset) { FactoryGirl.create(:asset) }
+      let(:asset) { FactoryBot.create(:asset) }
 
       it "updates attributes" do
         put :update, params: { id: asset.id, asset: attributes }
@@ -106,7 +106,7 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "DELETE destroy" do
     context "a valid asset" do
-      let(:asset) { FactoryGirl.create(:asset) }
+      let(:asset) { FactoryBot.create(:asset) }
 
       it "deletes the asset" do
         delete :destroy, params: { id: asset.id }
@@ -129,7 +129,7 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context "when Asset#destroy fails" do
-      let(:asset) { FactoryGirl.create(:asset) }
+      let(:asset) { FactoryBot.create(:asset) }
       let(:errors) { ActiveModel::Errors.new(asset) }
 
       before do
@@ -151,7 +151,7 @@ RSpec.describe AssetsController, type: :controller do
 
   describe "GET show" do
     context "an asset which exists" do
-      let(:asset) { FactoryGirl.create(:asset) }
+      let(:asset) { FactoryBot.create(:asset) }
 
       it "is a successful request" do
         get :show, params: { id: asset.id }
@@ -183,7 +183,7 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     describe "POST restore" do
-      let(:asset) { FactoryGirl.create(:asset, deleted_at: 10.minutes.ago) }
+      let(:asset) { FactoryBot.create(:asset, deleted_at: 10.minutes.ago) }
 
       context "an asset which has been soft deleted" do
         before do
@@ -222,7 +222,7 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     describe "cache headers" do
-      let(:asset) { FactoryGirl.create(:asset) }
+      let(:asset) { FactoryBot.create(:asset) }
 
       it "sets the cache-control headers to 0 for an unscanned asset" do
         get :show, params: { id: asset.id }
