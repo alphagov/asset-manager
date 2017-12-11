@@ -20,11 +20,23 @@ RSpec.describe FakeS3Configuration do
 
   describe '#host' do
     before do
-      allow(govuk_config).to receive(:app_host).and_return('http://example.com')
+      allow(govuk_config).to receive(:app_host).and_return(app_host)
     end
 
-    it 'returns host to be used in fake S3 URLs' do
-      expect(config.host).to eq('http://example.com')
+    context 'when app_host is set' do
+      let(:app_host) { 'http://example.com' }
+
+      it 'returns fake S3 host obtained from GOV.UK app_host' do
+        expect(config.host).to eq('http://example.com')
+      end
+    end
+
+    context 'when app_host is not set' do
+      let(:app_host) { nil }
+
+      it 'returns default fake S3 host for Rails app in development' do
+        expect(config.host).to eq('http://localhost:3000')
+      end
     end
   end
 end

@@ -8,6 +8,6 @@ class GovukConfiguration
     app_domain = @env.fetch('GOVUK_APP_DOMAIN')
     "http://#{app_name}.#{app_domain}"
   rescue KeyError
-    'http://localhost:3000'
+    nil
   end
 end

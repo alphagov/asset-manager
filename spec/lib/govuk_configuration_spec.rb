@@ -25,8 +25,8 @@ RSpec.describe GovukConfiguration do
         }
       }
 
-      it 'returns default application host for Rails app in development' do
-        expect(config.app_host).to eq('http://localhost:3000')
+      it 'returns nil' do
+        expect(config.app_host).to be_nil
       end
     end
 
@@ -37,16 +37,16 @@ RSpec.describe GovukConfiguration do
         }
       }
 
-      it 'returns default application host for Rails app in development' do
-        expect(config.app_host).to eq('http://localhost:3000')
+      it 'returns nil' do
+        expect(config.app_host).to be_nil
       end
     end
 
     context 'when environment does not include GOVUK_APP_NAME or GOVUK_APP_DOMAIN' do
       let(:env) { {} }
 
-      it 'returns default application host for Rails app in development' do
-        expect(config.app_host).to eq('http://localhost:3000')
+      it 'returns nil' do
+        expect(config.app_host).to be_nil
       end
     end
   end

@@ -14,6 +14,6 @@ class FakeS3Configuration
   end
 
   def host
-    @govuk_config.app_host
+    @govuk_config.app_host || 'http://localhost:3000'
   end
 end
