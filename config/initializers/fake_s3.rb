@@ -1,2 +1,3 @@
-AssetManager.fake_s3_root = Rails.root.join('fake-s3')
-AssetManager.fake_s3_path_prefix = '/fake-s3'
+require 'fake_s3_configuration'
+
+AssetManager.fake_s3 = FakeS3Configuration.new

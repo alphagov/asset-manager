@@ -37,7 +37,7 @@ RSpec.describe S3Storage::Fake do
       url = storage.presigned_url_for(asset)
       path = URI(url).path
 
-      expect(path).to start_with(AssetManager.fake_s3_path_prefix)
+      expect(path).to start_with(AssetManager.fake_s3.path_prefix)
     end
 
     it 'returns URL with path ending with relative path to asset' do
@@ -47,12 +47,12 @@ RSpec.describe S3Storage::Fake do
       expect(path).to end_with(relative_path_to_asset.to_s)
     end
 
-    it 'returns URL with host set to AssetManager.app_host' do
+    it 'returns URL with host set to AssetManager.fake_s3.host' do
       url = storage.presigned_url_for(asset)
       scheme, domain, port = URI(url).select(:scheme, :host, :port)
       host = "#{scheme}://#{domain}:#{port}"
 
-      expect(host).to eq(AssetManager.app_host)
+      expect(host).to eq(AssetManager.fake_s3.host)
     end
   end
 
