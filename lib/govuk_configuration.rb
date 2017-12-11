@@ -4,14 +4,10 @@ class GovukConfiguration
   end
 
   def app_host
-    app_name = @env.fetch('GOVUK_APP_NAME', nil)
-    app_domain = @env.fetch('GOVUK_APP_DOMAIN', nil)
-    if app_name && app_domain
-      "http://#{app_name}.#{app_domain}"
-    elsif app_domain
-      "http://#{app_domain}"
-    else
-      "http://localhost:3000"
-    end
+    app_name = @env.fetch('GOVUK_APP_NAME')
+    app_domain = @env.fetch('GOVUK_APP_DOMAIN')
+    AssetManager.app_host = "http://#{app_name}.#{app_domain}"
+  rescue KeyError
+    AssetManager.app_host = 'http://localhost:3000'
   end
 end
