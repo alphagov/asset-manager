@@ -89,3 +89,7 @@ RSpec/VerifiedDoubles:
 RSpec/SubjectStub:
   Exclude:
       - 'spec/lib/s3_storage_spec.rb'
+
+RSpec/DescribeClass:
+  Exclude:
+      - 'spec/lib/govuk_configuration_spec.rb'
