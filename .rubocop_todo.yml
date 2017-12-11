@@ -93,3 +93,4 @@ RSpec/SubjectStub:
 RSpec/DescribeClass:
   Exclude:
       - 'spec/lib/govuk_configuration_spec.rb'
+      - 'spec/lib/fake_s3_configuration_spec.rb'

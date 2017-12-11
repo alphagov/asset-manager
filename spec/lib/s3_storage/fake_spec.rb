@@ -37,7 +37,7 @@ RSpec.describe S3Storage::Fake do
       url = storage.presigned_url_for(asset)
       path = URI(url).path
 
-      expect(path).to start_with(AssetManager.fake_s3_path_prefix)
+      expect(path).to start_with(AssetManager.fake_s3.path_prefix)
     end
 
     it 'returns URL with path ending with relative path to asset' do

@@ -9,7 +9,7 @@ class S3Storage
     if bucket_name.present?
       new(bucket_name)
     elsif Rails.env.development?
-      Fake.new(AssetManager.fake_s3_root)
+      Fake.new(AssetManager.fake_s3.root)
     else
       Null.new
     end
