@@ -16,7 +16,7 @@ class S3Storage
       relative_path = relative_path_for(asset)
       url_path_prefix = Pathname.new(AssetManager.fake_s3.path_prefix)
       url_path = url_path_prefix.join(relative_path)
-      "#{AssetManager.app_host}#{url_path}"
+      "#{AssetManager.fake_s3.host}#{url_path}"
     end
 
     def exists?(asset)
