@@ -1,7 +1,8 @@
 require 'govuk_configuration'
 
 class FakeS3Configuration
-  def initialize(govuk_config = GovukConfiguration.new)
+  def initialize(env = ENV, govuk_config = GovukConfiguration.new)
+    @env = env
     @govuk_config = govuk_config
   end
 
@@ -14,6 +15,6 @@ class FakeS3Configuration
   end
 
   def host
-    @govuk_config.app_host || 'http://localhost:3000'
+    @env['FAKE_S3_HOST'] || @govuk_config.app_host || 'http://localhost:3000'
   end
 end
