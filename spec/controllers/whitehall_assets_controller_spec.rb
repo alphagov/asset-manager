@@ -8,9 +8,9 @@ RSpec.describe WhitehallAssetsController, type: :controller do
   end
 
   describe "POST create" do
-    context "a valid asset" do
-      let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, :with_legacy_metadata) }
+    let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, :with_legacy_metadata) }
 
+    context "a valid asset" do
       it "is persisted" do
         post :create, params: { asset: attributes }
 
@@ -92,6 +92,16 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "an asset with the same legacy_url_path as an existing asset" do
+      let!(:existing_asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: attributes[:legacy_url_path]) }
+
+      it "marks the existing asset as deleted" do
+        post :create, params: { asset: attributes }
+
+        expect(existing_asset.reload).to be_deleted
       end
     end
   end

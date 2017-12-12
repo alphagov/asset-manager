@@ -1,5 +1,9 @@
 class WhitehallAssetsController < ApplicationController
   def create
+    if existing_asset_with_this_legacy_url_path.exists?
+      existing_asset_with_this_legacy_url_path.destroy
+    end
+
     @asset = WhitehallAsset.new(asset_params)
 
     if @asset.save
@@ -24,5 +28,9 @@ private
     params
       .require(:asset)
       .permit(:file, :legacy_url_path, :legacy_etag, :legacy_last_modified)
+  end
+
+  def existing_asset_with_this_legacy_url_path
+    WhitehallAsset.where(legacy_url_path: asset_params[:legacy_url_path])
   end
 end
