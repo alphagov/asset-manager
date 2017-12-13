@@ -11,42 +11,16 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryBot.create(:clean_asset) }
 
-      context "when proxy_to_s3_via_nginx? is falsey (default)" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
-          allow(controller).to receive(:render)
-        end
+      it "proxies asset to S3 via Nginx" do
+        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-        it "serves asset from NFS via Nginx" do
-          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
-
-          get :download, params
-        end
-
-        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          get :download, params
-
-          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
-        end
+        get :download, params
       end
 
-      context "when proxy_to_s3_via_nginx? is truthy" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-          allow(controller).to receive(:render)
-        end
+      it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
+        get :download, params
 
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
-
-          get :download, params
-        end
-
-        it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
-          get :download, params
-
-          expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
-        end
+        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
       end
 
       context "when the file name in the URL represents an old version" do
@@ -167,21 +141,6 @@ RSpec.describe MediaController, type: :controller do
       it "responds with not found status" do
         expect(response).to have_http_status(:not_found)
       end
-    end
-  end
-
-  describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
-    let(:mainstream_percentage) { 55 }
-
-    before do
-      allow(AssetManager)
-        .to receive(:proxy_percentage_of_asset_requests_to_s3_via_nginx)
-        .and_return(mainstream_percentage)
-    end
-
-    it 'returns the percentage of Mainstream requests to proxy to S3' do
-      expect(controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx))
-        .to eq(mainstream_percentage)
     end
   end
 end

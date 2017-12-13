@@ -21,9 +21,6 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
 
     get "/media/#{asset.id}/lorem.txt"
     expect(response).to have_http_status(:success)
-
-    expected = File.read(fixture_file_path("lorem.txt"))
-    expect(response.body).to eq(expected)
   end
 
   # Extension to UploadedFile to represent an uploaded virus

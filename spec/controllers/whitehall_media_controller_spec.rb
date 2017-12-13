@@ -13,30 +13,10 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is clean' do
       let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
 
-      context "when proxy_to_s3_via_nginx? is falsey (default)" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(false)
-          allow(controller).to receive(:render)
-        end
+      it "proxies asset to S3 via Nginx" do
+        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-        it "serves asset from NFS via Nginx" do
-          expect(controller).to receive(:serve_from_nfs_via_nginx).with(asset)
-
-          get :download, params: { path: path, format: format }
-        end
-      end
-
-      context "when proxy_to_s3_via_nginx? is truthy" do
-        before do
-          allow(controller).to receive(:proxy_to_s3_via_nginx?).and_return(true)
-          allow(controller).to receive(:render)
-        end
-
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
-
-          get :download, params: { path: path, format: format }
-        end
+        get :download, params: { path: path, format: format }
       end
     end
 
@@ -76,21 +56,6 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
         expect(response).to have_http_status(:not_found)
       end
-    end
-  end
-
-  describe '#proxy_percentage_of_asset_requests_to_s3_via_nginx' do
-    let(:whitehall_percentage) { 45 }
-
-    before do
-      allow(AssetManager)
-        .to receive(:proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx)
-        .and_return(whitehall_percentage)
-    end
-
-    it 'returns the percentage of Whitehall requests to proxy to S3' do
-      expect(controller.send(:proxy_percentage_of_asset_requests_to_s3_via_nginx))
-        .to eq(whitehall_percentage)
     end
   end
 end

@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe 'Whitehall media requests', type: :request do
+  let(:cloud_storage) { instance_double(S3Storage) }
+  let(:http_method) { 'GET' }
+  let(:presigned_url) { 'https://s3-host.test/presigned-url' }
+
+  before do
+    allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+  end
+
   describe 'request for an asset which does not exist' do
     it 'responds with 404 Not Found status' do
       get '/government/uploads/asset.png'
@@ -12,12 +20,17 @@ RSpec.describe 'Whitehall media requests', type: :request do
   describe 'request for an unscanned image asset' do
     let(:path) { '/government/uploads/asset.png' }
 
-    before do
+    let(:asset) {
       FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file('asset.png'),
         legacy_url_path: path
       )
+    }
+
+    before do
+      allow(cloud_storage).to receive(:presigned_url_for)
+        .with(asset, http_method: http_method).and_return(presigned_url)
 
       get path
     end
@@ -34,12 +47,17 @@ RSpec.describe 'Whitehall media requests', type: :request do
   describe 'request for an unscanned non-image asset' do
     let(:path) { '/government/uploads/lorem.txt' }
 
-    before do
+    let(:asset) {
       FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file('lorem.txt'),
         legacy_url_path: path
       )
+    }
+
+    before do
+      allow(cloud_storage).to receive(:presigned_url_for)
+        .with(asset, http_method: http_method).and_return(presigned_url)
 
       get path
     end
@@ -55,9 +73,12 @@ RSpec.describe 'Whitehall media requests', type: :request do
 
   describe 'request for a clean asset' do
     let(:path) { '/government/uploads/asset.png' }
-    let!(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
+    let(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
 
     before do
+      allow(cloud_storage).to receive(:presigned_url_for)
+        .with(asset, http_method: http_method).and_return(presigned_url)
+
       get path, headers: {
         'HTTP_X_SENDFILE_TYPE' => 'X-Accel-Redirect',
         'HTTP_X_ACCEL_MAPPING' => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
@@ -69,8 +90,7 @@ RSpec.describe 'Whitehall media requests', type: :request do
     end
 
     it 'sets the X-Accel-Redirect response header' do
-      id = asset.id.to_s
-      expected_path = "/raw/#{id[2..3]}/#{id[4..5]}/#{id}/#{asset.file.identifier}"
+      expected_path = "/cloud-storage-proxy/#{presigned_url}"
       expect(response.headers['X-Accel-Redirect']).to eq(expected_path)
     end
 

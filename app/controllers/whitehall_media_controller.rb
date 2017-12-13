@@ -18,16 +18,6 @@ class WhitehallMediaController < BaseMediaController
 
     set_expiry(AssetManager.whitehall_cache_control.max_age)
     headers['X-Frame-Options'] = AssetManager.whitehall_frame_options
-    if proxy_to_s3_via_nginx?
-      proxy_to_s3_via_nginx(asset)
-    else
-      serve_from_nfs_via_nginx(asset)
-    end
-  end
-
-protected
-
-  def proxy_percentage_of_asset_requests_to_s3_via_nginx
-    AssetManager.proxy_percentage_of_whitehall_asset_requests_to_s3_via_nginx
+    proxy_to_s3_via_nginx(asset)
   end
 end
