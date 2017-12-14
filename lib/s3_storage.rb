@@ -6,9 +6,8 @@ class S3Storage
   ObjectNotFoundError = Class.new(StandardError)
 
   def self.build
-    bucket_name = AssetManager.s3.bucket_name
-    if bucket_name.present?
-      new(bucket_name)
+    if AssetManager.s3.configured?
+      new(AssetManager.s3.bucket_name)
     elsif Rails.env.development?
       Fake.new(AssetManager.fake_s3.root)
     else

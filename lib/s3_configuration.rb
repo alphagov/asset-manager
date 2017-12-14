@@ -10,4 +10,8 @@ class S3Configuration
       @env['AWS_S3_BUCKET_NAME']
     end
   end
+
+  def configured?
+    bucket_name.present?
+  end
 end

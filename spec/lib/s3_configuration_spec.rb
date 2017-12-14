@@ -47,4 +47,20 @@ RSpec.describe S3Configuration do
       end
     end
   end
+
+  describe '#configured?' do
+    context 'when bucket_name is set' do
+      let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
+
+      it 'is considered to be configured' do
+        expect(config).to be_configured
+      end
+    end
+
+    context 'when bucket_name is not set' do
+      it 'is considered not to be configured' do
+        expect(config).not_to be_configured
+      end
+    end
+  end
 end

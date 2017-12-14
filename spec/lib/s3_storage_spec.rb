@@ -21,7 +21,8 @@ RSpec.describe S3Storage do
   describe '.build' do
     subject { described_class.build }
 
-    let(:s3_config) { instance_double(S3Configuration, bucket_name: bucket_name) }
+    let(:s3_configured) { true }
+    let(:s3_config) { instance_double(S3Configuration, bucket_name: bucket_name, configured?: s3_configured) }
 
     before do
       allow(AssetManager).to receive(:s3).and_return(s3_config)
@@ -31,8 +32,8 @@ RSpec.describe S3Storage do
       expect(subject).to be_instance_of(described_class)
     end
 
-    context 'when bucket_name is blank' do
-      let(:bucket_name) { '' }
+    context 'when S3 is not configured' do
+      let(:s3_configured) { false }
       let(:rails_env) { double('rails-env') }
 
       before do
