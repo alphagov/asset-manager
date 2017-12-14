@@ -63,4 +63,26 @@ RSpec.describe S3Configuration do
       end
     end
   end
+
+  describe '#fake?' do
+    before do
+      allow(Rails.env).to receive(:development?).and_return(development)
+    end
+
+    context 'when Rails environment is development' do
+      let(:development) { true }
+
+      it 'is fake' do
+        expect(config).to be_fake
+      end
+    end
+
+    context 'when Rails environment is not development' do
+      let(:development) { false }
+
+      it 'is not fake' do
+        expect(config).not_to be_fake
+      end
+    end
+  end
 end

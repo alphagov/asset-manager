@@ -8,7 +8,7 @@ class S3Storage
   def self.build
     if AssetManager.s3.configured?
       new(AssetManager.s3.bucket_name)
-    elsif Rails.env.development?
+    elsif AssetManager.s3.fake?
       Fake.new(AssetManager.fake_s3.root)
     else
       Null.new

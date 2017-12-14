@@ -14,4 +14,8 @@ class S3Configuration
   def configured?
     bucket_name.present?
   end
+
+  def fake?
+    Rails.env.development?
+  end
 end
