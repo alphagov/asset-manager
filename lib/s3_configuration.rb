@@ -16,6 +16,6 @@ class S3Configuration
   end
 
   def fake?
-    Rails.env.development?
+    !configured? && Rails.env.development?
   end
 end
