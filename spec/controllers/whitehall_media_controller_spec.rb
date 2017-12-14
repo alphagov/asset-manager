@@ -18,6 +18,16 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
         get :download, params: { path: path, format: format }
       end
+
+      context 'and legacy_url_path has no format' do
+        let(:legacy_url_path) { "/government/uploads/#{path}" }
+
+        it "proxies asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params: { path: path, format: nil }
+        end
+      end
     end
 
     context 'when asset is unscanned image' do

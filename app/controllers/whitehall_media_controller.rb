@@ -1,6 +1,7 @@
 class WhitehallMediaController < BaseMediaController
   def download
-    path = "/government/uploads/#{params[:path]}.#{params[:format]}"
+    path = "/government/uploads/#{params[:path]}"
+    path += ".#{params[:format]}" if params[:format].present?
     asset = WhitehallAsset.find_by(legacy_url_path: path)
 
     if asset.unscanned?
