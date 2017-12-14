@@ -49,7 +49,6 @@ All assets are uploaded to the S3 bucket via a separate `govuk_sidekiq` job trig
 ##### AWS
 
 * `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored (required in production)
-* `AWS_S3_USE_VIRTUAL_HOST` - generate URLs for virtual host (assumes CNAME has been setup for bucket)
 
 ### Testing
 
