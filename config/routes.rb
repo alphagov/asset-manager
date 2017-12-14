@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }
   get "/government/uploads/*path" => "whitehall_media#download"
 
-  if Rails.env.development?
+  if AssetManager.s3.fake?
     mount Rack::File.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: 'fake_s3'
   end
 
