@@ -47,8 +47,8 @@ RSpec.describe S3Storage do
       context 'and fake S3 is not enabled' do
         let(:s3_fake) { false }
 
-        it 'builds an instance of S3Storage::Null' do
-          expect(subject).to be_instance_of(S3Storage::Null)
+        it 'raises an exception' do
+          expect { subject }.to raise_error('AWS S3 bucket not correctly configured')
         end
       end
     end

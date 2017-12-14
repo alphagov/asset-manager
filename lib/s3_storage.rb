@@ -1,8 +1,6 @@
 require 's3_storage/fake'
-require 's3_storage/null'
 
 class S3Storage
-  NotConfiguredError = Class.new(StandardError)
   ObjectNotFoundError = Class.new(StandardError)
 
   def self.build
@@ -11,7 +9,7 @@ class S3Storage
     elsif AssetManager.s3.fake?
       Fake.new(AssetManager.fake_s3.root)
     else
-      Null.new
+      raise 'AWS S3 bucket not correctly configured'
     end
   end
 
