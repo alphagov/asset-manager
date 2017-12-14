@@ -28,10 +28,7 @@ class S3Storage
   end
 
   def presigned_url_for(asset, http_method: 'GET')
-    options = {
-      expires_in: 1.minute
-    }
-    object_for(asset).presigned_url(http_method, options)
+    object_for(asset).presigned_url(http_method, expires_in: 1.minute)
   end
 
   def exists?(asset)
