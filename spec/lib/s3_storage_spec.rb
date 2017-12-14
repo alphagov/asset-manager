@@ -21,8 +21,10 @@ RSpec.describe S3Storage do
   describe '.build' do
     subject { described_class.build }
 
+    let(:s3_config) { instance_double(S3Configuration, bucket_name: bucket_name) }
+
     before do
-      allow(AssetManager).to receive(:aws_s3_bucket_name).and_return(bucket_name)
+      allow(AssetManager).to receive(:s3).and_return(s3_config)
     end
 
     it 'builds an instance of S3Storage' do

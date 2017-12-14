@@ -21,8 +21,10 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
     end
 
     context 'when S3 bucket is not configured' do
+      let(:s3_config) { instance_double(S3Configuration, bucket_name: nil) }
+
       before do
-        allow(AssetManager).to receive(:aws_s3_bucket_name).and_return(nil)
+        allow(AssetManager).to receive(:s3).and_return(s3_config)
       end
 
       it 'does not attempt to build AWS S3 resource', disable_cloud_storage_stub: true do
