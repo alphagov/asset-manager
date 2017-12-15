@@ -90,5 +90,88 @@ RSpec.describe BaseMediaController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context 'when a conditional request is made using an ETag that matches the asset ETag' do
+      it 'does not instruct Nginx to proxy the request to S3' do
+        request.headers['If-None-Match'] = %("#{asset.etag}")
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers).not_to include('X-Accel-Redirect')
+      end
+    end
+
+    context 'when conditional request is made using an ETag that does not match the asset ETag' do
+      it 'instructs Nginx to proxy the request to S3' do
+        request.headers['If-None-Match'] = %("made-up-etag")
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers['X-Accel-Redirect']).to match("/cloud-storage-proxy/#{presigned_url}")
+      end
+    end
+
+    context 'when a conditional request is made using a timestamp that matches the asset timestamp' do
+      it 'does not instruct Nginx to proxy the request to S3' do
+        request.headers['If-Modified-Since'] = asset.last_modified.httpdate
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers).not_to include('X-Accel-Redirect')
+      end
+    end
+
+    context 'when a conditional request is made using a timestamp that is earlier than the asset timestamp' do
+      it 'instructs Nginx to proxy the request to S3' do
+        request.headers['If-Modified-Since'] = (asset.last_modified - 1.day).httpdate
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers['X-Accel-Redirect']).to match("/cloud-storage-proxy/#{presigned_url}")
+      end
+    end
+
+    context 'when a conditional request is made using a timestamp that is later than the asset timestamp' do
+      it 'does not instruct Nginx to proxy the request to S3' do
+        request.headers['If-Modified-Since'] = (asset.last_modified + 1.day).httpdate
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers).not_to include('X-Accel-Redirect')
+      end
+    end
+
+    context 'when a conditional request is made using an Etag and timestamp that match the asset' do
+      it 'does not instruct Nginx to proxy the request to S3' do
+        request.headers['If-None-Match'] = %("#{asset.etag}")
+        request.headers['If-Modified-Since'] = asset.last_modified.httpdate
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers).not_to include('X-Accel-Redirect')
+      end
+    end
+
+    context 'when a conditional request is made using an Etag that matches and timestamp that does not match the asset' do
+      it 'instructs Nginx to proxy the request to S3' do
+        request.headers['If-None-Match'] = %("#{asset.etag}")
+        request.headers['If-Modified-Since'] = (asset.last_modified - 1.day).httpdate
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers['X-Accel-Redirect']).to match("/cloud-storage-proxy/#{presigned_url}")
+      end
+    end
+
+    context 'when a conditional request is made using an Etag that does not match and a timestamp that matches the asset' do
+      it 'instructs Nginx to proxy the request to S3' do
+        request.headers['If-None-Match'] = 'made-up-etag'
+        request.headers['If-Modified-Since'] = asset.last_modified.httpdate
+
+        get :download, params: { id: asset.id }
+
+        expect(response.headers['X-Accel-Redirect']).to match("/cloud-storage-proxy/#{presigned_url}")
+      end
+    end
   end
 end
