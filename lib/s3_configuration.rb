@@ -1,4 +1,10 @@
 class S3Configuration
+  def self.build
+    config = new
+    config.check!
+    config
+  end
+
   def initialize(env = ENV)
     @env = env
   end
@@ -14,6 +20,8 @@ class S3Configuration
   def configured?
     bucket_name.present?
   end
+
+  alias_method :check!, :configured?
 
   def fake?
     !configured? && Rails.env.development?

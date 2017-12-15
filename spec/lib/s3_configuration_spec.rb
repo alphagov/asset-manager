@@ -6,6 +6,30 @@ RSpec.describe S3Configuration do
 
   let(:env) { {} }
 
+  describe '.build' do
+    subject(:config_class) { described_class }
+
+    let(:production) { false }
+
+    before do
+      allow(Rails.env).to receive(:production?).and_return(production)
+    end
+
+    it 'returns instance of configuration' do
+      expect(config_class.build).to be_instance_of(config_class)
+    end
+
+    context 'when Rails environment is production' do
+      let(:production) { true }
+
+      context 'when AWS_S3_BUCKET_NAME env var is not present' do
+        it 'fails fast by raising an exception' do
+          expect { config_class.build }.to raise_error(KeyError)
+        end
+      end
+    end
+  end
+
   describe '#bucket_name' do
     before do
       allow(Rails.env).to receive(:production?).and_return(production)
