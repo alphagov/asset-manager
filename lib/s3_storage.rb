@@ -1,17 +1,15 @@
 require 's3_storage/fake'
-require 's3_storage/null'
 
 class S3Storage
-  NotConfiguredError = Class.new(StandardError)
   ObjectNotFoundError = Class.new(StandardError)
 
-  def self.build(bucket_name)
-    if bucket_name.present?
-      new(bucket_name)
-    elsif Rails.env.development?
+  def self.build
+    if AssetManager.s3.configured?
+      new(AssetManager.s3.bucket_name)
+    elsif AssetManager.s3.fake?
       Fake.new(AssetManager.fake_s3.root)
     else
-      Null.new
+      raise 'AWS S3 bucket not correctly configured'
     end
   end
 

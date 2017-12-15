@@ -19,34 +19,36 @@ RSpec.describe S3Storage do
   end
 
   describe '.build' do
-    subject { described_class.build(bucket_name) }
+    subject { described_class.build }
+
+    let(:s3_configured) { true }
+    let(:s3_fake) { false }
+    let(:s3_config) { instance_double(S3Configuration, bucket_name: bucket_name, configured?: s3_configured, fake?: s3_fake) }
+
+    before do
+      allow(AssetManager).to receive(:s3).and_return(s3_config)
+    end
 
     it 'builds an instance of S3Storage' do
       expect(subject).to be_instance_of(described_class)
     end
 
-    context 'when bucket_name is blank' do
-      let(:bucket_name) { '' }
-      let(:rails_env) { double('rails-env') }
+    context 'when S3 is not configured' do
+      let(:s3_configured) { false }
 
-      before do
-        allow(Rails).to receive(:env).and_return(rails_env)
-        allow(rails_env).to receive(:development?).and_return(is_development)
-      end
-
-      context 'and Rails environment is development' do
-        let(:is_development) { true }
+      context 'and fake S3 is enabled' do
+        let(:s3_fake) { true }
 
         it 'builds an instance of S3Storage::Fake' do
           expect(subject).to be_instance_of(S3Storage::Fake)
         end
       end
 
-      context 'and Rails environment is not development' do
-        let(:is_development) { false }
+      context 'and fake S3 is not enabled' do
+        let(:s3_fake) { false }
 
-        it 'builds an instance of S3Storage::Null' do
-          expect(subject).to be_instance_of(S3Storage::Null)
+        it 'raises an exception' do
+          expect { subject }.to raise_error('AWS S3 bucket not correctly configured')
         end
       end
     end

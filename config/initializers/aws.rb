@@ -1,8 +1,6 @@
-AssetManager.aws_s3_bucket_name = if Rails.env.production?
-                                    ENV.fetch('AWS_S3_BUCKET_NAME')
-                                  else
-                                    ENV['AWS_S3_BUCKET_NAME']
-                                  end
+require 's3_configuration'
+
+AssetManager.s3 = S3Configuration.build
 
 Aws.config.update(
   logger: Rails.logger
