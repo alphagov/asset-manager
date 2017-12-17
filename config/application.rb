@@ -32,8 +32,6 @@ module AssetManager
     # Disable Rack::Cache
     config.action_dispatch.rack_cache = nil
 
-    config.action_dispatch.x_sendfile_header = "X-Accel-Redirect"
-
     config.assets.prefix = '/asset-manager'
   end
 
