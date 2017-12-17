@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'aws-sdk', '~> 2.10.10'
+gem 'aws-sdk', '~> 3.0.1'
 gem 'carrierwave', '~> 0.10.0'
 gem 'carrierwave-mongoid', '~> 0.10.0', require: 'carrierwave/mongoid'
 gem 'gds-sso', '~> 13.2'
