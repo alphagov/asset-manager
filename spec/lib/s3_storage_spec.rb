@@ -61,6 +61,7 @@ RSpec.describe S3Storage do
 
     it 'uploads file to S3 bucket' do
       expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
+        .and_return(true)
 
       subject.save(asset)
     end
@@ -69,8 +70,22 @@ RSpec.describe S3Storage do
       expected_metadata = { 'md5-hexdigest' => asset.md5_hexdigest }
       expect(s3_object).to receive(:upload_file)
         .with(anything, include(metadata: include(expected_metadata)))
+        .and_return(true)
 
       subject.save(asset)
+    end
+
+    context 'when Aws::S3::Object#upload_file returns false' do
+      before do
+        allow(s3_object).to receive(:upload_file).and_return(false)
+      end
+
+      it 'raises ObjectUploadFailedError exception' do
+        error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
+
+        expect { subject.save(asset) }
+          .to raise_error(S3Storage::ObjectUploadFailedError, error_message)
+      end
     end
 
     context 'when S3 object already exists' do
@@ -94,7 +109,7 @@ RSpec.describe S3Storage do
 
         context 'but force options is set' do
           it 'uploads file to S3' do
-            expect(s3_object).to receive(:upload_file)
+            expect(s3_object).to receive(:upload_file).and_return(true)
 
             subject.save(asset, force: true)
           end
@@ -105,7 +120,7 @@ RSpec.describe S3Storage do
         let(:md5_hexdigest) { 'does-not-match' }
 
         it 'uploads file to S3' do
-          expect(s3_object).to receive(:upload_file)
+          expect(s3_object).to receive(:upload_file).and_return(true)
 
           subject.save(asset)
         end
@@ -115,7 +130,7 @@ RSpec.describe S3Storage do
           let(:metadata) { default_metadata.merge(existing_metadata) }
 
           it 'uploads file to S3 with existing metadata' do
-            expect(s3_object).to receive(:upload_file)
+            expect(s3_object).to receive(:upload_file).and_return(true)
               .with(anything, include(metadata: include(existing_metadata)))
 
             subject.save(asset)

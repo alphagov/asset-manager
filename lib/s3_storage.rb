@@ -2,6 +2,7 @@ require 's3_storage/fake'
 
 class S3Storage
   ObjectNotFoundError = Class.new(StandardError)
+  ObjectUploadFailedError = Class.new(StandardError)
 
   def self.build
     if AssetManager.s3.configured?
@@ -21,7 +22,10 @@ class S3Storage
     metadata = exists?(asset) ? metadata_for(asset) : {}
     if force || metadata['md5-hexdigest'] != asset.md5_hexdigest
       metadata['md5-hexdigest'] = asset.md5_hexdigest
-      object_for(asset).upload_file(asset.file.path, metadata: metadata)
+      unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
+        error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
+        raise ObjectUploadFailedError.new(error_message)
+      end
     end
   end
 
