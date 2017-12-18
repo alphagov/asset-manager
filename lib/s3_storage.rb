@@ -22,7 +22,11 @@ class S3Storage
     metadata = exists?(asset) ? metadata_for(asset) : {}
     if force || metadata['md5-hexdigest'] != asset.md5_hexdigest
       metadata['md5-hexdigest'] = asset.md5_hexdigest
-      unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
+      begin
+        unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
+          raise ObjectUploadFailedError
+        end
+      rescue Aws::S3::MultipartUploadError
         raise ObjectUploadFailedError
       end
     end

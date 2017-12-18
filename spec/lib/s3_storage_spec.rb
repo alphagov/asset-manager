@@ -86,6 +86,18 @@ RSpec.describe S3Storage do
       end
     end
 
+    context 'when Aws::S3::Object#upload_file raises Aws::S3::MultipartUploadError' do
+      before do
+        allow(s3_object).to receive(:upload_file)
+          .and_raise(Aws::S3::MultipartUploadError.new('message', [RuntimeError.new]))
+      end
+
+      it 'raises ObjectUploadFailedError exception' do
+        expect { subject.save(asset) }
+          .to raise_error(S3Storage::ObjectUploadFailedError)
+      end
+    end
+
     context 'when S3 object already exists' do
       let(:default_metadata) { { 'md5-hexdigest' => md5_hexdigest } }
       let(:metadata) { default_metadata }
