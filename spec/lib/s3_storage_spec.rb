@@ -300,4 +300,16 @@ RSpec.describe S3Storage do
       end
     end
   end
+
+  describe S3Storage::ObjectNotFoundError do
+    it 'inherits from CloudStorage::ObjectNotFoundError' do
+      expect(subject).to be_kind_of(CloudStorage::ObjectNotFoundError)
+    end
+  end
+
+  describe S3Storage::ObjectUploadFailedError do
+    it 'inherits from CloudStorage::ObjectUploadFailedError' do
+      expect(subject).to be_kind_of(CloudStorage::ObjectUploadFailedError)
+    end
+  end
 end

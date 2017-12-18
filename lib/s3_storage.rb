@@ -1,8 +1,9 @@
+require 'cloud_storage'
 require 's3_storage/fake'
 
 class S3Storage
-  ObjectNotFoundError = Class.new(StandardError)
-  ObjectUploadFailedError = Class.new(StandardError)
+  ObjectNotFoundError = Class.new(CloudStorage::ObjectNotFoundError)
+  ObjectUploadFailedError = Class.new(CloudStorage::ObjectUploadFailedError)
 
   def self.build
     if AssetManager.s3.configured?
