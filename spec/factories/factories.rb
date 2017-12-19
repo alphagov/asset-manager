@@ -8,6 +8,12 @@ FactoryBot.define do
   factory :infected_asset, parent: :asset do
     after :create, &:scanned_infected!
   end
+  factory :uploaded_asset, parent: :clean_asset do
+    after :create, &:upload_success!
+  end
+  factory :not_uploaded_asset, parent: :clean_asset do
+    after :create, &:upload_failure!
+  end
 
   factory :access_limited_asset, parent: :clean_asset do
     access_limited true

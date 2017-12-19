@@ -501,4 +501,104 @@ RSpec.describe Asset, type: :model do
       expect(asset).to be_mainstream
     end
   end
+
+  describe '#upload_success!' do
+    context 'when asset is unscanned' do
+      let(:asset) { FactoryBot.create(:asset) }
+
+      it 'does not change asset state to uploaded' do
+        expect { asset.upload_success! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is clean' do
+      let(:asset) { FactoryBot.create(:clean_asset) }
+
+      it 'changes asset state to uploaded' do
+        asset.upload_success!
+
+        expect(asset.reload).to be_uploaded
+      end
+    end
+
+    context 'when asset is infected' do
+      let(:asset) { FactoryBot.create(:infected_asset) }
+
+      it 'does not change asset state to uploaded' do
+        expect { asset.upload_success! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is uploaded' do
+      let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+      it 'leaves asset state as uploaded' do
+        asset.upload_success!
+
+        expect(asset.reload).to be_uploaded
+      end
+    end
+
+    context 'when asset is not_uploaded' do
+      let(:asset) { FactoryBot.create(:not_uploaded_asset) }
+
+      it 'changes asset state to uploaded' do
+        asset.upload_success!
+
+        expect(asset.reload).to be_uploaded
+      end
+    end
+  end
+
+  describe '#upload_failure!' do
+    context 'when asset is unscanned' do
+      let(:asset) { FactoryBot.create(:asset) }
+
+      it 'does not change asset state to not_uploaded' do
+        expect { asset.upload_failure! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is clean' do
+      let(:asset) { FactoryBot.create(:clean_asset) }
+
+      it 'changes asset state to not_uploaded' do
+        asset.upload_failure!
+
+        expect(asset.reload).to be_not_uploaded
+      end
+    end
+
+    context 'when asset is infected' do
+      let(:asset) { FactoryBot.create(:infected_asset) }
+
+      it 'does not change asset state to not_uploaded' do
+        expect { asset.upload_failure! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is uploaded' do
+      let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+      it 'changes asset state to not_uploaded' do
+        asset.upload_failure!
+
+        expect(asset.reload).to be_not_uploaded
+      end
+    end
+
+    context 'when asset is not_uploaded' do
+      let(:asset) { FactoryBot.create(:not_uploaded_asset) }
+
+      it 'leaves asset state as not_uploaded' do
+        asset.upload_failure!
+
+        expect(asset.reload).to be_not_uploaded
+      end
+    end
+  end
 end
