@@ -29,7 +29,7 @@ protected
 
   def asset_servable?
     asset.filename_valid?(params[:filename]) &&
-      asset.clean? &&
+      (asset.clean? || asset.uploaded?) &&
       asset.accessible_by?(current_user) &&
       asset.mainstream?
   end

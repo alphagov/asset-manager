@@ -9,12 +9,32 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
 
     before do
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+      allow(cloud_storage).to receive(:save)
     end
 
     it 'saves the asset to cloud storage' do
       expect(cloud_storage).to receive(:save).with(asset)
 
       worker.perform(asset)
+    end
+
+    it 'changes the state of the asset to uploaded' do
+      worker.perform(asset)
+
+      expect(asset.reload).to be_uploaded
+    end
+
+    context 'when S3Storage::ObjectUploadFailedError is raised' do
+      before do
+        allow(cloud_storage).to receive(:save)
+          .and_raise(S3Storage::ObjectUploadFailedError)
+      end
+
+      it 'leaves the state of the asset set to clean' do
+        worker.perform(asset) rescue nil
+
+        expect(asset.reload).to be_clean
+      end
     end
   end
 end
