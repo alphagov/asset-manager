@@ -18,7 +18,7 @@ class S3Configuration
   end
 
   def check!
-    if !configured? && !allow_fake?
+    unless configured? || allow_fake?
       raise 'S3 bucket name not set'
     end
   end
