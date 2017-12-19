@@ -18,12 +18,17 @@ class S3Configuration
   end
 
   def check!
-    if !configured? && Rails.env.production?
-      raise 'S3 bucket name not set in production environment'
+    if !configured? && !allow_fake?
+      raise 'S3 bucket name not set'
     end
   end
 
   def fake?
-    !configured? && !Rails.env.production?
+    !configured? && allow_fake?
+  end
+
+  def allow_fake?
+    !Rails.env.production? ||
+      @env['ALLOW_FAKE_S3_IN_PRODUCTION_FOR_PUBLISHING_E2E_TESTS'].present?
   end
 end

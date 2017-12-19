@@ -23,9 +23,19 @@ RSpec.describe S3Configuration do
       let(:production) { true }
 
       context 'when AWS_S3_BUCKET_NAME env var is not present' do
-        it 'fails fast by raising an exception' do
-          expect { config_class.build(env) }
-            .to raise_error('S3 bucket name not set in production environment')
+        context 'when fake S3 is allowed' do
+          let(:env) { { 'ALLOW_FAKE_S3_IN_PRODUCTION_FOR_PUBLISHING_E2E_TESTS' => '1' } }
+
+          it 'does not fail fast' do
+            expect { config_class.build(env) }.not_to raise_error
+          end
+        end
+
+        context 'when fake S3 is not allowed' do
+          it 'fails fast by raising an exception' do
+            expect { config_class.build(env) }
+              .to raise_error('S3 bucket name not set')
+          end
         end
       end
 
@@ -106,14 +116,25 @@ RSpec.describe S3Configuration do
       context 'when Rails environment is production' do
         let(:production) { true }
 
-        it 'is not fake' do
-          expect(config).not_to be_fake
+        context 'when fake S3 is allowed in production' do
+          let(:env) { { 'ALLOW_FAKE_S3_IN_PRODUCTION_FOR_PUBLISHING_E2E_TESTS' => '1' } }
+
+          it 'is fake' do
+            expect(config).to be_fake
+          end
+        end
+
+        context 'when fake S3 is not allowed in production' do
+          it 'is not fake' do
+            expect(config).not_to be_fake
+          end
         end
       end
     end
 
     context 'when configured' do
-      let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
+      let(:extra_env) { {} }
+      let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' }.merge(extra_env) }
 
       context 'when Rails environment is not production' do
         let(:production) { false }
@@ -126,8 +147,18 @@ RSpec.describe S3Configuration do
       context 'when Rails environment is production' do
         let(:production) { true }
 
-        it 'is not fake' do
-          expect(config).not_to be_fake
+        context 'when fake S3 is allowed in production' do
+          let(:extra_env) { { 'ALLOW_FAKE_S3_IN_PRODUCTION_FOR_PUBLISHING_E2E_TESTS' => '1' } }
+
+          it 'is not fake' do
+            expect(config).not_to be_fake
+          end
+        end
+
+        context 'when fake S3 is not allowed in production' do
+          it 'is not fake' do
+            expect(config).not_to be_fake
+          end
         end
       end
     end
