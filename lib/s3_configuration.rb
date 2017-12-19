@@ -1,6 +1,6 @@
 class S3Configuration
-  def self.build
-    config = new
+  def self.build(env = ENV)
+    config = new(env)
     config.check!
     config
   end
@@ -10,20 +10,25 @@ class S3Configuration
   end
 
   def bucket_name
-    if Rails.env.production?
-      @env.fetch('AWS_S3_BUCKET_NAME')
-    else
-      @env['AWS_S3_BUCKET_NAME']
-    end
+    @env['AWS_S3_BUCKET_NAME']
   end
 
   def configured?
     bucket_name.present?
   end
 
-  alias_method :check!, :configured?
+  def check!
+    unless configured? || allow_fake?
+      raise 'S3 bucket name not set'
+    end
+  end
 
   def fake?
-    !configured? && Rails.env.development?
+    !configured? && allow_fake?
+  end
+
+  def allow_fake?
+    !Rails.env.production? ||
+      @env['ALLOW_FAKE_S3_IN_PRODUCTION_FOR_PUBLISHING_E2E_TESTS'].present?
   end
 end
