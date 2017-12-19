@@ -10,7 +10,7 @@ class S3Configuration
   end
 
   def bucket_name
-    if Rails.env.production?
+    if Rails.env.production? && !ENV['USE_FAKE_S3']
       @env.fetch('AWS_S3_BUCKET_NAME')
     else
       @env['AWS_S3_BUCKET_NAME']
