@@ -331,7 +331,7 @@ DEPENDENCIES
   logstasher (= 0.4.8)
   mongoid (~> 6.2.0)
   mongoid_paranoia (= 0.3.0)
-  nokogiri (= 1.8.1)
+  nokogiri (~> 1.8.1)
   plek (~> 2.0)
   rack_strip_client_ip (= 0.0.2)
   rails (= 5.1.4)
