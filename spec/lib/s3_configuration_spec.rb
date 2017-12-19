@@ -91,20 +91,20 @@ RSpec.describe S3Configuration do
 
   describe '#fake?' do
     before do
-      allow(Rails.env).to receive(:development?).and_return(development)
+      allow(Rails.env).to receive(:production?).and_return(production)
     end
 
     context 'when not configured' do
-      context 'when Rails environment is development' do
-        let(:development) { true }
+      context 'when Rails environment is not production' do
+        let(:production) { false }
 
         it 'is fake' do
           expect(config).to be_fake
         end
       end
 
-      context 'when Rails environment is not development' do
-        let(:development) { false }
+      context 'when Rails environment is production' do
+        let(:production) { true }
 
         it 'is not fake' do
           expect(config).not_to be_fake
@@ -115,16 +115,16 @@ RSpec.describe S3Configuration do
     context 'when configured' do
       let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
 
-      context 'when Rails environment is development' do
-        let(:development) { true }
+      context 'when Rails environment is not production' do
+        let(:production) { false }
 
         it 'is not fake' do
           expect(config).not_to be_fake
         end
       end
 
-      context 'when Rails environment is not development' do
-        let(:development) { false }
+      context 'when Rails environment is production' do
+        let(:production) { true }
 
         it 'is not fake' do
           expect(config).not_to be_fake
