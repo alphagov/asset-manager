@@ -16,7 +16,7 @@ RSpec.describe S3Configuration do
     end
 
     it 'returns instance of configuration' do
-      expect(config_class.build).to be_instance_of(config_class)
+      expect(config_class.build(env)).to be_instance_of(config_class)
     end
 
     context 'when Rails environment is production' do
@@ -24,31 +24,16 @@ RSpec.describe S3Configuration do
 
       context 'when AWS_S3_BUCKET_NAME env var is not present' do
         it 'fails fast by raising an exception' do
-          expect { config_class.build }.to raise_error(KeyError)
+          expect { config_class.build(env) }
+            .to raise_error('S3 bucket name not set in production environment')
         end
       end
-    end
-  end
-
-  describe '#bucket_name' do
-    before do
-      allow(Rails.env).to receive(:production?).and_return(production)
-    end
-
-    context 'when Rails environment is production' do
-      let(:production) { true }
 
       context 'when AWS_S3_BUCKET_NAME env var is present' do
         let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
 
-        it 'returns S3 bucket name' do
-          expect(config.bucket_name).to eq('s3-bucket-name')
-        end
-      end
-
-      context 'when AWS_S3_BUCKET_NAME env var is not present' do
-        it 'fails fast by raising an exception' do
-          expect { config.bucket_name }.to raise_error(KeyError)
+        it 'does not fail fast' do
+          expect { config_class.build(env) }.not_to raise_error
         end
       end
     end
@@ -56,18 +41,34 @@ RSpec.describe S3Configuration do
     context 'when Rails environment is not production' do
       let(:production) { false }
 
-      context 'when AWS_S3_BUCKET_NAME env var is present' do
-        let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
-
-        it 'returns S3 bucket name' do
-          expect(config.bucket_name).to eq('s3-bucket-name')
+      context 'when AWS_S3_BUCKET_NAME env var is not present' do
+        it 'does not fail fast' do
+          expect { config_class.build(env) }.not_to raise_error
         end
       end
 
-      context 'when AWS_S3_BUCKET_NAME env var is not present' do
-        it 'returns nil and does not fail fast' do
-          expect(config.bucket_name).to eq(nil)
+      context 'when AWS_S3_BUCKET_NAME env var is present' do
+        let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
+
+        it 'does not fail fast' do
+          expect { config_class.build(env) }.not_to raise_error
         end
+      end
+    end
+  end
+
+  describe '#bucket_name' do
+    context 'when AWS_S3_BUCKET_NAME env var is present' do
+      let(:env) { { 'AWS_S3_BUCKET_NAME' => 's3-bucket-name' } }
+
+      it 'returns S3 bucket name' do
+        expect(config.bucket_name).to eq('s3-bucket-name')
+      end
+    end
+
+    context 'when AWS_S3_BUCKET_NAME env var is not present' do
+      it 'returns nil' do
+        expect(config.bucket_name).to eq(nil)
       end
     end
   end
