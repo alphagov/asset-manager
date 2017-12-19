@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'aws-sdk', '~> 2.10.10'
-gem 'carrierwave', '~> 0.10.0'
+gem 'carrierwave', '~> 0.11.2'
 gem 'carrierwave-mongoid', '~> 0.10.0', require: 'carrierwave/mongoid'
 gem 'gds-sso', '~> 13.2'
 gem 'govuk_app_config', '~> 0.3.0'
