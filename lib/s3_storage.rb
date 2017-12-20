@@ -22,8 +22,13 @@ class S3Storage
     metadata = exists?(asset) ? metadata_for(asset) : {}
     if force || metadata['md5-hexdigest'] != asset.md5_hexdigest
       metadata['md5-hexdigest'] = asset.md5_hexdigest
-      unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
-        error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
+      begin
+        unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
+          error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
+          raise ObjectUploadFailedError.new(error_message)
+        end
+      rescue Aws::S3::MultipartUploadError => e
+        error_message = "Aws::S3::Object#upload_file raised #{e.inspect} for asset ID: #{asset.id}"
         raise ObjectUploadFailedError.new(error_message)
       end
     end
