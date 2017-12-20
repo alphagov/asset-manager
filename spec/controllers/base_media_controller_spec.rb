@@ -20,7 +20,7 @@ RSpec.describe BaseMediaController, type: :controller do
   end
 
   it 'does not require sign-in permission' do
-    expect(controller).not_to receive(:require_signin_permission!)
+    expect(controller).not_to receive(:authenticate_user!)
 
     get :anything
   end

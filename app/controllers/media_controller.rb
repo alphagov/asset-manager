@@ -35,7 +35,7 @@ protected
   end
 
   def authenticate_if_private
-    require_signin_permission! if requested_via_private_vhost?
+    authenticate_user! if requested_via_private_vhost?
   end
 
   def asset

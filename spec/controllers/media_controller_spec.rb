@@ -107,7 +107,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "bounces anonymous users to sign-on" do
-        expect(controller).to receive(:require_signin_permission!)
+        expect(controller).to receive(:authenticate_user!)
 
         get :download, params: { id: asset, filename: 'asset.png' }
       end
