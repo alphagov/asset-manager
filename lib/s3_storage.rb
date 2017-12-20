@@ -1,7 +1,9 @@
+require 'cloud_storage'
 require 's3_storage/fake'
 
 class S3Storage
-  ObjectNotFoundError = Class.new(StandardError)
+  ObjectNotFoundError = Class.new(CloudStorage::ObjectNotFoundError)
+  ObjectUploadFailedError = Class.new(CloudStorage::ObjectUploadFailedError)
 
   def self.build
     if AssetManager.s3.configured?
@@ -21,7 +23,13 @@ class S3Storage
     metadata = exists?(asset) ? metadata_for(asset) : {}
     if force || metadata['md5-hexdigest'] != asset.md5_hexdigest
       metadata['md5-hexdigest'] = asset.md5_hexdigest
-      object_for(asset).upload_file(asset.file.path, metadata: metadata)
+      begin
+        unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
+          raise ObjectUploadFailedError
+        end
+      rescue Aws::S3::MultipartUploadError
+        raise ObjectUploadFailedError
+      end
     end
   end
 

@@ -52,6 +52,14 @@ class Asset
     event :scanned_infected do
       transition any => :infected
     end
+
+    event :upload_success do
+      transition %i(clean uploaded not_uploaded) => :uploaded
+    end
+
+    event :upload_failure do
+      transition %i(clean uploaded not_uploaded) => :not_uploaded
+    end
   end
 
   def public_url_path

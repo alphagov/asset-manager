@@ -1,6 +1,24 @@
 require "rails_helper"
 
 RSpec.describe WhitehallMediaController, type: :controller do
+  shared_examples 'handles valid asset request' do
+    it "proxies asset to S3 via Nginx" do
+      expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+      get :download, params: { path: path, format: format }
+    end
+
+    context 'and legacy_url_path has no format' do
+      let(:legacy_url_path) { "/government/uploads/#{path}" }
+
+      it "proxies asset to S3 via Nginx" do
+        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+        get :download, params: { path: path, format: nil }
+      end
+    end
+  end
+
   describe '#download' do
     let(:path) { 'path/to/asset' }
     let(:format) { 'png' }
@@ -13,21 +31,19 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is clean' do
       let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
 
-      it "proxies asset to S3 via Nginx" do
-        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+      include_examples 'handles valid asset request'
+    end
 
-        get :download, params: { path: path, format: format }
-      end
+    context 'when asset is uploaded' do
+      let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'uploaded') }
 
-      context 'and legacy_url_path has no format' do
-        let(:legacy_url_path) { "/government/uploads/#{path}" }
+      include_examples 'handles valid asset request'
+    end
 
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+    context 'when asset is not_uploaded' do
+      let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'not_uploaded') }
 
-          get :download, params: { path: path, format: nil }
-        end
-      end
+      include_examples 'handles valid asset request'
     end
 
     context 'when asset is unscanned image' do
