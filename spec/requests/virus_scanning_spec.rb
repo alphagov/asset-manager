@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Virus scanning of uploaded images", type: :request do
+RSpec.describe "Virus scanning of uploaded images", type: :request, disable_cloud_storage_stub: true do
   before do
     login_as_stub_user
   end
@@ -20,6 +20,20 @@ RSpec.describe "Virus scanning of uploaded images", type: :request do
     VirusScanWorker.drain
 
     get "/media/#{asset.id}/lorem.txt"
+    expect(response).to have_http_status(:success)
+
+    redirect_url = headers['X-Accel-Redirect']
+    cloud_url = redirect_url.match(%r{^/cloud-storage-proxy/(.*)$})[1]
+    expect { get cloud_url }.to raise_error(ActionController::RoutingError)
+
+    SaveToCloudStorageWorker.drain
+
+    get "/media/#{asset.id}/lorem.txt"
+    expect(response).to have_http_status(:success)
+
+    redirect_url = headers['X-Accel-Redirect']
+    cloud_url = redirect_url.match(%r{^/cloud-storage-proxy/(.*)$})[1]
+    get cloud_url
     expect(response).to have_http_status(:success)
   end
 

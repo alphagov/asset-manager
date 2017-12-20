@@ -9,6 +9,11 @@ RSpec.describe 'routes for S3Storage::Fake', type: :routing do
     Rails.application.reload_routes!
   end
 
+  after do
+    allow(AssetManager).to receive(:s3).and_call_original
+    Rails.application.reload_routes!
+  end
+
   context 'when fake S3 is enabled' do
     let(:s3_fake_enabled) { true }
 
