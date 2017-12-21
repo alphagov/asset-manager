@@ -99,7 +99,7 @@ GEM
       rubocop (~> 0.51.0)
       rubocop-rspec (~> 1.19.0)
       scss_lint
-    govuk_app_config (1.0.0)
+    govuk_app_config (1.1.0)
       logstasher (~> 1.2.2)
       sentry-raven (~> 2.7.1)
       statsd-ruby (~> 1.4.0)
@@ -332,7 +332,7 @@ DEPENDENCIES
   factory_bot_rails
   gds-sso (~> 13.5)
   govuk-lint
-  govuk_app_config (~> 1.0.0)
+  govuk_app_config (~> 1.0)
   govuk_sidekiq (~> 2.0.0)
   mongoid (~> 6.2.0)
   mongoid_paranoia (= 0.3.0)
