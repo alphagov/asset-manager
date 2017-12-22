@@ -17,13 +17,11 @@ RSpec.describe 'Whitehall media requests', type: :request do
     end
   end
 
-  describe 'request for an unscanned image asset' do
-    let(:path) { '/government/uploads/asset.png' }
-
+  describe 'request for an unscanned asset' do
     let(:asset) {
       FactoryBot.create(
         :whitehall_asset,
-        file: load_fixture_file('asset.png'),
+        file: load_fixture_file(File.basename(path)),
         legacy_url_path: path
       )
     }
@@ -35,39 +33,28 @@ RSpec.describe 'Whitehall media requests', type: :request do
       get path
     end
 
-    it 'redirects to placeholder image' do
-      expect(response).to redirect_to(%r(/asset-manager/thumbnail-placeholder-.*\.png))
+    context 'when asset is an image' do
+      let(:path) { '/government/uploads/asset.png' }
+
+      it 'redirects to placeholder image' do
+        expect(response).to redirect_to(%r(/asset-manager/thumbnail-placeholder-.*\.png))
+      end
+
+      it 'sets the Cache-Control response header to 1 minute' do
+        expect(response.headers['Cache-Control']).to eq('max-age=60, public')
+      end
     end
 
-    it 'sets the Cache-Control response header to 1 minute' do
-      expect(response.headers['Cache-Control']).to eq('max-age=60, public')
-    end
-  end
+    context 'when asset is not an image' do
+      let(:path) { '/government/uploads/lorem.txt' }
 
-  describe 'request for an unscanned non-image asset' do
-    let(:path) { '/government/uploads/lorem.txt' }
+      it 'redirects to government placeholder page' do
+        expect(response).to redirect_to('/government/placeholder')
+      end
 
-    let(:asset) {
-      FactoryBot.create(
-        :whitehall_asset,
-        file: load_fixture_file('lorem.txt'),
-        legacy_url_path: path
-      )
-    }
-
-    before do
-      allow(cloud_storage).to receive(:presigned_url_for)
-        .with(asset, http_method: http_method).and_return(presigned_url)
-
-      get path
-    end
-
-    it 'redirects to government placeholder page' do
-      expect(response).to redirect_to('/government/placeholder')
-    end
-
-    it 'sets the Cache-Control response header to 1 minute' do
-      expect(response.headers['Cache-Control']).to eq('max-age=60, public')
+      it 'sets the Cache-Control response header to 1 minute' do
+        expect(response.headers['Cache-Control']).to eq('max-age=60, public')
+      end
     end
   end
 
