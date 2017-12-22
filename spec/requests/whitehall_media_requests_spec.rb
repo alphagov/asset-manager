@@ -18,11 +18,14 @@ RSpec.describe 'Whitehall media requests', type: :request do
   end
 
   describe 'request for an unscanned asset' do
+    let(:state) { 'unscanned' }
+
     let(:asset) {
       FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file(File.basename(path)),
-        legacy_url_path: path
+        legacy_url_path: path,
+        state: state
       )
     }
 
