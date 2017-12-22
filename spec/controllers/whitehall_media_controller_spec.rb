@@ -19,6 +19,32 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
   end
 
+  shared_examples 'redirects to placeholders' do
+    before do
+      allow(asset).to receive(:image?).and_return(image)
+    end
+
+    context 'and asset is image' do
+      let(:image) { true }
+
+      it 'redirects to thumbnail-placeholder image' do
+        get :download, params: { path: path, format: format }
+
+        expect(controller).to redirect_to(described_class.helpers.image_path('thumbnail-placeholder.png'))
+      end
+    end
+
+    context 'and asset is not an image' do
+      let(:image) { false }
+
+      it 'redirects to government placeholder page' do
+        get :download, params: { path: path, format: format }
+
+        expect(controller).to redirect_to('/government/placeholder')
+      end
+    end
+  end
+
   describe '#download' do
     let(:path) { 'path/to/asset' }
     let(:format) { 'png' }
@@ -44,29 +70,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is unscanned' do
       let(:state) { 'unscanned' }
 
-      before do
-        allow(asset).to receive(:image?).and_return(image)
-      end
-
-      context 'and asset is image' do
-        let(:image) { true }
-
-        it 'redirects to thumbnail-placeholder image' do
-          get :download, params: { path: path, format: format }
-
-          expect(controller).to redirect_to(described_class.helpers.image_path('thumbnail-placeholder.png'))
-        end
-      end
-
-      context 'and asset is not an image' do
-        let(:image) { false }
-
-        it 'redirects to government placeholder page' do
-          get :download, params: { path: path, format: format }
-
-          expect(controller).to redirect_to('/government/placeholder')
-        end
-      end
+      include_examples 'redirects to placeholders'
     end
 
     context 'when asset is infected' do
