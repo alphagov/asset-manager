@@ -37,12 +37,6 @@ RSpec.describe WhitehallMediaController, type: :controller do
       allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(asset)
     end
 
-    context 'when asset is clean' do
-      let(:state) { 'clean' }
-
-      include_examples 'redirects to placeholders'
-    end
-
     context 'when asset is uploaded' do
       let(:state) { 'uploaded' }
 
@@ -65,6 +59,12 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
     context 'when asset is unscanned' do
       let(:state) { 'unscanned' }
+
+      include_examples 'redirects to placeholders'
+    end
+
+    context 'when asset is clean' do
+      let(:state) { 'clean' }
 
       include_examples 'redirects to placeholders'
     end
