@@ -1,25 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Whitehall media requests', type: :request do
-  let(:cloud_storage) { instance_double(S3Storage) }
-  let(:http_method) { 'GET' }
-  let(:presigned_url) { 'https://s3-host.test/presigned-url' }
-
-  before do
-    allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-  end
-
-  describe 'request for an asset which does not exist' do
-    it 'responds with 404 Not Found status' do
-      get '/government/uploads/asset.png'
-
-      expect(response).to have_http_status(:not_found)
-    end
-  end
-
-  describe 'request for an unscanned asset' do
-    let(:state) { 'unscanned' }
-
+  shared_examples 'redirects to placeholders' do
     let(:asset) {
       FactoryBot.create(
         :whitehall_asset,
@@ -59,6 +41,28 @@ RSpec.describe 'Whitehall media requests', type: :request do
         expect(response.headers['Cache-Control']).to eq('max-age=60, public')
       end
     end
+  end
+
+  let(:cloud_storage) { instance_double(S3Storage) }
+  let(:http_method) { 'GET' }
+  let(:presigned_url) { 'https://s3-host.test/presigned-url' }
+
+  before do
+    allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+  end
+
+  describe 'request for an asset which does not exist' do
+    it 'responds with 404 Not Found status' do
+      get '/government/uploads/asset.png'
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe 'request for an unscanned asset' do
+    let(:state) { 'unscanned' }
+
+    include_examples 'redirects to placeholders'
   end
 
   describe 'request for a clean asset' do
