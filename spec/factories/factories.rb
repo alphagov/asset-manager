@@ -12,7 +12,7 @@ FactoryBot.define do
     after :create, &:upload_success!
   end
 
-  factory :access_limited_asset, parent: :clean_asset do
+  factory :access_limited_asset, parent: :uploaded_asset do
     access_limited true
     organisation_slug 'example-organisation'
   end
@@ -32,6 +32,10 @@ FactoryBot.define do
 
   factory :clean_whitehall_asset, parent: :whitehall_asset do
     after :create, &:scanned_clean!
+  end
+
+  factory :uploaded_whitehall_asset, parent: :clean_whitehall_asset do
+    after :create, &:upload_success!
   end
 
   factory :user do

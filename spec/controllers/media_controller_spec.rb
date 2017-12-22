@@ -50,7 +50,10 @@ RSpec.describe MediaController, type: :controller do
     context "with a valid clean file" do
       let(:asset) { FactoryBot.create(:clean_asset) }
 
-      include_examples('handles valid asset request')
+      it "responds with 404 Not Found" do
+        get :download, params
+        expect(response).to have_http_status(:not_found)
+      end
     end
 
     context "with a valid uploaded file" do
@@ -70,7 +73,7 @@ RSpec.describe MediaController, type: :controller do
 
     context "with an otherwise servable whitehall asset" do
       let(:path) { '/government/uploads/asset.png' }
-      let(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
+      let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
 
       it "responds with 404 Not Found" do
         get :download, params
@@ -96,7 +99,7 @@ RSpec.describe MediaController, type: :controller do
 
     context "access limiting on the public interface" do
       let(:restricted_asset) { FactoryBot.create(:access_limited_asset, organisation_slug: 'example-slug') }
-      let(:unrestricted_asset) { FactoryBot.create(:clean_asset) }
+      let(:unrestricted_asset) { FactoryBot.create(:uploaded_asset) }
 
       it "responds with 404 Not Found for access-limited documents" do
         get :download, params: { id: restricted_asset, filename: 'asset.png' }
