@@ -23,25 +23,26 @@ RSpec.describe WhitehallMediaController, type: :controller do
     let(:path) { 'path/to/asset' }
     let(:format) { 'png' }
     let(:legacy_url_path) { "/government/uploads/#{path}.#{format}" }
+    let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: state) }
 
     before do
       allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(asset)
     end
 
     context 'when asset is clean' do
-      let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'clean') }
+      let(:state) { 'clean' }
 
       include_examples 'handles valid asset request'
     end
 
     context 'when asset is uploaded' do
-      let(:asset) { FactoryBot.build(:whitehall_asset, legacy_url_path: legacy_url_path, state: 'uploaded') }
+      let(:state) { 'uploaded' }
 
       include_examples 'handles valid asset request'
     end
 
     context 'when asset is unscanned' do
-      let(:asset) { FactoryBot.build(:whitehall_asset, state: 'unscanned') }
+      let(:state) { 'unscanned' }
 
       before do
         allow(asset).to receive(:image?).and_return(image)
@@ -69,7 +70,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     end
 
     context 'when asset is infected' do
-      let(:asset) { FactoryBot.build(:whitehall_asset, state: 'infected') }
+      let(:state) { 'infected' }
 
       it 'responds with 404 Not Found' do
         get :download, params: { path: path, format: format }
