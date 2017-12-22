@@ -1,24 +1,6 @@
 require "rails_helper"
 
 RSpec.describe WhitehallMediaController, type: :controller do
-  shared_examples 'handles valid asset request' do
-    it "proxies asset to S3 via Nginx" do
-      expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
-
-      get :download, params: { path: path, format: format }
-    end
-
-    context 'and legacy_url_path has no format' do
-      let(:legacy_url_path) { "/government/uploads/#{path}" }
-
-      it "proxies asset to S3 via Nginx" do
-        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
-
-        get :download, params: { path: path, format: nil }
-      end
-    end
-  end
-
   shared_examples 'redirects to placeholders' do
     before do
       allow(asset).to receive(:image?).and_return(image)
@@ -64,7 +46,21 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is uploaded' do
       let(:state) { 'uploaded' }
 
-      include_examples 'handles valid asset request'
+      it "proxies asset to S3 via Nginx" do
+        expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+        get :download, params: { path: path, format: format }
+      end
+
+      context 'and legacy_url_path has no format' do
+        let(:legacy_url_path) { "/government/uploads/#{path}" }
+
+        it "proxies asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params: { path: path, format: nil }
+        end
+      end
     end
 
     context 'when asset is unscanned' do
