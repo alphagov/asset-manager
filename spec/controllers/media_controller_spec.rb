@@ -8,15 +8,6 @@ RSpec.describe MediaController, type: :controller do
       allow(controller).to receive_messages(requested_via_private_vhost?: false)
     end
 
-    context "with a valid clean file" do
-      let(:asset) { FactoryBot.create(:clean_asset) }
-
-      it "responds with 404 Not Found" do
-        get :download, params
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
     context "with a valid uploaded file" do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
 
@@ -60,6 +51,15 @@ RSpec.describe MediaController, type: :controller do
 
     context "with an unscanned file" do
       let(:asset) { FactoryBot.create(:asset) }
+
+      it "responds with 404 Not Found" do
+        get :download, params
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with a valid clean file" do
+      let(:asset) { FactoryBot.create(:clean_asset) }
 
       it "responds with 404 Not Found" do
         get :download, params
