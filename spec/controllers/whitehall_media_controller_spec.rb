@@ -40,31 +40,31 @@ RSpec.describe WhitehallMediaController, type: :controller do
       include_examples 'handles valid asset request'
     end
 
-    context 'when asset is unscanned image' do
+    context 'when asset is unscanned' do
       let(:asset) { FactoryBot.build(:whitehall_asset, state: 'unscanned') }
 
       before do
-        allow(asset).to receive(:image?).and_return(true)
+        allow(asset).to receive(:image?).and_return(image)
       end
 
-      it 'redirects to thumbnail-placeholder image' do
-        get :download, params: { path: path, format: format }
+      context 'and asset is image' do
+        let(:image) { true }
 
-        expect(controller).to redirect_to(described_class.helpers.image_path('thumbnail-placeholder.png'))
-      end
-    end
+        it 'redirects to thumbnail-placeholder image' do
+          get :download, params: { path: path, format: format }
 
-    context 'when asset is unscanned non-image' do
-      let(:asset) { FactoryBot.build(:whitehall_asset, state: 'unscanned') }
-
-      before do
-        allow(asset).to receive(:image?).and_return(false)
+          expect(controller).to redirect_to(described_class.helpers.image_path('thumbnail-placeholder.png'))
+        end
       end
 
-      it 'redirects to government placeholder page' do
-        get :download, params: { path: path, format: format }
+      context 'and asset is not an image' do
+        let(:image) { false }
 
-        expect(controller).to redirect_to('/government/placeholder')
+        it 'redirects to government placeholder page' do
+          get :download, params: { path: path, format: format }
+
+          expect(controller).to redirect_to('/government/placeholder')
+        end
       end
     end
 
