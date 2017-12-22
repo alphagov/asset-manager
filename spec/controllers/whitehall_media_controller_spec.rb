@@ -58,7 +58,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     context 'when asset is clean' do
       let(:state) { 'clean' }
 
-      include_examples 'handles valid asset request'
+      include_examples 'redirects to placeholders'
     end
 
     context 'when asset is uploaded' do

@@ -65,9 +65,15 @@ RSpec.describe 'Whitehall media requests', type: :request do
     include_examples 'redirects to placeholders'
   end
 
-  describe 'request for a clean asset' do
+  describe 'request for an clean asset' do
+    let(:state) { 'clean' }
+
+    include_examples 'redirects to placeholders'
+  end
+
+  describe 'request for an uploaded asset' do
     let(:path) { '/government/uploads/asset.png' }
-    let(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
+    let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
