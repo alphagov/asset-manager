@@ -15,7 +15,7 @@ gem 'rack_strip_client_ip', '0.0.2'
 gem 'rails', '5.1.4'
 gem 'rails-controller-testing'
 gem 'state_machines-mongoid', '~> 0.2.0'
-gem 'unicorn', '5.3.1'
+gem 'unicorn', '5.4.0'
 
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
