@@ -21,22 +21,16 @@ RSpec.describe VirusScanner do
       expect(scanner.scan(file_path)).to eq(true)
     end
 
-    it "returns false if clamdscan detects a virus" do
+    it "raises InfectedFile exception if clamdscan detects a virus" do
       status = double("Process::Status", exitstatus: 1)
       allow(Open3).to receive(:capture2e).and_return(["#{file_path}: Eicar-Test-Signature FOUND", status])
 
-      expect(scanner.scan(file_path)).to eq(false)
+      expect {
+        scanner.scan(file_path)
+      }.to raise_error(VirusScanner::InfectedFile, "#{file_path}: Eicar-Test-Signature FOUND")
     end
 
-    it "makes virus info available after detecting a virus" do
-      status = double("Process::Status", exitstatus: 1)
-      allow(Open3).to receive(:capture2e).and_return(["#{file_path}: Eicar-Test-Signature FOUND", status])
-
-      scanner.scan(file_path)
-      expect(scanner.virus_info).to eq("#{file_path}: Eicar-Test-Signature FOUND")
-    end
-
-    it "raises an error with the output message if clamdscan fails" do
+    it "raises Error exception with the output message if clamdscan fails" do
       status = double("Process::Status", exitstatus: 2)
       allow(Open3).to receive(:capture2e).and_return(["ERROR: Can't access file #{file_path}", status])
 

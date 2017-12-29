@@ -22,9 +22,12 @@ RSpec.describe VirusScanWorker do
   end
 
   context "when a virus is found" do
+    let(:exception_message) { "/path/to/file: Eicar-Test-Signature FOUND" }
+    let(:exception) { VirusScanner::InfectedFile.new(exception_message) }
+
     before do
-      allow_any_instance_of(VirusScanner).to receive(:scan).with(asset.file.path).and_return(false)
-      allow_any_instance_of(VirusScanner).to receive(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
+      allow_any_instance_of(VirusScanner).to receive(:scan).with(asset.file.path)
+        .and_raise(exception)
     end
 
     it "sets the state to infected if a virus is found" do
@@ -36,7 +39,7 @@ RSpec.describe VirusScanWorker do
 
     it "sends an exception notification" do
       expect(GovukError).to receive(:notify).
-        with(VirusScanner::InfectedFile.new, extra: { error_message: "/path/to/file: Eicar-Test-Signature FOUND", id: asset.id, filename: asset.filename })
+        with(exception, extra: { id: asset.id, filename: asset.filename })
 
       worker.perform(asset.id)
     end

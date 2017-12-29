@@ -10,16 +10,13 @@ class VirusScanner
   # Used for sending exception notices on infection
   class InfectedFile < StandardError; end
 
-  attr_reader :virus_info
-
   def scan(file_path)
     out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', file_path)
     case status.exitstatus
     when 0
       @clean = true
     when 1
-      @clean = false
-      @virus_info = out_str
+      raise InfectedFile, out_str
     else
       raise Error, out_str
     end
