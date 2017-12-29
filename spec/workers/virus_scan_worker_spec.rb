@@ -7,13 +7,13 @@ RSpec.describe VirusScanWorker do
   it "calls out to the VirusScanner to scan the file" do
     scanner = double("VirusScanner")
     expect(VirusScanner).to receive(:new).with(asset.file.path).and_return(scanner)
-    expect(scanner).to receive(:clean?).and_return(true)
+    expect(scanner).to receive(:scan).and_return(true)
 
     worker.perform(asset.id)
   end
 
   it "sets the state to clean if the file is clean" do
-    allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(true)
+    allow_any_instance_of(VirusScanner).to receive(:scan).and_return(true)
 
     worker.perform(asset.id)
 
@@ -23,7 +23,7 @@ RSpec.describe VirusScanWorker do
 
   context "when a virus is found" do
     before do
-      allow_any_instance_of(VirusScanner).to receive(:clean?).and_return(false)
+      allow_any_instance_of(VirusScanner).to receive(:scan).and_return(false)
       allow_any_instance_of(VirusScanner).to receive(:virus_info).and_return("/path/to/file: Eicar-Test-Signature FOUND")
     end
 

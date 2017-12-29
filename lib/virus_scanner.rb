@@ -16,13 +16,6 @@ class VirusScanner
 
   attr_reader :virus_info
 
-  def clean?
-    scan
-    @clean
-  end
-
-private
-
   def scan
     out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', @file_path)
     case status.exitstatus
@@ -34,5 +27,6 @@ private
     else
       raise Error, out_str
     end
+    @clean
   end
 end

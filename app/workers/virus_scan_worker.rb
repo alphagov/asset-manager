@@ -6,7 +6,7 @@ class VirusScanWorker
   def perform(asset_id)
     asset = Asset.find(asset_id)
     scanner = VirusScanner.new(asset.file.path)
-    if scanner.clean?
+    if scanner.scan
       asset.scanned_clean
     else
       GovukError.notify(VirusScanner::InfectedFile.new, extra: { error_message: scanner.virus_info, id: asset.id, filename: asset.filename })

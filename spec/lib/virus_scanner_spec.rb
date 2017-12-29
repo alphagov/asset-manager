@@ -9,28 +9,28 @@ RSpec.describe VirusScanner do
       status = double("Process::Status", exitstatus: 0)
       expect(Open3).to receive(:capture2e).with("govuk_clamscan", "--no-summary", "/path/to/file").and_return(["", status])
 
-      scanner.clean?
+      scanner.scan
     end
 
     it "returns true if clamdscan detects no virus" do
       status = double("Process::Status", exitstatus: 0)
       allow(Open3).to receive(:capture2e).and_return(["/path/to/file: OK", status])
 
-      expect(scanner.clean?).to eq(true)
+      expect(scanner.scan).to eq(true)
     end
 
     it "returns false if clamdscan detects a virus" do
       status = double("Process::Status", exitstatus: 1)
       allow(Open3).to receive(:capture2e).and_return(["/path/to/file: Eicar-Test-Signature FOUND", status])
 
-      expect(scanner.clean?).to eq(false)
+      expect(scanner.scan).to eq(false)
     end
 
     it "makes virus info available after detecting a virus" do
       status = double("Process::Status", exitstatus: 1)
       allow(Open3).to receive(:capture2e).and_return(["/path/to/file: Eicar-Test-Signature FOUND", status])
 
-      scanner.clean?
+      scanner.scan
       expect(scanner.virus_info).to eq("/path/to/file: Eicar-Test-Signature FOUND")
     end
 
@@ -39,7 +39,7 @@ RSpec.describe VirusScanner do
       allow(Open3).to receive(:capture2e).and_return(["ERROR: Can't access file /path/to/file", status])
 
       expect {
-        scanner.clean?
+        scanner.scan
       }.to raise_error(VirusScanner::Error, "ERROR: Can't access file /path/to/file")
     end
   end
