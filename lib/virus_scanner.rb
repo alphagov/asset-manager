@@ -14,12 +14,11 @@ class VirusScanner
     out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', file_path)
     case status.exitstatus
     when 0
-      @clean = true
+      return true
     when 1
       raise InfectedFile, out_str
     else
       raise Error, out_str
     end
-    @clean
   end
 end
