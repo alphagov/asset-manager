@@ -6,8 +6,6 @@ require 'open3'
 # to either clamscan or clamdscan
 class VirusScanner
   class Error < StandardError; end
-
-  # Used for sending exception notices on infection
   class InfectedFile < StandardError; end
 
   def scan(file_path)
