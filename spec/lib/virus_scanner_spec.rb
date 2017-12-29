@@ -6,37 +6,48 @@ RSpec.describe VirusScanner do
     subject(:scanner) { described_class.new }
 
     let(:file_path) { '/path/to/file' }
+    let(:output) { '' }
+    let(:status) { instance_double('Process::Status', exitstatus: exitstatus) }
+    let(:exitstatus) { 0 }
+
+    before do
+      allow(Open3).to receive(:capture2e).and_return([output, status])
+    end
 
     it "calls out to clamdscan" do
-      status = double("Process::Status", exitstatus: 0)
-      expect(Open3).to receive(:capture2e).with("govuk_clamscan", "--no-summary", file_path).and_return(["", status])
+      expect(Open3).to receive(:capture2e).with("govuk_clamscan", "--no-summary", file_path)
 
       scanner.scan(file_path)
     end
 
-    it "returns true if clamdscan detects no virus" do
-      status = double("Process::Status", exitstatus: 0)
-      allow(Open3).to receive(:capture2e).and_return(["#{file_path}: OK", status])
+    context 'when clamdscan detects no virus' do
+      let(:exitstatus) { 0 }
 
-      expect(scanner.scan(file_path)).to eq(true)
+      it "returns true" do
+        expect(scanner.scan(file_path)).to eq(true)
+      end
     end
 
-    it "raises InfectedFile exception if clamdscan detects a virus" do
-      status = double("Process::Status", exitstatus: 1)
-      allow(Open3).to receive(:capture2e).and_return(["#{file_path}: Eicar-Test-Signature FOUND", status])
+    context 'when clamdscan detects a virus' do
+      let(:exitstatus) { 1 }
+      let(:output) { "#{file_path}: Eicar-Test-Signature FOUND" }
 
-      expect {
-        scanner.scan(file_path)
-      }.to raise_error(VirusScanner::InfectedFile, "#{file_path}: Eicar-Test-Signature FOUND")
+      it "raises InfectedFile exception with the output message" do
+        expect {
+          scanner.scan(file_path)
+        }.to raise_error(VirusScanner::InfectedFile, output)
+      end
     end
 
-    it "raises Error exception with the output message if clamdscan fails" do
-      status = double("Process::Status", exitstatus: 2)
-      allow(Open3).to receive(:capture2e).and_return(["ERROR: Can't access file #{file_path}", status])
+    context 'when clamdscan fails' do
+      let(:exitstatus) { 2 }
+      let(:output) { "ERROR: Can't access file #{file_path}" }
 
-      expect {
-        scanner.scan(file_path)
-      }.to raise_error(VirusScanner::Error, "ERROR: Can't access file #{file_path}")
+      it "raises Error exception with the output message" do
+        expect {
+          scanner.scan(file_path)
+        }.to raise_error(VirusScanner::Error, output)
+      end
     end
   end
 end
