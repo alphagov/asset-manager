@@ -12,16 +12,6 @@ RSpec.describe VirusScanner do
       scanner.clean?
     end
 
-    it "only scans the file once" do
-      status = double("Process::Status", exitstatus: 0)
-      allow(Open3).to receive(:capture2e).and_return(["/path/to/file: OK", status])
-
-      scanner.clean?
-      expect(Open3).not_to receive(:capture2e)
-
-      expect(scanner.clean?).to eq(true)
-    end
-
     it "returns true if clamdscan detects no virus" do
       status = double("Process::Status", exitstatus: 0)
       allow(Open3).to receive(:capture2e).and_return(["/path/to/file: OK", status])

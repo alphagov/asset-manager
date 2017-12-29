@@ -12,13 +12,12 @@ class VirusScanner
 
   def initialize(file_path)
     @file_path = file_path
-    @scanned = false
   end
 
   attr_reader :virus_info
 
   def clean?
-    scan unless @scanned
+    scan
     @clean
   end
 
@@ -35,6 +34,5 @@ private
     else
       raise Error, out_str
     end
-    @scanned = true
   end
 end
