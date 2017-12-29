@@ -25,7 +25,7 @@ class Asset
   field :md5_hexdigest, type: String
   protected :md5_hexdigest=
 
-  validates :file, presence: true
+  validates :file, presence: true, unless: :uploaded?
   validates :organisation_slug, presence: true, if: :access_limited?
 
   validates :uuid, presence: true,
@@ -37,7 +37,7 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
-  before_save :store_metadata
+  before_save :store_metadata, unless: :uploaded?
   after_save :schedule_virus_scan
 
   state_machine :state, initial: :unscanned do
@@ -55,6 +55,10 @@ class Asset
 
     event :upload_success do
       transition clean: :uploaded
+    end
+
+    after_transition to: :uploaded do |asset, _|
+      asset.remove_file!
     end
   end
 
