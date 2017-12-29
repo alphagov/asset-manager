@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'services'
 
 RSpec.describe VirusScanWorker do
   let(:worker) { described_class.new }
@@ -6,7 +7,7 @@ RSpec.describe VirusScanWorker do
   let(:scanner) { instance_double('VirusScanner') }
 
   before do
-    allow(VirusScanner).to receive(:new).and_return(scanner)
+    allow(Services).to receive(:virus_scanner).and_return(scanner)
   end
 
   it "calls out to the VirusScanner to scan the file" do
