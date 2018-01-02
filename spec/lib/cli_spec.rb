@@ -64,4 +64,90 @@ RSpec.describe CLI, type: :model do
       end
     end
   end
+
+  describe '#update_asset' do
+    let(:asset) { FactoryBot.create(:uploaded_asset) }
+    let(:new_path) { fixture_file_path('asset2.jpg') }
+
+    context 'when called with ID of existing asset and path to new file' do
+      let(:args) { [asset.id, new_path] }
+
+      it 'updates existing asset' do
+        cli.update_asset(*args)
+
+        expect(asset.reload.file.file.identifier).to eq('asset2.jpg')
+      end
+
+      it 'reports that asset was saved' do
+        cli.update_asset(*args)
+
+        output.rewind
+        expect(output.read).to match(/^updated/i)
+      end
+
+      context 'when saving asset fails due to validation errors' do
+        let(:invalid_asset) { Asset.new }
+
+        before do
+          allow(Asset).to receive(:find).and_return(invalid_asset)
+          allow(invalid_asset).to receive(:save).and_return(false)
+        end
+
+        it 'does not update existing asset' do
+          cli.update_asset(*args)
+
+          expect(asset.reload.file.file.identifier).to eq('asset.png')
+        end
+
+        it 'reports that asset was not updated' do
+          cli.update_asset(*args)
+
+          output.rewind
+          expect(output.read).to match(/^not updated/i)
+        end
+      end
+    end
+
+    context 'when called with ID of existing asset but no path to new file' do
+      let(:args) { [asset.id] }
+
+      before do
+        allow(kernel).to receive(:abort).and_raise('abort-error')
+      end
+
+      it 'aborts execution' do
+        expect(kernel).to receive(:abort)
+
+        cli.update_asset(*args) rescue nil
+      end
+
+      it 'prints usage instructions' do
+        cli.update_asset(*args) rescue nil
+
+        output.rewind
+        expect(output.read).to match(/provide a filename/i)
+      end
+    end
+
+    context 'when called with no arguments' do
+      let(:args) { [] }
+
+      before do
+        allow(kernel).to receive(:abort).and_raise('abort-error')
+      end
+
+      it 'aborts execution' do
+        expect(kernel).to receive(:abort)
+
+        cli.update_asset(*args) rescue nil
+      end
+
+      it 'prints usage instructions' do
+        cli.update_asset(*args) rescue nil
+
+        output.rewind
+        expect(output.read).to match(/provide the asset id/i)
+      end
+    end
+  end
 end
