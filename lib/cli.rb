@@ -8,7 +8,7 @@ class CLI
     filename = argv[0]
 
     unless filename
-      @output.puts "You need to provide a filename as first argument when running this script"
+      puts "You need to provide a filename as first argument when running this script"
       @kernel.abort
     end
 
@@ -16,13 +16,13 @@ class CLI
     asset = Asset.new(file: file)
 
     if asset.save
-      @output.puts "Saved!"
-      @output.puts "Asset id: #{asset.id}"
-      @output.puts "Asset name: #{asset.file.filename}"
-      @output.puts "Asset basepath: /media/#{asset.id}/#{asset.file.filename}"
+      puts "Saved!"
+      puts "Asset id: #{asset.id}"
+      puts "Asset name: #{asset.file.filename}"
+      puts "Asset basepath: /media/#{asset.id}/#{asset.file.filename}"
     else
-      @output.puts "Not saved, error messages:"
-      @output.puts asset.errors.full_messages
+      puts "Not saved, error messages:"
+      puts asset.errors.full_messages
     end
   end
 
@@ -31,12 +31,12 @@ class CLI
     filename = argv[1]
 
     unless old_asset_id
-      @output.puts "You need to provide the asset ID as first argument when running this script"
+      puts "You need to provide the asset ID as first argument when running this script"
       @kernel.abort
     end
 
     unless filename
-      @output.puts "You need to provide a filename as second argument when running this script"
+      puts "You need to provide a filename as second argument when running this script"
       @kernel.abort
     end
 
@@ -44,13 +44,19 @@ class CLI
     old_asset = Asset.find(old_asset_id)
 
     if old_asset.update_attributes(file: file)
-      @output.puts "Updated!"
-      @output.puts "Asset id: #{old_asset.id}"
-      @output.puts "Asset name: #{old_asset.file.filename}"
-      @output.puts "Asset basepath: /media/#{old_asset.id}/#{old_asset.file.filename}"
+      puts "Updated!"
+      puts "Asset id: #{old_asset.id}"
+      puts "Asset name: #{old_asset.file.filename}"
+      puts "Asset basepath: /media/#{old_asset.id}/#{old_asset.file.filename}"
     else
-      @output.puts "not updated, something went wrong"
-      @output.puts "errors: #{old_asset.errors.full_messages}"
+      puts "not updated, something went wrong"
+      puts "errors: #{old_asset.errors.full_messages}"
     end
+  end
+
+private
+
+  def puts(*messages)
+    @output.puts(*messages)
   end
 end
