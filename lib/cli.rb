@@ -9,7 +9,7 @@ class CLI
 
     unless filename
       puts "You need to provide a filename as first argument when running this script"
-      @kernel.abort
+      abort
     end
 
     file = File.new(filename)
@@ -32,12 +32,12 @@ class CLI
 
     unless old_asset_id
       puts "You need to provide the asset ID as first argument when running this script"
-      @kernel.abort
+      abort
     end
 
     unless filename
       puts "You need to provide a filename as second argument when running this script"
-      @kernel.abort
+      abort
     end
 
     file = File.new(filename)
@@ -58,5 +58,9 @@ private
 
   def puts(*messages)
     @output.puts(*messages)
+  end
+
+  def abort(message = nil)
+    @kernel.abort(message)
   end
 end
