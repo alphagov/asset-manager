@@ -5,7 +5,7 @@ class CLI
   end
 
   def create_asset(*argv)
-    filename = argv.any? ? argv.fetch(0) : nil
+    filename = argv[0]
 
     unless filename
       @output.puts "You need to provide a filename as first argument when running this script"
