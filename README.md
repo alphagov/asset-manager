@@ -266,7 +266,7 @@ deploy@integration-backend-1:$ curl \
 
 ```
 deploy@integration-backend-1:$ curl \
-  -H"Authorization: Bearer <bearer-token>" \
+  -H"Authorization: Bearer $BEARER_TOKEN" \
   -H"Accept: application/json" \
   https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92
 {
