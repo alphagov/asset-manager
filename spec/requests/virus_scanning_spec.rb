@@ -5,7 +5,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     login_as_stub_user
   end
 
-  specify "uploading a clean asset, and seeing it available after virus scanning" do
+  specify "a clean asset is available after virus scanning & uploading to cloud storage" do
     post "/assets", params: { asset: { file: load_fixture_file("lorem.txt") } }
     expect(response).to have_http_status(:created)
 
@@ -20,11 +20,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     VirusScanWorker.drain
 
     get "/media/#{asset.id}/lorem.txt"
-    expect(response).to have_http_status(:success)
-
-    redirect_url = headers['X-Accel-Redirect']
-    cloud_url = redirect_url.match(%r{^/cloud-storage-proxy/(.*)$})[1]
-    expect { get cloud_url }.to raise_error(ActionController::RoutingError)
+    expect(response).to have_http_status(:not_found)
 
     SaveToCloudStorageWorker.drain
 

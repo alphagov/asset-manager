@@ -13,7 +13,7 @@ RSpec.describe "Media requests", type: :request do
     let(:http_method) { 'GET' }
     let(:presigned_url) { 'https://s3-host.test/presigned-url' }
 
-    let(:asset) { FactoryBot.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:uploaded_asset) }
 
     before do
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)

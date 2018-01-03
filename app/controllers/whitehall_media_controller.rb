@@ -4,7 +4,7 @@ class WhitehallMediaController < BaseMediaController
     path += ".#{params[:format]}" if params[:format].present?
     asset = WhitehallAsset.find_by(legacy_url_path: path)
 
-    if asset.unscanned?
+    if asset.unscanned? || asset.clean?
       set_expiry(1.minute)
       if asset.image?
         redirect_to self.class.helpers.image_path('thumbnail-placeholder.png')

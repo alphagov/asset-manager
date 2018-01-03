@@ -1,6 +1,48 @@
 require 'rails_helper'
 
 RSpec.describe 'Whitehall media requests', type: :request do
+  shared_examples 'redirects to placeholders' do
+    let(:asset) {
+      FactoryBot.create(
+        :whitehall_asset,
+        file: load_fixture_file(File.basename(path)),
+        legacy_url_path: path,
+        state: state
+      )
+    }
+
+    before do
+      allow(cloud_storage).to receive(:presigned_url_for)
+        .with(asset, http_method: http_method).and_return(presigned_url)
+
+      get path
+    end
+
+    context 'when asset is an image' do
+      let(:path) { '/government/uploads/asset.png' }
+
+      it 'redirects to placeholder image' do
+        expect(response).to redirect_to(%r(/asset-manager/thumbnail-placeholder-.*\.png))
+      end
+
+      it 'sets the Cache-Control response header to 1 minute' do
+        expect(response.headers['Cache-Control']).to eq('max-age=60, public')
+      end
+    end
+
+    context 'when asset is not an image' do
+      let(:path) { '/government/uploads/lorem.txt' }
+
+      it 'redirects to government placeholder page' do
+        expect(response).to redirect_to('/government/placeholder')
+      end
+
+      it 'sets the Cache-Control response header to 1 minute' do
+        expect(response.headers['Cache-Control']).to eq('max-age=60, public')
+      end
+    end
+  end
+
   let(:cloud_storage) { instance_double(S3Storage) }
   let(:http_method) { 'GET' }
   let(:presigned_url) { 'https://s3-host.test/presigned-url' }
@@ -17,63 +59,21 @@ RSpec.describe 'Whitehall media requests', type: :request do
     end
   end
 
-  describe 'request for an unscanned image asset' do
-    let(:path) { '/government/uploads/asset.png' }
+  describe 'request for an unscanned asset' do
+    let(:state) { 'unscanned' }
 
-    let(:asset) {
-      FactoryBot.create(
-        :whitehall_asset,
-        file: load_fixture_file('asset.png'),
-        legacy_url_path: path
-      )
-    }
-
-    before do
-      allow(cloud_storage).to receive(:presigned_url_for)
-        .with(asset, http_method: http_method).and_return(presigned_url)
-
-      get path
-    end
-
-    it 'redirects to placeholder image' do
-      expect(response).to redirect_to(%r(/asset-manager/thumbnail-placeholder-.*\.png))
-    end
-
-    it 'sets the Cache-Control response header to 1 minute' do
-      expect(response.headers['Cache-Control']).to eq('max-age=60, public')
-    end
+    include_examples 'redirects to placeholders'
   end
 
-  describe 'request for an unscanned non-image asset' do
-    let(:path) { '/government/uploads/lorem.txt' }
+  describe 'request for an clean asset' do
+    let(:state) { 'clean' }
 
-    let(:asset) {
-      FactoryBot.create(
-        :whitehall_asset,
-        file: load_fixture_file('lorem.txt'),
-        legacy_url_path: path
-      )
-    }
-
-    before do
-      allow(cloud_storage).to receive(:presigned_url_for)
-        .with(asset, http_method: http_method).and_return(presigned_url)
-
-      get path
-    end
-
-    it 'redirects to government placeholder page' do
-      expect(response).to redirect_to('/government/placeholder')
-    end
-
-    it 'sets the Cache-Control response header to 1 minute' do
-      expect(response.headers['Cache-Control']).to eq('max-age=60, public')
-    end
+    include_examples 'redirects to placeholders'
   end
 
-  describe 'request for a clean asset' do
+  describe 'request for an uploaded asset' do
     let(:path) { '/government/uploads/asset.png' }
-    let(:asset) { FactoryBot.create(:clean_whitehall_asset, legacy_url_path: path) }
+    let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)

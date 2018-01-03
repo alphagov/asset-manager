@@ -60,7 +60,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "retrieving an asset" do
     it "retreives details about an existing asset" do
-      asset = FactoryBot.create(:clean_asset)
+      asset = FactoryBot.create(:uploaded_asset)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -72,7 +72,7 @@ RSpec.describe "Asset requests", type: :request do
       expect(body["name"]).to eq("asset.png")
       expect(body["content_type"]).to eq("image/png")
       expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
-      expect(body["state"]).to eq("clean")
+      expect(body["state"]).to eq("uploaded")
     end
 
     it "returns details about an infected asset" do
@@ -102,7 +102,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "deleting an asset" do
     it "soft deletes an existing asset" do
-      asset = FactoryBot.create(:clean_asset)
+      asset = FactoryBot.create(:uploaded_asset)
 
       delete "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -113,7 +113,7 @@ RSpec.describe "Asset requests", type: :request do
       expect(body["name"]).to eq("asset.png")
       expect(body["content_type"]).to eq("image/png")
       expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
-      expect(body["state"]).to eq("clean")
+      expect(body["state"]).to eq("uploaded")
 
       get "/assets/#{asset.id}"
 
@@ -123,7 +123,7 @@ RSpec.describe "Asset requests", type: :request do
 
   describe "restoring an asset" do
     it "restores a soft deleted asset" do
-      asset = FactoryBot.create(:clean_asset)
+      asset = FactoryBot.create(:uploaded_asset)
 
       post "/assets/#{asset.id}/restore"
 
@@ -135,7 +135,7 @@ RSpec.describe "Asset requests", type: :request do
       expect(body["name"]).to eq("asset.png")
       expect(body["content_type"]).to eq("image/png")
       expect(body["file_url"]).to eq("http://assets.digital.cabinet-office.gov.uk/media/#{asset.id}/asset.png")
-      expect(body["state"]).to eq("clean")
+      expect(body["state"]).to eq("uploaded")
 
       get "/assets/#{asset.id}"
 
