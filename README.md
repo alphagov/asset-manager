@@ -48,6 +48,10 @@ All assets are uploaded to the S3 bucket via a separate `govuk_sidekiq` job trig
 
 * `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored (required in production)
 
+#### Fake S3
+
+In non-production environments if the `AWS_S3_BUCKET_NAME` environment variable is not set, then a fake version of S3 (`S3Storage::Fake`) is used and the other `AWS_*` environment variables do not need to be set. In this case, files are saved to the local filesystem instead of S3 and are served via an instance of `Rack::File` mounted on the appropriate route path prefix.
+
 ### Testing
 
 `bundle exec rspec`
