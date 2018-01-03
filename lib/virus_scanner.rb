@@ -6,35 +6,17 @@ require 'open3'
 # to either clamscan or clamdscan
 class VirusScanner
   class Error < StandardError; end
-
-  # Used for sending exception notices on infection
   class InfectedFile < StandardError; end
 
-  def initialize(file_path)
-    @file_path = file_path
-    @scanned = false
-  end
-
-  attr_reader :virus_info
-
-  def clean?
-    scan unless @scanned
-    @clean
-  end
-
-private
-
-  def scan
-    out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', @file_path)
+  def scan(file_path)
+    out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', file_path)
     case status.exitstatus
     when 0
-      @clean = true
+      return true
     when 1
-      @clean = false
-      @virus_info = out_str
+      raise InfectedFile, out_str
     else
       raise Error, out_str
     end
-    @scanned = true
   end
 end

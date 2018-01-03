@@ -1,16 +1,14 @@
-require 'virus_scanner'
+require 'services'
 
 class VirusScanWorker
   include Sidekiq::Worker
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    scanner = VirusScanner.new(asset.file.path)
-    if scanner.clean?
-      asset.scanned_clean
-    else
-      GovukError.notify(VirusScanner::InfectedFile.new, extra: { error_message: scanner.virus_info, id: asset.id, filename: asset.filename })
-      asset.scanned_infected
-    end
+    Services.virus_scanner.scan(asset.file.path)
+    asset.scanned_clean
+  rescue VirusScanner::InfectedFile => e
+    GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+    asset.scanned_infected
   end
 end
