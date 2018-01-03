@@ -14,6 +14,16 @@ RSpec.describe Asset, type: :model do
       it 'is not valid' do
         expect(asset).not_to be_valid
       end
+
+      context 'when asset has been uploaded to cloud storage' do
+        before do
+          asset.state = 'uploaded'
+        end
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
     end
 
     it 'is valid without an organisation slug' do
@@ -514,11 +524,24 @@ RSpec.describe Asset, type: :model do
 
     context 'when asset is clean' do
       let(:asset) { FactoryBot.create(:clean_asset) }
+      let(:path) { asset.file.path }
 
       it 'changes asset state to uploaded' do
         asset.upload_success!
 
         expect(asset.reload).to be_uploaded
+      end
+
+      it 'sets file attribute to blank' do
+        asset.upload_success!
+
+        expect(asset.reload.file).to be_blank
+      end
+
+      it 'removes the underlying file' do
+        asset.upload_success!
+
+        expect(File.exist?(path)).to be_falsey
       end
     end
 
@@ -537,6 +560,20 @@ RSpec.describe Asset, type: :model do
       it 'does not allow asset state change to uploaded' do
         expect { asset.upload_success! }
           .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+  end
+
+  describe '#save' do
+    let(:asset) { FactoryBot.create(:clean_asset) }
+
+    context 'when asset has been uploaded to cloud storage' do
+      before do
+        asset.upload_success!
+      end
+
+      it 'saves asset successfully despite having no file' do
+        expect(asset.save).to be_truthy
       end
     end
   end
