@@ -244,11 +244,10 @@ deploy@integration-backend-1:$ echo `date` > tmp.txt
 deploy@integration-backend-1:$ cat tmp.txt
 Wed Sep 20 14:42:54 UTC 2017
 
-deploy@integration-backend-1:$ cat /etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN
-<bearer-token>
+deploy@integration-backend-1:$ export BEARER_TOKEN=`cat /etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`
 
 deploy@integration-backend-1:$ curl \
-  -H"Authorization: Bearer <bearer-token>" \
+  -H"Authorization: Bearer $BEARER_TOKEN" \
   -H"Accept: application/json" \
   https://asset-manager.integration.publishing.service.gov.uk/assets \
   --form "asset[file]=@tmp.txt"
