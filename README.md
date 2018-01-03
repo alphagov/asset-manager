@@ -46,8 +46,6 @@ All assets are uploaded to the S3 bucket via a separate `govuk_sidekiq` job trig
 
 #### Application-specific environment variables
 
-##### AWS
-
 * `AWS_S3_BUCKET_NAME` - name of bucket where assets are to be stored (required in production)
 
 ### Testing
