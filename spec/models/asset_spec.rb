@@ -525,6 +525,10 @@ RSpec.describe Asset, type: :model do
     context 'when asset is clean' do
       let(:asset) { FactoryBot.create(:clean_asset) }
       let(:path) { asset.file.path }
+      let(:pathname) { Pathname.new(path) }
+      let(:dir) { pathname.parent }
+      let(:parent_dir) { pathname.parent.parent }
+      let(:grandparent_dir) { pathname.parent.parent.parent }
 
       it 'changes asset state to uploaded' do
         asset.upload_success!
@@ -542,6 +546,72 @@ RSpec.describe Asset, type: :model do
         asset.upload_success!
 
         expect(File.exist?(path)).to be_falsey
+      end
+
+      it 'removes the empty directory' do
+        asset.upload_success!
+
+        expect(Dir).not_to exist(dir), "#{dir} exists"
+      end
+
+      context 'when directory is not empty' do
+        before do
+          FileUtils.touch(dir.join('do-not-delete-me'))
+        end
+
+        after do
+          FileUtils.rm(dir.join('do-not-delete-me'), force: true)
+        end
+
+        it 'does not remove directory' do
+          asset.upload_success!
+
+          expect(Dir).to exist(dir), "#{dir} exists"
+        end
+      end
+
+      it 'removes the empty parent directory' do
+        asset.upload_success!
+
+        expect(Dir).not_to exist(parent_dir), "#{parent_dir} exists"
+      end
+
+      context 'when parent directory is not empty' do
+        before do
+          FileUtils.touch(parent_dir.join('do-not-delete-me'))
+        end
+
+        after do
+          FileUtils.rm(parent_dir.join('do-not-delete-me'), force: true)
+        end
+
+        it 'does not remove the parent directory' do
+          asset.upload_success!
+
+          expect(Dir).to exist(parent_dir), "#{parent_dir} exists"
+        end
+      end
+
+      it 'removes the empty grandparent directory' do
+        asset.upload_success!
+
+        expect(Dir).not_to exist(grandparent_dir), "#{grandparent_dir} exists"
+      end
+
+      context 'when grandparent directory is not empty' do
+        before do
+          FileUtils.touch(grandparent_dir.join('do-not-delete-me'))
+        end
+
+        after do
+          FileUtils.rm(grandparent_dir.join('do-not-delete-me'), force: true)
+        end
+
+        it 'does not remove the grandparent directory if not empty' do
+          asset.upload_success!
+
+          expect(Dir).to exist(grandparent_dir), "#{grandparent_dir} exists"
+        end
       end
     end
 
