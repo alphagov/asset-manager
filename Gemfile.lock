@@ -39,6 +39,8 @@ GEM
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     arel (8.0.0)
     ast (2.3.0)
     aws-sdk (2.10.105)
@@ -179,6 +181,7 @@ GEM
       ast (~> 2.3)
     plek (2.0.0)
     powerpack (0.1.1)
+    public_suffix (3.0.1)
     rack (2.0.3)
     rack-cache (1.7.1)
       rack (>= 0.4)
@@ -327,6 +330,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  addressable
   aws-sdk (~> 2.10.10)
   carrierwave (~> 0.11.2)
   carrierwave-mongoid (~> 0.10.0)
