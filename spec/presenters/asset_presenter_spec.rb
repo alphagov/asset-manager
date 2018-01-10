@@ -54,5 +54,14 @@ RSpec.describe AssetPresenter do
     it 'returns hash including asset state' do
       expect(json).to include(state: 'unscanned')
     end
+
+    context 'when public url path contains non-ascii characters' do
+      let(:public_url_path) { '/public-ürl-path' }
+
+      it 'URI encodes the public asset URL' do
+        uri = URI.parse(json[:file_url])
+        expect(uri.path).to eq(URI.encode(public_url_path))
+      end
+    end
   end
 end
