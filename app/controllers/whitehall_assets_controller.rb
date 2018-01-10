@@ -16,7 +16,7 @@ class WhitehallAssetsController < ApplicationController
 
   def show
     path = "/#{params[:path]}.#{params[:format]}"
-    @asset = WhitehallAsset.find_by(legacy_url_path: path)
+    @asset = WhitehallAsset.find_by(legacy_url_path: URI.decode(path))
 
     @asset.unscanned? ? set_expiry(0) : set_expiry(30.minutes)
     render json: AssetPresenter.new(@asset, view_context)
