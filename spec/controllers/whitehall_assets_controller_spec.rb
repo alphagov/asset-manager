@@ -146,5 +146,15 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
       expect(response.headers['Cache-Control']).to match("max-age=#{30.minutes}")
     end
+
+    context "an asset with a legacy_url_path containing URI encoded characters" do
+      let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: '/government/uploads/îmage.png') }
+
+      it "renders the asset using the AssetPresenter" do
+        get :show, params: { path: URI.encode('government/uploads/îmage'), format: 'png' }
+
+        expect(response.body).to eq('"asset-as-json"')
+      end
+    end
   end
 end
