@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'addressable'
 gem 'aws-sdk', '~> 2.10.10'
 gem 'carrierwave', '~> 0.11.2'
 gem 'carrierwave-mongoid', '~> 0.10.0', require: 'carrierwave/mongoid'
