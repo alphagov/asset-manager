@@ -1,5 +1,6 @@
 class WhitehallAsset < Asset
   field :legacy_url_path, type: String
+  index legacy_url_path: 1
   attr_readonly :legacy_url_path
 
   field :legacy_etag, type: String
