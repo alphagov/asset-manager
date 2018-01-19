@@ -298,6 +298,30 @@ RSpec.describe Asset, type: :model do
         expect(asset.content_type).to eq('application/octet-stream')
       end
     end
+
+    it 'handles .jpg file extensions' do
+      file = Tempfile.new(['file', '.jpg'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('image/jpeg')
+    end
+
+    it 'handles .jpeg file extensions' do
+      file = Tempfile.new(['file', '.jpeg'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('image/jpeg')
+    end
+
+    it 'handles .gif file extensions' do
+      file = Tempfile.new(['file', '.gif'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('image/gif')
+    end
+
+    it 'handles .png file extensions' do
+      file = Tempfile.new(['file', '.png'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('image/png')
+    end
   end
 
   describe '#image?' do
