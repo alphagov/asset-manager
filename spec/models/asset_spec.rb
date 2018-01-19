@@ -283,7 +283,7 @@ RSpec.describe Asset, type: :model do
       end
 
       context 'and the extension is not a recognised mime type' do
-        let(:asset) { Asset.new(file: load_fixture_file("asset-with-unregistered-mimetype-extension.doc")) }
+        let(:asset) { Asset.new(file: Tempfile.new(['file', '.unknown-extension'])) }
 
         it "returns default content type" do
           expect(asset.content_type).to eq('application/octet-stream')
@@ -321,6 +321,60 @@ RSpec.describe Asset, type: :model do
       file = Tempfile.new(['file', '.png'])
       asset = Asset.new(file: file)
       expect(asset.content_type).to eq('image/png')
+    end
+
+    it 'handles .pdf file extensions' do
+      file = Tempfile.new(['file', '.pdf'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/pdf')
+    end
+
+    it 'handles .csv file extensions' do
+      file = Tempfile.new(['file', '.csv'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('text/csv')
+    end
+
+    it 'handles .rtf file extensions' do
+      file = Tempfile.new(['file', '.rtf'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('text/rtf')
+    end
+
+    it 'handles .doc file extensions' do
+      file = Tempfile.new(['file', '.doc'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/msword')
+    end
+
+    it 'handles .docx file extensions' do
+      file = Tempfile.new(['file', '.docx'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    end
+
+    it 'handles .xls file extensions' do
+      file = Tempfile.new(['file', '.xls'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.ms-excel')
+    end
+
+    it 'handles .xlsx file extensions' do
+      file = Tempfile.new(['file', '.xlsx'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    end
+
+    it 'handles .odt file extensions' do
+      file = Tempfile.new(['file', '.odt'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.oasis.opendocument.text')
+    end
+
+    it 'handles .ods file extensions' do
+      file = Tempfile.new(['file', '.ods'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.oasis.opendocument.spreadsheet')
     end
   end
 
