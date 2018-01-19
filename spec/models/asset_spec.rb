@@ -376,6 +376,12 @@ RSpec.describe Asset, type: :model do
       asset = Asset.new(file: file)
       expect(asset.content_type).to eq('application/vnd.oasis.opendocument.spreadsheet')
     end
+
+    it 'handles .svg file extensions' do
+      file = Tempfile.new(['file', '.svg'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('image/svg+xml')
+    end
   end
 
   describe '#image?' do
