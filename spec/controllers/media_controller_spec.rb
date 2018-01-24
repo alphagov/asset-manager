@@ -89,21 +89,6 @@ RSpec.describe MediaController, type: :controller do
       end
     end
 
-    context "access limiting on the public interface" do
-      let(:restricted_asset) { FactoryBot.create(:access_limited_asset, organisation_slug: 'example-slug') }
-      let(:unrestricted_asset) { FactoryBot.create(:uploaded_asset) }
-
-      it "responds with 404 Not Found for access-limited documents" do
-        get :download, params: { id: restricted_asset, filename: 'asset.png' }
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "responds with 200 OK for unrestricted documents" do
-        get :download, params: { id: unrestricted_asset, filename: 'asset.png' }
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
     context "with a soft deleted file" do
       let(:asset) { FactoryBot.create(:deleted_asset) }
 
