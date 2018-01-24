@@ -4,10 +4,6 @@ RSpec.describe MediaController, type: :controller do
   describe "GET 'download'" do
     let(:params) { { params: { id: asset, filename: asset.filename } } }
 
-    before do
-      allow(controller).to receive_messages(requested_via_private_vhost?: false)
-    end
-
     context "with a valid uploaded file" do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
 
@@ -104,38 +100,6 @@ RSpec.describe MediaController, type: :controller do
 
       it "responds with 200 OK for unrestricted documents" do
         get :download, params: { id: unrestricted_asset, filename: 'asset.png' }
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "access limiting on the private interface" do
-      let(:asset) { FactoryBot.create(:access_limited_asset, organisation_slug: 'correct-organisation-slug') }
-
-      before do
-        allow(controller).to receive_messages(requested_via_private_vhost?: true)
-      end
-
-      it "bounces anonymous users to sign-on" do
-        expect(controller).to receive(:authenticate_user!)
-
-        get :download, params: { id: asset, filename: 'asset.png' }
-      end
-
-      it "responds with 404 Not Found for access-limited documents if the user has the wrong organisation" do
-        user = FactoryBot.create(:user, organisation_slug: 'incorrect-organisation-slug')
-        login_as(user)
-
-        get :download, params: { id: asset, filename: 'asset.png' }
-
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "responds with 200 OK for access-limited documents if the user has the right organisation" do
-        user = FactoryBot.create(:user, organisation_slug: 'correct-organisation-slug')
-        login_as(user)
-
-        get :download, params: { id: asset, filename: 'asset.png' }
-
         expect(response).to have_http_status(:ok)
       end
     end

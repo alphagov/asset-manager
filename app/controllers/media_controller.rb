@@ -1,6 +1,4 @@
 class MediaController < BaseMediaController
-  before_action :authenticate_if_private
-
   def download
     unless asset_servable?
       error_404
@@ -34,16 +32,8 @@ protected
       asset.mainstream?
   end
 
-  def authenticate_if_private
-    authenticate_user! if requested_via_private_vhost?
-  end
-
   def asset
     @asset ||= Asset.find(params[:id])
-  end
-
-  def requested_via_private_vhost?
-    request.host == ENV['PRIVATE_ASSET_MANAGER_HOST']
   end
 
   def redirect_to_current_filename
