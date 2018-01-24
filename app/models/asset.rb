@@ -13,9 +13,6 @@ class Asset
   field :uuid, type: String, default: -> { SecureRandom.uuid }
   attr_readonly :uuid
 
-  field :access_limited, type: Boolean, default: false
-  field :organisation_slug, type: String
-
   field :etag, type: String
   protected :etag=
 
@@ -26,7 +23,6 @@ class Asset
   protected :md5_hexdigest=
 
   validates :file, presence: true, unless: :uploaded?
-  validates :organisation_slug, presence: true, if: :access_limited?
 
   validates :uuid, presence: true,
                    uniqueness: true,

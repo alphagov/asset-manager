@@ -25,24 +25,6 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
-
-    it 'is valid without an organisation slug' do
-      asset.organisation_slug = nil
-      expect(asset).to be_valid
-    end
-
-    context 'when access-limited' do
-      subject(:asset) { FactoryBot.build(:access_limited_asset) }
-
-      it 'is valid when built from factory' do
-        expect(asset).to be_valid
-      end
-
-      it 'is not valid without an organisation slug' do
-        asset.organisation_slug = nil
-        expect(asset).not_to be_valid
-      end
-    end
   end
 
   describe 'creation' do

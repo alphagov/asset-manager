@@ -12,11 +12,6 @@ FactoryBot.define do
     after :create, &:upload_success!
   end
 
-  factory :access_limited_asset, parent: :uploaded_asset do
-    access_limited true
-    organisation_slug 'example-organisation'
-  end
-
   factory :deleted_asset, parent: :asset do
     deleted_at { Time.now }
   end
