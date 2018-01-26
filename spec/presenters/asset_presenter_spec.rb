@@ -55,6 +55,20 @@ RSpec.describe AssetPresenter do
       expect(json).to include(state: 'unscanned')
     end
 
+    it 'returns hash including asset draft status as false' do
+      expect(json).to include(draft: false)
+    end
+
+    context 'when asset is draft' do
+      before do
+        asset.draft = true
+      end
+
+      it 'returns hash including asset draft status as true' do
+        expect(json).to include(draft: true)
+      end
+    end
+
     context 'when public url path contains non-ascii characters' do
       let(:public_url_path) { '/public-ürl-path' }
 

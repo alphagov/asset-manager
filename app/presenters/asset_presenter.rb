@@ -14,6 +14,7 @@ class AssetPresenter
       content_type: @asset.content_type,
       file_url: URI.join(Plek.new.asset_root, Addressable::URI.encode(@asset.public_url_path)).to_s,
       state: @asset.state,
+      draft: @asset.draft?
     }
   end
 end
