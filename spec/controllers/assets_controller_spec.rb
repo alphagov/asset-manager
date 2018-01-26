@@ -53,6 +53,16 @@ RSpec.describe AssetsController, type: :controller do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "a draft asset" do
+      let(:attributes) { { draft: true, file: load_fixture_file("asset.png") } }
+
+      it "is persisted" do
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset)).to be_draft
+      end
+    end
   end
 
   describe "PUT update" do
@@ -100,6 +110,17 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "a draft asset" do
+      let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
+      let(:asset) { FactoryBot.create(:asset) }
+
+      it "updates attributes" do
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset)).to be_draft
       end
     end
   end
