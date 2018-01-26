@@ -111,12 +111,6 @@ class Asset
     @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
   end
 
-  def accessible_by?(user)
-    return true unless access_limited?
-
-    user && user.organisation_slug == self.organisation_slug
-  end
-
 protected
 
   def store_metadata

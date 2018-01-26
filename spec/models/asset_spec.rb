@@ -194,38 +194,6 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#accessible_by?(user)" do
-    let(:user) { FactoryBot.build(:user, organisation_slug: 'example-organisation') }
-
-    it "is always true if the asset is not access limited" do
-      expect(Asset.new(access_limited: false)).to be_accessible_by(user)
-      expect(Asset.new(access_limited: false)).to be_accessible_by(nil)
-      asset = Asset.new(access_limited: false, organisation_slug: (user.organisation_slug + "-2"))
-      expect(asset).to be_accessible_by(user)
-    end
-
-    it "is true if the asset is access limited and the user has the correct organisation" do
-      asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
-      expect(asset).to be_accessible_by(user)
-    end
-
-    it "is false if the asset is access limited and the user has an incorrect organisation" do
-      asset = Asset.new(access_limited: true, organisation_slug: (user.organisation_slug + "-2"))
-      expect(asset).not_to be_accessible_by(user)
-    end
-
-    it "is false if the asset is access limited and the user has no organisation" do
-      unassociated_user = FactoryBot.build(:user, organisation_slug: nil)
-      asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
-      expect(asset).not_to be_accessible_by(unassociated_user)
-    end
-
-    it "is false if the asset is access limited and the user is not logged in" do
-      asset = Asset.new(access_limited: true, organisation_slug: user.organisation_slug)
-      expect(asset).not_to be_accessible_by(nil)
-    end
-  end
-
   describe "soft deletion" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
