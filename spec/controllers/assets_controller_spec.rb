@@ -34,6 +34,7 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['id']).to eq("http://test.host/assets/#{asset.id}")
         expect(body['name']).to eq("asset.png")
         expect(body['content_type']).to eq("image/png")
+        expect(body['draft']).to be_falsey
       end
     end
 
@@ -51,6 +52,24 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "a draft asset" do
+      let(:attributes) { { draft: true, file: load_fixture_file("asset.png") } }
+
+      it "is persisted" do
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset)).to be_draft
+      end
+
+      it "returns the draft status of the new asset" do
+        post :create, params: { asset: attributes }
+
+        body = JSON.parse(response.body)
+
+        expect(body['draft']).to be_truthy
       end
     end
   end
@@ -83,6 +102,7 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['id']).to eq("http://test.host/assets/#{asset.id}")
         expect(body['name']).to eq("asset2.jpg")
         expect(body['content_type']).to eq("image/jpeg")
+        expect(body['draft']).to be_falsey
       end
     end
 
@@ -100,6 +120,25 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "a draft asset" do
+      let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
+      let(:asset) { FactoryBot.create(:asset) }
+
+      it "updates attributes" do
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset)).to be_draft
+      end
+
+      it "returns the draft status of the updated asset" do
+        put :update, params: { id: asset.id, asset: attributes }
+
+        body = JSON.parse(response.body)
+
+        expect(body['draft']).to be_truthy
       end
     end
   end
@@ -164,6 +203,14 @@ RSpec.describe AssetsController, type: :controller do
 
         expect(assigns(:asset)).to be_a(Asset)
         expect(assigns(:asset).id).to eq(asset.id)
+      end
+
+      it "returns the draft status of the asset" do
+        get :show, params: { id: asset.id }
+
+        body = JSON.parse(response.body)
+
+        expect(body['draft']).to be_falsey
       end
     end
 

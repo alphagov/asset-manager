@@ -77,6 +77,30 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe '#draft?' do
+    subject(:asset) { Asset.new }
+
+    it 'returns false-y by default' do
+      expect(asset).not_to be_draft
+    end
+
+    context 'when draft attribute is set to false' do
+      subject(:asset) { Asset.new(draft: false) }
+
+      it 'returns false-y by default' do
+        expect(asset).not_to be_draft
+      end
+    end
+
+    context 'when draft attribute is set to true' do
+      subject(:asset) { Asset.new(draft: true) }
+
+      it 'returns truth-y by default' do
+        expect(asset).to be_draft
+      end
+    end
+  end
+
   describe '#public_url_path' do
     subject(:asset) { Asset.new }
 

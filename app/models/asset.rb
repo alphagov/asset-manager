@@ -13,6 +13,8 @@ class Asset
   field :uuid, type: String, default: -> { SecureRandom.uuid }
   attr_readonly :uuid
 
+  field :draft, type: Boolean, default: false
+
   field :etag, type: String
   protected :etag=
 

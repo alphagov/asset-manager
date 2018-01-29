@@ -55,6 +55,6 @@ private
   end
 
   def asset_params
-    params.require(:asset).permit(:file)
+    params.require(:asset).permit(:file, :draft)
   end
 end

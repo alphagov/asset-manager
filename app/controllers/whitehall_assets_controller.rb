@@ -27,7 +27,7 @@ private
   def asset_params
     params
       .require(:asset)
-      .permit(:file, :legacy_url_path, :legacy_etag, :legacy_last_modified)
+      .permit(:file, :draft, :legacy_url_path, :legacy_etag, :legacy_last_modified)
   end
 
   def existing_asset_with_this_legacy_url_path

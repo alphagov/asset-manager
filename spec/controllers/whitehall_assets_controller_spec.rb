@@ -104,6 +104,23 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(existing_asset.reload).to be_deleted
       end
     end
+
+    context "a draft asset" do
+      let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, :with_legacy_metadata, draft: true) }
+
+      it "stores draft status on asset" do
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset)).to be_draft
+      end
+
+      it "returns JSON response including draft status of new asset" do
+        post :create, params: { asset: attributes }
+
+        body = JSON.parse(response.body)
+        expect(body['draft']).to be_truthy
+      end
+    end
   end
 
   describe 'GET show' do
