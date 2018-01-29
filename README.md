@@ -242,7 +242,9 @@ These examples assume you're running on a machine with access to the integration
 * `Authorization: Bearer <bearer-token>`
 * `Accept: application/json`
 
-Note that the value of the bearer token is stored in `/etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`.
+Note that a suitable value for the bearer token is stored in `/etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`. This
+environment variable can be made available in a new shell by using:
+`govuk_setenv manuals-publisher bash`.
 
 #### Create an asset
 
@@ -252,17 +254,17 @@ deploy@integration-backend-1:$ echo `date` > tmp.txt
 deploy@integration-backend-1:$ cat tmp.txt
 Wed Sep 20 14:42:54 UTC 2017
 
-deploy@integration-backend-1:$ export BEARER_TOKEN=`cat /etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`
+deploy@integration-backend-1:$ govuk_setenv manuals-publisher bash
 
 deploy@integration-backend-1:$ curl \
-  -H"Authorization: Bearer $BEARER_TOKEN" \
+  -H"Authorization: Bearer $ASSET_MANAGER_BEARER_TOKEN" \
   -H"Accept: application/json" \
-  https://asset-manager.integration.publishing.service.gov.uk/assets \
+  https://asset-manager.$GOVUK_APP_DOMAIN/assets \
   --form "asset[file]=@tmp.txt"
 
 {
   "_response_info":{"status":"created"},
-  "id":"https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92",
+  "id":"https://asset-manager.integration.govuk-internal.digital/assets/59c282e2e5274a598a083a92",
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
@@ -274,12 +276,12 @@ deploy@integration-backend-1:$ curl \
 
 ```
 deploy@integration-backend-1:$ curl \
-  -H"Authorization: Bearer $BEARER_TOKEN" \
+  -H"Authorization: Bearer $ASSET_MANAGER_BEARER_TOKEN" \
   -H"Accept: application/json" \
-  https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92
+  https://asset-manager.$GOVUK_APP_DOMAIN/assets/59c282e2e5274a598a083a92
 {
   "_response_info":{"status":"ok"},
-  "id":"https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92",
+  "id":"https://asset-manager.integration.govuk-internal.digital/assets/59c282e2e5274a598a083a92",
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
