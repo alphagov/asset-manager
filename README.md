@@ -259,12 +259,12 @@ deploy@integration-backend-1:$ govuk_setenv manuals-publisher bash
 deploy@integration-backend-1:$ curl \
   -H"Authorization: Bearer $ASSET_MANAGER_BEARER_TOKEN" \
   -H"Accept: application/json" \
-  https://asset-manager.integration.publishing.service.gov.uk/assets \
+  https://asset-manager.$GOVUK_APP_DOMAIN/assets \
   --form "asset[file]=@tmp.txt"
 
 {
   "_response_info":{"status":"created"},
-  "id":"https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92",
+  "id":"https://asset-manager.integration.govuk-internal.digital/assets/59c282e2e5274a598a083a92",
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
@@ -278,10 +278,10 @@ deploy@integration-backend-1:$ curl \
 deploy@integration-backend-1:$ curl \
   -H"Authorization: Bearer $ASSET_MANAGER_BEARER_TOKEN" \
   -H"Accept: application/json" \
-  https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92
+  https://asset-manager.$GOVUK_APP_DOMAIN/assets/59c282e2e5274a598a083a92
 {
   "_response_info":{"status":"ok"},
-  "id":"https://asset-manager.integration.publishing.service.gov.uk/assets/59c282e2e5274a598a083a92",
+  "id":"https://asset-manager.integration.govuk-internal.digital/assets/59c282e2e5274a598a083a92",
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"https://assets-origin.integration.publishing.service.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
