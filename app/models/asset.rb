@@ -13,9 +13,6 @@ class Asset
   field :uuid, type: String, default: -> { SecureRandom.uuid }
   attr_readonly :uuid
 
-  field :access_limited, type: Boolean, default: false
-  field :organisation_slug, type: String
-
   field :etag, type: String
   protected :etag=
 
@@ -26,7 +23,6 @@ class Asset
   protected :md5_hexdigest=
 
   validates :file, presence: true, unless: :uploaded?
-  validates :organisation_slug, presence: true, if: :access_limited?
 
   validates :uuid, presence: true,
                    uniqueness: true,
@@ -109,12 +105,6 @@ class Asset
 
   def md5_hexdigest_from_file
     @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
-  end
-
-  def accessible_by?(user)
-    return true unless access_limited?
-
-    user && user.organisation_slug == self.organisation_slug
   end
 
 protected
