@@ -242,7 +242,9 @@ These examples assume you're running on a machine with access to the integration
 * `Authorization: Bearer <bearer-token>`
 * `Accept: application/json`
 
-Note that the value of the bearer token is stored in `/etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`.
+Note that a suitable value for the bearer token is stored in `/etc/govuk/manuals-publisher/env.d/ASSET_MANAGER_BEARER_TOKEN`. This
+environment variable can be made available in a new shell by using:
+`govuk_setenv manuals-publisher bash`.
 
 #### Create an asset
 
