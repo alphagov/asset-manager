@@ -1,5 +1,9 @@
 class MediaController < BaseMediaController
   def download
+    if redirected_to_draft_assets_host_for?(asset)
+      return
+    end
+
     unless asset_servable?
       error_404
       return

@@ -1,5 +1,9 @@
 class WhitehallMediaController < BaseMediaController
   def download
+    if redirected_to_draft_assets_host_for?(asset)
+      return
+    end
+
     if asset.infected?
       error_404
       return
