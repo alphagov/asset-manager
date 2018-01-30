@@ -45,6 +45,44 @@ RSpec.describe MediaController, type: :controller do
       end
     end
 
+    context 'with draft uploaded asset' do
+      let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
+      let(:draft_assets_host) { AssetManager.govuk.draft_assets_host }
+
+      context 'when requested from host other than draft-assets' do
+        before do
+          request.headers['X-Forwarded-Host'] = "not-#{draft_assets_host}"
+        end
+
+        it 'redirects to draft assets host' do
+          get :download, params
+
+          expected_url = "http://#{draft_assets_host}#{asset.public_url_path}"
+          expect(controller).to redirect_to expected_url
+        end
+      end
+
+      context 'when requested from draft-assets host' do
+        before do
+          request.headers['X-Forwarded-Host'] = draft_assets_host
+          allow(controller).to receive(:authenticate_user!)
+          allow(controller).to receive(:proxy_to_s3_via_nginx)
+        end
+
+        it 'requires authentication' do
+          expect(controller).to receive(:authenticate_user!)
+
+          get :download, params
+        end
+
+        it 'proxies asset to S3 via Nginx as usual' do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params
+        end
+      end
+    end
+
     context "with an unscanned file" do
       let(:asset) { FactoryBot.create(:asset) }
 
