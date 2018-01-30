@@ -35,8 +35,6 @@ module AssetManager
     config.assets.prefix = '/asset-manager'
   end
 
-  mattr_accessor :app_host
-
   mattr_accessor :govuk
 
   mattr_accessor :s3
