@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe BaseMediaController, type: :controller do
+  let(:draft_assets_host) { AssetManager.govuk.draft_assets_host }
+
   controller do
     def anything
       head :ok
@@ -19,10 +21,34 @@ RSpec.describe BaseMediaController, type: :controller do
     end
   end
 
-  it 'does not require sign-in permission' do
+  it 'does not require sign-in permission by default' do
     expect(controller).not_to receive(:authenticate_user!)
 
     get :anything
+  end
+
+  context 'when requested from draft-assets host' do
+    before do
+      request.headers['X-Forwarded-Host'] = draft_assets_host
+    end
+
+    it 'does require sign-in permission' do
+      expect(controller).to receive(:authenticate_user!)
+
+      get :anything
+    end
+  end
+
+  context 'when requested from host other than draft-assets' do
+    before do
+      request.headers['X-Forwarded-Host'] = "not-#{draft_assets_host}"
+    end
+
+    it 'does not require sign-in permission' do
+      expect(controller).not_to receive(:authenticate_user!)
+
+      get :anything
+    end
   end
 
   describe '#proxy_to_s3_via_nginx' do

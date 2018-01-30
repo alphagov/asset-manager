@@ -1,7 +1,11 @@
 class BaseMediaController < ApplicationController
-  skip_before_action :authenticate_user!
+  skip_before_action :authenticate_user!, unless: :requested_from_draft_assets_host?
 
 protected
+
+  def requested_from_draft_assets_host?
+    request.host == AssetManager.govuk.draft_assets_host
+  end
 
   def proxy_to_s3_via_nginx(asset)
     headers['ETag'] = %{"#{asset.etag}"}

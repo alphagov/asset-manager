@@ -37,6 +37,8 @@ module AssetManager
 
   mattr_accessor :app_host
 
+  mattr_accessor :govuk
+
   mattr_accessor :s3
 
   mattr_accessor :carrier_wave_store_base_dir
