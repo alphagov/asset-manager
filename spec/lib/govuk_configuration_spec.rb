@@ -50,4 +50,20 @@ RSpec.describe GovukConfiguration do
       end
     end
   end
+
+  describe '#draft_assets_host' do
+    subject(:config) { described_class.new(env, plek) }
+
+    let(:env) { {} }
+    let(:plek) { instance_double('Plek') }
+
+    before do
+      allow(plek).to receive(:external_url_for).with('draft-assets')
+        .and_return('https://draft-assets.publishing.service.gov.uk')
+    end
+
+    it 'returns externally facing draft-assets host' do
+      expect(config.draft_assets_host).to eq('draft-assets.publishing.service.gov.uk')
+    end
+  end
 end
