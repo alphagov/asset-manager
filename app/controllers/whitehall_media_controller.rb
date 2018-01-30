@@ -8,7 +8,9 @@ class WhitehallMediaController < BaseMediaController
         redirect_to '/government/placeholder'
       end
       return
-    elsif asset.infected?
+    end
+
+    if asset.infected?
       error_404
       return
     end
