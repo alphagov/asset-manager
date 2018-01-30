@@ -1,5 +1,10 @@
 class WhitehallMediaController < BaseMediaController
   def download
+    if asset.infected?
+      error_404
+      return
+    end
+
     if asset.unscanned? || asset.clean?
       set_expiry(1.minute)
       if asset.image?
@@ -7,11 +12,6 @@ class WhitehallMediaController < BaseMediaController
       else
         redirect_to '/government/placeholder'
       end
-      return
-    end
-
-    if asset.infected?
-      error_404
       return
     end
 
