@@ -20,9 +20,11 @@ protected
     head :ok, content_type: asset.content_type
   end
 
-  def redirected_to_draft_assets_host_for?(asset)
-    if asset.draft? && !requested_from_draft_assets_host?
-      redirect_to host: AssetManager.govuk.draft_assets_host, format: params[:format]
-    end
+  def redirect_to_draft_assets_host_for?(asset)
+    asset.draft? && !requested_from_draft_assets_host?
+  end
+
+  def redirect_to_draft_assets_host
+    redirect_to host: AssetManager.govuk.draft_assets_host, format: params[:format]
   end
 end

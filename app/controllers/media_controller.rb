@@ -1,6 +1,7 @@
 class MediaController < BaseMediaController
   def download
-    if redirected_to_draft_assets_host_for?(asset)
+    if redirect_to_draft_assets_host_for?(asset)
+      redirect_to_draft_assets_host
       return
     end
 
