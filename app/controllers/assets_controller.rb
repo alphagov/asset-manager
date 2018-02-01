@@ -19,7 +19,7 @@ class AssetsController < ApplicationController
   end
 
   def update
-    @asset = Asset.find(params.fetch(:id))
+    @asset = Asset.find(params[:id])
 
     if @asset.update_attributes(asset_params)
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
@@ -29,7 +29,7 @@ class AssetsController < ApplicationController
   end
 
   def destroy
-    @asset = Asset.find(params.fetch(:id))
+    @asset = Asset.find(params[:id])
 
     if @asset.destroy
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
@@ -39,7 +39,7 @@ class AssetsController < ApplicationController
   end
 
   def restore
-    @asset = Asset.unscoped.find(params.fetch(:id))
+    @asset = Asset.unscoped.find(params[:id])
 
     if @asset.restore
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
