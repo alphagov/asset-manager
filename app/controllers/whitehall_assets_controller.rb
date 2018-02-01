@@ -1,4 +1,13 @@
 class WhitehallAssetsController < ApplicationController
+  def show
+    @asset = WhitehallAsset.from_params(
+      path: params[:path], format: params[:format]
+    )
+
+    @asset.unscanned? ? set_expiry(0) : set_expiry(30.minutes)
+    render json: AssetPresenter.new(@asset, view_context)
+  end
+
   def create
     if existing_asset_with_this_legacy_url_path.exists?
       existing_asset_with_this_legacy_url_path.destroy
@@ -12,15 +21,6 @@ class WhitehallAssetsController < ApplicationController
     else
       error 422, @asset.errors.full_messages
     end
-  end
-
-  def show
-    @asset = WhitehallAsset.from_params(
-      path: params[:path], format: params[:format]
-    )
-
-    @asset.unscanned? ? set_expiry(0) : set_expiry(30.minutes)
-    render json: AssetPresenter.new(@asset, view_context)
   end
 
 private
