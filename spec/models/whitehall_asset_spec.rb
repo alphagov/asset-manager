@@ -137,4 +137,37 @@ RSpec.describe WhitehallAsset, type: :model do
       expect(asset).not_to be_mainstream
     end
   end
+
+  describe '.from_params' do
+    let(:format_from_params) { 'png' }
+    let(:path_from_params) { 'government/uploads/path/to/asset' }
+    let(:legacy_url_path) { "/#{path_from_params}.#{format_from_params}" }
+    let!(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
+
+    it 'finds Whitehall asset by legacy_url_path' do
+      found_asset = described_class.from_params(
+        path: path_from_params, format: format_from_params
+      )
+      expect(found_asset).to eq(asset)
+    end
+
+    context 'when format is not specified' do
+      let(:legacy_url_path) { "/#{path_from_params}" }
+
+      it 'finds Whitehall asset by legacy_url_path not including format' do
+        found_asset = described_class.from_params(path: path_from_params)
+        expect(found_asset).to eq(asset)
+      end
+    end
+
+    context 'when path_prefix is specified' do
+      it 'finds Whitehall asset by legacy_url_path including path_prefix' do
+        found_asset = described_class.from_params(
+          path: 'path/to/asset', format: format_from_params,
+          path_prefix: 'government/uploads/'
+        )
+        expect(found_asset).to eq(asset)
+      end
+    end
+  end
 end

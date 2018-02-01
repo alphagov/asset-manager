@@ -28,10 +28,8 @@ class WhitehallMediaController < BaseMediaController
 protected
 
   def asset
-    @asset ||= begin
-      path = "/government/uploads/#{params[:path]}"
-      path += ".#{params[:format]}" if params[:format].present?
-      WhitehallAsset.find_by(legacy_url_path: path)
-    end
+    @asset ||= WhitehallAsset.from_params(
+      path: params[:path], format: params[:format], path_prefix: 'government/uploads/'
+    )
   end
 end
