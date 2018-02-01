@@ -104,41 +104,24 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['content_type']).to eq("image/jpeg")
         expect(body['draft']).to be_falsey
       end
-    end
 
-    context "an invalid asset" do
-      let(:attributes) { { file: nil } }
+      context "a draft asset" do
+        let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
+        let(:asset) { FactoryBot.create(:asset) }
 
-      it "is not persisted" do
-        post :create, params: { asset: attributes }
+        it "updates attributes" do
+          put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset)).not_to be_persisted
-        expect(assigns(:asset).file.path).to be_nil
-      end
+          expect(assigns(:asset)).to be_draft
+        end
 
-      it "returns an unprocessable entity status" do
-        post :create, params: { asset: attributes }
+        it "returns the draft status of the updated asset" do
+          put :update, params: { id: asset.id, asset: attributes }
 
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
+          body = JSON.parse(response.body)
 
-    context "a draft asset" do
-      let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
-      let(:asset) { FactoryBot.create(:asset) }
-
-      it "updates attributes" do
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset)).to be_draft
-      end
-
-      it "returns the draft status of the updated asset" do
-        put :update, params: { id: asset.id, asset: attributes }
-
-        body = JSON.parse(response.body)
-
-        expect(body['draft']).to be_truthy
+          expect(body['draft']).to be_truthy
+        end
       end
     end
   end
@@ -150,7 +133,7 @@ RSpec.describe AssetsController, type: :controller do
       it "deletes the asset" do
         delete :destroy, params: { id: asset.id }
 
-        expect((get :show, params: { id: asset.id }).status).to eq(404)
+        expect(Asset.where(id: asset.id).first).to be_nil
       end
 
       it "returns a success status" do

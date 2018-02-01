@@ -16,6 +16,12 @@ class WhitehallAsset < Asset
       message: 'must start with /government/uploads'
     }
 
+  def self.from_params(path:, format: nil, path_prefix: nil)
+    legacy_url_path = "/#{path_prefix}#{path}"
+    legacy_url_path += ".#{format}" if format.present?
+    find_by(legacy_url_path: legacy_url_path)
+  end
+
   def etag
     legacy_etag || super
   end
