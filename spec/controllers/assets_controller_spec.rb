@@ -150,7 +150,7 @@ RSpec.describe AssetsController, type: :controller do
       it "deletes the asset" do
         delete :destroy, params: { id: asset.id }
 
-        expect((get :show, params: { id: asset.id }).status).to eq(404)
+        expect(Asset.where(id: asset.id).first).to be_nil
       end
 
       it "returns a success status" do
