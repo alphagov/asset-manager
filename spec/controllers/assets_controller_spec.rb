@@ -106,23 +106,6 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
 
-    context "an invalid asset" do
-      let(:attributes) { { file: nil } }
-
-      it "is not persisted" do
-        post :create, params: { asset: attributes }
-
-        expect(assigns(:asset)).not_to be_persisted
-        expect(assigns(:asset).file.path).to be_nil
-      end
-
-      it "returns an unprocessable entity status" do
-        post :create, params: { asset: attributes }
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
-
     context "a draft asset" do
       let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
       let(:asset) { FactoryBot.create(:asset) }
