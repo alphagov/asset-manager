@@ -15,7 +15,8 @@ class WhitehallAssetsController < ApplicationController
   end
 
   def show
-    path = "/#{params[:path]}.#{params[:format]}"
+    path = "/#{params[:path]}"
+    path += ".#{params[:format]}" if params[:format].present?
     @asset = WhitehallAsset.find_by(legacy_url_path: path)
 
     @asset.unscanned? ? set_expiry(0) : set_expiry(30.minutes)

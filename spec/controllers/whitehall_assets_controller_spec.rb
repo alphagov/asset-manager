@@ -124,7 +124,8 @@ RSpec.describe WhitehallAssetsController, type: :controller do
   end
 
   describe 'GET show' do
-    let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: '/government/uploads/image.png') }
+    let(:legacy_url_path) { '/government/uploads/image.png' }
+    let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
     let(:presenter) { instance_double(AssetPresenter) }
 
     before do
@@ -162,6 +163,16 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       get :show, params: { path: 'government/uploads/image', format: 'png' }
 
       expect(response.headers['Cache-Control']).to match("max-age=#{30.minutes}")
+    end
+
+    context 'and legacy_url_path has no format' do
+      let(:legacy_url_path) { '/government/uploads/file' }
+
+      it 'returns a 200 response' do
+        get :show, params: { path: 'government/uploads/file' }
+
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
