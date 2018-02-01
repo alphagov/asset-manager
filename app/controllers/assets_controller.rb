@@ -2,14 +2,14 @@ class AssetsController < ApplicationController
   before_action :restrict_request_format
 
   def show
-    @asset = Asset.find(params[:id])
+    @asset = find_asset
 
     @asset.unscanned? ? set_expiry(0) : set_expiry(30.minutes)
     render json: AssetPresenter.new(@asset, view_context)
   end
 
   def create
-    @asset = Asset.new(asset_params)
+    @asset = build_asset
 
     if @asset.save
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :created), status: :created
@@ -19,7 +19,7 @@ class AssetsController < ApplicationController
   end
 
   def update
-    @asset = Asset.find(params[:id])
+    @asset = find_asset
 
     if @asset.update_attributes(asset_params)
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
@@ -29,7 +29,7 @@ class AssetsController < ApplicationController
   end
 
   def destroy
-    @asset = Asset.find(params[:id])
+    @asset = find_asset
 
     if @asset.destroy
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
@@ -39,7 +39,7 @@ class AssetsController < ApplicationController
   end
 
   def restore
-    @asset = Asset.unscoped.find(params[:id])
+    @asset = find_asset(include_deleted: true)
 
     if @asset.restore
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
@@ -56,5 +56,14 @@ private
 
   def asset_params
     params.require(:asset).permit(:file, :draft)
+  end
+
+  def find_asset(include_deleted: false)
+    scope = include_deleted ? Asset.unscoped : Asset
+    scope.find(params[:id])
+  end
+
+  def build_asset
+    Asset.new(asset_params)
   end
 end
