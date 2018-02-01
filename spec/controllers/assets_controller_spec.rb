@@ -104,24 +104,24 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['content_type']).to eq("image/jpeg")
         expect(body['draft']).to be_falsey
       end
-    end
 
-    context "a draft asset" do
-      let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
-      let(:asset) { FactoryBot.create(:asset) }
+      context "a draft asset" do
+        let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
+        let(:asset) { FactoryBot.create(:asset) }
 
-      it "updates attributes" do
-        put :update, params: { id: asset.id, asset: attributes }
+        it "updates attributes" do
+          put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset)).to be_draft
-      end
+          expect(assigns(:asset)).to be_draft
+        end
 
-      it "returns the draft status of the updated asset" do
-        put :update, params: { id: asset.id, asset: attributes }
+        it "returns the draft status of the updated asset" do
+          put :update, params: { id: asset.id, asset: attributes }
 
-        body = JSON.parse(response.body)
+          body = JSON.parse(response.body)
 
-        expect(body['draft']).to be_truthy
+          expect(body['draft']).to be_truthy
+        end
       end
     end
   end
