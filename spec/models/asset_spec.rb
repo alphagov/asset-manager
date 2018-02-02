@@ -187,7 +187,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "when an asset is marked as clean" do
-    let!(:asset) { FactoryBot.create(:asset) }
+    let(:asset) { FactoryBot.create(:asset) }
 
     before do
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
@@ -383,13 +383,14 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#etag_from_file" do
-    let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { Asset.new }
 
     let(:size) { 1024 }
     let(:mtime) { Time.zone.parse('2017-01-01') }
     let(:stat) { instance_double(File::Stat, size: size, mtime: mtime) }
 
     before do
+      asset.file = load_fixture_file("asset.png")
       allow(File).to receive(:stat).and_return(stat)
     end
 
@@ -453,12 +454,13 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#last_modified_from_file" do
-    let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { Asset.new }
 
     let(:mtime) { Time.zone.parse('2017-01-01') }
     let(:stat) { instance_double(File::Stat, mtime: mtime) }
 
     before do
+      asset.file = load_fixture_file("asset.png")
       allow(File).to receive(:stat).and_return(stat)
     end
 
