@@ -5,7 +5,9 @@ class SaveToCloudStorageWorker
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    Services.cloud_storage.save(asset)
-    asset.upload_success!
+    unless asset.uploaded?
+      Services.cloud_storage.save(asset)
+      asset.upload_success!
+    end
   end
 end
