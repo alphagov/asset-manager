@@ -29,6 +29,36 @@ RSpec.describe VirusScanWorker do
     end
   end
 
+  context 'when the asset is already marked as clean' do
+    let(:asset) { FactoryBot.create(:clean_asset) }
+
+    it 'does not virus scan file' do
+      expect(scanner).not_to receive(:scan)
+
+      worker.perform(asset.id)
+    end
+  end
+
+  context 'when the asset is already marked as infected' do
+    let(:asset) { FactoryBot.create(:infected_asset) }
+
+    it 'does not virus scan file' do
+      expect(scanner).not_to receive(:scan)
+
+      worker.perform(asset.id)
+    end
+  end
+
+  context 'when the asset is already marked as uploaded' do
+    let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+    it 'does not virus scan file' do
+      expect(scanner).not_to receive(:scan)
+
+      worker.perform(asset.id)
+    end
+  end
+
   context "when a virus is found" do
     let(:exception_message) { "/path/to/file: Eicar-Test-Signature FOUND" }
     let(:exception) { VirusScanner::InfectedFile.new(exception_message) }
