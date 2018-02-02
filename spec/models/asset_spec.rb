@@ -187,7 +187,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "when an asset is marked as clean" do
-    let(:asset) { FactoryBot.create(:asset) }
+    let(:asset) { FactoryBot.build(:asset) }
 
     before do
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
