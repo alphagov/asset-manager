@@ -25,7 +25,7 @@ RSpec.describe VirusScanWorker do
       worker.perform(asset.id)
 
       asset.reload
-      expect(asset.state).to eq('clean')
+      expect(asset).to be_clean
     end
   end
 
@@ -41,7 +41,7 @@ RSpec.describe VirusScanWorker do
       worker.perform(asset.id)
 
       asset.reload
-      expect(asset.state).to eq('infected')
+      expect(asset).to be_infected
     end
 
     it "sends an exception notification" do
