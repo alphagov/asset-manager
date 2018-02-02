@@ -196,7 +196,7 @@ RSpec.describe Asset, type: :model do
     it 'schedules saving the asset to cloud storage' do
       expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
 
-      asset.scanned_clean
+      asset.scanned_clean!
     end
   end
 
