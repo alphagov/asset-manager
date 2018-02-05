@@ -151,7 +151,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       expect(response.body).to eq('"asset-as-json"')
     end
 
-    it 'sets the cache expiry to 0' do
+    it 'sets the Cache-Control header max-age to 0' do
       get :show, params: { path: 'government/uploads/image', format: 'png' }
 
       expect(response.headers['Cache-Control']).to match('max-age=0')

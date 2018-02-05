@@ -196,7 +196,7 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['draft']).to be_falsey
       end
 
-      it "sets the cache-control headers to 0" do
+      it "sets the Cache-Control header max-age to 0" do
         get :show, params: { id: asset.id }
 
         expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
