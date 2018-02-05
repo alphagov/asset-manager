@@ -151,18 +151,10 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       expect(response.body).to eq('"asset-as-json"')
     end
 
-    it 'sets the cache expiry to 0 if the asset is unscanned' do
+    it 'sets the Cache-Control header max-age to 0' do
       get :show, params: { path: 'government/uploads/image', format: 'png' }
 
       expect(response.headers['Cache-Control']).to match('max-age=0')
-    end
-
-    it 'sets the cache expiry to 30 minutes if the asset is scanned' do
-      asset.scanned_clean!
-
-      get :show, params: { path: 'government/uploads/image', format: 'png' }
-
-      expect(response.headers['Cache-Control']).to match("max-age=#{30.minutes}")
     end
 
     context 'and legacy_url_path has no format' do
