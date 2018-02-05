@@ -195,6 +195,12 @@ RSpec.describe AssetsController, type: :controller do
 
         expect(body['draft']).to be_falsey
       end
+
+      it "sets the cache-control headers to 0" do
+        get :show, params: { id: asset.id }
+
+        expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
+      end
     end
 
     context "an asset which does not exist" do
@@ -248,16 +254,6 @@ RSpec.describe AssetsController, type: :controller do
         it "responds with an error message" do
           expect(response.body).to match(/Something went wrong/)
         end
-      end
-    end
-
-    describe "cache headers" do
-      let(:asset) { FactoryBot.create(:asset) }
-
-      it "sets the cache-control headers to 0" do
-        get :show, params: { id: asset.id }
-
-        expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
       end
     end
   end
