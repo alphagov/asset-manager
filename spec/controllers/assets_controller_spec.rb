@@ -254,24 +254,10 @@ RSpec.describe AssetsController, type: :controller do
     describe "cache headers" do
       let(:asset) { FactoryBot.create(:asset) }
 
-      it "sets the cache-control headers to 0 for an unscanned asset" do
+      it "sets the cache-control headers to 0" do
         get :show, params: { id: asset.id }
 
         expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
-      end
-
-      it "sets the cache-control headers to 30 minutes for a clean asset" do
-        asset.scanned_clean!
-        get :show, params: { id: asset.id }
-
-        expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
-      end
-
-      it "sets the cache-control headers to 30 minutes for an infected asset" do
-        asset.scanned_infected!
-        get :show, params: { id: asset.id }
-
-        expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
     end
   end
