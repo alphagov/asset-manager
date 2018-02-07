@@ -1,7 +1,6 @@
 FROM ruby:2.4.2
-RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt-get clean
-RUN freshclam
-RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
+RUN apt-get update -qq && apt-get upgrade -y && apt-get clean
+RUN ln -sf /bin/true /usr/bin/govuk_clamscan
 RUN gem install bundler -v1.14.5
 
 ENV GOVUK_APP_NAME asset-manager
