@@ -16,4 +16,8 @@ class GovukConfiguration
     draft_assets_base_uri = @plek.external_url_for('draft-assets')
     URI.parse(draft_assets_base_uri).host
   end
+
+  def clamscan_path
+    @env.fetch('ASSET_MANAGER_CLAMSCAN_PATH', 'govuk_clamscan')
+  end
 end
