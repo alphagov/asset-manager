@@ -25,7 +25,37 @@ RSpec.describe VirusScanWorker do
       worker.perform(asset.id)
 
       asset.reload
-      expect(asset.state).to eq('clean')
+      expect(asset).to be_clean
+    end
+  end
+
+  context 'when the asset is already marked as clean' do
+    let(:asset) { FactoryBot.create(:clean_asset) }
+
+    it 'does not virus scan file' do
+      expect(scanner).not_to receive(:scan)
+
+      worker.perform(asset.id)
+    end
+  end
+
+  context 'when the asset is already marked as infected' do
+    let(:asset) { FactoryBot.create(:infected_asset) }
+
+    it 'does not virus scan file' do
+      expect(scanner).not_to receive(:scan)
+
+      worker.perform(asset.id)
+    end
+  end
+
+  context 'when the asset is already marked as uploaded' do
+    let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+    it 'does not virus scan file' do
+      expect(scanner).not_to receive(:scan)
+
+      worker.perform(asset.id)
     end
   end
 
@@ -41,7 +71,7 @@ RSpec.describe VirusScanWorker do
       worker.perform(asset.id)
 
       asset.reload
-      expect(asset.state).to eq('infected')
+      expect(asset).to be_infected
     end
 
     it "sends an exception notification" do

@@ -187,16 +187,94 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "when an asset is marked as clean" do
-    let!(:asset) { FactoryBot.create(:asset) }
+    let(:state) { 'unscanned' }
+    let(:asset) { FactoryBot.build(:asset, state: state) }
 
     before do
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
     end
 
+    it 'sets the asset state to clean' do
+      asset.scanned_clean!
+
+      expect(asset.reload).to be_clean
+    end
+
     it 'schedules saving the asset to cloud storage' do
       expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
 
-      asset.scanned_clean
+      asset.scanned_clean!
+    end
+
+    context 'when asset is already clean' do
+      let(:state) { 'clean' }
+
+      it 'does not allow the state transition' do
+        expect { asset.scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is already infected' do
+      let(:state) { 'infected' }
+
+      it 'does not allow the state transition' do
+        expect { asset.scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is already uploaded' do
+      let(:state) { 'uploaded' }
+
+      it 'does not allow the state transition' do
+        expect { asset.scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+  end
+
+  describe 'when an asset is marked as infected' do
+    let(:state) { 'unscanned' }
+    let(:asset) { FactoryBot.build(:asset, state: state) }
+
+    it 'does not schedule saving the asset to cloud storage' do
+      expect(SaveToCloudStorageWorker).not_to receive(:perform_async).with(asset.id)
+
+      asset.scanned_infected!
+    end
+
+    it 'sets the asset state to infected' do
+      asset.scanned_infected!
+
+      expect(asset.reload).to be_infected
+    end
+
+    context 'when asset is clean' do
+      let(:state) { 'clean' }
+
+      it 'does not allow the state transition' do
+        expect { asset.scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is already infected' do
+      let(:state) { 'infected' }
+
+      it 'does not allow the state transition' do
+        expect { asset.scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context 'when asset is already uploaded' do
+      let(:state) { 'uploaded' }
+
+      it 'does not allow the state transition' do
+        expect { asset.scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
     end
   end
 
@@ -383,13 +461,14 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#etag_from_file" do
-    let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { Asset.new }
 
     let(:size) { 1024 }
     let(:mtime) { Time.zone.parse('2017-01-01') }
     let(:stat) { instance_double(File::Stat, size: size, mtime: mtime) }
 
     before do
+      asset.file = load_fixture_file("asset.png")
       allow(File).to receive(:stat).and_return(stat)
     end
 
@@ -453,12 +532,13 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#last_modified_from_file" do
-    let!(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { Asset.new }
 
     let(:mtime) { Time.zone.parse('2017-01-01') }
     let(:stat) { instance_double(File::Stat, mtime: mtime) }
 
     before do
+      asset.file = load_fixture_file("asset.png")
       allow(File).to receive(:stat).and_return(stat)
     end
 

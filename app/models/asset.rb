@@ -40,7 +40,7 @@ class Asset
 
   state_machine :state, initial: :unscanned do
     event :scanned_clean do
-      transition any => :clean
+      transition unscanned: :clean
     end
 
     after_transition to: :clean do |asset, _|
@@ -48,7 +48,7 @@ class Asset
     end
 
     event :scanned_infected do
-      transition any => :infected
+      transition unscanned: :infected
     end
 
     event :upload_success do

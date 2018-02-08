@@ -24,6 +24,22 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
       expect(asset.reload).to be_uploaded
     end
 
+    context 'when asset is already uploaded' do
+      let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+      it 'does not save the asset to cloud storage' do
+        expect(cloud_storage).not_to receive(:save).with(asset)
+
+        worker.perform(asset)
+      end
+
+      it 'does not change the state of the asset' do
+        worker.perform(asset)
+
+        expect(asset.reload).to be_uploaded
+      end
+    end
+
     context 'when S3Storage::ObjectUploadFailedError is raised' do
       before do
         allow(cloud_storage).to receive(:save)
