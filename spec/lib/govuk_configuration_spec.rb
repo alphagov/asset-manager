@@ -51,6 +51,28 @@ RSpec.describe GovukConfiguration do
     end
   end
 
+  describe '#clamscan_path' do
+    context 'when environment includes an ASSET_MANAGER_CLAMSCAN_PATH value' do
+      let(:env) {
+        {
+          'ASSET_MANAGER_CLAMSCAN_PATH' => 'alternative-path',
+        }
+      }
+
+      it 'returns environment variable' do
+        expect(config.clamscan_path).to eq('alternative-path')
+      end
+    end
+
+    context 'when environment does not include an ASSET_MANAGER_CLAMSCAN_PATH value' do
+      let(:env) { {} }
+
+      it 'returns govuk_clamscan' do
+        expect(config.clamscan_path).to eq('govuk_clamscan')
+      end
+    end
+  end
+
   describe '#draft_assets_host' do
     subject(:config) { described_class.new(env, plek) }
 

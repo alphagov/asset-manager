@@ -9,7 +9,8 @@ class VirusScanner
   class InfectedFile < StandardError; end
 
   def scan(file_path)
-    out_str, status = Open3.capture2e('govuk_clamscan', '--no-summary', file_path)
+    clamscan_path = AssetManager.govuk.clamscan_path
+    out_str, status = Open3.capture2e(clamscan_path, '--no-summary', file_path)
     case status.exitstatus
     when 0
       return true
