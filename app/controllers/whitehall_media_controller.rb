@@ -5,6 +5,11 @@ class WhitehallMediaController < BaseMediaController
       return
     end
 
+    unless asset.accessible_by?(current_user)
+      head :forbidden
+      return
+    end
+
     if asset.infected?
       error_404
       return
