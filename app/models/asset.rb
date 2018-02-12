@@ -66,6 +66,13 @@ class Asset
     end
   end
 
+  def accessible_by?(user)
+    return true unless draft?
+    return true if access_limited.empty?
+
+    access_limited.include?(user.uid)
+  end
+
   def public_url_path
     "/media/#{id}/#{filename}"
   end

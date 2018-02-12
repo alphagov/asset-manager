@@ -5,13 +5,9 @@ class MediaController < BaseMediaController
       return
     end
 
-    if asset.draft?
-      if asset.access_limited.any?
-        unless asset.access_limited.include?(current_user.uid)
-          head :forbidden
-          return
-        end
-      end
+    unless asset.accessible_by?(current_user)
+      head :forbidden
+      return
     end
 
     unless asset_servable?

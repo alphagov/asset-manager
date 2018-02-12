@@ -83,6 +83,33 @@ RSpec.describe MediaController, type: :controller do
       end
     end
 
+    context 'with an access limited draft asset' do
+      let(:user) { FactoryBot.build(:user) }
+      let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
+
+      before do
+        allow(Asset).to receive(:find).with(asset.id).and_return(asset)
+        request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
+        login_as user
+      end
+
+      it 'grants access to a user who is authorised to view the asset' do
+        allow(asset).to receive(:accessible_by?).with(user).and_return(true)
+
+        get :download, params
+
+        expect(response).to be_success
+      end
+
+      it 'denies access to a user who is not authorised to view the asset' do
+        allow(asset).to receive(:accessible_by?).with(user).and_return(false)
+
+        get :download, params
+
+        expect(response).to be_forbidden
+      end
+    end
+
     context "with an unscanned file" do
       let(:asset) { FactoryBot.create(:asset) }
 
