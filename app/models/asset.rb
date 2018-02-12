@@ -28,6 +28,8 @@ class Asset
   field :size, type: Integer
   protected :size=
 
+  field :access_limited, type: Array, default: []
+
   validates :file, presence: true, unless: :uploaded?
 
   validates :uuid, presence: true,
