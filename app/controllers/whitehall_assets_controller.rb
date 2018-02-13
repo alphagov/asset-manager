@@ -14,7 +14,8 @@ private
       .require(:asset)
       .permit(
         :file, :draft, :redirect_url,
-        :legacy_url_path, :legacy_etag, :legacy_last_modified
+        :legacy_url_path, :legacy_etag, :legacy_last_modified,
+        access_limited: []
       )
   end
 

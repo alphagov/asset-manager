@@ -41,6 +41,12 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).legacy_last_modified).to eq(attributes[:legacy_last_modified])
       end
 
+      it "stores access_limited on asset" do
+        post :create, params: { asset: attributes.merge(access_limited: ['user-id']) }
+
+        expect(assigns(:asset).access_limited).to eq(['user-id'])
+      end
+
       it "returns a created status" do
         post :create, params: { asset: attributes }
 
