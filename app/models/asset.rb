@@ -14,6 +14,7 @@ class Asset
   attr_readonly :uuid
 
   field :draft, type: Boolean, default: false
+  field :redirect_url, type: String
 
   field :etag, type: String
   protected :etag=
