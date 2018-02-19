@@ -32,7 +32,15 @@ RSpec.describe WhitehallMediaController, type: :controller do
     let(:format) { 'png' }
     let(:legacy_url_path) { "/government/uploads/#{path}.#{format}" }
     let(:draft) { false }
-    let(:attributes) { { legacy_url_path: legacy_url_path, state: state, draft: draft } }
+    let(:redirect_url) { nil }
+    let(:attributes) {
+      {
+        legacy_url_path: legacy_url_path,
+        state: state,
+        draft: draft,
+        redirect_url: redirect_url
+      }
+    }
     let(:asset) { FactoryBot.build(:whitehall_asset, attributes) }
 
     before do
@@ -94,6 +102,17 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
           get :download, params: { path: path, format: format }
         end
+      end
+    end
+
+    context 'when asset has a redirect URL' do
+      let(:state) { 'uploaded' }
+      let(:redirect_url) { 'https://example.com/path/file.ext' }
+
+      it 'redirects to redirect URL' do
+        get :download, params: { path: path, format: format }
+
+        expect(response).to redirect_to(redirect_url)
       end
     end
 

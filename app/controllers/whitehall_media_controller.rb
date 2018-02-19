@@ -10,6 +10,11 @@ class WhitehallMediaController < BaseMediaController
       return
     end
 
+    if asset.redirect_url.present?
+      redirect_to asset.redirect_url
+      return
+    end
+
     if asset.unscanned? || asset.clean?
       set_expiry(1.minute)
       if asset.image?
