@@ -592,6 +592,15 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#size_from_file" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:size) { 57705 }
+
+    it "returns the size of the file" do
+      expect(asset.size_from_file).to eq(size)
+    end
+  end
+
   describe "#md5_hexdigest_from_file" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }

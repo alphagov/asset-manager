@@ -109,6 +109,10 @@ class Asset
     @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
   end
 
+  def size_from_file
+    file_stat.size
+  end
+
 protected
 
   def store_metadata
