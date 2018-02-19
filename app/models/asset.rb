@@ -24,6 +24,9 @@ class Asset
   field :md5_hexdigest, type: String
   protected :md5_hexdigest=
 
+  field :size, type: Integer
+  protected :size=
+
   validates :file, presence: true, unless: :uploaded?
 
   validates :uuid, presence: true,

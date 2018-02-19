@@ -601,6 +601,15 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+
+  describe "#size=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.size = 100 }.to raise_error(NoMethodError)
+    end
+  end
+
   describe "#md5_hexdigest_from_file" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
