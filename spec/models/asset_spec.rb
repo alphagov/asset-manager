@@ -601,6 +601,40 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#size" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), size: size) }
+    let(:asset_size) { 100 }
+
+    before do
+      allow(asset).to receive(:size).and_return(asset_size)
+    end
+
+    context "when asset is created" do
+      let(:size) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.size).to eq(asset_size)
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+        let(:new_asset_size) { 200 }
+
+        before do
+          allow(asset).to receive(:size).and_return(new_asset_size)
+          asset.update_attributes!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.size).to eq(new_asset_size)
+        end
+      end
+    end
+  end
 
   describe "#size=" do
     let(:asset) { Asset.new }
