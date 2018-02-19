@@ -45,6 +45,20 @@ RSpec.describe AssetPresenter do
       expect(json).to include(content_type: 'image/png')
     end
 
+    it 'returns hash with a size key' do
+      expect(json).to have_key(:size)
+    end
+
+    context 'when the asset has been saved' do
+      before do
+        asset.save
+      end
+
+      it 'returns hash including asset size' do
+        expect(json).to include(size: 57705)
+      end
+    end
+
     it 'returns hash including public asset URL as file_url' do
       uri = URI.parse(json[:file_url])
       expect("#{uri.scheme}://#{uri.host}").to eq(Plek.new.asset_root)
