@@ -72,6 +72,17 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['draft']).to be_truthy
       end
     end
+
+    context 'an asset with a redirect URL' do
+      let(:redirect_url) { 'https://example.com/path/file.ext' }
+      let(:attributes) { { redirect_url: redirect_url, file: load_fixture_file("asset.png") } }
+
+      it 'stores redirect URL' do
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).redirect_url).to eq(redirect_url)
+      end
+    end
   end
 
   describe "PUT update" do

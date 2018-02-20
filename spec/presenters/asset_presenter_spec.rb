@@ -77,5 +77,27 @@ RSpec.describe AssetPresenter do
         expect(uri.path).to eq('/public-%C3%BCrl-path')
       end
     end
+
+    context 'when asset has no redirect URL' do
+      before do
+        asset.redirect_url = nil
+      end
+
+      it 'returns hash without redirect_url' do
+        expect(json).not_to have_key(:redirect_url)
+      end
+    end
+
+    context 'when asset has redirect URL' do
+      let(:redirect_url) { 'https://example.com/path/file.ext' }
+
+      before do
+        asset.redirect_url = redirect_url
+      end
+
+      it 'returns hash including redirect_url' do
+        expect(json).to have_key(:redirect_url)
+      end
+    end
   end
 end

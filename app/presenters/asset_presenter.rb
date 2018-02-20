@@ -5,7 +5,7 @@ class AssetPresenter
   end
 
   def as_json(options = {})
-    {
+    json = {
       _response_info: {
         status: options[:status] || "ok",
       },
@@ -16,5 +16,9 @@ class AssetPresenter
       state: @asset.state,
       draft: @asset.draft?
     }
+    if @asset.redirect_url.present?
+      json[:redirect_url] = @asset.redirect_url
+    end
+    json
   end
 end

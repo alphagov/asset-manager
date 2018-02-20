@@ -121,6 +121,18 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(body['draft']).to be_truthy
       end
     end
+
+    context 'an asset with a redirect URL' do
+      let(:redirect_url) { 'https://example.com/path/file.ext' }
+      let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, redirect_url: redirect_url) }
+
+      it 'returns JSON response including redirect URL of new asset' do
+        post :create, params: { asset: attributes }
+
+        body = JSON.parse(response.body)
+        expect(body['redirect_url']).to eq(redirect_url)
+      end
+    end
   end
 
   describe 'GET show' do
