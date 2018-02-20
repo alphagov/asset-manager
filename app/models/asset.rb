@@ -25,6 +25,9 @@ class Asset
   field :md5_hexdigest, type: String
   protected :md5_hexdigest=
 
+  field :size, type: Integer
+  protected :size=
+
   validates :file, presence: true, unless: :uploaded?
 
   validates :uuid, presence: true,
@@ -110,12 +113,22 @@ class Asset
     @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
   end
 
+  def size_from_file
+    file_stat.size
+  end
+
+  def set_size_from_etag
+    self.size = size_from_etag
+    save
+  end
+
 protected
 
   def store_metadata
     self.etag = etag_from_file
     self.last_modified = last_modified_from_file
     self.md5_hexdigest = md5_hexdigest_from_file
+    self.size = size_from_file
   end
 
   def valid_filenames
@@ -134,5 +147,9 @@ protected
 
   def file_stat
     File.stat(file.path)
+  end
+
+  def size_from_etag
+    etag.split('-').last.to_i(16)
   end
 end

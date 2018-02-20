@@ -14,4 +14,13 @@ namespace :db do
       puts 'Error: Unable to remove Asset#organisation_slug'
     end
   end
+
+  desc "Set the size field for all assets from the etag"
+  task set_size_for_all_uploaded_assets: :environment do
+    scope = Asset.unscoped.where(size: nil)
+    processor = AssetProcessor.new(scope: scope)
+    processor.process_all_assets_with do |asset_id|
+      scope.find(asset_id).set_size_from_etag
+    end
+  end
 end

@@ -592,6 +592,68 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#size_from_file" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:size) { 57705 }
+
+    it "returns the size of the file" do
+      expect(asset.size_from_file).to eq(size)
+    end
+  end
+
+  describe "#size" do
+    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), size: size) }
+    let(:asset_size) { 100 }
+
+    before do
+      allow(asset).to receive(:size).and_return(asset_size)
+    end
+
+    context "when asset is created" do
+      let(:size) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.size).to eq(asset_size)
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+        let(:new_asset_size) { 200 }
+
+        before do
+          allow(asset).to receive(:size).and_return(new_asset_size)
+          asset.update_attributes!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.size).to eq(new_asset_size)
+        end
+      end
+    end
+  end
+
+  describe "#set_size_from_etag" do
+    let(:asset) { FactoryBot.create(:uploaded_asset_without_size) }
+
+    it 'sets the size from the calculated etag' do
+      expect(asset.size).to be_nil
+      asset.set_size_from_etag
+      expect(asset.reload.size).to eq(57705)
+    end
+  end
+
+  describe "#size=" do
+    let(:asset) { Asset.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.size = 100 }.to raise_error(NoMethodError)
+    end
+  end
+
   describe "#md5_hexdigest_from_file" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
