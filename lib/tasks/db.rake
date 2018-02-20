@@ -20,7 +20,7 @@ namespace :db do
     scope = Asset.unscoped.where(size: nil)
     processor = AssetProcessor.new(scope: scope)
     processor.process_all_assets_with do |asset_id|
-      scope.find(asset_id).set_size_from_etag
+      SetAssetSizeWorker.perform_async(asset_id)
     end
   end
 end
