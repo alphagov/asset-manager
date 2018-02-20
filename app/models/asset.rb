@@ -118,8 +118,7 @@ class Asset
   end
 
   def set_size_from_etag
-    self.size = size_from_etag
-    save
+    set(size: size_from_etag)
   end
 
 protected
