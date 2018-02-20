@@ -636,16 +636,6 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "#set_size_from_etag" do
-    let(:asset) { FactoryBot.create(:uploaded_asset_without_size) }
-
-    it 'sets the size from the calculated etag' do
-      expect(asset.size).to be_nil
-      asset.set_size_from_etag
-      expect(asset.reload.size).to eq(57705)
-    end
-  end
-
   describe "#size=" do
     let(:asset) { Asset.new }
 
