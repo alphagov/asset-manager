@@ -117,11 +117,6 @@ class Asset
     file_stat.size
   end
 
-  def set_size_from_etag
-    self.size = size_from_etag
-    save
-  end
-
 protected
 
   def store_metadata
@@ -147,9 +142,5 @@ protected
 
   def file_stat
     File.stat(file.path)
-  end
-
-  def size_from_etag
-    etag.split('-').last.to_i(16)
   end
 end
