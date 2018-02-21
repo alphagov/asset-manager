@@ -116,6 +116,34 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
     end
 
+    context 'when asset is draft and access limited' do
+      let(:user) { FactoryBot.build(:user) }
+      let(:state) { 'uploaded' }
+
+      before do
+        allow(controller).to receive(:proxy_to_s3_via_nginx)
+        allow(WhitehallAsset).to receive(:from_params).and_return(asset)
+        request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
+        login_as user
+      end
+
+      it 'grants access to a user who is authorised to view the asset' do
+        allow(asset).to receive(:accessible_by?).with(user).and_return(true)
+
+        get :download, params: { path: path, format: format }
+
+        expect(response).to be_success
+      end
+
+      it 'denies access to a user who is not authorised to view the asset' do
+        allow(asset).to receive(:accessible_by?).with(user).and_return(false)
+
+        get :download, params: { path: path, format: format }
+
+        expect(response).to be_forbidden
+      end
+    end
+
     context 'when asset is unscanned' do
       let(:state) { 'unscanned' }
 

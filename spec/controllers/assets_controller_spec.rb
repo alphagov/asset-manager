@@ -24,6 +24,12 @@ RSpec.describe AssetsController, type: :controller do
         expect(response).to have_http_status(:created)
       end
 
+      it "stores access_limited on asset" do
+        post :create, params: { asset: attributes.merge(access_limited: ['user-id']) }
+
+        expect(assigns(:asset).access_limited).to eq(['user-id'])
+      end
+
       it "returns the location and details of the new asset" do
         post :create, params: { asset: attributes }
 
@@ -101,6 +107,12 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(response).to have_http_status(:success)
+      end
+
+      it "stores access_limited on asset" do
+        put :update, params: { id: asset.id, asset: attributes.merge(access_limited: ['user-id']) }
+
+        expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
       it "returns the location and details of the new asset" do

@@ -5,6 +5,11 @@ class MediaController < BaseMediaController
       return
     end
 
+    unless asset.accessible_by?(current_user)
+      head :forbidden
+      return
+    end
+
     unless asset_servable?
       error_404
       return

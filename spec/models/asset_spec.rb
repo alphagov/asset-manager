@@ -43,6 +43,30 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe '#accessible_by?' do
+    it 'returns true if the asset is not draft' do
+      asset = FactoryBot.build(:asset, draft: false)
+      expect(asset).to be_accessible_by(nil)
+    end
+
+    it 'returns true if the asset is draft but not access limited' do
+      asset = FactoryBot.build(:asset, draft: true, access_limited: [])
+      expect(asset).to be_accessible_by(nil)
+    end
+
+    it 'returns true if the asset is draft and access limited and the user is authorised to view it' do
+      user = FactoryBot.build(:user, uid: 'user-id')
+      asset = FactoryBot.build(:asset, draft: true, access_limited: ['user-id'])
+      expect(asset).to be_accessible_by(user)
+    end
+
+    it 'returns false if the asset is draft and access limited and the user is not authorised to view it' do
+      user = FactoryBot.build(:user, uid: 'user-id')
+      asset = FactoryBot.build(:asset, draft: true, access_limited: ['another-user-id'])
+      expect(asset).not_to be_accessible_by(user)
+    end
+  end
+
   describe '#uuid' do
     it 'is generated on instantiation' do
       allow(SecureRandom).to receive(:uuid).and_return('uuid')

@@ -28,6 +28,8 @@ class Asset
   field :size, type: Integer
   protected :size=
 
+  field :access_limited, type: Array, default: []
+
   validates :file, presence: true, unless: :uploaded?
 
   validates :uuid, presence: true,
@@ -62,6 +64,13 @@ class Asset
     after_transition to: :uploaded do |asset, _|
       asset.remove_file!
     end
+  end
+
+  def accessible_by?(user)
+    return true unless draft?
+    return true if access_limited.empty?
+
+    access_limited.include?(user.uid)
   end
 
   def public_url_path
