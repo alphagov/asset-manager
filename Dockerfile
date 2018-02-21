@@ -2,7 +2,7 @@ FROM ruby:2.4.2
 RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt-get clean
 RUN freshclam
 RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
-RUN gem install bundler -v1.14.5
+RUN gem install foreman
 
 ENV GOVUK_APP_NAME asset-manager
 ENV GOVUK_ASSET_ROOT http://assets-origin.dev.gov.uk
@@ -21,4 +21,4 @@ ADD . $APP_HOME
 
 HEALTHCHECK CMD curl --silent --fail localhost:$PORT/healthcheck || exit 1
 
-CMD bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p $PORT -b '0.0.0.0'"
+CMD foreman run web
