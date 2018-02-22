@@ -138,6 +138,16 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         body = JSON.parse(response.body)
         expect(body['redirect_url']).to eq(redirect_url)
       end
+
+      context 'and redirect URL is blank' do
+        let(:redirect_url) { '' }
+
+        it 'stores redirect URL as nil' do
+          post :create, params: { asset: attributes }
+
+          expect(assigns(:asset).redirect_url).to be_nil
+        end
+      end
     end
   end
 

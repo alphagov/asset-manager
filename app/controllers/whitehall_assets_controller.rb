@@ -10,13 +10,15 @@ class WhitehallAssetsController < BaseAssetsController
 private
 
   def asset_params
-    params
-      .require(:asset)
-      .permit(
-        :file, :draft, :redirect_url,
-        :legacy_url_path, :legacy_etag, :legacy_last_modified,
-        access_limited: []
-      )
+    exclude_blank_redirect_url(
+      params
+        .require(:asset)
+        .permit(
+          :file, :draft, :redirect_url,
+          :legacy_url_path, :legacy_etag, :legacy_last_modified,
+          access_limited: []
+        )
+    )
   end
 
   def existing_asset_with_this_legacy_url_path
