@@ -38,7 +38,9 @@ private
   end
 
   def asset_params
-    params.require(:asset).permit(:file, :draft, :redirect_url, access_limited: [])
+    params
+      .require(:asset)
+      .permit(:file, :draft, :redirect_url, access_limited: [])
   end
 
   def find_asset(include_deleted: false)
