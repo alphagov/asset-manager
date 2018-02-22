@@ -20,6 +20,11 @@ class MediaController < BaseMediaController
       return
     end
 
+    if asset.redirect_url.present?
+      redirect_to asset.redirect_url
+      return
+    end
+
     respond_to do |format|
       format.any do
         set_expiry(AssetManager.cache_control.max_age)

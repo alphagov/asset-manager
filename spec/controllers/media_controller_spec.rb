@@ -165,5 +165,16 @@ RSpec.describe MediaController, type: :controller do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context 'when asset has a redirect URL' do
+      let(:redirect_url) { 'https://example.com/path/file.ext' }
+      let(:asset) { FactoryBot.create(:uploaded_asset, redirect_url: redirect_url) }
+
+      it 'redirects to redirect URL' do
+        get :download, params
+
+        expect(response).to redirect_to(redirect_url)
+      end
+    end
   end
 end
