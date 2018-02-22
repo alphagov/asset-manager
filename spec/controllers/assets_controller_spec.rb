@@ -88,6 +88,16 @@ RSpec.describe AssetsController, type: :controller do
 
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
       end
+
+      context 'and redirect URL is blank' do
+        let(:redirect_url) { '' }
+
+        it 'stores redirect URL as nil' do
+          post :create, params: { asset: attributes }
+
+          expect(assigns(:asset).redirect_url).to be_nil
+        end
+      end
     end
   end
 
@@ -113,6 +123,20 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes.merge(access_limited: ['user-id']) }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
+      end
+
+      it "stores redirect_url on asset" do
+        redirect_url = 'https://example.com/path/file.ext'
+        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+
+        expect(assigns(:asset).redirect_url).to eq(redirect_url)
+      end
+
+      it "stores blank redirect_url as nil on asset" do
+        redirect_url = ''
+        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+
+        expect(assigns(:asset).redirect_url).to be_nil
       end
 
       it "returns the location and details of the new asset" do

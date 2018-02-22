@@ -15,4 +15,10 @@ class BaseAssetsController < ApplicationController
       error 422, @asset.errors.full_messages
     end
   end
+
+protected
+
+  def exclude_blank_redirect_url(params)
+    params.reject { |k, v| (k.to_sym == :redirect_url) && v.blank? }
+  end
 end
