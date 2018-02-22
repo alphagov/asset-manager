@@ -115,6 +115,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
+      it "stores redirect_url on asset" do
+        redirect_url = 'https://example.com/path/file.ext'
+        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+
+        expect(assigns(:asset).redirect_url).to eq(redirect_url)
+      end
+
       it "returns the location and details of the new asset" do
         put :update, params: { id: asset.id, asset: attributes }
 
