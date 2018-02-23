@@ -43,13 +43,13 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     arel (8.0.0)
     ast (2.3.0)
-    aws-sdk (2.10.105)
-      aws-sdk-resources (= 2.10.105)
-    aws-sdk-core (2.10.105)
+    aws-sdk (2.11.3)
+      aws-sdk-resources (= 2.11.3)
+    aws-sdk-core (2.11.3)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.105)
-      aws-sdk-core (= 2.10.105)
+    aws-sdk-resources (2.11.3)
+      aws-sdk-core (= 2.11.3)
     aws-sigv4 (1.0.2)
     bson (4.2.2)
     builder (3.2.3)
@@ -327,7 +327,7 @@ PLATFORMS
 
 DEPENDENCIES
   addressable
-  aws-sdk (~> 2.10.10)
+  aws-sdk (~> 2.0)
   carrierwave (~> 0.11.2)
   carrierwave-mongoid (~> 0.10.0)
   database_cleaner
