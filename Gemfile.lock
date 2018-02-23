@@ -224,7 +224,6 @@ GEM
     rb-fsevent (0.10.2)
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
-    rdoc (4.3.0)
     redis (4.0.1)
     redis-namespace (1.6.0)
       redis (>= 3.0.4)
@@ -269,9 +268,6 @@ GEM
     scss_lint (0.56.0)
       rake (>= 0.9, < 13)
       sass (~> 3.5.3)
-    sdoc (0.4.2)
-      json (~> 1.7, >= 1.7.7)
-      rdoc (~> 4.0)
     sentry-raven (2.7.2)
       faraday (>= 0.7.6, < 1.0)
     sidekiq (5.0.5)
@@ -348,7 +344,6 @@ DEPENDENCIES
   rails (= 5.1.5)
   rails-controller-testing
   rspec-rails
-  sdoc (~> 0.4.0)
   simplecov-rcov
   state_machines-mongoid (~> 0.2.0)
   unicorn (= 5.4.0)
