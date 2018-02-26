@@ -190,32 +190,31 @@ RSpec.describe AssetsController, type: :controller do
 
         expect(response).to have_http_status(:success)
       end
+
+      context 'when Asset#destroy fails' do
+        let(:errors) { ActiveModel::Errors.new(asset) }
+
+        before do
+          errors.add(:base, 'Something went wrong')
+          allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
+          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
+          delete :destroy, params: { id: asset.id }
+        end
+
+        it 'responds with unprocessable entity status' do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'includes the errors in the response' do
+          expect(response.body).to match(/Something went wrong/)
+        end
+      end
     end
 
     context 'no existing asset' do
       it 'responds with not found status' do
         delete :destroy, params: { id: '12345' }
         expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context 'when Asset#destroy fails' do
-      let(:asset) { FactoryBot.create(:asset) }
-      let(:errors) { ActiveModel::Errors.new(asset) }
-
-      before do
-        errors.add(:base, 'Something went wrong')
-        allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
-        allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-        delete :destroy, params: { id: asset.id }
-      end
-
-      it 'responds with unprocessable entity status' do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'includes the errors in the response' do
-        expect(response.body).to match(/Something went wrong/)
       end
     end
   end
