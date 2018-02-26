@@ -17,19 +17,24 @@ RSpec.describe AssetsController, type: :controller do
         post :create, params: { asset: valid_attributes }
 
         expect(assigns(:asset)).to be_persisted
-        expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
-      it 'responds with created status' do
+      it 'stores file on asset' do
         post :create, params: { asset: valid_attributes }
 
-        expect(response).to have_http_status(:created)
+        expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
       it 'stores access_limited on asset' do
         post :create, params: { asset: valid_attributes.merge(access_limited: ['user-id']) }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
+      end
+
+      it 'responds with created status' do
+        post :create, params: { asset: valid_attributes }
+
+        expect(response).to have_http_status(:created)
       end
 
       it 'responds with the details of the new asset' do
@@ -113,13 +118,12 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: valid_attributes }
 
         expect(assigns(:asset)).to be_persisted
-        expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
       end
 
-      it 'responds with success status' do
+      it 'stores file on existing asset' do
         put :update, params: { id: asset.id, asset: valid_attributes }
 
-        expect(response).to have_http_status(:success)
+        expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
       end
 
       it 'stores access_limited on existing asset' do
@@ -140,6 +144,12 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: valid_attributes.merge(redirect_url: redirect_url) }
 
         expect(assigns(:asset).redirect_url).to be_nil
+      end
+
+      it 'responds with success status' do
+        put :update, params: { id: asset.id, asset: valid_attributes }
+
+        expect(response).to have_http_status(:success)
       end
 
       it 'responds with the details of the existing asset' do
