@@ -47,6 +47,14 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
+      it "stores replacement on asset" do
+        replacement = FactoryBot.create(:asset)
+        replacement_id = replacement.id.to_s
+        post :create, params: { asset: { replacement_id: replacement_id } }
+
+        expect(assigns(:asset).replacement).to eq(replacement)
+      end
+
       it "returns a created status" do
         post :create, params: { asset: attributes }
 

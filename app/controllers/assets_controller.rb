@@ -41,7 +41,7 @@ private
     exclude_blank_redirect_url(
       params
         .require(:asset)
-        .permit(:file, :draft, :redirect_url, access_limited: [])
+        .permit(:file, :draft, :redirect_url, :replacement_id, access_limited: [])
     )
   end
 

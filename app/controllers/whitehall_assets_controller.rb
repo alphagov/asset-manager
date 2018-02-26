@@ -14,7 +14,7 @@ private
       params
         .require(:asset)
         .permit(
-          :file, :draft, :redirect_url,
+          :file, :draft, :redirect_url, :replacement_id,
           :legacy_url_path, :legacy_etag, :legacy_last_modified,
           access_limited: []
         )
