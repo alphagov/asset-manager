@@ -113,5 +113,28 @@ RSpec.describe AssetPresenter do
         expect(json).to have_key(:redirect_url)
       end
     end
+
+    context 'when asset has no replacement' do
+      before do
+        asset.replacement = nil
+      end
+
+      it 'returns hash without replacement_id' do
+        expect(json).not_to have_key(:replacement_id)
+      end
+    end
+
+    context 'when asset has replacement' do
+      let(:replacement) { FactoryBot.create(:asset) }
+      let(:replacement_id) { replacement.id.to_s }
+
+      before do
+        asset.replacement = replacement
+      end
+
+      it 'returns hash including replacement_id' do
+        expect(json).to include(replacement_id: replacement_id)
+      end
+    end
   end
 end

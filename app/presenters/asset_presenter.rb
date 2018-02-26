@@ -20,6 +20,9 @@ class AssetPresenter
     if @asset.redirect_url.present?
       json[:redirect_url] = @asset.redirect_url
     end
+    if @asset.replacement.present?
+      json[:replacement_id] = @asset.replacement_id.to_s
+    end
     json
   end
 end
