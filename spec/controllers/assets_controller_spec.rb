@@ -10,30 +10,30 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe 'POST create' do
-    context 'when attributes are valid' do
-      let(:attributes) { { file: file } }
+    let(:valid_attributes) { { file: file } }
 
+    context 'when attributes are valid' do
       it 'persists asset' do
-        post :create, params: { asset: attributes }
+        post :create, params: { asset: valid_attributes }
 
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
       it 'responds with created status' do
-        post :create, params: { asset: attributes }
+        post :create, params: { asset: valid_attributes }
 
         expect(response).to have_http_status(:created)
       end
 
       it 'stores access_limited on asset' do
-        post :create, params: { asset: attributes.merge(access_limited: ['user-id']) }
+        post :create, params: { asset: valid_attributes.merge(access_limited: ['user-id']) }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
       it 'responds with the details of the new asset' do
-        post :create, params: { asset: attributes }
+        post :create, params: { asset: valid_attributes }
 
         asset = assigns(:asset)
 
@@ -47,24 +47,24 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context 'when attributes are invalid' do
-      let(:attributes) { { file: nil } }
+      let(:invalid_attributes) { { file: nil } }
 
       it 'does not persist asset' do
-        post :create, params: { asset: attributes }
+        post :create, params: { asset: invalid_attributes }
 
         expect(assigns(:asset)).not_to be_persisted
         expect(assigns(:asset).file.path).to be_nil
       end
 
       it 'responds with unprocessable entity status' do
-        post :create, params: { asset: attributes }
+        post :create, params: { asset: invalid_attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
     context 'when attributes include draft status' do
-      let(:attributes) { { draft: true, file: file } }
+      let(:attributes) { valid_attributes.merge(draft: true) }
 
       it 'stores draft status on asset' do
         post :create, params: { asset: attributes }
@@ -83,7 +83,7 @@ RSpec.describe AssetsController, type: :controller do
 
     context 'when attributes include a redirect URL' do
       let(:redirect_url) { 'https://example.com/path/file.ext' }
-      let(:attributes) { { redirect_url: redirect_url, file: file } }
+      let(:attributes) { valid_attributes.merge(redirect_url: redirect_url) }
 
       it 'stores redirect URL on asset' do
         post :create, params: { asset: attributes }
@@ -105,44 +105,45 @@ RSpec.describe AssetsController, type: :controller do
 
   describe 'PUT update' do
     context 'an existing asset' do
-      let(:attributes) { { file: load_fixture_file('asset2.jpg') } }
       let(:asset) { FactoryBot.create(:asset) }
+      let(:file) { load_fixture_file('asset2.jpg') }
+      let(:valid_attributes) { { file: file } }
 
       it 'persists new attributes on existing asset' do
-        put :update, params: { id: asset.id, asset: attributes }
+        put :update, params: { id: asset.id, asset: valid_attributes }
 
         expect(assigns(:asset)).to be_persisted
         expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
       end
 
       it 'responds with success status' do
-        put :update, params: { id: asset.id, asset: attributes }
+        put :update, params: { id: asset.id, asset: valid_attributes }
 
         expect(response).to have_http_status(:success)
       end
 
       it 'stores access_limited on existing asset' do
-        put :update, params: { id: asset.id, asset: attributes.merge(access_limited: ['user-id']) }
+        put :update, params: { id: asset.id, asset: valid_attributes.merge(access_limited: ['user-id']) }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
       it 'stores redirect_url on existing asset' do
         redirect_url = 'https://example.com/path/file.ext'
-        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+        put :update, params: { id: asset.id, asset: valid_attributes.merge(redirect_url: redirect_url) }
 
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
       end
 
       it 'stores blank redirect_url as nil on existing asset' do
         redirect_url = ''
-        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+        put :update, params: { id: asset.id, asset: valid_attributes.merge(redirect_url: redirect_url) }
 
         expect(assigns(:asset).redirect_url).to be_nil
       end
 
       it 'responds with the details of the existing asset' do
-        put :update, params: { id: asset.id, asset: attributes }
+        put :update, params: { id: asset.id, asset: valid_attributes }
 
         asset = assigns(:asset)
 
@@ -155,7 +156,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       context 'when attributes include draft status' do
-        let(:attributes) { { draft: true, file: load_fixture_file('asset2.jpg') } }
+        let(:attributes) { valid_attributes.merge(draft: true) }
 
         it 'stores draft status on existing asset' do
           put :update, params: { id: asset.id, asset: attributes }
