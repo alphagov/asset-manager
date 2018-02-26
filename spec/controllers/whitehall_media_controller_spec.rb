@@ -116,6 +116,27 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
     end
 
+    context 'when asset has a replacement' do
+      let(:state) { 'uploaded' }
+      let(:replacement) { FactoryBot.create(:uploaded_asset) }
+
+      before do
+        asset.replacement = replacement
+      end
+
+      it 'redirects to replacement for asset' do
+        get :download, params: { path: path, format: format }
+
+        expect(response).to redirect_to(replacement.public_url_path)
+      end
+
+      it 'responds with 301 moved permanently status' do
+        get :download, params: { path: path, format: format }
+
+        expect(response).to have_http_status(:moved_permanently)
+      end
+    end
+
     context 'when asset is draft and access limited' do
       let(:user) { FactoryBot.build(:user) }
       let(:state) { 'uploaded' }

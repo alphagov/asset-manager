@@ -27,4 +27,8 @@ protected
   def redirect_to_draft_assets_host
     redirect_to host: AssetManager.govuk.draft_assets_host, format: params[:format]
   end
+
+  def redirect_to_replacement_for(asset)
+    redirect_to asset.replacement.public_url_path, status: :moved_permanently
+  end
 end
