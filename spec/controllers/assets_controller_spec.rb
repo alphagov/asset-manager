@@ -3,13 +3,15 @@ require 'rails_helper'
 RSpec.describe AssetsController, type: :controller do
   render_views # for json responses
 
+  let(:file) { load_fixture_file('asset.png') }
+
   before do
     login_as_stub_user
   end
 
   describe 'POST create' do
     context 'when attributes are valid' do
-      let(:attributes) { { file: load_fixture_file('asset.png') } }
+      let(:attributes) { { file: file } }
 
       it 'persists asset' do
         post :create, params: { asset: attributes }
@@ -62,7 +64,7 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     context 'when attributes include draft status' do
-      let(:attributes) { { draft: true, file: load_fixture_file('asset.png') } }
+      let(:attributes) { { draft: true, file: file } }
 
       it 'stores draft status on asset' do
         post :create, params: { asset: attributes }
@@ -81,7 +83,7 @@ RSpec.describe AssetsController, type: :controller do
 
     context 'when attributes include a redirect URL' do
       let(:redirect_url) { 'https://example.com/path/file.ext' }
-      let(:attributes) { { redirect_url: redirect_url, file: load_fixture_file('asset.png') } }
+      let(:attributes) { { redirect_url: redirect_url, file: file } }
 
       it 'stores redirect URL on asset' do
         post :create, params: { asset: attributes }
