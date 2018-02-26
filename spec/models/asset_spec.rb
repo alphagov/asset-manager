@@ -845,4 +845,40 @@ RSpec.describe Asset, type: :model do
       end
     end
   end
+
+  describe '#replacement' do
+    let(:asset) { FactoryBot.build(:asset, replacement: replacement) }
+
+    context 'when replacement is nil' do
+      let(:replacement) { nil }
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+
+      it 'has no replacement_id' do
+        expect(asset.replacement_id).to be_nil
+      end
+    end
+
+    context 'when replacement is set' do
+      let(:replacement) { FactoryBot.create(:asset) }
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+
+      it 'persists replacement when saved' do
+        asset.save!
+
+        expect(asset.reload.replacement).to eq(replacement)
+      end
+
+      it 'persists replacement_id when saved' do
+        asset.save!
+
+        expect(asset.reload.replacement_id).to eq(replacement.id)
+      end
+    end
+  end
 end
