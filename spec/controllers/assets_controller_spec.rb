@@ -154,7 +154,6 @@ RSpec.describe AssetsController, type: :controller do
 
       context 'when attributes include draft status' do
         let(:attributes) { { draft: true, file: load_fixture_file('asset2.jpg') } }
-        let(:asset) { FactoryBot.create(:asset) }
 
         it 'stores draft status on existing asset' do
           put :update, params: { id: asset.id, asset: attributes }
