@@ -26,7 +26,8 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores access_limited on asset' do
-        post :create, params: { asset: valid_attributes.merge(access_limited: ['user-id']) }
+        attributes = valid_attributes.merge(access_limited: ['user-id'])
+        post :create, params: { asset: attributes }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
@@ -127,21 +128,24 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores access_limited on existing asset' do
-        put :update, params: { id: asset.id, asset: valid_attributes.merge(access_limited: ['user-id']) }
+        attributes = valid_attributes.merge(access_limited: ['user-id'])
+        put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
       it 'stores redirect_url on existing asset' do
         redirect_url = 'https://example.com/path/file.ext'
-        put :update, params: { id: asset.id, asset: valid_attributes.merge(redirect_url: redirect_url) }
+        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
       end
 
       it 'stores blank redirect_url as nil on existing asset' do
         redirect_url = ''
-        put :update, params: { id: asset.id, asset: valid_attributes.merge(redirect_url: redirect_url) }
+        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to be_nil
       end
