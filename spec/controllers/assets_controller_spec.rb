@@ -3,74 +3,82 @@ require 'rails_helper'
 RSpec.describe AssetsController, type: :controller do
   render_views # for json responses
 
+  let(:file) { load_fixture_file('asset.png') }
+
   before do
     login_as_stub_user
   end
 
-  describe "POST create" do
-    context "a valid asset" do
-      let(:attributes) { { file: load_fixture_file("asset.png") } }
+  describe 'POST create' do
+    let(:valid_attributes) { { file: file } }
 
-      it "is persisted" do
-        post :create, params: { asset: attributes }
+    context 'when attributes are valid' do
+      it 'persists asset' do
+        post :create, params: { asset: valid_attributes }
 
         expect(assigns(:asset)).to be_persisted
+      end
+
+      it 'stores file on asset' do
+        post :create, params: { asset: valid_attributes }
+
         expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
-      it "returns a created status" do
+      it 'stores access_limited on asset' do
+        attributes = valid_attributes.merge(access_limited: ['user-id'])
         post :create, params: { asset: attributes }
-
-        expect(response).to have_http_status(:created)
-      end
-
-      it "stores access_limited on asset" do
-        post :create, params: { asset: attributes.merge(access_limited: ['user-id']) }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
-      it "returns the location and details of the new asset" do
-        post :create, params: { asset: attributes }
+      it 'responds with created status' do
+        post :create, params: { asset: valid_attributes }
+
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'responds with the details of the new asset' do
+        post :create, params: { asset: valid_attributes }
 
         asset = assigns(:asset)
 
         body = JSON.parse(response.body)
 
         expect(body['id']).to eq("http://test.host/assets/#{asset.id}")
-        expect(body['name']).to eq("asset.png")
-        expect(body['content_type']).to eq("image/png")
+        expect(body['name']).to eq('asset.png')
+        expect(body['content_type']).to eq('image/png')
         expect(body['draft']).to be_falsey
       end
     end
 
-    context "an invalid asset" do
-      let(:attributes) { { file: nil } }
+    context 'when attributes are invalid' do
+      let(:invalid_attributes) { { file: nil } }
 
-      it "is not persisted" do
-        post :create, params: { asset: attributes }
+      it 'does not persist asset' do
+        post :create, params: { asset: invalid_attributes }
 
         expect(assigns(:asset)).not_to be_persisted
         expect(assigns(:asset).file.path).to be_nil
       end
 
-      it "returns an unprocessable entity status" do
-        post :create, params: { asset: attributes }
+      it 'responds with unprocessable entity status' do
+        post :create, params: { asset: invalid_attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 
-    context "a draft asset" do
-      let(:attributes) { { draft: true, file: load_fixture_file("asset.png") } }
+    context 'when attributes include draft status' do
+      let(:attributes) { valid_attributes.merge(draft: true) }
 
-      it "is persisted" do
+      it 'stores draft status on asset' do
         post :create, params: { asset: attributes }
 
         expect(assigns(:asset)).to be_draft
       end
 
-      it "returns the draft status of the new asset" do
+      it 'includes the draft status in the response' do
         post :create, params: { asset: attributes }
 
         body = JSON.parse(response.body)
@@ -79,11 +87,11 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
 
-    context 'an asset with a redirect URL' do
+    context 'when attributes include a redirect URL' do
       let(:redirect_url) { 'https://example.com/path/file.ext' }
-      let(:attributes) { { redirect_url: redirect_url, file: load_fixture_file("asset.png") } }
+      let(:attributes) { valid_attributes.merge(redirect_url: redirect_url) }
 
-      it 'stores redirect URL' do
+      it 'stores redirect URL on asset' do
         post :create, params: { asset: attributes }
 
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
@@ -101,68 +109,76 @@ RSpec.describe AssetsController, type: :controller do
     end
   end
 
-  describe "PUT update" do
-    context "a valid asset" do
-      let(:attributes) { { file: load_fixture_file("asset2.jpg") } }
+  describe 'PUT update' do
+    context 'an existing asset' do
       let(:asset) { FactoryBot.create(:asset) }
+      let(:file) { load_fixture_file('asset2.jpg') }
+      let(:valid_attributes) { { file: file } }
 
-      it "updates attributes" do
-        put :update, params: { id: asset.id, asset: attributes }
+      it 'persists new attributes on existing asset' do
+        put :update, params: { id: asset.id, asset: valid_attributes }
 
         expect(assigns(:asset)).to be_persisted
+      end
+
+      it 'stores file on existing asset' do
+        put :update, params: { id: asset.id, asset: valid_attributes }
+
         expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
       end
 
-      it "returns a success status" do
+      it 'stores access_limited on existing asset' do
+        attributes = valid_attributes.merge(access_limited: ['user-id'])
         put :update, params: { id: asset.id, asset: attributes }
-
-        expect(response).to have_http_status(:success)
-      end
-
-      it "stores access_limited on asset" do
-        put :update, params: { id: asset.id, asset: attributes.merge(access_limited: ['user-id']) }
 
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
-      it "stores redirect_url on asset" do
+      it 'stores redirect_url on existing asset' do
         redirect_url = 'https://example.com/path/file.ext'
-        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
       end
 
-      it "stores blank redirect_url as nil on asset" do
+      it 'stores blank redirect_url as nil on existing asset' do
         redirect_url = ''
-        put :update, params: { id: asset.id, asset: attributes.merge(redirect_url: redirect_url) }
+        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to be_nil
       end
 
-      it "returns the location and details of the new asset" do
-        put :update, params: { id: asset.id, asset: attributes }
+      it 'responds with success status' do
+        put :update, params: { id: asset.id, asset: valid_attributes }
+
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'responds with the details of the existing asset' do
+        put :update, params: { id: asset.id, asset: valid_attributes }
 
         asset = assigns(:asset)
 
         body = JSON.parse(response.body)
 
         expect(body['id']).to eq("http://test.host/assets/#{asset.id}")
-        expect(body['name']).to eq("asset2.jpg")
-        expect(body['content_type']).to eq("image/jpeg")
+        expect(body['name']).to eq('asset2.jpg')
+        expect(body['content_type']).to eq('image/jpeg')
         expect(body['draft']).to be_falsey
       end
 
-      context "a draft asset" do
-        let(:attributes) { { draft: true, file: load_fixture_file("asset2.jpg") } }
-        let(:asset) { FactoryBot.create(:asset) }
+      context 'when attributes include draft status' do
+        let(:attributes) { valid_attributes.merge(draft: true) }
 
-        it "updates attributes" do
+        it 'stores draft status on existing asset' do
           put :update, params: { id: asset.id, asset: attributes }
 
           expect(assigns(:asset)).to be_draft
         end
 
-        it "returns the draft status of the updated asset" do
+        it 'includes the draft status in the response' do
           put :update, params: { id: asset.id, asset: attributes }
 
           body = JSON.parse(response.body)
@@ -173,69 +189,68 @@ RSpec.describe AssetsController, type: :controller do
     end
   end
 
-  describe "DELETE destroy" do
-    context "a valid asset" do
+  describe 'DELETE destroy' do
+    context 'an existing asset' do
       let(:asset) { FactoryBot.create(:asset) }
 
-      it "deletes the asset" do
+      it 'deletes the asset' do
         delete :destroy, params: { id: asset.id }
 
         expect(Asset.where(id: asset.id).first).to be_nil
       end
 
-      it "returns a success status" do
+      it 'responds with a success status' do
         delete :destroy, params: { id: asset.id }
 
         expect(response).to have_http_status(:success)
       end
+
+      context 'when Asset#destroy fails' do
+        let(:errors) { ActiveModel::Errors.new(asset) }
+
+        before do
+          errors.add(:base, 'Something went wrong')
+          allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
+          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
+          delete :destroy, params: { id: asset.id }
+        end
+
+        it 'responds with unprocessable entity status' do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'includes the errors in the response' do
+          expect(response.body).to match(/Something went wrong/)
+        end
+      end
     end
 
-    context "an asset that doesn't exist" do
-      it "responds with not found status" do
-        delete :destroy, params: { id: "12345" }
+    context 'no existing asset' do
+      it 'responds with not found status' do
+        delete :destroy, params: { id: '12345' }
         expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context "when Asset#destroy fails" do
-      let(:asset) { FactoryBot.create(:asset) }
-      let(:errors) { ActiveModel::Errors.new(asset) }
-
-      before do
-        errors.add(:base, "Something went wrong")
-        allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
-        allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-        delete :destroy, params: { id: asset.id }
-      end
-
-      it "responds with unprocessable entity status" do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it "returns the asset errors" do
-        expect(response.body).to match(/Something went wrong/)
       end
     end
   end
 
-  describe "GET show" do
-    context "an asset which exists" do
+  describe 'GET show' do
+    context 'an asset which exists' do
       let(:asset) { FactoryBot.create(:asset) }
 
-      it "is a successful request" do
+      it 'responds with success status' do
         get :show, params: { id: asset.id }
 
         expect(response).to be_success
       end
 
-      it "assigns the asset to the template" do
+      it 'makes the asset available to the view template' do
         get :show, params: { id: asset.id }
 
         expect(assigns(:asset)).to be_a(Asset)
         expect(assigns(:asset).id).to eq(asset.id)
       end
 
-      it "returns the draft status of the asset" do
+      it 'includes the draft status in the response' do
         get :show, params: { id: asset.id }
 
         body = JSON.parse(response.body)
@@ -243,62 +258,62 @@ RSpec.describe AssetsController, type: :controller do
         expect(body['draft']).to be_falsey
       end
 
-      it "sets the Cache-Control header max-age to 0" do
+      it 'sets the Cache-Control header max-age to 0' do
         get :show, params: { id: asset.id }
 
-        expect(response.headers["Cache-Control"]).to eq("max-age=0, public")
+        expect(response.headers['Cache-Control']).to eq('max-age=0, public')
       end
     end
 
-    context "an asset which does not exist" do
-      it "returns a not found status" do
-        get :show, params: { id: "some-gif-or-other" }
+    context 'no existing asset' do
+      it 'responds with not found status' do
+        get :show, params: { id: 'some-gif-or-other' }
 
         expect(response).to have_http_status(:not_found)
       end
 
-      it "returns a not found message" do
-        get :show, params: { id: "some-gif-or-other" }
+      it 'responds with not found message' do
+        get :show, params: { id: 'some-gif-or-other' }
 
         body = JSON.parse(response.body)
-        expect(body['_response_info']['status']).to eq("not found")
+        expect(body['_response_info']['status']).to eq('not found')
       end
     end
+  end
 
-    describe "POST restore" do
+  describe 'POST restore' do
+    context 'an asset marked as deleted' do
       let(:asset) { FactoryBot.create(:asset, deleted_at: 10.minutes.ago) }
 
-      context "an asset which has been soft deleted" do
-        before do
-          post :restore, params: { id: asset.id }
-        end
-
-        it "is a successful request" do
-          expect(response).to be_success
-        end
-
-        it "assigns the asset" do
-          restored_asset = assigns(:asset)
-          expect(restored_asset).to be
-          expect(restored_asset.deleted_at).to be_nil
-        end
+      before do
+        post :restore, params: { id: asset.id }
       end
 
-      context "when restoring fails" do
+      it 'responds with success status' do
+        expect(response).to be_success
+      end
+
+      it 'marks the asset as not deleted' do
+        restored_asset = assigns(:asset)
+        expect(restored_asset).to be
+        expect(restored_asset.deleted_at).to be_nil
+      end
+
+      context 'when restoring fails' do
         let(:errors) { ActiveModel::Errors.new(asset) }
 
         before do
-          errors.add(:base, "Something went wrong")
+          errors.add(:base, 'Something went wrong')
           allow_any_instance_of(Asset).to receive(:restore).and_return(false)
           allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
           post :restore, params: { id: asset.id }
         end
 
-        it "responds with unprocessable entity status" do
+        it 'responds with unprocessable entity status' do
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
-        it "responds with an error message" do
+        it 'includes the errors in the response' do
           expect(response.body).to match(/Something went wrong/)
         end
       end
