@@ -266,9 +266,9 @@ RSpec.describe AssetsController, type: :controller do
     end
 
     describe 'POST restore' do
-      let(:asset) { FactoryBot.create(:asset, deleted_at: 10.minutes.ago) }
-
       context 'an asset marked as deleted' do
+        let(:asset) { FactoryBot.create(:asset, deleted_at: 10.minutes.ago) }
+
         before do
           post :restore, params: { id: asset.id }
         end
@@ -282,24 +282,24 @@ RSpec.describe AssetsController, type: :controller do
           expect(restored_asset).to be
           expect(restored_asset.deleted_at).to be_nil
         end
-      end
 
-      context 'when restoring fails' do
-        let(:errors) { ActiveModel::Errors.new(asset) }
+        context 'when restoring fails' do
+          let(:errors) { ActiveModel::Errors.new(asset) }
 
-        before do
-          errors.add(:base, 'Something went wrong')
-          allow_any_instance_of(Asset).to receive(:restore).and_return(false)
-          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-          post :restore, params: { id: asset.id }
-        end
+          before do
+            errors.add(:base, 'Something went wrong')
+            allow_any_instance_of(Asset).to receive(:restore).and_return(false)
+            allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
+            post :restore, params: { id: asset.id }
+          end
 
-        it 'responds with unprocessable entity status' do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+          it 'responds with unprocessable entity status' do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
 
-        it 'includes the errors in the response' do
-          expect(response.body).to match(/Something went wrong/)
+          it 'includes the errors in the response' do
+            expect(response.body).to match(/Something went wrong/)
+          end
         end
       end
     end
