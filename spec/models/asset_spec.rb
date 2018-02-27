@@ -495,6 +495,11 @@ RSpec.describe Asset, type: :model do
       expect(asset.content_type).to eq('application/vnd.ms-excel')
     end
 
+    it 'handles .txt file extensions and adds the charset parameter' do
+      file = Tempfile.new(['file', '.txt'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('text/plain; charset=utf-8')
+    end
   end
 
   describe '#image?' do
