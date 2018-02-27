@@ -2,14 +2,16 @@ require "rails_helper"
 
 RSpec.describe Asset, type: :model do
   describe 'validation' do
-    subject(:asset) { FactoryBot.build(:asset) }
+    subject(:asset) { FactoryBot.build(:asset, attributes) }
+
+    let(:attributes) { {} }
 
     it 'is valid when built from factory' do
       expect(asset).to be_valid
     end
 
     context 'when file is not specified' do
-      subject(:asset) { FactoryBot.build(:asset, file: nil) }
+      let(:attributes) { { file: nil } }
 
       it 'is not valid' do
         expect(asset).not_to be_valid
