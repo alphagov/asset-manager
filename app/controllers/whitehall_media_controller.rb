@@ -21,7 +21,7 @@ class WhitehallMediaController < BaseMediaController
     end
 
     if asset.unscanned? || asset.clean?
-      set_expiry(1.minute)
+      set_expiry(cache_control.expires_in(1.minute))
       if asset.image?
         redirect_to self.class.helpers.image_path('thumbnail-placeholder.png')
       else
@@ -30,7 +30,7 @@ class WhitehallMediaController < BaseMediaController
       return
     end
 
-    set_expiry(AssetManager.whitehall_cache_control.max_age)
+    set_expiry(cache_control)
     headers['X-Frame-Options'] = AssetManager.whitehall_frame_options
     proxy_to_s3_via_nginx(asset)
   end
@@ -41,5 +41,9 @@ protected
     @asset ||= WhitehallAsset.from_params(
       path: params[:path], format: params[:format], path_prefix: 'government/uploads/'
     )
+  end
+
+  def cache_control
+    AssetManager.whitehall_cache_control
   end
 end

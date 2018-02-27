@@ -19,9 +19,9 @@ private
     render json: { _response_info: { status: message } }, status: code
   end
 
-  def set_expiry(duration)
+  def set_expiry(config)
     unless Rails.env.development?
-      expires_in duration, **AssetManager.cache_control.options
+      expires_in config.max_age, **config.options
     end
   end
 end

@@ -19,4 +19,8 @@ class CacheControlConfiguration
     response.prepare!
     response['Cache-Control']
   end
+
+  def expires_in(max_age)
+    self.class.new(@attributes.merge(max_age: max_age))
+  end
 end

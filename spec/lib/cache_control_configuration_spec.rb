@@ -36,4 +36,21 @@ RSpec.describe CacheControlConfiguration do
       end
     end
   end
+
+  describe '#expires_in' do
+    context 'when attributes are supplied to constructor' do
+      let(:other_options) { { public: true, must_revalidate: true } }
+      let(:attributes) { { max_age: 1.hour }.merge(other_options) }
+      let(:new_max_age) { 2.hours }
+      let(:new_config) { subject.expires_in(new_max_age) }
+
+      it 'returns a new configuration with max_age set to specified value' do
+        expect(new_config.max_age).to eq(new_max_age)
+      end
+
+      it 'returns a new configuration with same options as original' do
+        expect(new_config.options).to eq(other_options)
+      end
+    end
+  end
 end

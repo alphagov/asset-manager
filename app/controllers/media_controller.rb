@@ -27,7 +27,7 @@ class MediaController < BaseMediaController
 
     respond_to do |format|
       format.any do
-        set_expiry(AssetManager.cache_control.max_age)
+        set_expiry(cache_control)
         headers['X-Frame-Options'] = AssetManager.frame_options
         proxy_to_s3_via_nginx(asset)
       end
@@ -57,5 +57,9 @@ protected
       filename: asset.filename,
       only_path: true,
     )
+  end
+
+  def cache_control
+    AssetManager.cache_control
   end
 end

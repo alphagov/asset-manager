@@ -2,7 +2,7 @@ class BaseAssetsController < ApplicationController
   def show
     @asset = find_asset
 
-    set_expiry(0)
+    set_expiry(cache_control.expires_in(0.minutes))
     render json: AssetPresenter.new(@asset, view_context)
   end
 
@@ -20,5 +20,9 @@ protected
 
   def exclude_blank_redirect_url(params)
     params.reject { |k, v| (k.to_sym == :redirect_url) && v.blank? }
+  end
+
+  def cache_control
+    AssetManager.cache_control
   end
 end
