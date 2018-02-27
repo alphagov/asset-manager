@@ -21,6 +21,7 @@ class WhitehallMediaController < BaseMediaController
     end
 
     if asset.replacement.present?
+      set_expiry(cache_control)
       redirect_to_replacement_for(asset)
       return
     end
