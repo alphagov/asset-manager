@@ -135,6 +135,24 @@ RSpec.describe AssetsController, type: :controller do
         end
       end
 
+      context 'and replacement_id does not match an existing asset' do
+        let(:replacement_id) { 'non-existent-asset-id' }
+
+        it 'responds with unprocessable entity status' do
+          post :create, params: { asset: attributes }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'includes error message in response' do
+          post :create, params: { asset: attributes }
+
+          body = JSON.parse(response.body)
+          status = body['_response_info']['status']
+          expect(status).to include('Replacement not found')
+        end
+      end
+
       it 'includes the replacement_id in the response' do
         post :create, params: { asset: attributes }
 
@@ -201,6 +219,24 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).replacement_id).to be_nil
+      end
+
+      it 'responds with unprocessable entity status if replacement is not found' do
+        replacement_id = 'non-existent-asset-id'
+        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'includes error message in response if replacement is not found' do
+        replacement_id = 'non-existent-asset-id'
+        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        put :update, params: { id: asset.id, asset: attributes }
+
+        body = JSON.parse(response.body)
+        status = body['_response_info']['status']
+        expect(status).to include('Replacement not found')
       end
 
       it 'responds with success status' do

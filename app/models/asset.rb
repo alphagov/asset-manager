@@ -41,6 +41,8 @@ class Asset
                      message: 'must match the format defined in rfc4122'
                    }
 
+  validate :check_specified_replacement_exists
+
   mount_uploader :file, AssetUploader
 
   before_save :store_metadata, unless: :uploaded?
@@ -153,5 +155,11 @@ protected
 
   def file_stat
     File.stat(file.path)
+  end
+
+  def check_specified_replacement_exists
+    if replacement_id.present? && replacement.blank?
+      errors.add(:replacement, 'not found')
+    end
   end
 end

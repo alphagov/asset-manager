@@ -27,6 +27,40 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
+
+    context 'when replacement_id is not specified' do
+      let(:attributes) { { replacement_id: nil } }
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+    end
+
+    context 'when replacement_id is specified' do
+      let(:attributes) { { replacement_id: replacement_id } }
+
+      context 'and replacement asset exists' do
+        let(:replacement) { FactoryBot.create(:asset) }
+        let(:replacement_id) { replacement.id.to_s }
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
+
+      context 'and replacement asset does not exist' do
+        let(:replacement_id) { 'non-existent-asset-id' }
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+        end
+
+        it 'includes error for replacement not found' do
+          asset.valid?
+          expect(asset.errors[:replacement]).to include('not found')
+        end
+      end
+    end
   end
 
   describe 'creation' do
