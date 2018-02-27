@@ -6,6 +6,8 @@ class Asset
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
+  belongs_to :replacement, class_name: 'Asset', optional: true
+
   field :state, type: String, default: 'unscanned'
   field :filename_history, type: Array, default: -> { [] }
   protected :filename_history=
@@ -38,6 +40,8 @@ class Asset
                      with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
                      message: 'must match the format defined in rfc4122'
                    }
+
+  validate :check_specified_replacement_exists
 
   mount_uploader :file, AssetUploader
 
@@ -151,5 +155,11 @@ protected
 
   def file_stat
     File.stat(file.path)
+  end
+
+  def check_specified_replacement_exists
+    if replacement_id.present? && replacement.blank?
+      errors.add(:replacement, 'not found')
+    end
   end
 end

@@ -20,6 +20,12 @@ class WhitehallMediaController < BaseMediaController
       return
     end
 
+    if asset.replacement.present?
+      set_expiry(cache_control)
+      redirect_to_replacement_for(asset)
+      return
+    end
+
     if asset.unscanned? || asset.clean?
       set_expiry(cache_control.expires_in(1.minute))
       if asset.image?

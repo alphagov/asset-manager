@@ -107,6 +107,60 @@ RSpec.describe AssetsController, type: :controller do
         end
       end
     end
+
+    context 'when attributes include a replacement_id' do
+      let(:replacement) { FactoryBot.create(:asset) }
+      let(:replacement_id) { replacement.id.to_s }
+      let(:attributes) { valid_attributes.merge(replacement_id: replacement_id) }
+
+      it 'stores replacement asset' do
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).replacement).to eq(replacement)
+      end
+
+      context 'and replacement_id is blank' do
+        let(:replacement_id) { '' }
+
+        it 'stores no replacement' do
+          post :create, params: { asset: attributes }
+
+          expect(assigns(:asset).replacement).to be_blank
+        end
+
+        it 'stores replacement_id as nil' do
+          post :create, params: { asset: attributes }
+
+          expect(assigns(:asset).replacement_id).to be_nil
+        end
+      end
+
+      context 'and replacement_id does not match an existing asset' do
+        let(:replacement_id) { 'non-existent-asset-id' }
+
+        it 'responds with unprocessable entity status' do
+          post :create, params: { asset: attributes }
+
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'includes error message in response' do
+          post :create, params: { asset: attributes }
+
+          body = JSON.parse(response.body)
+          status = body['_response_info']['status']
+          expect(status).to include('Replacement not found')
+        end
+      end
+
+      it 'includes the replacement_id in the response' do
+        post :create, params: { asset: attributes }
+
+        body = JSON.parse(response.body)
+
+        expect(body['replacement_id']).to eq(replacement_id)
+      end
+    end
   end
 
   describe 'PUT update' do
@@ -148,6 +202,41 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to be_nil
+      end
+
+      it 'stores replacement on existing asset' do
+        replacement = FactoryBot.create(:asset)
+        replacement_id = replacement.id.to_s
+        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).replacement).to eq(replacement)
+      end
+
+      it 'stores replacement_id as nil if replacement_id is blank' do
+        replacement_id = ''
+        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).replacement_id).to be_nil
+      end
+
+      it 'responds with unprocessable entity status if replacement is not found' do
+        replacement_id = 'non-existent-asset-id'
+        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'includes error message in response if replacement is not found' do
+        replacement_id = 'non-existent-asset-id'
+        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        put :update, params: { id: asset.id, asset: attributes }
+
+        body = JSON.parse(response.body)
+        status = body['_response_info']['status']
+        expect(status).to include('Replacement not found')
       end
 
       it 'responds with success status' do

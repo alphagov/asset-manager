@@ -25,6 +25,12 @@ class MediaController < BaseMediaController
       return
     end
 
+    if asset.replacement.present?
+      set_expiry(cache_control)
+      redirect_to_replacement_for(asset)
+      return
+    end
+
     respond_to do |format|
       format.any do
         set_expiry(cache_control)

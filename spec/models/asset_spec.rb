@@ -2,14 +2,16 @@ require "rails_helper"
 
 RSpec.describe Asset, type: :model do
   describe 'validation' do
-    subject(:asset) { FactoryBot.build(:asset) }
+    subject(:asset) { FactoryBot.build(:asset, attributes) }
+
+    let(:attributes) { {} }
 
     it 'is valid when built from factory' do
       expect(asset).to be_valid
     end
 
     context 'when file is not specified' do
-      subject(:asset) { FactoryBot.build(:asset, file: nil) }
+      let(:attributes) { { file: nil } }
 
       it 'is not valid' do
         expect(asset).not_to be_valid
@@ -22,6 +24,40 @@ RSpec.describe Asset, type: :model do
 
         it 'is valid' do
           expect(asset).to be_valid
+        end
+      end
+    end
+
+    context 'when replacement_id is not specified' do
+      let(:attributes) { { replacement_id: nil } }
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+    end
+
+    context 'when replacement_id is specified' do
+      let(:attributes) { { replacement_id: replacement_id } }
+
+      context 'and replacement asset exists' do
+        let(:replacement) { FactoryBot.create(:asset) }
+        let(:replacement_id) { replacement.id.to_s }
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
+
+      context 'and replacement asset does not exist' do
+        let(:replacement_id) { 'non-existent-asset-id' }
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+        end
+
+        it 'includes error for replacement not found' do
+          asset.valid?
+          expect(asset.errors[:replacement]).to include('not found')
         end
       end
     end
@@ -842,6 +878,42 @@ RSpec.describe Asset, type: :model do
 
       it 'saves asset successfully despite having no file' do
         expect(asset.save).to be_truthy
+      end
+    end
+  end
+
+  describe '#replacement' do
+    let(:asset) { FactoryBot.build(:asset, replacement: replacement) }
+
+    context 'when replacement is nil' do
+      let(:replacement) { nil }
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+
+      it 'has no replacement_id' do
+        expect(asset.replacement_id).to be_nil
+      end
+    end
+
+    context 'when replacement is set' do
+      let(:replacement) { FactoryBot.create(:asset) }
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+
+      it 'persists replacement when saved' do
+        asset.save!
+
+        expect(asset.reload.replacement).to eq(replacement)
+      end
+
+      it 'persists replacement_id when saved' do
+        asset.save!
+
+        expect(asset.reload.replacement_id).to eq(replacement.id)
       end
     end
   end

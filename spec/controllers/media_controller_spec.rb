@@ -176,5 +176,28 @@ RSpec.describe MediaController, type: :controller do
         expect(response).to redirect_to(redirect_url)
       end
     end
+
+    context 'when asset has a replacement' do
+      let(:replacement) { FactoryBot.create(:uploaded_asset) }
+      let(:asset) { FactoryBot.create(:uploaded_asset, replacement: replacement) }
+
+      it 'redirects to replacement for asset' do
+        get :download, params
+
+        expect(response).to redirect_to(replacement.public_url_path)
+      end
+
+      it 'responds with 301 moved permanently status' do
+        get :download, params
+
+        expect(response).to have_http_status(:moved_permanently)
+      end
+
+      it 'sets the Cache-Control response header to 24 hours' do
+        get :download, params
+
+        expect(response.headers['Cache-Control']).to eq('max-age=86400, public')
+      end
+    end
   end
 end
