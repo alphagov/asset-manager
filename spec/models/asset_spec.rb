@@ -458,6 +458,43 @@ RSpec.describe Asset, type: :model do
       asset = Asset.new(file: file)
       expect(asset.content_type).to eq('image/svg+xml')
     end
+
+    it 'handles .dot file extensions' do
+      file = Tempfile.new(['file', '.dot'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/msword')
+    end
+
+    it 'handles .ppt file extensions' do
+      file = Tempfile.new(['file', '.ppt'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.ms-powerpoint')
+    end
+
+    it 'handles .pptx file extensions' do
+      file = Tempfile.new(['file', '.pptx'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.presentationml.presentation')
+    end
+
+    it 'handles .rdf file extensions' do
+      file = Tempfile.new(['file', '.rdf'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/rdf+xml')
+    end
+
+    it 'handles .xlsm file extensions' do
+      file = Tempfile.new(['file', '.xlsm'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.ms-excel.sheet.macroEnabled.12')
+    end
+
+    it 'handles .xlt file extensions' do
+      file = Tempfile.new(['file', '.xlt'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/vnd.ms-excel')
+    end
+
   end
 
   describe '#image?' do
