@@ -500,6 +500,18 @@ RSpec.describe Asset, type: :model do
       asset = Asset.new(file: file)
       expect(asset.content_type).to eq('text/plain; charset=utf-8')
     end
+
+    it 'handles .gml file extensions' do
+      file = Tempfile.new(['file', '.gml'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/gml+xml')
+    end
+
+    it 'handles .dxf file extensions' do
+      file = Tempfile.new(['file', '.dxf'])
+      asset = Asset.new(file: file)
+      expect(asset.content_type).to eq('application/dxf')
+    end
   end
 
   describe '#image?' do

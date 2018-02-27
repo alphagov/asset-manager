@@ -3,6 +3,8 @@
 # Add new mime types for use in respond_to blocks:
 # Mime::Type.register "text/richtext", :rtf
 
+Mime::Type.register "application/dxf", :dxf
+Mime::Type.register "application/gml+xml", :gml
 Mime::Type.register "application/msword", :doc
 Mime::Type.register "application/msword", :dot
 Mime::Type.register "application/rdf+xml", :rdf
