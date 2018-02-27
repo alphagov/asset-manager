@@ -2,7 +2,7 @@ class BaseAssetsController < ApplicationController
   def show
     @asset = find_asset
 
-    set_expiry(0)
+    set_expiry(AssetManager.cache_control.expires_in(0.minutes))
     render json: AssetPresenter.new(@asset, view_context)
   end
 
