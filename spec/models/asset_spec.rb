@@ -966,4 +966,17 @@ RSpec.describe Asset, type: :model do
       end
     end
   end
+
+  describe '#parent_document_url' do
+    let(:asset) { Asset.new }
+
+    it 'is nil by default' do
+      expect(asset.parent_document_url).to be_nil
+    end
+
+    it 'can be set' do
+      asset.parent_document_url = 'parent-document-url'
+      expect(asset.parent_document_url).to eql('parent-document-url')
+    end
+  end
 end

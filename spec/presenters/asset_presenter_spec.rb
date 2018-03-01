@@ -92,6 +92,28 @@ RSpec.describe AssetPresenter do
       end
     end
 
+    context 'when asset has no parent document URL' do
+      before do
+        asset.parent_document_url = nil
+      end
+
+      it 'returns hash without parent_document_url' do
+        expect(json).not_to have_key(:parent_document_url)
+      end
+    end
+
+    context 'when asset has parent document URL' do
+      let(:parent_document_url) { 'https://example.com/path/file.ext' }
+
+      before do
+        asset.parent_document_url = parent_document_url
+      end
+
+      it 'returns hash including parent_document_url' do
+        expect(json).to include(parent_document_url: parent_document_url)
+      end
+    end
+
     context 'when asset has no redirect URL' do
       before do
         asset.redirect_url = nil

@@ -32,6 +32,8 @@ class Asset
 
   field :access_limited, type: Array, default: []
 
+  field :parent_document_url, type: String
+
   validates :file, presence: true, unless: :uploaded?
 
   validates :uuid, presence: true,

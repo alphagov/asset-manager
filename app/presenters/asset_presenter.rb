@@ -23,6 +23,9 @@ class AssetPresenter
     if @asset.replacement.present?
       json[:replacement_id] = @asset.replacement_id.to_s
     end
+    if @asset.parent_document_url.present?
+      json[:parent_document_url] = @asset.parent_document_url.to_s
+    end
     json
   end
 end

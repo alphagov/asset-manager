@@ -171,6 +171,38 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
     end
 
+    context "when the asset doesn't contain a parent_document_url" do
+      let(:state) { 'uploaded' }
+
+      before do
+        allow(controller).to receive(:proxy_to_s3_via_nginx)
+        allow(WhitehallAsset).to receive(:from_params).and_return(asset)
+        asset.update_attribute(:parent_document_url, nil)
+      end
+
+      it "doesn't send a Link HTTP header" do
+        get :download, params: { path: path, format: format }
+
+        expect(response.headers['Link']).to be_nil
+      end
+    end
+
+    context 'when the asset has a parent_document_url' do
+      let(:state) { 'uploaded' }
+
+      before do
+        allow(controller).to receive(:proxy_to_s3_via_nginx)
+        allow(WhitehallAsset).to receive(:from_params).and_return(asset)
+        asset.update_attribute(:parent_document_url, 'parent-document-url')
+      end
+
+      it 'sends the parent_document_url in a Link HTTP header' do
+        get :download, params: { path: path, format: format }
+
+        expect(response.headers['Link']).to eql('<parent-document-url>; rel="up"')
+      end
+    end
+
     context 'when asset is unscanned' do
       let(:state) { 'unscanned' }
 

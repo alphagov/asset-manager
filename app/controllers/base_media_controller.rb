@@ -31,4 +31,10 @@ protected
   def redirect_to_replacement_for(asset)
     redirect_to asset.replacement.public_url_path, status: :moved_permanently
   end
+
+  def add_link_header(asset)
+    if asset.parent_document_url
+      headers['Link'] = %(<#{asset.parent_document_url}>; rel="up")
+    end
+  end
 end
