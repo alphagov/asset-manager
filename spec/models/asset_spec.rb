@@ -64,7 +64,14 @@ RSpec.describe Asset, type: :model do
 
     context 'when published asset is marked as draft' do
       let(:replacement) { nil }
-      let(:attributes) { { draft: false, replacement: replacement } }
+      let(:redirect_url) { nil }
+      let(:attributes) {
+        {
+          draft: false,
+          replacement: replacement,
+          redirect_url: redirect_url
+        }
+      }
 
       before do
         asset.save!
@@ -85,6 +92,20 @@ RSpec.describe Asset, type: :model do
         it 'includes error for forbidden draft state change' do
           asset.valid?
           message = 'cannot be true, because already replaced'
+          expect(asset.errors[:draft]).to include(message)
+        end
+      end
+
+      context 'and asset is redirected' do
+        let(:redirect_url) { 'https://example.com/path/file.ext' }
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+        end
+
+        it 'includes error for forbidden draft state change' do
+          asset.valid?
+          message = 'cannot be true, because already redirected'
           expect(asset.errors[:draft]).to include(message)
         end
       end

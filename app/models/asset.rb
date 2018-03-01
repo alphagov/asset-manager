@@ -165,8 +165,13 @@ protected
   end
 
   def prevent_transition_from_published_to_draft_if_replaced
-    if (changes[:draft] == [false, true]) && replacement.present?
-      errors.add(:draft, 'cannot be true, because already replaced')
+    if changes[:draft] == [false, true]
+      if replacement.present?
+        errors.add(:draft, 'cannot be true, because already replaced')
+      end
+      if redirect_url.present?
+        errors.add(:draft, 'cannot be true, because already redirected')
+      end
     end
   end
 end
