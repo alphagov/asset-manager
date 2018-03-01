@@ -61,6 +61,34 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
+
+    context 'when published asset is marked as draft' do
+      let(:replacement) { nil }
+      let(:attributes) { { draft: false, replacement: replacement } }
+
+      before do
+        asset.save!
+        asset.draft = true
+      end
+
+      it 'is valid' do
+        expect(asset).to be_valid
+      end
+
+      context 'and asset is replaced' do
+        let(:replacement) { Asset.new }
+
+        it 'is not valid' do
+          expect(asset).not_to be_valid
+        end
+
+        it 'includes error for forbidden draft state change' do
+          asset.valid?
+          message = 'cannot be true, because already replaced'
+          expect(asset.errors[:draft]).to include(message)
+        end
+      end
+    end
   end
 
   describe 'creation' do
