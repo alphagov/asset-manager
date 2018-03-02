@@ -45,6 +45,7 @@ class Asset
 
   validate :check_specified_replacement_exists
   validate :prevent_transition_from_published_to_draft_if_replaced
+  validate :ensure_parent_document_url_is_valid
 
   mount_uploader :file, AssetUploader
 
@@ -174,6 +175,20 @@ protected
       if redirect_url.present?
         errors.add(:draft, 'cannot be true, because already redirected')
       end
+    end
+  end
+
+  def ensure_parent_document_url_is_valid
+    return unless parent_document_url.present?
+
+    begin
+      uri = Addressable::URI.parse(parent_document_url)
+    rescue Addressable::URI::InvalidURIError
+      uri = nil
+    end
+
+    unless uri && %w(http https).include?(uri.scheme)
+      errors.add(:parent_document_url, 'must be an http(s) URL')
     end
   end
 end
