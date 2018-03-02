@@ -42,6 +42,7 @@ class Asset
                    }
 
   validate :check_specified_replacement_exists
+  validate :prevent_transition_from_published_to_draft_if_replaced
 
   mount_uploader :file, AssetUploader
 
@@ -160,6 +161,17 @@ protected
   def check_specified_replacement_exists
     if replacement_id.present? && replacement.blank?
       errors.add(:replacement, 'not found')
+    end
+  end
+
+  def prevent_transition_from_published_to_draft_if_replaced
+    if changes[:draft] == [false, true]
+      if replacement.present?
+        errors.add(:draft, 'cannot be true, because already replaced')
+      end
+      if redirect_url.present?
+        errors.add(:draft, 'cannot be true, because already redirected')
+      end
     end
   end
 end
