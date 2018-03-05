@@ -199,5 +199,33 @@ RSpec.describe MediaController, type: :controller do
         expect(response.headers['Cache-Control']).to eq('max-age=86400, public')
       end
     end
+
+    context "when the asset doesn't contain a parent_document_url" do
+      let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+      before do
+        asset.update_attribute(:parent_document_url, nil)
+      end
+
+      it "doesn't send a Link HTTP header" do
+        get :download, params
+
+        expect(response.headers['Link']).to be_nil
+      end
+    end
+
+    context 'when the asset has a parent_document_url' do
+      let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+      before do
+        asset.update_attribute(:parent_document_url, 'parent-document-url')
+      end
+
+      it 'sends the parent_document_url in a Link HTTP header' do
+        get :download, params
+
+        expect(response.headers['Link']).to eql('<parent-document-url>; rel="up"')
+      end
+    end
   end
 end

@@ -37,6 +37,7 @@ class WhitehallMediaController < BaseMediaController
     end
 
     set_expiry(cache_control)
+    add_link_header(asset)
     headers['X-Frame-Options'] = AssetManager.whitehall_frame_options
     proxy_to_s3_via_nginx(asset)
   end

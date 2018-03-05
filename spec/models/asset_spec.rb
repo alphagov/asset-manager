@@ -110,6 +110,57 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
+
+    context 'when parent_document_url is not specified' do
+      it 'is valid' do
+        asset.parent_document_url = nil
+        expect(asset).to be_valid
+      end
+    end
+
+    context 'when parent_document_url is specified' do
+      it "is valid when it's an http URL" do
+        asset.parent_document_url = 'http://www.example.com'
+        expect(asset).to be_valid
+      end
+
+      it "is valid when it's an https URL" do
+        asset.parent_document_url = 'https://www.example.com'
+        expect(asset).to be_valid
+      end
+
+      context 'and is not an http(s) URL' do
+        before do
+          asset.parent_document_url = 'ftp://example.com'
+        end
+
+        it "is invalid" do
+          expect(asset).not_to be_valid
+        end
+
+        it "contains error message" do
+          asset.valid?
+          message = 'must be an http(s) URL'
+          expect(asset.errors[:parent_document_url]).to include(message)
+        end
+      end
+
+      context 'and the URL cannot be parsed' do
+        before do
+          asset.parent_document_url = 'http://foo:bar:baz'
+        end
+
+        it "is invalid" do
+          expect(asset).not_to be_valid
+        end
+
+        it "contains error message" do
+          asset.valid?
+          message = 'must be an http(s) URL'
+          expect(asset.errors[:parent_document_url]).to include(message)
+        end
+      end
+    end
   end
 
   describe 'creation' do
@@ -964,6 +1015,19 @@ RSpec.describe Asset, type: :model do
 
         expect(asset.reload.replacement_id).to eq(replacement.id)
       end
+    end
+  end
+
+  describe '#parent_document_url' do
+    let(:asset) { Asset.new }
+
+    it 'is nil by default' do
+      expect(asset.parent_document_url).to be_nil
+    end
+
+    it 'can be set' do
+      asset.parent_document_url = 'parent-document-url'
+      expect(asset.parent_document_url).to eql('parent-document-url')
     end
   end
 end

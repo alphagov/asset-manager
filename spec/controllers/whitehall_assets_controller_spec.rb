@@ -55,6 +55,12 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).replacement).to eq(replacement)
       end
 
+      it 'stores parent_document_url on asset' do
+        post :create, params: { asset: attributes.merge(parent_document_url: 'parent-document-url') }
+
+        expect(assigns(:asset).parent_document_url).to eq('parent-document-url')
+      end
+
       it "returns a created status" do
         post :create, params: { asset: attributes }
 

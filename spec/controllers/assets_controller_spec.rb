@@ -32,6 +32,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
+      it 'stores parent_document_url on asset' do
+        attributes = valid_attributes.merge(parent_document_url: 'parent-document-url')
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).parent_document_url).to eq('parent-document-url')
+      end
+
       it 'responds with created status' do
         post :create, params: { asset: valid_attributes }
 
