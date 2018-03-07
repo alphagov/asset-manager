@@ -38,7 +38,7 @@ private
   end
 
   def asset_params
-    exclude_blank_redirect_url(
+    normalize_redirect_url(
       handle_empty_access_limited_param(params)
         .require(:asset)
         .permit(:file, :draft, :redirect_url, :replacement_id, :parent_document_url, access_limited: [])

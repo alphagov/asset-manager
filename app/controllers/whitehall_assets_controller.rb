@@ -10,7 +10,7 @@ class WhitehallAssetsController < BaseAssetsController
 private
 
   def asset_params
-    exclude_blank_redirect_url(
+    normalize_redirect_url(
       params
         .require(:asset)
         .permit(
