@@ -22,7 +22,7 @@ protected
     params.reject { |k, v| (k.to_sym == :redirect_url) && v.blank? }
   end
 
-  def handle_empty_access_limited_param(params)
+  def normalize_access_limited(params)
     if params.has_key?(:asset) && params[:asset].has_key?(:access_limited) && params[:asset][:access_limited].empty?
       params[:asset][:access_limited] = []
     end

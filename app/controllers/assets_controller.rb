@@ -39,7 +39,7 @@ private
 
   def asset_params
     normalize_redirect_url(
-      handle_empty_access_limited_param(params)
+      normalize_access_limited(params)
         .require(:asset)
         .permit(:file, :draft, :redirect_url, :replacement_id, :parent_document_url, access_limited: [])
     )
