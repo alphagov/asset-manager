@@ -195,6 +195,17 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
+      it 'resets access_limited to an empty array for an existing asset with an access_limited array' do
+        asset.update_attributes!(access_limited: ['user-uid'])
+
+        # We have to use an empty string as that is what gds-api-adapters/rest-client
+        # will generate instead of an empty array
+        attributes = valid_attributes.merge(access_limited: '')
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).access_limited).to eq([])
+      end
+
       it 'stores redirect_url on existing asset' do
         redirect_url = 'https://example.com/path/file.ext'
         attributes = valid_attributes.merge(redirect_url: redirect_url)

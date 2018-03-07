@@ -18,8 +18,15 @@ class BaseAssetsController < ApplicationController
 
 protected
 
-  def exclude_blank_redirect_url(params)
+  def normalize_redirect_url(params)
     params.reject { |k, v| (k.to_sym == :redirect_url) && v.blank? }
+  end
+
+  def normalize_access_limited(params)
+    if params.has_key?(:asset) && params[:asset].has_key?(:access_limited) && params[:asset][:access_limited].empty?
+      params[:asset][:access_limited] = []
+    end
+    params
   end
 
   def cache_control
