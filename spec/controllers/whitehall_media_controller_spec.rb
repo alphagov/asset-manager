@@ -142,10 +142,10 @@ RSpec.describe WhitehallMediaController, type: :controller do
         expect(response).to have_http_status(:moved_permanently)
       end
 
-      it 'sets the Cache-Control response header to 4 hours' do
+      it 'sets the Cache-Control response header to 24 hours' do
         get :download, params: { path: path, format: format }
 
-        expect(response.headers['Cache-Control']).to eq('max-age=14400, public')
+        expect(response.headers['Cache-Control']).to eq('max-age=86400, public')
       end
 
       context 'and the replacement is draft' do
