@@ -40,7 +40,6 @@ RSpec/MultipleExpectations:
 # Offense count: 31
 RSpec/NamedSubject:
   Exclude:
-    - 'spec/lib/cache_control_configuration_spec.rb'
     - 'spec/lib/content_disposition_configuration_spec.rb'
     - 'spec/lib/s3_storage_spec.rb'
 
