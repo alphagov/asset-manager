@@ -33,7 +33,11 @@ class MediaController < BaseMediaController
 
     respond_to do |format|
       format.any do
-        set_expiry(cache_control)
+        if requested_from_draft_assets_host?
+          expires_now
+        else
+          set_expiry(cache_control)
+        end
         add_link_header(asset)
         headers['X-Frame-Options'] = AssetManager.frame_options
         proxy_to_s3_via_nginx(asset)

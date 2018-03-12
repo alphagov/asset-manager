@@ -80,6 +80,12 @@ RSpec.describe MediaController, type: :controller do
 
           get :download, params
         end
+
+        it "sets Cache-Control header to no-cache" do
+          get :download, params
+
+          expect(response.headers["Cache-Control"]).to eq("no-cache")
+        end
       end
     end
 
