@@ -19,17 +19,14 @@ private
     render json: { _response_info: { status: message } }, status: code
   end
 
-  def set_expiry(config)
-    unless Rails.env.development?
-      expires_in config.max_age, **config.options
-    end
-  end
-
   def set_default_expiry
     cache_control = CacheControlConfiguration.new(
       max_age: 24.hours,
       public: true
     )
-    set_expiry(cache_control)
+    config = cache_control
+    unless Rails.env.development?
+      expires_in config.max_age, **config.options
+    end
   end
 end
