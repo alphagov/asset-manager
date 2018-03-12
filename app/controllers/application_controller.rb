@@ -26,13 +26,10 @@ private
   end
 
   def set_default_expiry
-    set_expiry(cache_control)
-  end
-
-  def cache_control
-    CacheControlConfiguration.new(
+    cache_control = CacheControlConfiguration.new(
       max_age: 24.hours,
       public: true
     )
+    set_expiry(cache_control)
   end
 end
