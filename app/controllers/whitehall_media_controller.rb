@@ -55,6 +55,6 @@ protected
   end
 
   def cache_control
-    AssetManager.whitehall_cache_control
+    AssetManager.cache_control
   end
 end
