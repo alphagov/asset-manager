@@ -28,8 +28,4 @@ protected
     end
     params
   end
-
-  def cache_control
-    AssetManager.cache_control
-  end
 end

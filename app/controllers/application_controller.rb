@@ -24,4 +24,8 @@ private
       expires_in config.max_age, **config.options
     end
   end
+
+  def cache_control
+    AssetManager.cache_control
+  end
 end
