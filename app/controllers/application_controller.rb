@@ -20,13 +20,8 @@ private
   end
 
   def set_default_expiry
-    cache_control = CacheControlConfiguration.new(
-      max_age: 24.hours,
-      public: true
-    )
-    config = cache_control
     unless Rails.env.development?
-      expires_in config.max_age, **config.options
+      expires_in 24.hours, public: true
     end
   end
 end
