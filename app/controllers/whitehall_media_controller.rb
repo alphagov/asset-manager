@@ -53,8 +53,4 @@ protected
       path: params[:path], format: params[:format], path_prefix: 'government/uploads/'
     )
   end
-
-  def cache_control
-    AssetManager.cache_control
-  end
 end

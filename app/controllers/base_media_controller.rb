@@ -37,4 +37,8 @@ protected
       headers['Link'] = %(<#{asset.parent_document_url}>; rel="up")
     end
   end
+
+  def cache_control
+    AssetManager.cache_control
+  end
 end
