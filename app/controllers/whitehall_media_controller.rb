@@ -27,7 +27,7 @@ class WhitehallMediaController < BaseMediaController
     end
 
     if asset.unscanned? || asset.clean?
-      set_expiry(cache_control.expires_in(1.minute))
+      expires_in 1.minute, public: true
       if asset.image?
         redirect_to self.class.helpers.image_path('thumbnail-placeholder.png')
       else
