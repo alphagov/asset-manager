@@ -102,6 +102,12 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
           get :download, params: { path: path, format: format }
         end
+
+        it "sets Cache-Control header to no-cache" do
+          get :download, params: { path: path, format: format }
+
+          expect(response.headers["Cache-Control"]).to eq("no-cache")
+        end
       end
     end
 
