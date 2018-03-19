@@ -2,7 +2,7 @@
 task create_missing_whitehall_assets: :environment do
   placeholder_path = Rails.root.join('tmp/whitehall-attachment-placeholder.txt')
   File.open(placeholder_path, 'w') do |file|
-    file.puts('whitehall-attachment-placeholder.txt')
+    file.puts('See https://github.com/alphagov/asset-manager/pull/528 for more information')
   end
 
   redirects = [
