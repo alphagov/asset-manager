@@ -12,7 +12,6 @@ task create_missing_whitehall_assets: :environment do
     ["/government/uploads/system/uploads/attachment_data/file/9559/att0212.xls", "/government/uploads/system/uploads/attachment_data/file/230269/att0212.xls"],
     ["/government/uploads/system/uploads/attachment_data/file/11510/climate-change-2011-tables-xls.zip", "/government/uploads/system/uploads/attachment_data/file/230270/climate-change-2011-tables-xls.zip"],
     ["/government/uploads/system/uploads/attachment_data/file/11723/Water_Efficiency_Calculator_Rev_02.xls", "/government/uploads/system/uploads/attachment_data/file/205789/The_water_efficiency_calculator_tool.xls"],
-    ["/government/uploads/system/uploads/attachment_data/file/28419/Form_NSV001.pdf", "/government/uploads/system/uploads/attachment_data/file/303346/Form_NSV001.pdf"],
     ["/government/uploads/system/uploads/attachment_data/file/210359/positive-for-youth-consultation-responses.doc", "/government/uploads/system/uploads/attachment_data/file/210381/positive-for-youth-consultation-responses.doc"],
     ["/government/uploads/system/uploads/attachment_data/file/210360/positive-for-youth-young-peoples-role-in-its-development.doc", "/government/uploads/system/uploads/attachment_data/file/210382/positive-for-youth-young-peoples-role_in_its_development.doc"],
     ["/government/uploads/system/uploads/attachment_data/file/211761/110713_Local_CO2_NS_-_Annex_A__Statistical_release_.pdf", "/government/uploads/system/uploads/attachment_data/file/322819/20140624_Statistical_release_Local_Authority_CO2_emissions.pdf"],
