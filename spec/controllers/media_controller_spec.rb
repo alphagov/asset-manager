@@ -204,6 +204,29 @@ RSpec.describe MediaController, type: :controller do
 
         expect(response.headers['Cache-Control']).to eq('max-age=86400, public')
       end
+
+      context 'and the replacement is draft' do
+        before do
+          replacement.update_attribute(:draft, true)
+        end
+
+        it 'serves the original asset when requested via something other than the draft-assets host' do
+          request.headers['X-Forwarded-Host'] = "not-#{AssetManager.govuk.draft_assets_host}"
+
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params
+        end
+
+        it 'redirects to the replacement asset when requested via the draft-assets host by a signed-in user' do
+          request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
+          allow(controller).to receive(:authenticate_user!)
+
+          get :download, params
+
+          expect(response).to redirect_to(replacement.public_url_path)
+        end
+      end
     end
 
     context "when the asset doesn't contain a parent_document_url" do

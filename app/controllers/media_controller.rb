@@ -25,7 +25,7 @@ class MediaController < BaseMediaController
       return
     end
 
-    if asset.replacement.present?
+    if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
       set_expiry(cache_control)
       redirect_to_replacement_for(asset)
       return
