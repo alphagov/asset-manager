@@ -147,6 +147,29 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
         expect(response.headers['Cache-Control']).to eq('max-age=14400, public')
       end
+
+      context 'and the replacement is draft' do
+        before do
+          replacement.update_attribute(:draft, true)
+        end
+
+        it 'serves the asset when requested via something other than the draft-assets host' do
+          request.headers['X-Forwarded-Host'] = "not-#{AssetManager.govuk.draft_assets_host}"
+
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params: { path: path, format: format }
+        end
+
+        it 'redirects to the replacement when requested via the draft-assets host' do
+          request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
+          allow(controller).to receive(:authenticate_user!)
+
+          get :download, params: { path: path, format: format }
+
+          expect(response).to redirect_to(replacement.public_url_path)
+        end
+      end
     end
 
     context 'when asset is draft and access limited' do
