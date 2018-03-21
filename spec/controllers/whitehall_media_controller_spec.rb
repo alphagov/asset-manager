@@ -153,7 +153,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
           replacement.update_attribute(:draft, true)
         end
 
-        it 'serves the asset when requested via something other than the draft-assets host' do
+        it 'serves the original asset when requested via something other than the draft-assets host' do
           request.headers['X-Forwarded-Host'] = "not-#{AssetManager.govuk.draft_assets_host}"
 
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
@@ -161,7 +161,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
           get :download, params: { path: path, format: format }
         end
 
-        it 'redirects to the replacement when requested via the draft-assets host' do
+        it 'redirects to the replacement asset when requested via the draft-assets host by a signed-in user' do
           request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
           allow(controller).to receive(:authenticate_user!)
 
