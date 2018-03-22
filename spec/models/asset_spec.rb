@@ -60,6 +60,19 @@ RSpec.describe Asset, type: :model do
           expect(asset.errors[:replacement]).to include('not found')
         end
       end
+
+      context 'and the replacement exists but has been deleted' do
+        let(:replacement) { FactoryBot.create(:asset) }
+        let(:replacement_id) { replacement.id.to_s }
+
+        before do
+          replacement.destroy
+        end
+
+        it 'is valid' do
+          expect(asset).to be_valid
+        end
+      end
     end
 
     context 'when published asset is marked as draft' do
@@ -83,7 +96,7 @@ RSpec.describe Asset, type: :model do
       end
 
       context 'and asset is replaced' do
-        let(:replacement) { Asset.new }
+        let(:replacement) { FactoryBot.create(:asset) }
 
         it 'is not valid' do
           expect(asset).not_to be_valid
