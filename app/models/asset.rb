@@ -162,7 +162,8 @@ protected
   end
 
   def check_specified_replacement_exists
-    if replacement_id.present? && replacement.blank?
+    unscoped_replacement = Asset.unscoped.where(id: replacement_id)
+    if replacement_id.present? && unscoped_replacement.blank?
       errors.add(:replacement, 'not found')
     end
   end
