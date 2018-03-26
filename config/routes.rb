@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get '/timeout' => 'timeout#show'
+
   resources :assets, only: %i(show create update destroy) do
     member do
       post :restore
