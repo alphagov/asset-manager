@@ -21,13 +21,13 @@ class WhitehallMediaController < BaseMediaController
     end
 
     if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
-      set_expiry(cache_control)
+      set_default_expiry
       redirect_to_replacement_for(asset)
       return
     end
 
     if asset.unscanned? || asset.clean?
-      set_expiry(cache_control.expires_in(1.minute))
+      expires_in 1.minute, public: true
       if asset.image?
         redirect_to self.class.helpers.image_path('thumbnail-placeholder.png')
       else
@@ -39,7 +39,7 @@ class WhitehallMediaController < BaseMediaController
     if requested_from_draft_assets_host?
       expires_now
     else
-      set_expiry(cache_control)
+      set_default_expiry
     end
     add_link_header(asset)
     headers['X-Frame-Options'] = AssetManager.whitehall_frame_options
@@ -52,9 +52,5 @@ protected
     @asset ||= WhitehallAsset.from_params(
       path: params[:path], format: params[:format], path_prefix: 'government/uploads/'
     )
-  end
-
-  def cache_control
-    AssetManager.whitehall_cache_control
   end
 end

@@ -2,7 +2,7 @@ class BaseAssetsController < ApplicationController
   def show
     @asset = find_asset
 
-    set_expiry(cache_control.expires_in(0.minutes))
+    expires_now
     render json: AssetPresenter.new(@asset, view_context)
   end
 
@@ -27,9 +27,5 @@ protected
       params[:asset][:access_limited] = []
     end
     params
-  end
-
-  def cache_control
-    AssetManager.cache_control
   end
 end

@@ -41,8 +41,6 @@ module AssetManager
 
   mattr_accessor :carrier_wave_store_base_dir
 
-  mattr_accessor :cache_control
-  mattr_accessor :whitehall_cache_control
   mattr_accessor :content_disposition
   mattr_accessor :default_content_type
   mattr_accessor :frame_options

@@ -19,9 +19,9 @@ private
     render json: { _response_info: { status: message } }, status: code
   end
 
-  def set_expiry(config)
+  def set_default_expiry
     unless Rails.env.development?
-      expires_in config.max_age, **config.options
+      expires_in 24.hours, public: true
     end
   end
 end
