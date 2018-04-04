@@ -208,5 +208,17 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context 'when the asset has been deleted' do
+      before do
+        asset.destroy
+      end
+
+      it 'returns a 200 response' do
+        get :show, params: { path: 'government/uploads/image', format: 'png' }
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 end

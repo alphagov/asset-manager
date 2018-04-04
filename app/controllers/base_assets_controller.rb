@@ -1,6 +1,6 @@
 class BaseAssetsController < ApplicationController
   def show
-    @asset = find_asset
+    @asset = find_asset(include_deleted: true)
 
     expires_now
     render json: AssetPresenter.new(@asset, view_context)

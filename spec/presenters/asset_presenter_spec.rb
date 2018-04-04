@@ -49,6 +49,10 @@ RSpec.describe AssetPresenter do
       expect(json).to have_key(:size)
     end
 
+    it 'return hash including deleted state' do
+      expect(json).to include(deleted: false)
+    end
+
     context 'when the asset has been saved' do
       before do
         asset.save
@@ -56,6 +60,17 @@ RSpec.describe AssetPresenter do
 
       it 'returns hash including asset size' do
         expect(json).to include(size: 57705)
+      end
+    end
+
+    context 'when the asset has been saved and then destroyed' do
+      before do
+        asset.save!
+        asset.destroy
+      end
+
+      it 'return hash including deleted state' do
+        expect(json).to include(deleted: true)
       end
     end
 

@@ -372,6 +372,16 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
 
+    context 'an asset that has been deleted' do
+      let(:asset) { FactoryBot.create(:deleted_asset) }
+
+      it 'responds with success status' do
+        get :show, params: { id: asset.id }
+
+        expect(response).to be_success
+      end
+    end
+
     context 'no existing asset' do
       it 'responds with not found status' do
         get :show, params: { id: 'some-gif-or-other' }

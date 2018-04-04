@@ -15,7 +15,8 @@ class AssetPresenter
       size: @asset.size,
       file_url: URI.join(Plek.new.asset_root, Addressable::URI.encode(@asset.public_url_path)).to_s,
       state: @asset.state,
-      draft: @asset.draft?
+      draft: @asset.draft?,
+      deleted: @asset.deleted?
     }
     if @asset.redirect_url.present?
       json[:redirect_url] = @asset.redirect_url
