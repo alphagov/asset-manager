@@ -116,8 +116,10 @@ RSpec.describe "Asset requests", type: :request do
       expect(body["state"]).to eq("uploaded")
 
       get "/assets/#{asset.id}"
+      body = JSON.parse(response.body)
 
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:ok)
+      expect(body['deleted']).to eq(true)
     end
   end
 

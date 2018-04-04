@@ -25,8 +25,9 @@ private
     WhitehallAsset.where(legacy_url_path: asset_params[:legacy_url_path])
   end
 
-  def find_asset
-    WhitehallAsset.from_params(
+  def find_asset(include_deleted: false)
+    scope = include_deleted ? WhitehallAsset.unscoped : WhitehallAsset
+    scope.from_params(
       path: params[:path], format: params[:format]
     )
   end
