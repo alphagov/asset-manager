@@ -34,7 +34,7 @@ RSpec.describe WhitehallAsset, type: :model do
       end
 
       context 'and legacy_url_path is not unique' do
-        let(:existing_asset) { FactoryBot.create(:whitehall_asset) }
+        let!(:existing_asset) { FactoryBot.create(:whitehall_asset) }
 
         before do
           asset.legacy_url_path = existing_asset.legacy_url_path
@@ -49,10 +49,16 @@ RSpec.describe WhitehallAsset, type: :model do
           before do
             asset.legacy_url_path = existing_asset.legacy_url_path
             existing_asset.delete
+            asset.save
           end
 
           it 'is valid because legacy_url_path is unique within the assets not marked as deleted' do
             expect(asset).to be_valid
+          end
+
+          it 'can find the most recent (undeleted) asset' do
+            path = asset.legacy_url_path[1..-1]
+            expect(WhitehallAsset.unscoped.from_params(path: path).deleted?).to eq(false)
           end
         end
       end
