@@ -51,6 +51,7 @@ class Asset
 
   before_save :store_metadata, unless: :uploaded?
   after_save :schedule_virus_scan
+  after_save :update_indirect_replacements
 
   state_machine :state, initial: :unscanned do
     event :scanned_clean do
@@ -132,6 +133,15 @@ class Asset
 
   def size_from_file
     file_stat.size
+  end
+
+  def update_indirect_replacements
+    return unless replacement.present?
+
+    Asset.unscoped.where(replacement_id: self.id).each do |asset|
+      asset.replacement = replacement
+      asset.save
+    end
   end
 
 protected
