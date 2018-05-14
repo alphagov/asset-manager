@@ -23,4 +23,14 @@ namespace :db do
       SetAssetSizeWorker.perform_async(asset_id)
     end
   end
+
+  desc "Transform all redirect chains into one-step redirects"
+  task resolve_redirect_chains: :environment do
+    replaced = Asset.unscoped.where(:replacement_id.ne => nil)
+    replaced.each do |asset|
+      next unless asset.replacement.present?
+      next if asset.replacement.replacement.present?
+      asset.update_indirect_replacements
+    end
+  end
 end
