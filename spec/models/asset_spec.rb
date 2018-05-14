@@ -75,6 +75,22 @@ RSpec.describe Asset, type: :model do
       end
     end
 
+    context 'when replacements are replaced' do
+      let(:first_replacement) { FactoryBot.create(:asset) }
+      let(:final_replacement) { FactoryBot.create(:asset) }
+
+      before do
+        asset.replacement = first_replacement
+        asset.save
+        first_replacement.replacement = final_replacement
+        first_replacement.save
+      end
+
+      it 'updates the original asset' do
+        expect(asset.reload.replacement_id).to eq(final_replacement.id)
+      end
+    end
+
     context 'when published asset is marked as draft' do
       let(:replacement) { nil }
       let(:redirect_url) { nil }
