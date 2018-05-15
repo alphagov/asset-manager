@@ -43,8 +43,6 @@ module AssetManager
 
   mattr_accessor :content_disposition
   mattr_accessor :default_content_type
-  mattr_accessor :frame_options
-  mattr_accessor :whitehall_frame_options
 
   mattr_accessor :fake_s3
 end

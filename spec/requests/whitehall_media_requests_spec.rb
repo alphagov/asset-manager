@@ -106,8 +106,8 @@ RSpec.describe 'Whitehall media requests', type: :request do
       expect(response.headers['Cache-Control']).to eq('max-age=86400, public')
     end
 
-    it 'sets the X-Frame-Options response header to SAMEORIGIN' do
-      expect(response.headers['X-Frame-Options']).to eq('SAMEORIGIN')
+    it 'sets the X-Frame-Options response header to DENY' do
+      expect(response.headers['X-Frame-Options']).to eq('DENY')
     end
   end
 end
