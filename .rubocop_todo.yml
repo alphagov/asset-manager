@@ -69,7 +69,7 @@ RSpec/SubjectStub:
 # Configuration parameters: IgnoreSymbolicNames.
 RSpec/VerifiedDoubles:
   Exclude:
-    - 'spec/controllers/base_media_controller_spec.rb'
+    - 'spec/controllers/media_controller_spec.rb'
     - 'spec/lib/s3_storage_spec.rb'
     - 'spec/lib/virus_scanner_spec.rb'
     - 'spec/routing/fake_s3_route_spec.rb'
