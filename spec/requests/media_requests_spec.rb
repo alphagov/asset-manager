@@ -36,7 +36,7 @@ RSpec.describe "Media requests", type: :request do
       expect(response.headers["Content-Disposition"]).to eq('inline; filename="asset.png"')
     end
 
-    it "sets the X-Frame-Options header to SAMEORIGIN" do
+    it "sets the X-Frame-Options header to DENY" do
       expect(response.headers["X-Frame-Options"]).to eq('DENY')
     end
   end

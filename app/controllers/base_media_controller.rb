@@ -37,4 +37,8 @@ protected
       headers['Link'] = %(<#{asset.parent_document_url}>; rel="up")
     end
   end
+
+  def add_frame_header
+    headers['X-Frame-Options'] = 'DENY'
+  end
 end
