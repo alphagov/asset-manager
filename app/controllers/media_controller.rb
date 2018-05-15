@@ -31,18 +31,19 @@ class MediaController < BaseMediaController
       return
     end
 
-    respond_to do |format|
-      format.any do
-        if requested_from_draft_assets_host?
-          expires_now
-        else
-          set_default_expiry
-        end
-        add_link_header(asset)
-        add_frame_header
-        proxy_to_s3_via_nginx(asset)
-      end
+    if temporary_redirect?
+      perform_temporary_redirect
+      return
     end
+
+    if requested_from_draft_assets_host?
+      expires_now
+    else
+      set_default_expiry
+    end
+    add_link_header(asset)
+    add_frame_header
+    proxy_to_s3_via_nginx(asset)
   end
 
 protected
@@ -68,5 +69,9 @@ protected
       filename: asset.filename,
       only_path: true,
     )
+  end
+
+  def temporary_redirect?
+    false
   end
 end
