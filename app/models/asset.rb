@@ -13,6 +13,7 @@ class Asset
   protected :filename_history=
 
   field :uuid, type: String, default: -> { SecureRandom.uuid }
+  index uuid: 1
   attr_readonly :uuid
 
   field :draft, type: Boolean, default: false
