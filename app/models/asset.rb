@@ -6,7 +6,7 @@ class Asset
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
-  belongs_to :replacement, class_name: 'Asset', optional: true
+  belongs_to :replacement, class_name: 'Asset', optional: true, index: true
 
   field :state, type: String, default: 'unscanned'
   field :filename_history, type: Array, default: -> { [] }
