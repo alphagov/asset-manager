@@ -6,6 +6,8 @@ class Asset
   include Mongoid::Paranoia
   include Mongoid::Timestamps
 
+  index deleted_at: 1
+
   belongs_to :replacement, class_name: 'Asset', optional: true, index: true
 
   field :state, type: String, default: 'unscanned'
