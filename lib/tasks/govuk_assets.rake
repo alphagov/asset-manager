@@ -16,4 +16,28 @@ namespace :govuk_assets do
     status = result.successful? ? 'OK' : 'Error'
     puts "#{status}: #{result.written_count} documents updated"
   end
+
+  def unreplace_asset(asset)
+    if asset.replacement.nil?
+      puts "#{asset.uuid} has no replacement"
+      return
+    end
+
+    puts "found replacement #{asset.replacement.uuid}"
+
+    asset.replacement.update!(deleted: true)
+    asset.update!(replacement: nil)
+  end
+
+  desc 'Unreplace an asset and delete the replacement'
+  task :unreplace_asset, [:uuid] => :environment do |_, args|
+    asset = Asset.unscoped.find_by!(uuid: args[:uuid])
+    unreplace_asset(asset)
+  end
+
+  desc 'Unreplace a Whitehall asset and delete the replacement'
+  task :unreplace_whitehall_asset, [:legacy_url_path] => :environment do |_, args|
+    asset = WhitehallAsset.unscoped.find_by!(legacy_url_path: args[:legacy_url_path])
+    unreplace_asset(asset)
+  end
 end
