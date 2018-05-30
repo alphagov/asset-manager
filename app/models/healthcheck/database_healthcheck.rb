@@ -5,7 +5,7 @@ class Healthcheck
     end
 
     def status
-      Asset.count
+      Asset.unscoped.count
       :ok
     rescue Mongo::Error::NoServerAvailable
       :critical
