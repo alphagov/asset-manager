@@ -74,6 +74,7 @@ class Asset
     end
 
     after_transition to: :uploaded do |asset, _|
+      asset.save!
       asset.remove_file!
     end
   end
