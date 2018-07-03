@@ -222,6 +222,17 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).redirect_url).to be_nil
       end
 
+      it 'removes existing redirect_url from existing asset if empty one is sent' do
+        redirect_url = 'https://example.com/path/file.ext'
+        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        put :update, params: { id: asset.id, asset: attributes }
+        expect(assigns(:asset).redirect_url).to eq(redirect_url)
+
+        attributes = valid_attributes.merge(redirect_url: '')
+        put :update, params: { id: asset.id, asset: attributes }
+        expect(assigns(:asset).redirect_url).to be_nil
+      end
+
       it 'stores replacement on existing asset' do
         replacement = FactoryBot.create(:asset)
         replacement_id = replacement.id.to_s

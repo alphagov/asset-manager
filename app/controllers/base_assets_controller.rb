@@ -19,7 +19,10 @@ class BaseAssetsController < ApplicationController
 protected
 
   def normalize_redirect_url(params)
-    params.reject { |k, v| (k.to_sym == :redirect_url) && v.blank? }
+    if params.has_key?(:redirect_url) && params[:redirect_url].blank?
+      params[:redirect_url] = nil
+    end
+    params
   end
 
   def normalize_access_limited(params)
