@@ -3,7 +3,6 @@ require 'services'
 
 class Asset
   include Mongoid::Document
-  include Mongoid::Paranoia
   include Mongoid::Timestamps
 
   index deleted_at: 1
