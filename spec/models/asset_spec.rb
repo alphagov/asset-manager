@@ -470,10 +470,6 @@ RSpec.describe Asset, type: :model do
   describe "soft deletion" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
-    it "includes the Mongoid::Paranoia library" do
-      expect(asset).to be_a(Mongoid::Paranoia)
-    end
-
     it "adds a deleted_at timestamp to the record" do
       asset.destroy
       expect(asset.deleted_at).not_to be_nil
