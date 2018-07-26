@@ -26,7 +26,7 @@ private
   end
 
   def find_asset(include_deleted: false)
-    scope = include_deleted ? WhitehallAsset.unscoped : WhitehallAsset
+    scope = include_deleted ? WhitehallAsset : WhitehallAsset.undeleted
     scope.from_params(
       path: params[:path], format: params[:format]
     )

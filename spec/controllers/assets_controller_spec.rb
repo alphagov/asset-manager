@@ -314,7 +314,7 @@ RSpec.describe AssetsController, type: :controller do
       it 'deletes the asset' do
         delete :destroy, params: { id: asset.id }
 
-        expect(Asset.where(id: asset.id).first).to be_nil
+        expect(Asset.where(id: asset.id).first.deleted_at).not_to be_nil
       end
 
       it 'responds with a success status' do
