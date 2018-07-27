@@ -3,7 +3,6 @@ require 'services'
 
 class Asset
   include Mongoid::Document
-  include Mongoid::Paranoia
   include Mongoid::Timestamps
 
   index deleted_at: 1
@@ -37,6 +36,8 @@ class Asset
 
   field :parent_document_url, type: String
 
+  field :deleted_at, type: Time
+
   validates :file, presence: true, unless: :uploaded?
 
   validates :uuid, presence: true,
@@ -55,6 +56,9 @@ class Asset
   before_save :store_metadata, unless: :uploaded?
   after_save :schedule_virus_scan
   after_save :update_indirect_replacements
+
+  scope :deleted, -> { where(:deleted_at.ne => nil) }
+  scope :undeleted, -> { where(deleted: nil) }
 
   state_machine :state, initial: :unscanned do
     event :scanned_clean do
@@ -142,10 +146,26 @@ class Asset
   def update_indirect_replacements
     return unless replacement.present?
 
-    Asset.unscoped.where(replacement_id: self.id).each do |asset|
+    Asset.where(replacement_id: self.id).each do |asset|
       asset.replacement = replacement
       asset.save
     end
+  end
+
+  # Overrides Mongoid::Persistable::Destroyable#destroy
+  # Updates a document with a deleted_at timestamp, this
+  # can be used with 'deleted' and 'undeleted' scopes.
+  #
+  def destroy(_options = nil)
+    update(deleted_at: Time.zone.now)
+  end
+
+  def restore
+    update(deleted_at: nil)
+  end
+
+  def deleted?
+    deleted_at.present?
   end
 
 protected
@@ -176,8 +196,8 @@ protected
   end
 
   def check_specified_replacement_exists
-    unscoped_replacement = Asset.unscoped.where(id: replacement_id)
-    if replacement_id.present? && unscoped_replacement.blank?
+    replacement = Asset.where(id: replacement_id)
+    if replacement_id.present? && replacement.blank?
       errors.add(:replacement, 'not found')
     end
   end

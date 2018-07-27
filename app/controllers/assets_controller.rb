@@ -46,7 +46,7 @@ private
   end
 
   def find_asset(include_deleted: false)
-    scope = include_deleted ? Asset.unscoped : Asset
+    scope = include_deleted ? Asset : Asset.undeleted
     scope.find(params[:id])
   end
 
