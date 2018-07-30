@@ -10,7 +10,7 @@ RSpec.describe Healthcheck::DatabaseHealthcheck do
   context "when the database is not available" do
     before do
       allow(Asset)
-        .to receive_message_chain(:unscoped, :count) # rubocop:disable RSpec/MessageChain
+        .to receive(:count)
         .and_raise(Mongo::Error::NoServerAvailable.allocate)
     end
 
