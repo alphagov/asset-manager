@@ -470,9 +470,20 @@ RSpec.describe Asset, type: :model do
   describe "soft deletion" do
     let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
 
-    it "adds a deleted_at timestamp to the record" do
+    before do
       asset.destroy
+    end
+
+    it "adds a deleted_at timestamp to the record" do
       expect(asset.deleted_at).not_to be_nil
+    end
+
+    it "is not inclued in the 'undeleted' scope" do
+      expect(Asset.undeleted).not_to include(asset)
+    end
+
+    it "is included in the 'deleted' scope" do
+      expect(Asset.deleted).to include(asset)
     end
 
     it "can be restored" do
