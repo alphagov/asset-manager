@@ -58,7 +58,7 @@ class Asset
   after_save :update_indirect_replacements
 
   scope :deleted, -> { where(:deleted_at.ne => nil) }
-  scope :undeleted, -> { where(deleted: nil) }
+  scope :undeleted, -> { where(deleted_at: nil) }
 
   state_machine :state, initial: :unscanned do
     event :scanned_clean do
