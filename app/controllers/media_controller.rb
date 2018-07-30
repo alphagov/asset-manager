@@ -100,7 +100,7 @@ protected
   end
 
   def asset
-    @asset ||= Asset.find(params[:id])
+    @asset ||= Asset.undeleted.find(params[:id])
   end
 
   def redirect_to_current_filename

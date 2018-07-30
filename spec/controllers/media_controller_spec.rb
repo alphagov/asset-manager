@@ -223,9 +223,11 @@ RSpec.describe MediaController, type: :controller do
 
       context "when the file name in the URL represents an old version" do
         let(:old_file_name) { "an_old_filename.pdf" }
+        let(:scope) { double(:undeleted_scope) }
 
         before do
-          allow(Asset).to receive(:find).with(asset.id).and_return(asset)
+          allow(Asset).to receive(:undeleted).and_return(scope)
+          allow(scope).to receive(:find).with(asset.id).and_return(asset)
           allow(asset).to receive(:filename_valid?).and_return(true)
         end
 
@@ -294,9 +296,11 @@ RSpec.describe MediaController, type: :controller do
     context 'with an access limited draft asset' do
       let(:user) { FactoryBot.build(:user) }
       let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
+      let(:scope) { double(:undeleted_scope) }
 
       before do
-        allow(Asset).to receive(:find).with(asset.id).and_return(asset)
+        allow(Asset).to receive(:undeleted).and_return(scope)
+        allow(scope).to receive(:find).with(asset.id).and_return(asset)
         request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
         login_as user
       end
