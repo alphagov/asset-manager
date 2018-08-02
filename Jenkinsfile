@@ -9,6 +9,7 @@ node ('mongodb-2.4') {
     },
     sassLint: false,
     publishingE2ETests: true,
+    brakeman: true,
     afterTest: {
       govuk.setEnvar('AWS_S3_BUCKET_NAME', 'asset-precompilation-test')
     }
