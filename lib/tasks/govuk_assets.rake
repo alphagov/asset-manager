@@ -16,4 +16,14 @@ namespace :govuk_assets do
     status = result.successful? ? 'OK' : 'Error'
     puts "#{status}: #{result.written_count} documents updated"
   end
+
+  desc 'Create a whitehall asset with the given legacy URL path'
+  task :create_whitehall_asset, %i[file_path legacy_url_path] => :environment do |_, args|
+    file_path = args[:file_path]
+    legacy_url_path = args[:legacy_url_path]
+    WhitehallAsset.create!(
+      file: Pathname.new(file_path).open,
+      legacy_url_path: legacy_url_path,
+    )
+  end
 end
