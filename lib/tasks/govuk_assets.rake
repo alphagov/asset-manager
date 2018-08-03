@@ -31,10 +31,22 @@ namespace :govuk_assets do
     puts "Uploaded '#{file_path}' to '#{legacy_url_path}'"
   end
 
+  def create_or_replace_hmrc_asset(file_path, basename)
+    hmrc_url_base = '/government/uploads/uploaded/hmrc'
+    create_or_replace_whitehall_asset(file_path, "#{hmrc_url_base}/#{basename}")
+  end
+
+  desc 'Upload all *.zip files in the given directory to /government/uploads/uploaded/hmrc'
+  task :create_hmrc_paye_zips, %i[directory] => :environment do |_, args|
+    directory = args[:directory]
+
+    Dir.glob(File.join(directory, "*.zip")).each do |file_path|
+      create_or_replace_hmrc_asset(file_path, File.basename(file_path))
+    end
+  end
+
   desc 'Upload a file to /government/uploads/uploaded/hmrc.  The optional second argument is the filename to use.'
   task :create_hmrc_paye_asset, %i[file_path] => :environment do |_, args|
-    hmrc_url_base = '/government/uploads/uploaded/hmrc'
-
     file_path = args[:file_path]
 
     basename = File.basename(file_path)
@@ -42,7 +54,7 @@ namespace :govuk_assets do
       basename = args.extras[0]
     end
 
-    create_or_replace_whitehall_asset(file_path, "#{hmrc_url_base}/#{basename}")
+    create_or_replace_hmrc_asset(file_path, basename)
   end
 
   desc 'Create a whitehall asset with the given legacy URL path'
