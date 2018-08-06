@@ -14,7 +14,7 @@ gem 'rack_strip_client_ip', '0.0.2'
 gem 'rails', '5.2.0'
 gem 'rails-controller-testing'
 gem 'state_machines-mongoid', '~> 0.2.0'
-gem 'unicorn', '5.4.0'
+gem 'unicorn', '5.4.1'
 
 group :development, :test do
   gem 'database_cleaner'
