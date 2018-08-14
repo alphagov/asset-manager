@@ -2,10 +2,15 @@ class WhitehallMediaController < MediaController
 
 protected
 
+  class WhitehallAssetNotFound < StandardError
+  end
+
+  rescue_from WhitehallAssetNotFound, with: :error_404
+
   def asset
-    @asset ||= WhitehallAsset.from_params(
+    @asset ||= WhitehallAsset.undeleted.from_params(
       path: params[:path], format: params[:format], path_prefix: 'government/uploads/'
-    )
+    ) || raise(WhitehallAssetNotFound)
   end
 
   def asset_servable?
