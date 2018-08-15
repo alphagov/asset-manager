@@ -12,6 +12,11 @@ class S3Storage
       File.write(target_path, File.read(source_path))
     end
 
+    def delete(asset, **_args)
+      target_path = target_path_for(asset)
+      File.delete(target_path)
+    end
+
     def presigned_url_for(asset, **_args)
       relative_path = relative_path_for(asset)
       url_path_prefix = Pathname.new(AssetManager.fake_s3.path_prefix)
