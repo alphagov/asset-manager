@@ -253,5 +253,20 @@ RSpec.describe WhitehallMediaController, type: :controller do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context 'with a soft deleted file' do
+      let(:state) { 'uploaded' }
+
+      before do
+        allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(nil)
+        asset.update_attribute(:deleted_at, Time.now)
+      end
+
+      it 'responds with not found status' do
+        get :download, params: { path: path, format: format }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 end
