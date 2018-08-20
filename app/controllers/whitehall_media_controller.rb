@@ -1,5 +1,4 @@
 class WhitehallMediaController < MediaController
-
 protected
 
   class WhitehallAssetNotFound < StandardError
