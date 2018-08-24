@@ -8,6 +8,7 @@ node ('mongodb-2.4') {
       govuk.setEnvar('TEST_COVERAGE', 'true')
     },
     sassLint: false,
+    rubyLintDiff: false,
     publishingE2ETests: true,
     brakeman: true,
     afterTest: {
