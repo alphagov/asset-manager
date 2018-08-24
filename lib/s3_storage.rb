@@ -34,6 +34,10 @@ class S3Storage
     end
   end
 
+  def delete(asset)
+    object_for(asset).delete
+  end
+
   def presigned_url_for(asset, http_method: 'GET')
     object_for(asset).presigned_url(http_method, expires_in: 1.minute)
   end

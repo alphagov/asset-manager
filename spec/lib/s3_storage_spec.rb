@@ -156,6 +156,13 @@ RSpec.describe S3Storage do
     end
   end
 
+  describe "#delete" do
+    it "deletes the file from the S3 bucket" do
+      expect(s3_object).to receive(:delete).and_return(true)
+      subject.delete(asset)
+    end
+  end
+
   describe '#presigned_url_for' do
     it 'returns presigned URL for GET request to asset on S3 by default' do
       allow(s3_object).to receive(:presigned_url)
