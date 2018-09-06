@@ -6,6 +6,7 @@ class DeleteAssetFileFromNfsWorker
     asset = Asset.find(asset_id)
     if asset.uploaded?
       asset.remove_file!
+      FileUtils.rmdir(File.dirname(asset.file.path))
     end
   end
 end
