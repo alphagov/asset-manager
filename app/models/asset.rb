@@ -80,6 +80,7 @@ class Asset
     after_transition to: :uploaded do |asset, _|
       asset.save!
       asset.remove_file!
+      FileUtils.rmdir(File.dirname(asset.file.path))
     end
   end
 
