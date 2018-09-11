@@ -423,7 +423,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it 'marks the asset as not deleted' do
         restored_asset = assigns(:asset)
-        expect(restored_asset).to be
+        expect(restored_asset).not_to be_nil
         expect(restored_asset.deleted_at).to be_nil
       end
 

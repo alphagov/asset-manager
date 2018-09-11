@@ -6,3 +6,16 @@ RSpec/NestedGroups:
 
 RSpec/MultipleExpectations:
   Max: 10
+
+# This recently introduced cop seems to have stirred up some controversy
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+Layout/AccessModifierIndentation:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: false

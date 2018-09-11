@@ -13,7 +13,7 @@ RSpec.describe CLI, type: :model do
       let(:args) { [path] }
 
       it 'creates an asset' do
-        expect { cli.create_asset(*args) }.to change { Asset.count }.by 1
+        expect { cli.create_asset(*args) }.to change(Asset, :count).by 1
       end
 
       it 'reports that asset was saved' do
@@ -31,7 +31,7 @@ RSpec.describe CLI, type: :model do
         end
 
         it 'does not create an asset' do
-          expect { cli.create_asset(*args) }.to change { Asset.count }.by 0
+          expect { cli.create_asset(*args) }.to change(Asset, :count).by 0
         end
 
         it 'reports that asset was not saved' do
