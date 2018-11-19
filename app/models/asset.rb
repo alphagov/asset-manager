@@ -93,6 +93,16 @@ class Asset
     access_limited.include?(user.uid)
   end
 
+  def valid_auth_bypass_token?(token)
+    payload, = JWT.decode(token,
+                          Rails.application.secrets.jwt_auth_secret,
+                          true,
+                          algorithm: 'HS256')
+    payload['sub'].present? && auth_bypass_ids.include?(payload['sub'])
+  rescue JWT::DecodeError
+    false
+  end
+
   def public_url_path
     "/media/#{id}/#{filename}"
   end
