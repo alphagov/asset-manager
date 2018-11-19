@@ -18,6 +18,7 @@ gem 'state_machines-mongoid', '~> 0.2.0'
 gem 'unicorn', '5.4.1'
 
 group :development, :test do
+  gem 'climate_control'
   gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'govuk-lint'

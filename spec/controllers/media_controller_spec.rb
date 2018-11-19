@@ -17,38 +17,7 @@ RSpec.describe MediaController, type: :controller do
 
     before do
       routes.draw do
-        get 'anything' => 'media#anything'
         get 'download' => 'media#download'
-      end
-    end
-
-    it 'does not require sign-in permission by default' do
-      expect(controller).not_to receive(:authenticate_user!)
-
-      get :anything
-    end
-
-    context 'when requested from draft-assets host' do
-      before do
-        request.headers['X-Forwarded-Host'] = draft_assets_host
-      end
-
-      it 'does require sign-in permission' do
-        expect(controller).to receive(:authenticate_user!)
-
-        get :anything
-      end
-    end
-
-    context 'when requested from host other than draft-assets' do
-      before do
-        request.headers['X-Forwarded-Host'] = "not-#{draft_assets_host}"
-      end
-
-      it 'does not require sign-in permission' do
-        expect(controller).not_to receive(:authenticate_user!)
-
-        get :anything
       end
     end
 
@@ -61,6 +30,7 @@ RSpec.describe MediaController, type: :controller do
       let(:http_method) { 'GET' }
 
       before do
+        not_logged_in
         allow(Asset).to receive(:find).with(asset.id).and_return(asset)
         allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
         allow(cloud_storage).to receive(:presigned_url_for)
@@ -204,6 +174,8 @@ RSpec.describe MediaController, type: :controller do
   end
 
   describe "GET 'download'" do
+    before { not_logged_in }
+
     let(:params) { { params: { id: asset, filename: asset.filename } } }
 
     context "with a valid uploaded file" do
@@ -266,17 +238,24 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
-      context 'when requested from draft-assets host' do
+      context 'when requested from draft-assets host and not authenticated' do
         before do
           request.headers['X-Forwarded-Host'] = draft_assets_host
           allow(controller).to receive(:authenticate_user!)
-          allow(controller).to receive(:proxy_to_s3_via_nginx)
         end
 
         it 'requires authentication' do
           expect(controller).to receive(:authenticate_user!)
 
           get :download, params
+        end
+      end
+
+      context 'when requested from draft-assets host and authenticated' do
+        before do
+          request.headers['X-Forwarded-Host'] = draft_assets_host
+          login_as_stub_user
+          allow(controller).to receive(:proxy_to_s3_via_nginx)
         end
 
         it 'proxies asset to S3 via Nginx as usual' do
@@ -319,6 +298,61 @@ RSpec.describe MediaController, type: :controller do
         get :download, params
 
         expect(response).to be_forbidden
+      end
+    end
+
+    context "with draft uploaded asset with auth_bypass_ids" do
+      before do
+        request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
+      end
+
+      let(:auth_bypass_id) { "bypass-id" }
+      let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id]) }
+      let(:valid_token) do
+        JWT.encode({ "sub" => auth_bypass_id },
+                   Rails.application.secrets.jwt_auth_secret,
+                   "HS256")
+      end
+
+      context "when a user is not authenticated and has provided a valid token by query string" do
+        before { not_logged_in }
+
+        it "grants access to the file" do
+          expect(controller).not_to receive(:authenticate_user!)
+          query_params = params.tap { |p| p[:params].merge!(token: valid_token) }
+          get :download, query_params
+          expect(response).to be_successful
+        end
+      end
+
+      context "when a user is not authenticated and has provided a valid token by cookie" do
+        before { not_logged_in }
+
+        it "grants access to the file" do
+          request.cookies["auth_bypass_token"] = valid_token
+          expect(controller).not_to receive(:authenticate_user!)
+          get :download, params
+          expect(response).to be_successful
+        end
+      end
+
+      context "when a user is not authenticated and has provided an invalid token" do
+        before { not_logged_in }
+
+        it "authenticates the user" do
+          cookies["auth_bypass_token"] = "bad-token"
+          expect(controller).to receive(:authenticate_user!)
+          get :download, params
+        end
+      end
+
+      context "when user is authenticated" do
+        before { login_as_stub_user }
+
+        it "grants access to the file" do
+          get :download, params
+          expect(response).to be_successful
+        end
       end
     end
 
@@ -426,7 +460,7 @@ RSpec.describe MediaController, type: :controller do
 
         it 'redirects to the replacement asset when requested via the draft-assets host by a signed-in user' do
           request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
-          allow(controller).to receive(:authenticate_user!)
+          login_as_stub_user
 
           get :download, params
 

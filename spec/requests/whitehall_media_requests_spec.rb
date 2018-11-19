@@ -48,6 +48,7 @@ RSpec.describe 'Whitehall media requests', type: :request do
   let(:presigned_url) { 'https://s3-host.test/presigned-url' }
 
   before do
+    stub_user
     allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
   end
 
