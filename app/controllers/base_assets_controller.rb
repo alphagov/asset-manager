@@ -18,17 +18,19 @@ class BaseAssetsController < ApplicationController
 
 protected
 
-  def normalize_redirect_url(params)
-    if params.has_key?(:redirect_url) && params[:redirect_url].blank?
-      params[:redirect_url] = nil
-    end
-    params
-  end
+  def base_asset_params
+    params.require(:asset).tap do |asset|
+      if asset.has_key?(:redirect_url) && asset[:redirect_url].blank?
+        asset[:redirect_url] = nil
+      end
 
-  def normalize_access_limited(params)
-    if params.has_key?(:asset) && params[:asset].has_key?(:access_limited) && params[:asset][:access_limited].empty?
-      params[:asset][:access_limited] = []
+      if asset.has_key?(:access_limited) && asset[:access_limited].empty?
+        asset[:access_limited] = []
+      end
+
+      if asset.has_key?(:auth_bypass_ids) && asset[:auth_bypass_ids].empty?
+        asset[:auth_bypass_ids] = []
+      end
     end
-    params
   end
 end

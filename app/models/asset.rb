@@ -34,6 +34,8 @@ class Asset
 
   field :access_limited, type: Array, default: []
 
+  field :auth_bypass_ids, type: Array, default: []
+
   field :parent_document_url, type: String
 
   field :deleted_at, type: Time

@@ -10,15 +10,15 @@ class WhitehallAssetsController < BaseAssetsController
 private
 
   def asset_params
-    normalize_redirect_url(
-      params
-        .require(:asset)
-        .permit(
-          :file, :draft, :redirect_url, :replacement_id,
-          :legacy_url_path, :legacy_etag, :legacy_last_modified,
-          :parent_document_url, access_limited: []
-        )
-    )
+    base_asset_params.permit(:file,
+                             :draft,
+                             :redirect_url,
+                             :replacement_id,
+                             :legacy_url_path,
+                             :legacy_etag,
+                             :legacy_last_modified,
+                             :parent_document_url,
+                             access_limited: [])
   end
 
   def existing_asset_with_this_legacy_url_path
