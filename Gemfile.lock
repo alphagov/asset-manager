@@ -59,6 +59,7 @@ GEM
       oj (~> 3.0)
     bson (4.2.2)
     builder (3.2.3)
+    byebug (10.0.2)
     carrierwave (0.11.2)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -339,6 +340,7 @@ PLATFORMS
 DEPENDENCIES
   addressable
   aws-sdk (~> 2.0)
+  byebug
   carrierwave (~> 0.11.2)
   carrierwave-mongoid (~> 0.10.0)
   database_cleaner
@@ -347,6 +349,7 @@ DEPENDENCIES
   govuk-lint
   govuk_app_config (~> 1.9)
   govuk_sidekiq (~> 3.0)
+  jwt (~> 1.5)
   mongoid (~> 6.2.0)
   nokogiri (~> 1.8.5)
   plek (~> 2.1)
