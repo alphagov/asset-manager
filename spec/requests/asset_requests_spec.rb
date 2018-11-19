@@ -141,7 +141,7 @@ RSpec.describe "Asset requests", type: :request do
 
       get "/assets/#{asset.id}"
 
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 end

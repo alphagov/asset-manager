@@ -358,7 +358,7 @@ RSpec.describe AssetsController, type: :controller do
       it 'responds with success status' do
         get :show, params: { id: asset.id }
 
-        expect(response).to be_success
+        expect(response).to be_successful
       end
 
       it 'makes the asset available to the view template' do
@@ -389,7 +389,7 @@ RSpec.describe AssetsController, type: :controller do
       it 'responds with success status' do
         get :show, params: { id: asset.id }
 
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
 
@@ -418,7 +418,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'responds with success status' do
-        expect(response).to be_success
+        expect(response).to be_successful
       end
 
       it 'marks the asset as not deleted' do

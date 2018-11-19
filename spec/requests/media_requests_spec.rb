@@ -27,7 +27,7 @@ RSpec.describe "Media requests", type: :request do
     end
 
     it "sets the X-Accel-Redirect header" do
-      expect(response).to be_success
+      expect(response).to be_successful
       expect(response.headers["X-Accel-Redirect"]).to eq("/cloud-storage-proxy/#{presigned_url}")
     end
 

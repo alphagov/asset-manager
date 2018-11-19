@@ -14,7 +14,7 @@ RSpec.describe "Access limited assets", type: :request do
 
     get "/media/#{asset.id}/#{asset.filename}"
 
-    expect(response).to be_success
+    expect(response).to be_successful
   end
 
   it 'are not accessible to users who are not authorised to view them' do

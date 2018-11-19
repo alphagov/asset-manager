@@ -310,7 +310,7 @@ RSpec.describe MediaController, type: :controller do
 
         get :download, params
 
-        expect(response).to be_success
+        expect(response).to be_successful
       end
 
       it 'denies access to a user who is not authorised to view the asset' do
