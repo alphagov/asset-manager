@@ -33,6 +33,10 @@ module AssetManager
     config.action_dispatch.rack_cache = nil
 
     config.assets.prefix = '/asset-manager'
+
+    unless Rails.application.secrets.jwt_auth_secret
+      raise "JWT auth secret is not configured. See config/secrets.yml"
+    end
   end
 
   mattr_accessor :govuk
