@@ -44,6 +44,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
     let(:asset) { FactoryBot.build(:whitehall_asset, attributes) }
 
     before do
+      not_logged_in
       allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(asset)
     end
 
@@ -87,23 +88,25 @@ RSpec.describe WhitehallMediaController, type: :controller do
       context 'when requested from draft-assets host' do
         before do
           request.headers['X-Forwarded-Host'] = draft_assets_host
-          allow(controller).to receive(:authenticate_user!)
           allow(controller).to receive(:proxy_to_s3_via_nginx)
         end
 
         it 'requires authentication' do
+          not_logged_in
           expect(controller).to receive(:authenticate_user!)
 
           get :download, params: { path: path, format: format }
         end
 
         it 'proxies asset to S3 via Nginx as usual' do
+          login_as_stub_user
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
           get :download, params: { path: path, format: format }
         end
 
         it "sets Cache-Control header to no-cache" do
+          login_as_stub_user
           get :download, params: { path: path, format: format }
 
           expect(response.headers["Cache-Control"]).to eq("no-cache")
@@ -163,7 +166,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
         it 'redirects to the replacement asset when requested via the draft-assets host by a signed-in user' do
           request.headers['X-Forwarded-Host'] = AssetManager.govuk.draft_assets_host
-          allow(controller).to receive(:authenticate_user!)
+          login_as_stub_user
 
           get :download, params: { path: path, format: format }
 

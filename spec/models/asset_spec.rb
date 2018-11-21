@@ -232,6 +232,30 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe '#valid_auth_bypass_token?' do
+    it 'returns true when given a valid token which is in the auth_bypass_ids' do
+      asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
+      token = JWT.encode({ 'sub' => 'my-token' },
+                         Rails.application.secrets.jwt_auth_secret,
+                         'HS256')
+      expect(asset.valid_auth_bypass_token?(token)).to be true
+    end
+
+    it 'returns false when given a valid token which is not in the auth_bypass_ids' do
+      asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
+      token = JWT.encode({ 'sub' => 'other-token' },
+                         Rails.application.secrets.jwt_auth_secret,
+                         'HS256')
+      expect(asset.valid_auth_bypass_token?(token)).to be false
+    end
+
+    it 'returns false when given an invalid token' do
+      asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
+      token = SecureRandom.bytes(32)
+      expect(asset.valid_auth_bypass_token?(token)).to be false
+    end
+  end
+
   describe '#uuid' do
     it 'is generated on instantiation' do
       allow(SecureRandom).to receive(:uuid).and_return('uuid')

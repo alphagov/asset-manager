@@ -38,11 +38,13 @@ private
   end
 
   def asset_params
-    normalize_redirect_url(
-      normalize_access_limited(params)
-        .require(:asset)
-        .permit(:file, :draft, :redirect_url, :replacement_id, :parent_document_url, access_limited: [])
-    )
+    base_asset_params.permit(:file,
+                             :draft,
+                             :redirect_url,
+                             :replacement_id,
+                             :parent_document_url,
+                             access_limited: [],
+                             auth_bypass_ids: [])
   end
 
   def find_asset(include_deleted: false)

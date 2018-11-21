@@ -1,9 +1,15 @@
 class MediaController < ApplicationController
-  skip_before_action :authenticate_user!, unless: :requested_from_draft_assets_host?
+  skip_before_action :authenticate_user!
+  before_action { warden.authenticate }
 
   def download
     if redirect_to_draft_assets_host_for?(asset)
       redirect_to_draft_assets_host
+      return
+    end
+
+    if requested_from_draft_assets_host? && !is_authenticated_for_asset?(asset)
+      authenticate_user!
       return
     end
 
@@ -114,5 +120,12 @@ protected
 
   def temporary_redirect?
     false
+  end
+
+  def is_authenticated_for_asset?(asset)
+    return true if user_signed_in?
+
+    token = params.fetch(:token, cookies[:auth_bypass_token])
+    asset.valid_auth_bypass_token?(token)
   end
 end

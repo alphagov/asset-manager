@@ -59,6 +59,7 @@ GEM
       oj (~> 3.0)
     bson (4.2.2)
     builder (3.2.3)
+    byebug (10.0.2)
     carrierwave (0.11.2)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -69,6 +70,7 @@ GEM
       carrierwave (>= 0.8.0, < 0.12.0)
       mongoid (>= 3.0, < 7.0)
       mongoid-grid_fs (>= 1.3, < 3.0)
+    climate_control (0.2.0)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.2)
     crass (1.0.4)
@@ -339,14 +341,17 @@ PLATFORMS
 DEPENDENCIES
   addressable
   aws-sdk (~> 2.0)
+  byebug
   carrierwave (~> 0.11.2)
   carrierwave-mongoid (~> 0.10.0)
+  climate_control
   database_cleaner
   factory_bot_rails
   gds-sso (~> 13.6)
   govuk-lint
   govuk_app_config (~> 1.9)
   govuk_sidekiq (~> 3.0)
+  jwt (~> 1.5)
   mongoid (~> 6.2.0)
   nokogiri (~> 1.8.5)
   plek (~> 2.1)

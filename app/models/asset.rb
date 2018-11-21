@@ -34,6 +34,8 @@ class Asset
 
   field :access_limited, type: Array, default: []
 
+  field :auth_bypass_ids, type: Array, default: []
+
   field :parent_document_url, type: String
 
   field :deleted_at, type: Time
@@ -89,6 +91,16 @@ class Asset
     return true if access_limited.empty?
 
     access_limited.include?(user.uid)
+  end
+
+  def valid_auth_bypass_token?(token)
+    payload, = JWT.decode(token,
+                          Rails.application.secrets.jwt_auth_secret,
+                          true,
+                          algorithm: 'HS256')
+    payload['sub'].present? && auth_bypass_ids.include?(payload['sub'])
+  rescue JWT::DecodeError
+    false
   end
 
   def public_url_path

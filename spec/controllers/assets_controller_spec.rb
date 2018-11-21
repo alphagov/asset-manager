@@ -32,6 +32,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
+      it 'stores auth_bypass_ids on asset' do
+        attributes = valid_attributes.merge(auth_bypass_ids: %w[id1 id2])
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).auth_bypass_ids).to eq(%w[id1 id2])
+      end
+
       it 'stores parent_document_url on asset' do
         attributes = valid_attributes.merge(parent_document_url: 'parent-document-url')
         post :create, params: { asset: attributes }
@@ -204,6 +211,24 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).access_limited).to eq([])
+      end
+
+      it 'stores auth_bypass_ids on existing asset' do
+        attributes = valid_attributes.merge(auth_bypass_ids: ['bypass-id'])
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).auth_bypass_ids).to eq(['bypass-id'])
+      end
+
+      it 'copes when auth_bypass_ids are passed in as an empty string' do
+        asset.update_attributes!(auth_bypass_ids: %w[bypass-1 bypass-2])
+
+        # We have to use an empty string as that is what gds-api-adapters/rest-client
+        # will generate instead of an empty array
+        attributes = valid_attributes.merge(auth_bypass_ids: '')
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).auth_bypass_ids).to eq([])
       end
 
       it 'stores redirect_url on existing asset' do

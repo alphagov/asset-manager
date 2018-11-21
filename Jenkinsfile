@@ -6,6 +6,7 @@ node ('mongodb-2.4') {
   govuk.buildProject(
     beforeTest: {
       govuk.setEnvar('TEST_COVERAGE', 'true')
+      govuk.setEnvar('JWT_AUTH_SECRET', 'secret')
     },
     sassLint: false,
     rubyLintDiff: false,
