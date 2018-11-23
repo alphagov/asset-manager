@@ -270,6 +270,36 @@ RSpec.describe MediaController, type: :controller do
           expect(response.headers["Cache-Control"]).to eq("no-cache")
         end
       end
+
+      context "when the file name in the URL is invalid and the user is not authenticated" do
+        let(:invalid_file_name) { "invalid_file_name.pdf" }
+
+        before do
+          request.headers['X-Forwarded-Host'] = draft_assets_host
+          allow(controller).to receive(:authenticate_user!)
+        end
+
+        it "requires authentication" do
+          expect(controller).to receive(:authenticate_user!)
+
+          get :download, params: { id: asset, filename: invalid_file_name }
+        end
+      end
+
+      context "when the file name in the URL is invalid and the user is authenticated" do
+        let(:invalid_file_name) { "invalid_file_name.pdf" }
+
+        before do
+          request.headers['X-Forwarded-Host'] = draft_assets_host
+          login_as_stub_user
+        end
+
+        it "responds with 404 Not Found" do
+          get :download, params: { id: asset, filename: invalid_file_name }
+
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
 
     context 'with an access limited draft asset' do

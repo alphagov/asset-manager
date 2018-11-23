@@ -52,6 +52,12 @@ class MediaController < ApplicationController
     add_link_header(asset)
     add_frame_header
     proxy_to_s3_via_nginx(asset)
+  rescue Mongoid::Errors::DocumentNotFound
+    if requested_from_draft_assets_host? && !authenticated?
+      authenticate_user!
+    else
+      raise
+    end
   end
 
 protected
