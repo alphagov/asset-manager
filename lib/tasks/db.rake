@@ -30,6 +30,7 @@ namespace :db do
     replaced.each do |asset|
       next unless asset.replacement.present?
       next if asset.replacement.replacement.present?
+
       asset.update_indirect_replacements
     end
   end
