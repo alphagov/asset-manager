@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby File.read(".ruby-version").chomp
+
 gem 'addressable'
 gem 'aws-sdk', '~> 2.0'
 gem 'carrierwave', '~> 0.11.2'
