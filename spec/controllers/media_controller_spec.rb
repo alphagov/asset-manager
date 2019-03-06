@@ -460,7 +460,7 @@ RSpec.describe MediaController, type: :controller do
       it 'redirects to replacement for asset' do
         get :download, params
 
-        expected_url = "//#{AssetManager.govuk.assets_host}/#{replacement.public_url_path}"
+        expected_url = "//#{AssetManager.govuk.assets_host}#{replacement.public_url_path}"
         expect(response).to redirect_to(expected_url)
       end
 
@@ -495,7 +495,7 @@ RSpec.describe MediaController, type: :controller do
 
           get :download, params
 
-          expected_url = "//#{AssetManager.govuk.draft_assets_host}/#{replacement.public_url_path}"
+          expected_url = "//#{AssetManager.govuk.draft_assets_host}#{replacement.public_url_path}"
           expect(response).to redirect_to expected_url
         end
       end
