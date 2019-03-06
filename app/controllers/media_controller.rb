@@ -88,7 +88,16 @@ protected
   end
 
   def redirect_to_replacement_for(asset)
-    redirect_to asset.replacement.public_url_path, status: :moved_permanently
+    # explicitly use the external asset host
+    target_host =
+      if asset.replacement.draft?
+        AssetManager.govuk.draft_assets_host
+      else
+        AssetManager.govuk.assets_host
+      end
+
+    redirect_to "//#{target_host}/#{asset.replacement.public_url_path}",
+      status: :moved_permanently
   end
 
   def add_link_header(asset)
