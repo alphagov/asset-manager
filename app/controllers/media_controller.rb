@@ -96,7 +96,7 @@ protected
         AssetManager.govuk.assets_host
       end
 
-    redirect_to "//#{target_host}/#{asset.replacement.public_url_path}",
+    redirect_to "//#{target_host}#{asset.replacement.public_url_path}",
       status: :moved_permanently
   end
 
