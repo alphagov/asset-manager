@@ -12,6 +12,11 @@ class GovukConfiguration
     nil
   end
 
+  def assets_host
+    assets_base_uri = @plek.external_url_for('assets')
+    URI.parse(assets_base_uri).host
+  end
+
   def draft_assets_host
     draft_assets_base_uri = @plek.external_url_for('draft-assets')
     URI.parse(draft_assets_base_uri).host
