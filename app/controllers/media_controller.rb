@@ -97,7 +97,7 @@ protected
       end
 
     redirect_to "//#{target_host}#{asset.replacement.public_url_path}",
-      status: :moved_permanently
+                status: :moved_permanently
   end
 
   def add_link_header(asset)

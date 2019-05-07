@@ -1,5 +1,5 @@
 class WhitehallMediaController < MediaController
-protected
+protected # rubocop:disable Layout/IndentationWidth
 
   class WhitehallAssetNotFound < StandardError
   end
