@@ -12,7 +12,7 @@ RSpec.describe "Access limited assets", type: :request do
   it 'are accessible to users who are authorised to view them' do
     login_as user_1
 
-    get "/media/#{asset.id}/#{asset.filename}"
+    get download_media_path(id: asset, filename: asset.filename)
 
     expect(response).to be_successful
   end
@@ -20,7 +20,7 @@ RSpec.describe "Access limited assets", type: :request do
   it 'are not accessible to users who are not authorised to view them' do
     login_as user_2
 
-    get "/media/#{asset.id}/#{asset.filename}"
+    get download_media_path(id: asset, filename: asset.filename)
 
     expect(response).to be_forbidden
   end

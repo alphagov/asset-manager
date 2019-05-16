@@ -206,7 +206,7 @@ RSpec.describe MediaController, type: :controller do
         it "redirects to the new file name" do
           get :download, params: { id: asset, filename: old_file_name }
 
-          expect(response.location).to match(%r(\A/media/#{asset.id}/asset.png))
+          expect(response.location).to match(download_media_path(id: asset, filename: "asset.png"))
         end
       end
 
