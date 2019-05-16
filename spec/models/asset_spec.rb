@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Asset, type: :model do
+  include Rails.application.routes.url_helpers
+
   describe 'validation' do
     subject(:asset) { FactoryBot.build(:asset, attributes) }
 
@@ -315,10 +317,12 @@ RSpec.describe Asset, type: :model do
   end
 
   describe '#public_url_path' do
-    subject(:asset) { Asset.new }
+    subject(:asset) {
+      Asset.new(file: load_fixture_file("asset.png"))
+    }
 
     it 'returns public URL path for mainstream asset' do
-      expected_path = "/media/#{asset.id}/#{asset.filename}"
+      expected_path = download_media_path(id: asset.id, filename: asset.filename)
       expect(asset.public_url_path).to eq(expected_path)
     end
   end

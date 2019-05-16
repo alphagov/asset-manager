@@ -14,17 +14,17 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     asset_details = JSON.parse(response.body)
     expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{asset.id}})
 
-    get "/media/#{asset.id}/lorem.txt"
+    get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:not_found)
 
     VirusScanWorker.drain
 
-    get "/media/#{asset.id}/lorem.txt"
+    get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:not_found)
 
     SaveToCloudStorageWorker.drain
 
-    get "/media/#{asset.id}/lorem.txt"
+    get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:success)
 
     redirect_url = headers['X-Accel-Redirect']
@@ -60,12 +60,12 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     asset_details = JSON.parse(response.body)
     expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{asset.id}})
 
-    get "/media/#{asset.id}/eicar.com"
+    get download_media_path(id: asset, filename: "eicar.com")
     expect(response).to have_http_status(:not_found)
 
     VirusScanWorker.drain
 
-    get "/media/#{asset.id}/eicar.com"
+    get download_media_path(id: asset, filename: "eicar.com")
     expect(response).to have_http_status(:not_found)
   end
 end
