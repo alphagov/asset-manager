@@ -47,6 +47,33 @@ RSpec.describe "Media requests", type: :request do
     end
   end
 
+  describe "requesting a draft asset from live" do
+    around do |example|
+      ClimateControl.modify(GDS_SSO_MOCK_INVALID: "1") { example.run }
+    end
+
+    let(:asset) do
+      FactoryBot.create(:uploaded_asset, draft: true)
+    end
+
+    it "redirects to the draft host" do
+      get download_media_path(id: asset, filename: "asset.png")
+
+      expect(response).to redirect_to(download_media_url(host: AssetManager.govuk.draft_assets_host,
+                                                         id: asset,
+                                                         filename: "asset.png"))
+    end
+
+    it "preserves any query params" do
+      get download_media_path(id: asset, filename: "asset.png", params: { foo: "bar" })
+
+      expect(response).to redirect_to(download_media_url(host: AssetManager.govuk.draft_assets_host,
+                                                         id: asset,
+                                                         filename: "asset.png",
+                                                         params: { foo: "bar" }))
+    end
+  end
+
   describe "requesting a draft asset while not logged in" do
     around do |example|
       ClimateControl.modify(GDS_SSO_MOCK_INVALID: "1") { example.run }

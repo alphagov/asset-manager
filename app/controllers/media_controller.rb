@@ -84,7 +84,9 @@ protected
   end
 
   def redirect_to_draft_assets_host
-    redirect_to host: AssetManager.govuk.draft_assets_host, format: params[:format]
+    redirect_to host: AssetManager.govuk.draft_assets_host,
+                format: params[:format],
+                params: request.query_parameters
   end
 
   def redirect_to_replacement_for(asset)
