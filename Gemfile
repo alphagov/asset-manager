@@ -10,6 +10,7 @@ gem 'govuk_sidekiq', '~> 3.0'
 gem 'jwt', '~> 2.2'
 gem 'mongoid', '~> 6.2.0'
 gem 'nokogiri', '~> 1.10.3'
+gem "omniauth-rails_csrf_protection", "~> 0.1.2"
 gem 'plek', '~> 3.0'
 gem 'rack_strip_client_ip', '0.0.2'
 gem 'rails', '5.2.3'
