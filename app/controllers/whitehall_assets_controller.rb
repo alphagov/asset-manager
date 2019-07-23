@@ -18,7 +18,7 @@ private
                              :legacy_etag,
                              :legacy_last_modified,
                              :parent_document_url,
-                             access_limited: [])
+                             access_limited_user_ids: [])
   end
 
   def existing_asset_with_this_legacy_url_path

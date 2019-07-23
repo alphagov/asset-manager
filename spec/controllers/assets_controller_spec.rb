@@ -25,11 +25,11 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
-      it 'stores access_limited on asset' do
-        attributes = valid_attributes.merge(access_limited: ['user-id'])
+      it 'stores access_limited_user_ids on asset' do
+        attributes = valid_attributes.merge(access_limited_user_ids: ['user-id'])
         post :create, params: { asset: attributes }
 
-        expect(assigns(:asset).access_limited).to eq(['user-id'])
+        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
       end
 
       it 'stores auth_bypass_ids on asset' do
@@ -195,22 +195,22 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
       end
 
-      it 'stores access_limited on existing asset' do
-        attributes = valid_attributes.merge(access_limited: ['user-id'])
+      it 'stores access_limited_user_ids on existing asset' do
+        attributes = valid_attributes.merge(access_limited_user_ids: ['user-id'])
         put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset).access_limited).to eq(['user-id'])
+        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
       end
 
-      it 'resets access_limited to an empty array for an existing asset with an access_limited array' do
-        asset.update_attributes!(access_limited: ['user-uid'])
+      it 'resets access_limited_user_ids to an empty array for an existing asset with an access_limited_user_ids array' do
+        asset.update_attributes!(access_limited_user_ids: ['user-uid'])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
-        attributes = valid_attributes.merge(access_limited: '')
+        attributes = valid_attributes.merge(access_limited_user_ids: '')
         put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset).access_limited).to eq([])
+        expect(assigns(:asset).access_limited_user_ids).to eq([])
       end
 
       it 'stores auth_bypass_ids on existing asset' do

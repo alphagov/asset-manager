@@ -32,7 +32,7 @@ class Asset
   field :size, type: Integer
   protected :size=
 
-  field :access_limited, type: Array, default: []
+  field :access_limited_user_ids, type: Array, default: []
 
   field :auth_bypass_ids, type: Array, default: []
 
@@ -88,9 +88,9 @@ class Asset
 
   def accessible_by?(user)
     return true unless draft?
-    return true if access_limited.empty?
+    return true if access_limited_user_ids.empty?
 
-    access_limited.include?(user.uid)
+    access_limited_user_ids.include?(user.uid)
   end
 
   def valid_auth_bypass_token?(token)
