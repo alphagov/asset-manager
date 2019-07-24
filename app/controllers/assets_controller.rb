@@ -44,6 +44,7 @@ private
                              :replacement_id,
                              :parent_document_url,
                              access_limited: [],
+                             access_limited_organisation_ids: [],
                              auth_bypass_ids: [])
   end
 
