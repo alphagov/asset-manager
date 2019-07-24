@@ -47,6 +47,12 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
       end
 
+      it "stores access_limited_organisation_ids on asset" do
+        post :create, params: { asset: attributes.merge(access_limited_organisation_ids: ['org-id']) }
+
+        expect(assigns(:asset).access_limited_organisation_ids).to eq(['org-id'])
+      end
+
       it "stores replacement on asset" do
         replacement = FactoryBot.create(:asset)
         replacement_id = replacement.id.to_s

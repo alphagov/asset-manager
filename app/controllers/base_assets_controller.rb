@@ -28,6 +28,10 @@ protected
         asset[:access_limited_user_ids] = []
       end
 
+      if asset.has_key?(:access_limited_organisation_ids) && asset[:access_limited_organisation_ids].empty?
+        asset[:access_limited_organisation_ids] = []
+      end
+
       if asset.has_key?(:auth_bypass_ids) && asset[:auth_bypass_ids].empty?
         asset[:auth_bypass_ids] = []
       end
