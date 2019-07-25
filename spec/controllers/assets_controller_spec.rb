@@ -25,6 +25,20 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
+      it 'stores access_limited as access_limited_user_ids on asset' do
+        attributes = valid_attributes.merge(access_limited: ['user-id'])
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
+      end
+
+      it 'stores access_limited blank string as empty array on access_limited_user_ids' do
+        attributes = valid_attributes.merge(access_limited: '')
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).access_limited_user_ids).to eq([])
+      end
+
       it 'stores access_limited_user_ids on asset' do
         attributes = valid_attributes.merge(access_limited_user_ids: ['user-id'])
         post :create, params: { asset: attributes }
@@ -200,6 +214,13 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: valid_attributes }
 
         expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
+      end
+
+      it 'stores access_limited as access_limited_user_ids on existing asset' do
+        attributes = valid_attributes.merge(access_limited: ['user-id'])
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
       end
 
       it 'stores access_limited_user_ids on existing asset' do

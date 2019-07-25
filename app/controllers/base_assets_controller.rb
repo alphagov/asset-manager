@@ -24,6 +24,10 @@ protected
         asset[:redirect_url] = nil
       end
 
+      if asset.has_key?(:access_limited)
+        asset[:access_limited_user_ids] = asset[:access_limited]
+      end
+
       if asset.has_key?(:access_limited_user_ids) && asset[:access_limited_user_ids].empty?
         asset[:access_limited_user_ids] = []
       end
