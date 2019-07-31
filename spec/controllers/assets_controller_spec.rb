@@ -39,11 +39,28 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).access_limited_user_ids).to eq([])
       end
 
+      it 'stores the value access_limited if both params are set' do
+        attributes = valid_attributes.merge(
+          access_limited: ['user-id-a'],
+          access_limited_user_ids: ['user-id-b']
+        )
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id-a'])
+      end
+
       it 'stores access_limited_user_ids on asset' do
         attributes = valid_attributes.merge(access_limited_user_ids: ['user-id'])
         post :create, params: { asset: attributes }
 
         expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
+      end
+
+      it 'stores access_limited_user_ids blank string as empty array on access_limited_user_ids' do
+        attributes = valid_attributes.merge(access_limited_user_ids: '')
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).access_limited_user_ids).to eq([])
       end
 
       it 'stores access_limited_organisation_ids on asset' do
@@ -228,6 +245,17 @@ RSpec.describe AssetsController, type: :controller do
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
+      end
+
+      it 'resets existing access limit when access_limit is blank' do
+        asset.update_attributes!(access_limited_user_ids: ['user-uid'])
+
+        # We have to use an empty string as that is what gds-api-adapters/rest-client
+        # will generate instead of an empty array
+        attributes = valid_attributes.merge(access_limited: '')
+        put :update, params: { id: asset.id, asset: attributes }
+
+        expect(assigns(:asset).access_limited_user_ids).to eq([])
       end
 
       it 'resets access_limited_user_ids to an empty array for an existing asset with an access_limited_user_ids array' do
