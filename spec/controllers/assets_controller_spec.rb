@@ -32,6 +32,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
+      it 'stores access_limited blank string as empty array on access_limited' do
+        attributes = valid_attributes.merge(access_limited: '')
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).access_limited).to eq([])
+      end
+
       it 'stores access_limited_organisation_ids on asset' do
         attributes = valid_attributes.merge(access_limited_organisation_ids: ['org-id'])
         post :create, params: { asset: attributes }

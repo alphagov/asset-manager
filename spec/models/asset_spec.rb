@@ -211,38 +211,48 @@ RSpec.describe Asset, type: :model do
   end
 
   describe '#accessible_by?' do
-    it 'returns true if the asset is not draft' do
-      asset = FactoryBot.build(:asset, draft: false)
-      expect(asset).to be_accessible_by(nil)
+    context 'asset is live' do
+      let(:asset) { FactoryBot.build(:asset, draft: false) }
+
+      it 'returns true' do
+        expect(asset).to be_accessible_by(nil)
+      end
     end
 
-    it 'returns true if the asset is draft but not access limited' do
-      asset = FactoryBot.build(:asset, draft: true)
-      expect(asset).to be_accessible_by(nil)
+    context 'asset is a draft thats access_limited' do
+      let(:asset) do
+        FactoryBot.build(
+          :asset, draft: true, access_limited: ['user-id'], access_limited_organisation_ids: ['org-id']
+        )
+      end
+
+      it "returns true if user's id is authorised to view it" do
+        user = FactoryBot.build(:user, uid: 'user-id')
+        expect(asset).to be_accessible_by(user)
+      end
+
+      it "returns false if user's id is not authorised to view it" do
+        user = FactoryBot.build(:user, uid: 'another-id')
+        expect(asset).not_to be_accessible_by(user)
+      end
+
+      it "returns true if the user's org is authorised to view it" do
+        user = FactoryBot.build(:user, uid: 'another-id', organisation_content_id: 'org-id')
+        expect(asset).to be_accessible_by(user)
+      end
+
+      it "returns false if the user's org is not authorised to view it" do
+        user = FactoryBot.build(:user, uid: 'another-id', organisation_content_id: 'another-org-id')
+        expect(asset).not_to be_accessible_by(user)
+      end
     end
 
-    it 'returns true if the asset is draft and access limited and the user is authorised to view it' do
-      user = FactoryBot.build(:user, uid: 'user-id')
-      asset = FactoryBot.build(:asset, draft: true, access_limited: ['user-id'])
-      expect(asset).to be_accessible_by(user)
-    end
+    context 'asset is a draft thats not access limited' do
+      let(:asset) { FactoryBot.build(:asset, draft: true) }
 
-    it 'returns false if the asset is draft and access limited and the user is not authorised to view it' do
-      user = FactoryBot.build(:user, uid: 'user-id')
-      asset = FactoryBot.build(:asset, draft: true, access_limited: ['another-user-id'])
-      expect(asset).not_to be_accessible_by(user)
-    end
-
-    it 'returns true if the asset is draft and access limited and the users org is authorised to view it' do
-      user = FactoryBot.build(:user, uid: 'user-id', organisation_content_id: 'org-id')
-      asset = FactoryBot.build(:asset, draft: true, access_limited_organisation_ids: ['org-id'])
-      expect(asset).to be_accessible_by(user)
-    end
-
-    it 'returns false if the asset is draft and access limited and the users org is not authorised to view it' do
-      user = FactoryBot.build(:user, uid: 'user-id', organisation_content_id: 'org-id-A')
-      asset = FactoryBot.build(:asset, draft: true, access_limited_organisation_ids: ['org-id-B'])
-      expect(asset).not_to be_accessible_by(user)
+      it 'returns true' do
+        expect(asset).to be_accessible_by(nil)
+      end
     end
   end
 
