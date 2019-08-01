@@ -41,22 +41,10 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).legacy_last_modified).to eq(attributes[:legacy_last_modified])
       end
 
-      it "stores access_limited params as access_limited_user_ids on asset" do
+      it "stores access_limited on asset" do
         post :create, params: { asset: attributes.merge(access_limited: ['user-id']) }
 
-        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
-      end
-
-      it "stores access_limited_user_ids on asset" do
-        post :create, params: { asset: attributes.merge(access_limited_user_ids: ['user-id']) }
-
-        expect(assigns(:asset).access_limited_user_ids).to eq(['user-id'])
-      end
-
-      it "stores access_limited_organisation_ids on asset" do
-        post :create, params: { asset: attributes.merge(access_limited_organisation_ids: ['org-id']) }
-
-        expect(assigns(:asset).access_limited_organisation_ids).to eq(['org-id'])
+        expect(assigns(:asset).access_limited).to eq(['user-id'])
       end
 
       it "stores replacement on asset" do

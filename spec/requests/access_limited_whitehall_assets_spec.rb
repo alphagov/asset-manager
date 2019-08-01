@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Access limited Whitehall assets", type: :request do
   let(:user_1) { FactoryBot.create(:user, uid: 'user-1-id') }
   let(:user_2) { FactoryBot.create(:user, uid: 'user-2-id') }
-  let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, draft: true, access_limited_user_ids: ['user-1-id']) }
+  let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, draft: true, access_limited: ['user-1-id']) }
 
   before do
     host! AssetManager.govuk.draft_assets_host
