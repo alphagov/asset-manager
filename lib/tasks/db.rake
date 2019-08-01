@@ -1,10 +1,10 @@
 namespace :db do
   task remove_unused_fields_from_assets: :environment do
-    if Asset.where(access_limited: true).none?
-      Asset.update_all('$unset' => { 'access_limited' => true })
-      puts 'Asset#access_limited field removed successfully'
+    if Asset.where(access_limited_user_ids: true).none?
+      Asset.update_all('$unset' => { 'access_limited_user_ids' => true })
+      puts 'Asset#access_limited_user_ids field removed successfully'
     else
-      puts 'Error: Unable to remove Asset#access_limited'
+      puts 'Error: Unable to remove Asset#access_limited_user_ids'
     end
 
     if Asset.where(:organisation_slug.ne => nil).none?

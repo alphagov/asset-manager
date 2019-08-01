@@ -32,7 +32,9 @@ class Asset
   field :size, type: Integer
   protected :size=
 
-  field :access_limited, type: Array, default: []
+  field :access_limited_user_ids, type: Array, default: []
+
+  field :access_limited_organisation_ids, type: Array, default: []
 
   field :auth_bypass_ids, type: Array, default: []
 
@@ -87,10 +89,9 @@ class Asset
   end
 
   def accessible_by?(user)
-    return true unless draft?
-    return true if access_limited.empty?
+    return true unless draft? && access_limited?
 
-    access_limited.include?(user.uid)
+    access_limited_user_ids.include?(user.uid) || access_limited_organisation_ids.include?(user.organisation_content_id)
   end
 
   def valid_auth_bypass_token?(token)
@@ -185,6 +186,10 @@ class Asset
   end
 
 protected
+
+  def access_limited?
+    access_limited_user_ids.any? || access_limited_organisation_ids.any?
+  end
 
   def store_metadata
     self.etag = etag_from_file
