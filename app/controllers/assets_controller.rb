@@ -43,8 +43,7 @@ private
                              :redirect_url,
                              :replacement_id,
                              :parent_document_url,
-                             access_limited_user_ids: [],
-                             access_limited_organisation_ids: [],
+                             access_limited: [],
                              auth_bypass_ids: [])
   end
 
