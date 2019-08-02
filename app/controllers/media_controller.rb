@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 class MediaController < ApplicationController
   skip_before_action :authenticate_user!
-  before_action { warden.authenticate }
 
   def download
     if redirect_to_draft_assets_host_for?(asset)
@@ -8,12 +9,7 @@ class MediaController < ApplicationController
       return
     end
 
-    if requested_from_draft_assets_host? && !is_authenticated_for_asset?(asset)
-      authenticate_user!
-      return
-    end
-
-    unless asset.accessible_by?(current_user)
+    unless authorized_for_asset?(asset)
       head :forbidden
       return
     end
@@ -62,12 +58,26 @@ class MediaController < ApplicationController
 
 protected
 
+  def has_bypass_id_for_asset?(asset)
+    token = params.fetch(:token, cookies[:auth_bypass_token])
+    asset.valid_auth_bypass_token?(token)
+  end
+
+  def authorized_for_asset?(asset)
+    return true unless requested_from_draft_assets_host?
+
+    return true if has_bypass_id_for_asset?(asset)
+
+    authenticate_user!
+    asset.accessible_by?(current_user)
+  end
+
   def requested_from_draft_assets_host?
     request.host == AssetManager.govuk.draft_assets_host
   end
 
   def proxy_to_s3_via_nginx(asset)
-    headers['ETag'] = %{"#{asset.etag}"}
+    headers['ETag'] = %("#{asset.etag}")
     headers['Last-Modified'] = asset.last_modified.httpdate
     headers['Content-Disposition'] = AssetManager.content_disposition.header_for(asset)
 
@@ -131,18 +141,11 @@ protected
       action: :download,
       id: params[:id],
       filename: asset.filename,
-      only_path: true,
+      only_path: true
     )
   end
 
   def temporary_redirect?
     false
-  end
-
-  def is_authenticated_for_asset?(asset)
-    return true if user_signed_in?
-
-    token = params.fetch(:token, cookies[:auth_bypass_token])
-    asset.valid_auth_bypass_token?(token)
   end
 end

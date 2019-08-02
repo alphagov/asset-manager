@@ -82,20 +82,97 @@ RSpec.describe "Media requests", type: :request do
     before { host! AssetManager.govuk.draft_assets_host }
 
     let(:auth_bypass_id) { "bypass-id" }
-    let(:asset) do
-      FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id])
+
+    context "asset is not access limited" do
+      let(:asset) do
+        FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id])
+      end
+
+      it "redirects to login without a valid token" do
+        get download_media_path(id: asset, filename: "asset.png")
+        expect(response).to redirect_to("/auth/gds")
+      end
+
+      it "serves the asset with a valid token" do
+        secret = Rails.application.secrets.jwt_auth_secret
+        valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
+        get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
+        expect(response).to be_successful
+      end
     end
 
-    it "redirects to login without a valid token" do
-      get download_media_path(id: asset, filename: "asset.png")
-      expect(response).to redirect_to("/auth/gds")
+    context "asset is access limited" do
+      let(:asset) do
+        FactoryBot.create(
+          :uploaded_asset,
+          draft: true,
+          auth_bypass_ids: [auth_bypass_id],
+          access_limited: ['user-id']
+        )
+      end
+
+      it "redirects to login without a valid token" do
+        get download_media_path(id: asset, filename: "asset.png")
+        expect(response).to redirect_to("/auth/gds")
+      end
+
+      it "serves the asset with a valid token" do
+        secret = Rails.application.secrets.jwt_auth_secret
+        valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
+        get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
+        expect(response).to be_successful
+      end
+    end
+  end
+
+  describe "requesting a draft asset while logged in" do
+    before { host! AssetManager.govuk.draft_assets_host }
+
+    let(:auth_bypass_id) { "bypass-id" }
+
+    context "asset is not access limited" do
+      let(:asset) do
+        FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id])
+      end
+
+      it "serves the asset without a valid token" do
+        get download_media_path(id: asset, filename: "asset.png")
+        expect(response).to be_successful
+      end
+
+      it "serves the asset with a valid token" do
+        secret = Rails.application.secrets.jwt_auth_secret
+        valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
+        get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
+        expect(response).to be_successful
+      end
     end
 
-    it "serves the asset with a valid token" do
-      secret = Rails.application.secrets.jwt_auth_secret
-      valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
-      get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
-      expect(response).to be_successful
+    context "asset is access limited" do
+      let(:asset) do
+        FactoryBot.create(
+          :uploaded_asset,
+          draft: true,
+          auth_bypass_ids: [auth_bypass_id],
+          access_limited: [User.first.uid]
+        )
+      end
+
+      before do
+        GDS::SSO.test_user = User.first
+      end
+
+      it "serves the asset without a valid token" do
+        get download_media_path(id: asset, filename: "asset.png")
+        expect(response).to be_successful
+      end
+
+      it "serves the asset with a valid token" do
+        secret = Rails.application.secrets.jwt_auth_secret
+        valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
+        get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
+        expect(response).to be_successful
+      end
     end
   end
 end
