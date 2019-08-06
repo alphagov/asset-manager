@@ -174,5 +174,28 @@ RSpec.describe "Media requests", type: :request do
         expect(response).to be_successful
       end
     end
+
+    context "asset is access limited to a different user" do
+      let(:asset) do
+        FactoryBot.create(
+          :uploaded_asset,
+          draft: true,
+          auth_bypass_ids: [auth_bypass_id],
+          access_limited: ['some-other-user']
+        )
+      end
+
+      it "serves the asset without a valid token" do
+        get download_media_path(id: asset, filename: "asset.png")
+        expect(response).to be_forbidden
+      end
+
+      it "serves the asset with a valid token" do
+        secret = Rails.application.secrets.jwt_auth_secret
+        valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
+        get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
+        expect(response).to be_successful
+      end
+    end
   end
 end

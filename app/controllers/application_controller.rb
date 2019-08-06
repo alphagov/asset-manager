@@ -11,6 +11,10 @@ class ApplicationController < ActionController::Base
 
 private
 
+  def error_403
+    error 403, "Forbidden. You don't have permission to access this resource."
+  end
+
   def error_404
     error 404, "not found"
   end
