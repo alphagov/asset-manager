@@ -10,7 +10,7 @@ class MediaController < ApplicationController
     end
 
     unless authorized_for_asset?(asset)
-      head :forbidden
+      error_403
       return
     end
 
