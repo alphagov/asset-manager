@@ -26,17 +26,17 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores access_limited_user_ids as access_limited on asset' do
-        attributes = valid_attributes.merge(access_limited_user_ids: ['user-id'])
+        attributes = valid_attributes.merge(access_limited_user_ids: %w[user-id])
         post :create, params: { asset: attributes }
 
-        expect(assigns(:asset).access_limited).to eq(['user-id'])
+        expect(assigns(:asset).access_limited).to eq(%w[user-id])
       end
 
       it 'stores access_limited on asset' do
-        attributes = valid_attributes.merge(access_limited: ['user-id'])
+        attributes = valid_attributes.merge(access_limited: %w[user-id])
         post :create, params: { asset: attributes }
 
-        expect(assigns(:asset).access_limited).to eq(['user-id'])
+        expect(assigns(:asset).access_limited).to eq(%w[user-id])
       end
 
       it 'stores access_limited blank string as empty array on access_limited' do
@@ -54,10 +54,10 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores access_limited_organisation_ids on asset' do
-        attributes = valid_attributes.merge(access_limited_organisation_ids: ['org-id'])
+        attributes = valid_attributes.merge(access_limited_organisation_ids: %w[org-id])
         post :create, params: { asset: attributes }
 
-        expect(assigns(:asset).access_limited_organisation_ids).to eq(['org-id'])
+        expect(assigns(:asset).access_limited_organisation_ids).to eq(%w[org-id])
       end
 
       it 'stores auth_bypass_ids on asset' do
@@ -224,14 +224,14 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores access_limited on existing asset' do
-        attributes = valid_attributes.merge(access_limited: ['user-id'])
+        attributes = valid_attributes.merge(access_limited: %w[user-id])
         put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset).access_limited).to eq(['user-id'])
+        expect(assigns(:asset).access_limited).to eq(%w[user-id])
       end
 
       it 'resets access_limits for an existing asset with a blank acess_limited_user_ids param' do
-        asset.update_attributes!(access_limited: ['user-uid'])
+        asset.update_attributes!(access_limited: %w[user-uid])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
@@ -242,7 +242,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'resets access_limits for an existing asset with a blank acess_limited param' do
-        asset.update_attributes!(access_limited: ['user-uid'])
+        asset.update_attributes!(access_limited: %w[user-uid])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
@@ -253,14 +253,14 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores access_limited_organisation_ids on existing asset' do
-        attributes = valid_attributes.merge(access_limited_organisation_ids: ['org-id'])
+        attributes = valid_attributes.merge(access_limited_organisation_ids: %w[org-id])
         put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset).access_limited_organisation_ids).to eq(['org-id'])
+        expect(assigns(:asset).access_limited_organisation_ids).to eq(%w[org-id])
       end
 
       it 'resets access_limited_organisation_ids to an empty array for an existing asset with an access_limited_organisation_ids array' do
-        asset.update_attributes!(access_limited_organisation_ids: ['org-id'])
+        asset.update_attributes!(access_limited_organisation_ids: %w[org-id])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
@@ -271,10 +271,10 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it 'stores auth_bypass_ids on existing asset' do
-        attributes = valid_attributes.merge(auth_bypass_ids: ['bypass-id'])
+        attributes = valid_attributes.merge(auth_bypass_ids: %w[bypass-id])
         put :update, params: { id: asset.id, asset: attributes }
 
-        expect(assigns(:asset).auth_bypass_ids).to eq(['bypass-id'])
+        expect(assigns(:asset).auth_bypass_ids).to eq(%w[bypass-id])
       end
 
       it 'copes when auth_bypass_ids are passed in as an empty string' do

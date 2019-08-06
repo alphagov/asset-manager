@@ -107,7 +107,7 @@ RSpec.describe "Media requests", type: :request do
           :uploaded_asset,
           draft: true,
           auth_bypass_ids: [auth_bypass_id],
-          access_limited: ['user-id']
+          access_limited: %w[user-id]
         )
       end
 
