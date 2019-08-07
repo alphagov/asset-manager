@@ -58,7 +58,7 @@ RSpec.describe WhitehallAsset, type: :model do
 
           it 'can find the most recent (undeleted) asset' do
             path = asset.legacy_url_path[1..-1]
-            expect(WhitehallAsset.from_params(path: path).deleted?).to eq(false)
+            expect(described_class.from_params(path: path).deleted?).to eq(false)
           end
         end
       end
@@ -87,7 +87,7 @@ RSpec.describe WhitehallAsset, type: :model do
   end
 
   describe '#public_url_path' do
-    subject(:asset) { WhitehallAsset.new(legacy_url_path: '/legacy-url-path') }
+    subject(:asset) { described_class.new(legacy_url_path: '/legacy-url-path') }
 
     it 'returns legacy URL path for whitehall asset' do
       expect(asset.public_url_path).to eq('/legacy-url-path')
@@ -96,7 +96,7 @@ RSpec.describe WhitehallAsset, type: :model do
 
   describe '#etag' do
     let(:etag) { 'etag-value' }
-    let(:asset) { WhitehallAsset.new(etag: etag, legacy_etag: legacy_etag) }
+    let(:asset) { described_class.new(etag: etag, legacy_etag: legacy_etag) }
 
     context "when legacy_etag attribute is set" do
       let(:legacy_etag) { 'legacy-etag-value' }
@@ -116,7 +116,7 @@ RSpec.describe WhitehallAsset, type: :model do
   end
 
   describe '#last_modified' do
-    let(:asset) { WhitehallAsset.new(last_modified: last_modified, legacy_last_modified: legacy_last_modified) }
+    let(:asset) { described_class.new(last_modified: last_modified, legacy_last_modified: legacy_last_modified) }
     let(:last_modified) { Time.parse('2001-01-01 01:01') }
 
     context "when legacy_last_modified attribute is set" do
@@ -137,7 +137,7 @@ RSpec.describe WhitehallAsset, type: :model do
   end
 
   describe '#mainstream?' do
-    let(:asset) { WhitehallAsset.new }
+    let(:asset) { described_class.new }
 
     it 'returns false-y' do
       expect(asset).not_to be_mainstream

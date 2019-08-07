@@ -222,7 +222,7 @@ RSpec.describe Asset, type: :model do
     context 'asset is a draft thats access_limited' do
       let(:asset) do
         FactoryBot.build(
-          :asset, draft: true, access_limited: ['user-id'], access_limited_organisation_ids: ['org-id']
+          :asset, draft: true, access_limited: %w[user-id], access_limited_organisation_ids: %w[org-id]
         )
       end
 
@@ -283,7 +283,7 @@ RSpec.describe Asset, type: :model do
   describe '#uuid' do
     it 'is generated on instantiation' do
       allow(SecureRandom).to receive(:uuid).and_return('uuid')
-      asset = Asset.new
+      asset = described_class.new
       expect(asset.uuid).to eq('uuid')
     end
 
@@ -315,14 +315,14 @@ RSpec.describe Asset, type: :model do
   end
 
   describe '#draft?' do
-    subject(:asset) { Asset.new }
+    subject(:asset) { described_class.new }
 
     it 'returns false-y by default' do
       expect(asset).not_to be_draft
     end
 
     context 'when draft attribute is set to false' do
-      subject(:asset) { Asset.new(draft: false) }
+      subject(:asset) { described_class.new(draft: false) }
 
       it 'returns false-y by default' do
         expect(asset).not_to be_draft
@@ -330,7 +330,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context 'when draft attribute is set to true' do
-      subject(:asset) { Asset.new(draft: true) }
+      subject(:asset) { described_class.new(draft: true) }
 
       it 'returns truth-y by default' do
         expect(asset).to be_draft
@@ -340,7 +340,7 @@ RSpec.describe Asset, type: :model do
 
   describe '#public_url_path' do
     subject(:asset) {
-      Asset.new(file: load_fixture_file("asset.png"))
+      described_class.new(file: load_fixture_file("asset.png"))
     }
 
     it 'returns public URL path for mainstream asset' do
@@ -351,7 +351,7 @@ RSpec.describe Asset, type: :model do
 
   describe "#filename" do
     let(:asset) {
-      Asset.new(file: load_fixture_file("asset.png"))
+      described_class.new(file: load_fixture_file("asset.png"))
     }
 
     it "returns the current file attachments base name" do
@@ -361,7 +361,7 @@ RSpec.describe Asset, type: :model do
 
   describe "#filename_valid?" do
     let(:asset) {
-      Asset.new(file: load_fixture_file("asset.png"))
+      described_class.new(file: load_fixture_file("asset.png"))
     }
 
     context "for current file" do
@@ -389,7 +389,7 @@ RSpec.describe Asset, type: :model do
 
   describe "scheduling a virus scan" do
     it "schedules a scan after create" do
-      a = Asset.new(file: load_fixture_file("asset.png"))
+      a = described_class.new(file: load_fixture_file("asset.png"))
 
       expect(VirusScanWorker).to receive(:perform_async).with(a.id)
 
@@ -518,7 +518,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "soft deletion" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
     before do
       asset.destroy
@@ -529,11 +529,11 @@ RSpec.describe Asset, type: :model do
     end
 
     it "is not inclued in the 'undeleted' scope" do
-      expect(Asset.undeleted).not_to include(asset)
+      expect(described_class.undeleted).not_to include(asset)
     end
 
     it "is included in the 'deleted' scope" do
-      expect(Asset.deleted).to include(asset)
+      expect(described_class.deleted).to include(asset)
     end
 
     it "can be restored" do
@@ -546,7 +546,7 @@ RSpec.describe Asset, type: :model do
 
   describe "extension" do
     context "when asset file has extension" do
-      let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+      let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
       it "returns asset file extension" do
         expect(asset.extension).to eq('png')
@@ -554,7 +554,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when asset file has capitalised extension" do
-      let(:asset) { Asset.new(file: load_fixture_file("asset-with-capitalised-extension.TXT")) }
+      let(:asset) { described_class.new(file: load_fixture_file("asset-with-capitalised-extension.TXT")) }
 
       it "returns downcased extension" do
         expect(asset.extension).to eq('txt')
@@ -562,7 +562,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when asset file has no extension" do
-      let(:asset) { Asset.new(file: load_fixture_file("asset-without-extension")) }
+      let(:asset) { described_class.new(file: load_fixture_file("asset-without-extension")) }
 
       it "returns empty string" do
         expect(asset.extension).to eq('')
@@ -573,7 +573,7 @@ RSpec.describe Asset, type: :model do
   describe "content_type" do
     context "when asset file has extension" do
       context 'and the extension is a recognised mime type' do
-        let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+        let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
         it "returns content type based on asset file extension" do
           expect(asset.content_type).to eq(Mime::Type.lookup('image/png').to_s)
@@ -581,7 +581,7 @@ RSpec.describe Asset, type: :model do
       end
 
       context 'and the extension is not a recognised mime type' do
-        let(:asset) { Asset.new(file: Tempfile.new(['file', '.unknown-extension'])) }
+        let(:asset) { described_class.new(file: Tempfile.new(['file', '.unknown-extension'])) }
 
         it "returns default content type" do
           expect(asset.content_type).to eq('application/octet-stream')
@@ -590,7 +590,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when asset file has no extension" do
-      let(:asset) { Asset.new(file: load_fixture_file("asset-without-extension")) }
+      let(:asset) { described_class.new(file: load_fixture_file("asset-without-extension")) }
 
       it "returns default content type" do
         expect(asset.content_type).to eq('application/octet-stream')
@@ -599,145 +599,145 @@ RSpec.describe Asset, type: :model do
 
     it 'handles .jpg file extensions' do
       file = Tempfile.new(['file', '.jpg'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('image/jpeg')
     end
 
     it 'handles .jpeg file extensions' do
       file = Tempfile.new(['file', '.jpeg'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('image/jpeg')
     end
 
     it 'handles .gif file extensions' do
       file = Tempfile.new(['file', '.gif'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('image/gif')
     end
 
     it 'handles .png file extensions' do
       file = Tempfile.new(['file', '.png'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('image/png')
     end
 
     it 'handles .pdf file extensions' do
       file = Tempfile.new(['file', '.pdf'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/pdf')
     end
 
     it 'handles .csv file extensions' do
       file = Tempfile.new(['file', '.csv'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('text/csv')
     end
 
     it 'handles .rtf file extensions' do
       file = Tempfile.new(['file', '.rtf'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('text/rtf')
     end
 
     it 'handles .doc file extensions' do
       file = Tempfile.new(['file', '.doc'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/msword')
     end
 
     it 'handles .docx file extensions' do
       file = Tempfile.new(['file', '.docx'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     end
 
     it 'handles .xls file extensions' do
       file = Tempfile.new(['file', '.xls'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.ms-excel')
     end
 
     it 'handles .xlsx file extensions' do
       file = Tempfile.new(['file', '.xlsx'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     end
 
     it 'handles .odt file extensions' do
       file = Tempfile.new(['file', '.odt'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.oasis.opendocument.text')
     end
 
     it 'handles .ods file extensions' do
       file = Tempfile.new(['file', '.ods'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.oasis.opendocument.spreadsheet')
     end
 
     it 'handles .svg file extensions' do
       file = Tempfile.new(['file', '.svg'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('image/svg+xml')
     end
 
     it 'handles .dot file extensions' do
       file = Tempfile.new(['file', '.dot'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/msword')
     end
 
     it 'handles .ppt file extensions' do
       file = Tempfile.new(['file', '.ppt'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.ms-powerpoint')
     end
 
     it 'handles .pptx file extensions' do
       file = Tempfile.new(['file', '.pptx'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.presentationml.presentation')
     end
 
     it 'handles .rdf file extensions' do
       file = Tempfile.new(['file', '.rdf'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/rdf+xml')
     end
 
     it 'handles .xlsm file extensions' do
       file = Tempfile.new(['file', '.xlsm'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.ms-excel.sheet.macroEnabled.12')
     end
 
     it 'handles .xlt file extensions' do
       file = Tempfile.new(['file', '.xlt'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/vnd.ms-excel')
     end
 
     it 'handles .txt file extensions and adds the charset parameter' do
       file = Tempfile.new(['file', '.txt'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('text/plain; charset=utf-8')
     end
 
     it 'handles .gml file extensions' do
       file = Tempfile.new(['file', '.gml'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/gml+xml')
     end
 
     it 'handles .dxf file extensions' do
       file = Tempfile.new(['file', '.dxf'])
-      asset = Asset.new(file: file)
+      asset = described_class.new(file: file)
       expect(asset.content_type).to eq('application/dxf')
     end
   end
 
   describe '#image?' do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     before do
       allow(asset).to receive(:extension).and_return(extension)
@@ -761,7 +761,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#etag_from_file" do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     let(:size) { 1024 }
     let(:mtime) { Time.zone.parse('2017-01-01') }
@@ -791,7 +791,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#etag" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), etag: etag) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), etag: etag) }
 
     before do
       allow(asset).to receive(:etag_from_file).and_return('etag-from-file')
@@ -824,7 +824,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#etag=" do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
       expect { asset.etag = 'etag-value' }.to raise_error(NoMethodError)
@@ -832,7 +832,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#last_modified_from_file" do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     let(:mtime) { Time.zone.parse('2017-01-01') }
     let(:stat) { instance_double(File::Stat, mtime: mtime) }
@@ -848,7 +848,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#last_modified" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
 
     let(:time) { Time.parse('2002-02-02 02:02') }
     let(:time_from_file) { Time.parse('2001-01-01 01:01') }
@@ -885,7 +885,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#last_modified=" do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
       expect { asset.last_modified = Time.now }.to raise_error(NoMethodError)
@@ -893,7 +893,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#size_from_file" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
     let(:size) { 57705 }
 
     it "returns the size of the file" do
@@ -902,7 +902,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#size" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), size: size) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), size: size) }
     let(:asset_size) { 100 }
 
     before do
@@ -937,7 +937,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#size=" do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
       expect { asset.size = 100 }.to raise_error(NoMethodError)
@@ -945,7 +945,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#md5_hexdigest_from_file" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png")) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
 
     it "returns MD5 hex digest for asset file content" do
@@ -954,7 +954,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#md5_hexdigest" do
-    let(:asset) { Asset.new(file: load_fixture_file("asset.png"), md5_hexdigest: md5_hexdigest) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), md5_hexdigest: md5_hexdigest) }
 
     before do
       allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-file')
@@ -987,7 +987,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#md5_hexdigest=" do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
       expect { asset.md5_hexdigest = 'md5-value' }.to raise_error(NoMethodError)
@@ -995,7 +995,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe '#mainstream?' do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     it 'returns truth-y' do
       expect(asset).to be_mainstream
@@ -1105,7 +1105,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe '#parent_document_url' do
-    let(:asset) { Asset.new }
+    let(:asset) { described_class.new }
 
     it 'is nil by default' do
       expect(asset.parent_document_url).to be_nil
