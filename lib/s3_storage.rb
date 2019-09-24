@@ -1,4 +1,4 @@
-require 's3_storage/fake'
+require "s3_storage/fake"
 
 class S3Storage
   ObjectNotFoundError = Class.new(StandardError)
@@ -10,7 +10,7 @@ class S3Storage
     elsif AssetManager.s3.fake?
       Fake.new(AssetManager.fake_s3.root)
     else
-      raise 'AWS S3 bucket not correctly configured'
+      raise "AWS S3 bucket not correctly configured"
     end
   end
 
@@ -20,8 +20,8 @@ class S3Storage
 
   def save(asset, force: false)
     metadata = exists?(asset) ? metadata_for(asset) : {}
-    if force || metadata['md5-hexdigest'] != asset.md5_hexdigest
-      metadata['md5-hexdigest'] = asset.md5_hexdigest
+    if force || metadata["md5-hexdigest"] != asset.md5_hexdigest
+      metadata["md5-hexdigest"] = asset.md5_hexdigest
       begin
         unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
           error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
@@ -38,7 +38,7 @@ class S3Storage
     object_for(asset).delete
   end
 
-  def presigned_url_for(asset, http_method: 'GET')
+  def presigned_url_for(asset, http_method: "GET")
     object_for(asset).presigned_url(http_method, expires_in: 1.minute)
   end
 
@@ -52,7 +52,7 @@ class S3Storage
 
   def replicated?(asset)
     status = replication_status(asset)
-    status && (status == 'COMPLETED')
+    status && (status == "COMPLETED")
   end
 
   def metadata_for(asset)

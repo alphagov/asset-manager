@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe WhitehallAssetsController, type: :controller do
   render_views # for json responses
@@ -61,10 +61,10 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).replacement).to eq(replacement)
       end
 
-      it 'stores parent_document_url on asset' do
-        post :create, params: { asset: attributes.merge(parent_document_url: 'parent-document-url') }
+      it "stores parent_document_url on asset" do
+        post :create, params: { asset: attributes.merge(parent_document_url: "parent-document-url") }
 
-        expect(assigns(:asset).parent_document_url).to eq('parent-document-url')
+        expect(assigns(:asset).parent_document_url).to eq("parent-document-url")
       end
 
       it "returns a created status" do
@@ -78,21 +78,21 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
         asset = assigns(:asset)
         body = JSON.parse(response.body)
-        expect(body['id']).to eq("http://test.host/assets/#{asset.id}")
+        expect(body["id"]).to eq("http://test.host/assets/#{asset.id}")
       end
 
       it "returns JSON response including name of new asset" do
         post :create, params: { asset: attributes }
 
         body = JSON.parse(response.body)
-        expect(body['name']).to eq("asset.png")
+        expect(body["name"]).to eq("asset.png")
       end
 
       it "returns JSON response including content_type of new asset" do
         post :create, params: { asset: attributes }
 
         body = JSON.parse(response.body)
-        expect(body['content_type']).to eq("image/png")
+        expect(body["content_type"]).to eq("image/png")
       end
 
       it "returns JSON response including URL of new asset" do
@@ -100,7 +100,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
         body = JSON.parse(response.body)
         expected_path = "#{Plek.new.asset_root}#{attributes[:legacy_url_path]}"
-        expect(body['file_url']).to eq(expected_path)
+        expect(body["file_url"]).to eq(expected_path)
       end
     end
 
@@ -144,25 +144,25 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         body = JSON.parse(response.body)
-        expect(body['draft']).to be_truthy
+        expect(body["draft"]).to be_truthy
       end
     end
 
-    context 'an asset with a redirect URL' do
-      let(:redirect_url) { 'https://example.com/path/file.ext' }
+    context "an asset with a redirect URL" do
+      let(:redirect_url) { "https://example.com/path/file.ext" }
       let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, redirect_url: redirect_url) }
 
-      it 'returns JSON response including redirect URL of new asset' do
+      it "returns JSON response including redirect URL of new asset" do
         post :create, params: { asset: attributes }
 
         body = JSON.parse(response.body)
-        expect(body['redirect_url']).to eq(redirect_url)
+        expect(body["redirect_url"]).to eq(redirect_url)
       end
 
-      context 'and redirect URL is blank' do
-        let(:redirect_url) { '' }
+      context "and redirect URL is blank" do
+        let(:redirect_url) { "" }
 
-        it 'stores redirect URL as nil' do
+        it "stores redirect URL as nil" do
           post :create, params: { asset: attributes }
 
           expect(assigns(:asset).redirect_url).to be_nil
@@ -171,57 +171,57 @@ RSpec.describe WhitehallAssetsController, type: :controller do
     end
   end
 
-  describe 'GET show' do
-    let(:legacy_url_path) { '/government/uploads/image.png' }
+  describe "GET show" do
+    let(:legacy_url_path) { "/government/uploads/image.png" }
     let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
     let(:presenter) { instance_double(AssetPresenter) }
 
     before do
       allow(AssetPresenter).to receive(:new).with(asset, anything).and_return(presenter)
-      allow(presenter).to receive(:as_json).and_return('asset-as-json')
+      allow(presenter).to receive(:as_json).and_return("asset-as-json")
     end
 
-    it 'returns a 200 response' do
-      get :show, params: { path: 'government/uploads/image', format: 'png' }
+    it "returns a 200 response" do
+      get :show, params: { path: "government/uploads/image", format: "png" }
 
       expect(response).to have_http_status(:ok)
     end
 
-    it 'returns a 404 response if the asset cannot be found' do
-      get :show, params: { path: 'government/uploads/non-existent-image', format: 'png' }
+    it "returns a 404 response if the asset cannot be found" do
+      get :show, params: { path: "government/uploads/non-existent-image", format: "png" }
 
       expect(response).to have_http_status(:not_found)
     end
 
-    it 'renders the asset using the AssetPresenter' do
-      get :show, params: { path: 'government/uploads/image', format: 'png' }
+    it "renders the asset using the AssetPresenter" do
+      get :show, params: { path: "government/uploads/image", format: "png" }
 
       expect(response.body).to eq('"asset-as-json"')
     end
 
-    it 'sets the Cache-Control header to no-cache' do
-      get :show, params: { path: 'government/uploads/image', format: 'png' }
+    it "sets the Cache-Control header to no-cache" do
+      get :show, params: { path: "government/uploads/image", format: "png" }
 
-      expect(response.headers['Cache-Control']).to match('no-cache')
+      expect(response.headers["Cache-Control"]).to match("no-cache")
     end
 
-    context 'and legacy_url_path has no format' do
-      let(:legacy_url_path) { '/government/uploads/file' }
+    context "and legacy_url_path has no format" do
+      let(:legacy_url_path) { "/government/uploads/file" }
 
-      it 'returns a 200 response' do
-        get :show, params: { path: 'government/uploads/file' }
+      it "returns a 200 response" do
+        get :show, params: { path: "government/uploads/file" }
 
         expect(response).to have_http_status(:ok)
       end
     end
 
-    context 'when the asset has been deleted' do
+    context "when the asset has been deleted" do
       before do
         asset.destroy
       end
 
-      it 'returns a 200 response' do
-        get :show, params: { path: 'government/uploads/image', format: 'png' }
+      it "returns a 200 response" do
+        get :show, params: { path: "government/uploads/image", format: "png" }
 
         expect(response).to have_http_status(:ok)
       end

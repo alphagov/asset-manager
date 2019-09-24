@@ -1,10 +1,10 @@
-require 'rails_helper'
-require 's3_storage'
+require "rails_helper"
+require "s3_storage"
 
 RSpec.describe S3Storage do
   subject { described_class.new(bucket_name) }
 
-  let(:bucket_name) { 'bucket-name' }
+  let(:bucket_name) { "bucket-name" }
   let(:s3_client) { instance_double(Aws::S3::Client) }
   let(:s3_object) { instance_double(Aws::S3::Object) }
   let(:asset) { FactoryBot.create(:asset) }
@@ -18,7 +18,7 @@ RSpec.describe S3Storage do
       .with(s3_object_params).and_return(s3_object)
   end
 
-  describe '.build' do
+  describe ".build" do
     subject { described_class.build }
 
     let(:s3_configured) { true }
@@ -29,45 +29,45 @@ RSpec.describe S3Storage do
       allow(AssetManager).to receive(:s3).and_return(s3_config)
     end
 
-    it 'builds an instance of S3Storage' do
+    it "builds an instance of S3Storage" do
       expect(subject).to be_instance_of(described_class)
     end
 
-    context 'when S3 is not configured' do
+    context "when S3 is not configured" do
       let(:s3_configured) { false }
 
-      context 'and fake S3 is enabled' do
+      context "and fake S3 is enabled" do
         let(:s3_fake) { true }
 
-        it 'builds an instance of S3Storage::Fake' do
+        it "builds an instance of S3Storage::Fake" do
           expect(subject).to be_instance_of(S3Storage::Fake)
         end
       end
 
-      context 'and fake S3 is not enabled' do
+      context "and fake S3 is not enabled" do
         let(:s3_fake) { false }
 
-        it 'raises an exception' do
-          expect { subject }.to raise_error('AWS S3 bucket not correctly configured')
+        it "raises an exception" do
+          expect { subject }.to raise_error("AWS S3 bucket not correctly configured")
         end
       end
     end
   end
 
-  describe '#save' do
+  describe "#save" do
     before do
       allow(s3_object).to receive(:exists?).and_return(false)
     end
 
-    it 'uploads file to S3 bucket' do
+    it "uploads file to S3 bucket" do
       expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
         .and_return(true)
 
       subject.save(asset)
     end
 
-    it 'sets md5-hexdigest custom metadata on S3 object' do
-      expected_metadata = { 'md5-hexdigest' => asset.md5_hexdigest }
+    it "sets md5-hexdigest custom metadata on S3 object" do
+      expected_metadata = { "md5-hexdigest" => asset.md5_hexdigest }
       expect(s3_object).to receive(:upload_file)
         .with(anything, include(metadata: include(expected_metadata)))
         .and_return(true)
@@ -75,12 +75,12 @@ RSpec.describe S3Storage do
       subject.save(asset)
     end
 
-    context 'when Aws::S3::Object#upload_file returns false' do
+    context "when Aws::S3::Object#upload_file returns false" do
       before do
         allow(s3_object).to receive(:upload_file).and_return(false)
       end
 
-      it 'raises ObjectUploadFailedError exception' do
+      it "raises ObjectUploadFailedError exception" do
         error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
 
         expect { subject.save(asset) }
@@ -88,15 +88,15 @@ RSpec.describe S3Storage do
       end
     end
 
-    context 'when Aws::S3::Object#upload_file raises Aws::S3::MultipartUploadError' do
-      let(:exception) { Aws::S3::MultipartUploadError.new('message', [RuntimeError.new]) }
+    context "when Aws::S3::Object#upload_file raises Aws::S3::MultipartUploadError" do
+      let(:exception) { Aws::S3::MultipartUploadError.new("message", [RuntimeError.new]) }
 
       before do
         allow(s3_object).to receive(:upload_file)
           .and_raise(exception)
       end
 
-      it 'raises ObjectUploadFailedError exception' do
+      it "raises ObjectUploadFailedError exception" do
         error_message = "Aws::S3::Object#upload_file raised #{exception.inspect} for asset ID: #{asset.id}"
 
         expect { subject.save(asset) }
@@ -104,8 +104,8 @@ RSpec.describe S3Storage do
       end
     end
 
-    context 'when S3 object already exists' do
-      let(:default_metadata) { { 'md5-hexdigest' => md5_hexdigest } }
+    context "when S3 object already exists" do
+      let(:default_metadata) { { "md5-hexdigest" => md5_hexdigest } }
       let(:metadata) { default_metadata }
 
       before do
@@ -114,17 +114,17 @@ RSpec.describe S3Storage do
           .with(asset).and_return(metadata)
       end
 
-      context 'and MD5 hex digest does match' do
+      context "and MD5 hex digest does match" do
         let(:md5_hexdigest) { asset.md5_hexdigest }
 
-        it 'does not upload file to S3' do
+        it "does not upload file to S3" do
           expect(s3_object).not_to receive(:upload_file)
 
           subject.save(asset)
         end
 
-        context 'but force options is set' do
-          it 'uploads file to S3' do
+        context "but force options is set" do
+          it "uploads file to S3" do
             expect(s3_object).to receive(:upload_file).and_return(true)
 
             subject.save(asset, force: true)
@@ -132,20 +132,20 @@ RSpec.describe S3Storage do
         end
       end
 
-      context 'and MD5 hex digest does not match' do
-        let(:md5_hexdigest) { 'does-not-match' }
+      context "and MD5 hex digest does not match" do
+        let(:md5_hexdigest) { "does-not-match" }
 
-        it 'uploads file to S3' do
+        it "uploads file to S3" do
           expect(s3_object).to receive(:upload_file).and_return(true)
 
           subject.save(asset)
         end
 
-        context 'and object has existing metadata' do
-          let(:existing_metadata) { { 'existing-key' => 'existing-value' } }
+        context "and object has existing metadata" do
+          let(:existing_metadata) { { "existing-key" => "existing-value" } }
           let(:metadata) { default_metadata.merge(existing_metadata) }
 
-          it 'uploads file to S3 with existing metadata' do
+          it "uploads file to S3 with existing metadata" do
             expect(s3_object).to receive(:upload_file).and_return(true)
               .with(anything, include(metadata: include(existing_metadata)))
 
@@ -163,44 +163,44 @@ RSpec.describe S3Storage do
     end
   end
 
-  describe '#presigned_url_for' do
-    it 'returns presigned URL for GET request to asset on S3 by default' do
+  describe "#presigned_url_for" do
+    it "returns presigned URL for GET request to asset on S3 by default" do
       allow(s3_object).to receive(:presigned_url)
-        .with('GET', expires_in: 1.minute).and_return('presigned-url')
-      expect(subject.presigned_url_for(asset)).to eq('presigned-url')
+        .with("GET", expires_in: 1.minute).and_return("presigned-url")
+      expect(subject.presigned_url_for(asset)).to eq("presigned-url")
     end
 
-    it 'returns presigned URL for HEAD request to asset on S3 when http_method specified' do
+    it "returns presigned URL for HEAD request to asset on S3 when http_method specified" do
       allow(s3_object).to receive(:presigned_url)
-        .with('HEAD', expires_in: 1.minute).and_return('presigned-url')
-      expect(subject.presigned_url_for(asset, http_method: 'HEAD')).to eq('presigned-url')
+        .with("HEAD", expires_in: 1.minute).and_return("presigned-url")
+      expect(subject.presigned_url_for(asset, http_method: "HEAD")).to eq("presigned-url")
     end
   end
 
-  describe '#exists?' do
+  describe "#exists?" do
     before do
       allow(s3_object).to receive(:exists?).and_return(exists_on_s3)
     end
 
-    context 'when asset does not exist on S3' do
+    context "when asset does not exist on S3" do
       let(:exists_on_s3) { false }
 
-      it 'returns falsey' do
+      it "returns falsey" do
         expect(subject.exists?(asset)).to be_falsey
       end
     end
 
-    context 'when asset does exist on S3' do
+    context "when asset does exist on S3" do
       let(:exists_on_s3) { true }
 
-      it 'returns truthy' do
+      it "returns truthy" do
         expect(subject.exists?(asset)).to be_truthy
       end
     end
   end
 
-  describe '#never_replicated?' do
-    context 'when asset does not exist on S3' do
+  describe "#never_replicated?" do
+    context "when asset does not exist on S3" do
       let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
 
       before do
@@ -208,13 +208,13 @@ RSpec.describe S3Storage do
           .with(s3_head_object_params).and_raise(not_found_error)
       end
 
-      it 'raises exception' do
+      it "raises exception" do
         expect { subject.never_replicated?(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
 
-    context 'when asset does exist on S3' do
+    context "when asset does exist on S3" do
       let(:attributes) { { replication_status: replication_status } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
@@ -223,26 +223,26 @@ RSpec.describe S3Storage do
           .with(s3_head_object_params).and_return(s3_result)
       end
 
-      context 'and asset has no replication status' do
+      context "and asset has no replication status" do
         let(:replication_status) { nil }
 
-        it 'returns truthy' do
+        it "returns truthy" do
           expect(subject.never_replicated?(asset)).to be_truthy
         end
       end
 
-      context 'and asset has replication status' do
-        let(:replication_status) { 'COMPLETED' }
+      context "and asset has replication status" do
+        let(:replication_status) { "COMPLETED" }
 
-        it 'returns falsey' do
+        it "returns falsey" do
           expect(subject.never_replicated?(asset)).to be_falsey
         end
       end
     end
   end
 
-  describe '#replicated?' do
-    context 'when asset does not exist on S3' do
+  describe "#replicated?" do
+    context "when asset does not exist on S3" do
       let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
 
       before do
@@ -250,13 +250,13 @@ RSpec.describe S3Storage do
           .with(s3_head_object_params).and_raise(not_found_error)
       end
 
-      it 'raises exception' do
+      it "raises exception" do
         expect { subject.replicated?(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
 
-    context 'when asset does exist on S3' do
+    context "when asset does exist on S3" do
       let(:attributes) { { replication_status: replication_status } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
@@ -265,26 +265,26 @@ RSpec.describe S3Storage do
           .with(s3_head_object_params).and_return(s3_result)
       end
 
-      context 'and asset has no replication status' do
+      context "and asset has no replication status" do
         let(:replication_status) { nil }
 
-        it 'returns falsey' do
+        it "returns falsey" do
           expect(subject.replicated?(asset)).to be_falsey
         end
       end
 
-      context 'and asset replication status is COMPLETED' do
-        let(:replication_status) { 'COMPLETED' }
+      context "and asset replication status is COMPLETED" do
+        let(:replication_status) { "COMPLETED" }
 
-        it 'returns truthy' do
+        it "returns truthy" do
           expect(subject.replicated?(asset)).to be_truthy
         end
       end
     end
   end
 
-  describe '#metadata_for' do
-    context 'when S3 object does not exist' do
+  describe "#metadata_for" do
+    context "when S3 object does not exist" do
       let(:not_found_error) { Aws::S3::Errors::NotFound.new(nil, nil) }
 
       before do
@@ -292,14 +292,14 @@ RSpec.describe S3Storage do
           .with(s3_head_object_params).and_raise(not_found_error)
       end
 
-      it 'raises exception' do
+      it "raises exception" do
         expect { subject.metadata_for(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
 
-    context 'when S3 object does exist' do
-      let(:metadata) { { 'key' => 'value' } }
+    context "when S3 object does exist" do
+      let(:metadata) { { "key" => "value" } }
       let(:attributes) { { metadata: metadata } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
@@ -308,7 +308,7 @@ RSpec.describe S3Storage do
           .with(s3_head_object_params).and_return(s3_result)
       end
 
-      it 'returns metadata from S3 object' do
+      it "returns metadata from S3 object" do
         expect(subject.metadata_for(asset)).to eq(metadata)
       end
     end

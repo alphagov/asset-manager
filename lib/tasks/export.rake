@@ -1,7 +1,7 @@
-require 'csv'
+require "csv"
 
 namespace :export do
-  desc 'Export CSV of mirrorable (publicly visible, non-replaced, non-redirected) assets'
+  desc "Export CSV of mirrorable (publicly visible, non-replaced, non-redirected) assets"
   task :mirrorable do
     params = {
       deleted_at: nil,
@@ -10,7 +10,7 @@ namespace :export do
       :draft.in => [nil, false],
     }
 
-    CSV.open('mirrorable.csv', 'wb') do |csv|
+    CSV.open("mirrorable.csv", "wb") do |csv|
       csv << %w[uuid public_url_path]
       Asset.where(params).each do |asset|
         csv << [asset.uuid, asset.public_url_path]

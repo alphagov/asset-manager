@@ -1,10 +1,10 @@
-require 'rails_helper'
-require 'services'
+require "rails_helper"
+require "services"
 
 RSpec.describe VirusScanWorker do
   let(:worker) { described_class.new }
   let(:asset) { FactoryBot.create(:asset) }
-  let(:scanner) { instance_double('VirusScanner') }
+  let(:scanner) { instance_double("VirusScanner") }
 
   before do
     allow(Services).to receive(:virus_scanner).and_return(scanner)
@@ -16,7 +16,7 @@ RSpec.describe VirusScanWorker do
     worker.perform(asset.id)
   end
 
-  context 'when the file is clean' do
+  context "when the file is clean" do
     before do
       allow(scanner).to receive(:scan).and_return(true)
     end
@@ -29,30 +29,30 @@ RSpec.describe VirusScanWorker do
     end
   end
 
-  context 'when the asset is already marked as clean' do
+  context "when the asset is already marked as clean" do
     let(:asset) { FactoryBot.create(:clean_asset) }
 
-    it 'does not virus scan file' do
+    it "does not virus scan file" do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)
     end
   end
 
-  context 'when the asset is already marked as infected' do
+  context "when the asset is already marked as infected" do
     let(:asset) { FactoryBot.create(:infected_asset) }
 
-    it 'does not virus scan file' do
+    it "does not virus scan file" do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)
     end
   end
 
-  context 'when the asset is already marked as uploaded' do
+  context "when the asset is already marked as uploaded" do
     let(:asset) { FactoryBot.create(:uploaded_asset) }
 
-    it 'does not virus scan file' do
+    it "does not virus scan file" do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)

@@ -1,4 +1,4 @@
-require_relative 'boot'
+require_relative "boot"
 
 # Pick the frameworks you want:
 # require "active_model/railtie"
@@ -32,7 +32,7 @@ module AssetManager
     # Disable Rack::Cache
     config.action_dispatch.rack_cache = nil
 
-    config.assets.prefix = '/asset-manager'
+    config.assets.prefix = "/asset-manager"
 
     unless Rails.application.secrets.jwt_auth_secret
       raise "JWT auth secret is not configured. See config/secrets.yml"

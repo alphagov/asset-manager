@@ -1,4 +1,4 @@
-require 'open3'
+require "open3"
 
 # Simple wrapper around ClamAV
 #
@@ -10,7 +10,7 @@ class VirusScanner
 
   def scan(file_path)
     clamscan_path = AssetManager.govuk.clamscan_path
-    out_str, status = Open3.capture2e(clamscan_path, '--no-summary', file_path)
+    out_str, status = Open3.capture2e(clamscan_path, "--no-summary", file_path)
     case status.exitstatus
     when 0
       return true

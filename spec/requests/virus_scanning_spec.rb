@@ -27,7 +27,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:success)
 
-    redirect_url = headers['X-Accel-Redirect']
+    redirect_url = headers["X-Accel-Redirect"]
     cloud_url = redirect_url.match(%r{^/cloud-storage-proxy/(.*)$})[1]
     get cloud_url
     expect(response).to have_http_status(:success)

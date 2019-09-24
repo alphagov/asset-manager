@@ -1,5 +1,5 @@
-require 'virus_scanner'
-require 'services'
+require "virus_scanner"
+require "services"
 
 class Asset
   include Mongoid::Document
@@ -7,9 +7,9 @@ class Asset
 
   index deleted_at: 1
 
-  belongs_to :replacement, class_name: 'Asset', optional: true, index: true
+  belongs_to :replacement, class_name: "Asset", optional: true, index: true
 
-  field :state, type: String, default: 'unscanned'
+  field :state, type: String, default: "unscanned"
   field :filename_history, type: Array, default: -> { [] }
   protected :filename_history=
 
@@ -48,7 +48,7 @@ class Asset
                    uniqueness: true,
                    format: {
                      with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
-                     message: 'must match the format defined in rfc4122'
+                     message: "must match the format defined in rfc4122",
                    }
 
   validate :check_specified_replacement_exists
@@ -98,8 +98,8 @@ class Asset
     payload, = JWT.decode(token,
                           Rails.application.secrets.jwt_auth_secret,
                           true,
-                          algorithm: 'HS256')
-    payload['sub'].present? && auth_bypass_ids.include?(payload['sub'])
+                          algorithm: "HS256")
+    payload["sub"].present? && auth_bypass_ids.include?(payload["sub"])
   rescue JWT::DecodeError
     false
   end
@@ -129,7 +129,7 @@ class Asset
   end
 
   def extension
-    File.extname(filename).downcase.delete('.')
+    File.extname(filename).downcase.delete(".")
   end
 
   def content_type
@@ -142,9 +142,9 @@ class Asset
   end
 
   def etag_from_file
-    '%<mtime>x-%<size>x' % {
+    "%<mtime>x-%<size>x" % {
       mtime: last_modified_from_file,
-      size: file_stat.size
+      size: file_stat.size,
     }
   end
 
@@ -203,7 +203,7 @@ protected
   end
 
   def reset_state
-    self.state = 'unscanned'
+    self.state = "unscanned"
     @file_stat = nil
     @md5_hexdigest = nil
   end
@@ -219,17 +219,17 @@ protected
   def check_specified_replacement_exists
     replacement = Asset.where(id: replacement_id)
     if replacement_id.present? && replacement.blank?
-      errors.add(:replacement, 'not found')
+      errors.add(:replacement, "not found")
     end
   end
 
   def prevent_transition_from_published_to_draft_if_replaced
     if changes[:draft] == [false, true]
       if replacement.present?
-        errors.add(:draft, 'cannot be true, because already replaced')
+        errors.add(:draft, "cannot be true, because already replaced")
       end
       if redirect_url.present?
-        errors.add(:draft, 'cannot be true, because already redirected')
+        errors.add(:draft, "cannot be true, because already redirected")
       end
     end
   end
@@ -244,7 +244,7 @@ protected
     end
 
     unless uri && %w(http https).include?(uri.scheme)
-      errors.add(:parent_document_url, 'must be an http(s) URL')
+      errors.add(:parent_document_url, "must be an http(s) URL")
     end
   end
 end

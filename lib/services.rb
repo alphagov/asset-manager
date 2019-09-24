@@ -1,5 +1,5 @@
-require 's3_storage'
-require 'virus_scanner'
+require "s3_storage"
+require "virus_scanner"
 
 module Services
   def self.cloud_storage

@@ -28,7 +28,7 @@ FactoryBot.define do
 
     trait :with_legacy_metadata do
       sequence(:legacy_etag) { |n| "legacy-etag-#{n}" }
-      sequence(:legacy_last_modified) { |n| Time.parse('2000-01-01') + n.days }
+      sequence(:legacy_last_modified) { |n| Time.parse("2000-01-01") + n.days }
     end
   end
 

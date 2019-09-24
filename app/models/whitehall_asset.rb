@@ -9,11 +9,11 @@ class WhitehallAsset < Asset
   validates :legacy_url_path,
             presence: true,
             uniqueness: {
-              conditions: -> { where(deleted_at: nil) }
+              conditions: -> { where(deleted_at: nil) },
             },
             format: {
               with: %r{\A/government/uploads},
-              message: 'must start with /government/uploads'
+              message: "must start with /government/uploads",
             }
 
   def self.from_params(path:, format: nil, path_prefix: nil)

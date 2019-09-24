@@ -1,4 +1,4 @@
-require 'govuk_sidekiq/testing'
+require "govuk_sidekiq/testing"
 
 RSpec.configure do |config|
   config.before do
