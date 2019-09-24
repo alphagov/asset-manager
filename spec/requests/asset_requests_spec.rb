@@ -119,7 +119,7 @@ RSpec.describe "Asset requests", type: :request do
       body = JSON.parse(response.body)
 
       expect(response).to have_http_status(:ok)
-      expect(body['deleted']).to eq(true)
+      expect(body["deleted"]).to eq(true)
     end
   end
 

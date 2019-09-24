@@ -8,7 +8,7 @@ protected
 
   def asset
     @asset ||= WhitehallAsset.undeleted.from_params(
-      path: params[:path], format: params[:format], path_prefix: 'government/uploads/'
+      path: params[:path], format: params[:format], path_prefix: "government/uploads/",
     ) || raise(WhitehallAssetNotFound)
   end
 
@@ -27,9 +27,9 @@ protected
   def perform_temporary_redirect
     expires_in 1.minute, public: true
     if asset.image?
-      redirect_to self.class.helpers.image_path('thumbnail-placeholder.png')
+      redirect_to self.class.helpers.image_path("thumbnail-placeholder.png")
     else
-      redirect_to '/government/placeholder'
+      redirect_to "/government/placeholder"
     end
   end
 end

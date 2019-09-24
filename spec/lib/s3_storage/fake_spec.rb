@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe S3Storage::Fake do
   subject(:storage) { described_class.new(root_path) }
@@ -13,7 +13,7 @@ RSpec.describe S3Storage::Fake do
     FileUtils.remove_entry(root_directory)
   end
 
-  it 'implements all public methods defined on S3Storage' do
+  it "implements all public methods defined on S3Storage" do
     methods = S3Storage.public_instance_methods(false)
     expect(described_class.public_instance_methods(false)).to include(*methods)
   end
@@ -41,26 +41,26 @@ RSpec.describe S3Storage::Fake do
     end
   end
 
-  describe '#presigned_url_for' do
+  describe "#presigned_url_for" do
     before do
       storage.save(asset)
     end
 
-    it 'returns URL with path starting with fake S3 path prefix' do
+    it "returns URL with path starting with fake S3 path prefix" do
       url = storage.presigned_url_for(asset)
       path = URI(url).path
 
       expect(path).to start_with(AssetManager.fake_s3.path_prefix)
     end
 
-    it 'returns URL with path ending with relative path to asset' do
+    it "returns URL with path ending with relative path to asset" do
       url = storage.presigned_url_for(asset)
       path = URI(url).path
 
       expect(path).to end_with(relative_path_to_asset.to_s)
     end
 
-    it 'returns URL with host set to AssetManager.fake_s3.host' do
+    it "returns URL with host set to AssetManager.fake_s3.host" do
       url = storage.presigned_url_for(asset)
       scheme, domain, port = URI(url).select(:scheme, :host, :port)
       host = "#{scheme}://#{domain}:#{port}"
@@ -69,40 +69,40 @@ RSpec.describe S3Storage::Fake do
     end
   end
 
-  describe '#exists?' do
+  describe "#exists?" do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
-    context 'when file is not saved in storage' do
-      it 'returns falsey' do
+    context "when file is not saved in storage" do
+      it "returns falsey" do
         expect(storage.exists?(asset)).to be_falsey
       end
     end
 
-    context 'when file is saved in storage' do
+    context "when file is saved in storage" do
       before do
         storage.save(asset)
       end
 
-      it 'returns truthy' do
+      it "returns truthy" do
         expect(storage.exists?(asset)).to be_truthy
       end
     end
   end
 
-  describe '#never_replicated?' do
-    it 'raises exception to indicate method not implemented' do
+  describe "#never_replicated?" do
+    it "raises exception to indicate method not implemented" do
       expect { storage.never_replicated?(asset) }.to raise_error(NotImplementedError)
     end
   end
 
-  describe '#replicated?' do
-    it 'raises exception to indicate method not implemented' do
+  describe "#replicated?" do
+    it "raises exception to indicate method not implemented" do
       expect { storage.replicated?(asset) }.to raise_error(NotImplementedError)
     end
   end
 
-  describe '#metadata_for' do
-    it 'raises exception to indicate method not implemented' do
+  describe "#metadata_for" do
+    it "raises exception to indicate method not implemented" do
       expect { storage.metadata_for(asset) }.to raise_error(NotImplementedError)
     end
   end

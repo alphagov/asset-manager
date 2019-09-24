@@ -1,18 +1,18 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Healthcheck do
   subject(:healthcheck) { described_class.new(healthchecks) }
 
   let(:critical) do
-    instance_double('Healthcheck::Base', name: :foo, status: :critical, details: {})
+    instance_double("Healthcheck::Base", name: :foo, status: :critical, details: {})
   end
 
   let(:warning) do
-    instance_double('Healthcheck::Base', name: :bar, status: :warning, details: { errors: 7 })
+    instance_double("Healthcheck::Base", name: :bar, status: :warning, details: { errors: 7 })
   end
 
   let(:ok) do
-    instance_double('Healthcheck::Base', name: :baz, status: :ok, details: { https: true })
+    instance_double("Healthcheck::Base", name: :baz, status: :ok, details: { https: true })
   end
 
   context "when one of the checks is critical" do

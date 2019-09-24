@@ -1,19 +1,19 @@
 module AuthenticationControllerHelpers
   def login_as(user)
-    request.env['warden'] = double(
+    request.env["warden"] = double(
       authenticate: true,
       authenticate!: true,
       authenticated?: true,
-      user: user
+      user: user,
     )
   end
 
   def not_logged_in
-    request.env['warden'] = double(
+    request.env["warden"] = double(
       authenticate: true,
       authenticate!: true,
       authenticated?: false,
-      user: nil
+      user: nil,
     )
   end
 

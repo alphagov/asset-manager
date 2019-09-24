@@ -3,67 +3,67 @@ require "rails_helper"
 RSpec.describe Asset, type: :model do
   include Rails.application.routes.url_helpers
 
-  describe 'validation' do
+  describe "validation" do
     subject(:asset) { FactoryBot.build(:asset, attributes) }
 
     let(:attributes) { {} }
 
-    it 'is valid when built from factory' do
+    it "is valid when built from factory" do
       expect(asset).to be_valid
     end
 
-    context 'when file is not specified' do
+    context "when file is not specified" do
       let(:attributes) { { file: nil } }
 
-      it 'is not valid' do
+      it "is not valid" do
         expect(asset).not_to be_valid
       end
 
-      context 'when asset has been uploaded to cloud storage' do
+      context "when asset has been uploaded to cloud storage" do
         before do
-          asset.state = 'uploaded'
+          asset.state = "uploaded"
         end
 
-        it 'is valid' do
+        it "is valid" do
           expect(asset).to be_valid
         end
       end
     end
 
-    context 'when replacement_id is not specified' do
+    context "when replacement_id is not specified" do
       let(:attributes) { { replacement_id: nil } }
 
-      it 'is valid' do
+      it "is valid" do
         expect(asset).to be_valid
       end
     end
 
-    context 'when replacement_id is specified' do
+    context "when replacement_id is specified" do
       let(:attributes) { { replacement_id: replacement_id } }
 
-      context 'and replacement asset exists' do
+      context "and replacement asset exists" do
         let(:replacement) { FactoryBot.create(:asset) }
         let(:replacement_id) { replacement.id.to_s }
 
-        it 'is valid' do
+        it "is valid" do
           expect(asset).to be_valid
         end
       end
 
-      context 'and replacement asset does not exist' do
-        let(:replacement_id) { 'non-existent-asset-id' }
+      context "and replacement asset does not exist" do
+        let(:replacement_id) { "non-existent-asset-id" }
 
-        it 'is not valid' do
+        it "is not valid" do
           expect(asset).not_to be_valid
         end
 
-        it 'includes error for replacement not found' do
+        it "includes error for replacement not found" do
           asset.valid?
-          expect(asset.errors[:replacement]).to include('not found')
+          expect(asset.errors[:replacement]).to include("not found")
         end
       end
 
-      context 'and the replacement exists but has been deleted' do
+      context "and the replacement exists but has been deleted" do
         let(:replacement) { FactoryBot.create(:asset) }
         let(:replacement_id) { replacement.id.to_s }
 
@@ -71,13 +71,13 @@ RSpec.describe Asset, type: :model do
           replacement.destroy
         end
 
-        it 'is valid' do
+        it "is valid" do
           expect(asset).to be_valid
         end
       end
     end
 
-    context 'when replacements are replaced' do
+    context "when replacements are replaced" do
       let(:first_replacement) { FactoryBot.create(:asset) }
       let(:final_replacement) { FactoryBot.create(:asset) }
 
@@ -88,19 +88,19 @@ RSpec.describe Asset, type: :model do
         first_replacement.save
       end
 
-      it 'updates the original asset' do
+      it "updates the original asset" do
         expect(asset.reload.replacement_id).to eq(final_replacement.id)
       end
     end
 
-    context 'when published asset is marked as draft' do
+    context "when published asset is marked as draft" do
       let(:replacement) { nil }
       let(:redirect_url) { nil }
       let(:attributes) {
         {
           draft: false,
           replacement: replacement,
-          redirect_url: redirect_url
+          redirect_url: redirect_url,
         }
       }
 
@@ -109,60 +109,60 @@ RSpec.describe Asset, type: :model do
         asset.draft = true
       end
 
-      it 'is valid' do
+      it "is valid" do
         expect(asset).to be_valid
       end
 
-      context 'and asset is replaced' do
+      context "and asset is replaced" do
         let(:replacement) { FactoryBot.create(:asset) }
 
-        it 'is not valid' do
+        it "is not valid" do
           expect(asset).not_to be_valid
         end
 
-        it 'includes error for forbidden draft state change' do
+        it "includes error for forbidden draft state change" do
           asset.valid?
-          message = 'cannot be true, because already replaced'
+          message = "cannot be true, because already replaced"
           expect(asset.errors[:draft]).to include(message)
         end
       end
 
-      context 'and asset is redirected' do
-        let(:redirect_url) { 'https://example.com/path/file.ext' }
+      context "and asset is redirected" do
+        let(:redirect_url) { "https://example.com/path/file.ext" }
 
-        it 'is not valid' do
+        it "is not valid" do
           expect(asset).not_to be_valid
         end
 
-        it 'includes error for forbidden draft state change' do
+        it "includes error for forbidden draft state change" do
           asset.valid?
-          message = 'cannot be true, because already redirected'
+          message = "cannot be true, because already redirected"
           expect(asset.errors[:draft]).to include(message)
         end
       end
     end
 
-    context 'when parent_document_url is not specified' do
-      it 'is valid' do
+    context "when parent_document_url is not specified" do
+      it "is valid" do
         asset.parent_document_url = nil
         expect(asset).to be_valid
       end
     end
 
-    context 'when parent_document_url is specified' do
+    context "when parent_document_url is specified" do
       it "is valid when it's an http URL" do
-        asset.parent_document_url = 'http://www.example.com'
+        asset.parent_document_url = "http://www.example.com"
         expect(asset).to be_valid
       end
 
       it "is valid when it's an https URL" do
-        asset.parent_document_url = 'https://www.example.com'
+        asset.parent_document_url = "https://www.example.com"
         expect(asset).to be_valid
       end
 
-      context 'and is not an http(s) URL' do
+      context "and is not an http(s) URL" do
         before do
-          asset.parent_document_url = 'ftp://example.com'
+          asset.parent_document_url = "ftp://example.com"
         end
 
         it "is invalid" do
@@ -171,14 +171,14 @@ RSpec.describe Asset, type: :model do
 
         it "contains error message" do
           asset.valid?
-          message = 'must be an http(s) URL'
+          message = "must be an http(s) URL"
           expect(asset.errors[:parent_document_url]).to include(message)
         end
       end
 
-      context 'and the URL cannot be parsed' do
+      context "and the URL cannot be parsed" do
         before do
-          asset.parent_document_url = 'http://foo:bar:baz'
+          asset.parent_document_url = "http://foo:bar:baz"
         end
 
         it "is invalid" do
@@ -187,39 +187,39 @@ RSpec.describe Asset, type: :model do
 
         it "contains error message" do
           asset.valid?
-          message = 'must be an http(s) URL'
+          message = "must be an http(s) URL"
           expect(asset.errors[:parent_document_url]).to include(message)
         end
       end
     end
   end
 
-  describe 'creation' do
+  describe "creation" do
     subject(:asset) { FactoryBot.build(:asset) }
 
     before do
       asset.save!
     end
 
-    it 'is persisted' do
+    it "is persisted" do
       expect(asset).to be_persisted
     end
 
-    it 'writes file to filesystem' do
+    it "writes file to filesystem" do
       expect(File.exist?(asset.file.path)).to be_truthy
     end
   end
 
-  describe '#accessible_by?' do
-    context 'asset is live' do
+  describe "#accessible_by?" do
+    context "asset is live" do
       let(:asset) { FactoryBot.build(:asset, draft: false) }
 
-      it 'returns true' do
+      it "returns true" do
         expect(asset).to be_accessible_by(nil)
       end
     end
 
-    context 'asset is a draft thats access_limited' do
+    context "asset is a draft thats access_limited" do
       let(:asset) do
         FactoryBot.build(
           :asset, draft: true, access_limited: %w[user-id], access_limited_organisation_ids: %w[org-id]
@@ -227,123 +227,123 @@ RSpec.describe Asset, type: :model do
       end
 
       it "returns true if user's id is authorised to view it" do
-        user = FactoryBot.build(:user, uid: 'user-id')
+        user = FactoryBot.build(:user, uid: "user-id")
         expect(asset).to be_accessible_by(user)
       end
 
       it "returns false if user's id is not authorised to view it" do
-        user = FactoryBot.build(:user, uid: 'another-id')
+        user = FactoryBot.build(:user, uid: "another-id")
         expect(asset).not_to be_accessible_by(user)
       end
 
       it "returns true if the user's org is authorised to view it" do
-        user = FactoryBot.build(:user, uid: 'another-id', organisation_content_id: 'org-id')
+        user = FactoryBot.build(:user, uid: "another-id", organisation_content_id: "org-id")
         expect(asset).to be_accessible_by(user)
       end
 
       it "returns false if the user's org is not authorised to view it" do
-        user = FactoryBot.build(:user, uid: 'another-id', organisation_content_id: 'another-org-id')
+        user = FactoryBot.build(:user, uid: "another-id", organisation_content_id: "another-org-id")
         expect(asset).not_to be_accessible_by(user)
       end
     end
 
-    context 'asset is a draft thats not access limited' do
+    context "asset is a draft thats not access limited" do
       let(:asset) { FactoryBot.build(:asset, draft: true) }
 
-      it 'returns true' do
+      it "returns true" do
         expect(asset).to be_accessible_by(nil)
       end
     end
   end
 
-  describe '#valid_auth_bypass_token?' do
-    it 'returns true when given a valid token which is in the auth_bypass_ids' do
+  describe "#valid_auth_bypass_token?" do
+    it "returns true when given a valid token which is in the auth_bypass_ids" do
       asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
-      token = JWT.encode({ 'sub' => 'my-token' },
+      token = JWT.encode({ "sub" => "my-token" },
                          Rails.application.secrets.jwt_auth_secret,
-                         'HS256')
+                         "HS256")
       expect(asset.valid_auth_bypass_token?(token)).to be true
     end
 
-    it 'returns false when given a valid token which is not in the auth_bypass_ids' do
+    it "returns false when given a valid token which is not in the auth_bypass_ids" do
       asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
-      token = JWT.encode({ 'sub' => 'other-token' },
+      token = JWT.encode({ "sub" => "other-token" },
                          Rails.application.secrets.jwt_auth_secret,
-                         'HS256')
+                         "HS256")
       expect(asset.valid_auth_bypass_token?(token)).to be false
     end
 
-    it 'returns false when given an invalid token' do
+    it "returns false when given an invalid token" do
       asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
       token = SecureRandom.bytes(32)
       expect(asset.valid_auth_bypass_token?(token)).to be false
     end
   end
 
-  describe '#uuid' do
-    it 'is generated on instantiation' do
-      allow(SecureRandom).to receive(:uuid).and_return('uuid')
+  describe "#uuid" do
+    it "is generated on instantiation" do
+      allow(SecureRandom).to receive(:uuid).and_return("uuid")
       asset = described_class.new
-      expect(asset.uuid).to eq('uuid')
+      expect(asset.uuid).to eq("uuid")
     end
 
-    it 'cannot be changed after creation' do
-      uuid = '11111111-1111-1111-1111-11111111111111'
+    it "cannot be changed after creation" do
+      uuid = "11111111-1111-1111-1111-11111111111111"
       asset = FactoryBot.create(:asset, uuid: uuid)
-      expect { asset.uuid = '22222222-2222-2222-2222-222222222222' }.to raise_error(Mongoid::Errors::ReadonlyAttribute)
+      expect { asset.uuid = "22222222-2222-2222-2222-222222222222" }.to raise_error(Mongoid::Errors::ReadonlyAttribute)
     end
 
-    it 'cannot be empty' do
-      asset = FactoryBot.build(:asset, uuid: '')
+    it "cannot be empty" do
+      asset = FactoryBot.build(:asset, uuid: "")
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("can't be blank")
     end
 
-    it 'must be unique' do
-      uuid = '11111111-1111-1111-1111-11111111111111'
+    it "must be unique" do
+      uuid = "11111111-1111-1111-1111-11111111111111"
       FactoryBot.create(:asset, uuid: uuid)
       asset = FactoryBot.build(:asset, uuid: uuid)
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("is already taken")
     end
 
-    it 'must be in the format defined in rfc4122' do
-      asset = FactoryBot.build(:asset, uuid: 'uuid')
+    it "must be in the format defined in rfc4122" do
+      asset = FactoryBot.build(:asset, uuid: "uuid")
       expect(asset).not_to be_valid
-      expect(asset.errors[:uuid]).to include('must match the format defined in rfc4122')
+      expect(asset.errors[:uuid]).to include("must match the format defined in rfc4122")
     end
   end
 
-  describe '#draft?' do
+  describe "#draft?" do
     subject(:asset) { described_class.new }
 
-    it 'returns false-y by default' do
+    it "returns false-y by default" do
       expect(asset).not_to be_draft
     end
 
-    context 'when draft attribute is set to false' do
+    context "when draft attribute is set to false" do
       subject(:asset) { described_class.new(draft: false) }
 
-      it 'returns false-y by default' do
+      it "returns false-y by default" do
         expect(asset).not_to be_draft
       end
     end
 
-    context 'when draft attribute is set to true' do
+    context "when draft attribute is set to true" do
       subject(:asset) { described_class.new(draft: true) }
 
-      it 'returns truth-y by default' do
+      it "returns truth-y by default" do
         expect(asset).to be_draft
       end
     end
   end
 
-  describe '#public_url_path' do
+  describe "#public_url_path" do
     subject(:asset) {
       described_class.new(file: load_fixture_file("asset.png"))
     }
 
-    it 'returns public URL path for mainstream asset' do
+    it "returns public URL path for mainstream asset" do
       expected_path = download_media_path(id: asset.id, filename: asset.filename)
       expect(asset.public_url_path).to eq(expected_path)
     end
@@ -426,91 +426,91 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "when an asset is marked as clean" do
-    let(:state) { 'unscanned' }
+    let(:state) { "unscanned" }
     let(:asset) { FactoryBot.build(:asset, state: state) }
 
     before do
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
     end
 
-    it 'sets the asset state to clean' do
+    it "sets the asset state to clean" do
       asset.scanned_clean!
 
       expect(asset.reload).to be_clean
     end
 
-    it 'schedules saving the asset to cloud storage' do
+    it "schedules saving the asset to cloud storage" do
       expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
 
       asset.scanned_clean!
     end
 
-    context 'when asset is already clean' do
-      let(:state) { 'clean' }
+    context "when asset is already clean" do
+      let(:state) { "clean" }
 
-      it 'does not allow the state transition' do
+      it "does not allow the state transition" do
         expect { asset.scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
 
-    context 'when asset is already infected' do
-      let(:state) { 'infected' }
+    context "when asset is already infected" do
+      let(:state) { "infected" }
 
-      it 'does not allow the state transition' do
+      it "does not allow the state transition" do
         expect { asset.scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
 
-    context 'when asset is already uploaded' do
-      let(:state) { 'uploaded' }
+    context "when asset is already uploaded" do
+      let(:state) { "uploaded" }
 
-      it 'does not allow the state transition' do
+      it "does not allow the state transition" do
         expect { asset.scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
   end
 
-  describe 'when an asset is marked as infected' do
-    let(:state) { 'unscanned' }
+  describe "when an asset is marked as infected" do
+    let(:state) { "unscanned" }
     let(:asset) { FactoryBot.build(:asset, state: state) }
 
-    it 'does not schedule saving the asset to cloud storage' do
+    it "does not schedule saving the asset to cloud storage" do
       expect(SaveToCloudStorageWorker).not_to receive(:perform_async).with(asset.id)
 
       asset.scanned_infected!
     end
 
-    it 'sets the asset state to infected' do
+    it "sets the asset state to infected" do
       asset.scanned_infected!
 
       expect(asset.reload).to be_infected
     end
 
-    context 'when asset is clean' do
-      let(:state) { 'clean' }
+    context "when asset is clean" do
+      let(:state) { "clean" }
 
-      it 'does not allow the state transition' do
+      it "does not allow the state transition" do
         expect { asset.scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
 
-    context 'when asset is already infected' do
-      let(:state) { 'infected' }
+    context "when asset is already infected" do
+      let(:state) { "infected" }
 
-      it 'does not allow the state transition' do
+      it "does not allow the state transition" do
         expect { asset.scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
 
-    context 'when asset is already uploaded' do
-      let(:state) { 'uploaded' }
+    context "when asset is already uploaded" do
+      let(:state) { "uploaded" }
 
-      it 'does not allow the state transition' do
+      it "does not allow the state transition" do
         expect { asset.scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
@@ -549,7 +549,7 @@ RSpec.describe Asset, type: :model do
       let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
       it "returns asset file extension" do
-        expect(asset.extension).to eq('png')
+        expect(asset.extension).to eq("png")
       end
     end
 
@@ -557,7 +557,7 @@ RSpec.describe Asset, type: :model do
       let(:asset) { described_class.new(file: load_fixture_file("asset-with-capitalised-extension.TXT")) }
 
       it "returns downcased extension" do
-        expect(asset.extension).to eq('txt')
+        expect(asset.extension).to eq("txt")
       end
     end
 
@@ -565,26 +565,26 @@ RSpec.describe Asset, type: :model do
       let(:asset) { described_class.new(file: load_fixture_file("asset-without-extension")) }
 
       it "returns empty string" do
-        expect(asset.extension).to eq('')
+        expect(asset.extension).to eq("")
       end
     end
   end
 
   describe "content_type" do
     context "when asset file has extension" do
-      context 'and the extension is a recognised mime type' do
+      context "and the extension is a recognised mime type" do
         let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
         it "returns content type based on asset file extension" do
-          expect(asset.content_type).to eq(Mime::Type.lookup('image/png').to_s)
+          expect(asset.content_type).to eq(Mime::Type.lookup("image/png").to_s)
         end
       end
 
-      context 'and the extension is not a recognised mime type' do
-        let(:asset) { described_class.new(file: Tempfile.new(['file', '.unknown-extension'])) }
+      context "and the extension is not a recognised mime type" do
+        let(:asset) { described_class.new(file: Tempfile.new(["file", ".unknown-extension"])) }
 
         it "returns default content type" do
-          expect(asset.content_type).to eq('application/octet-stream')
+          expect(asset.content_type).to eq("application/octet-stream")
         end
       end
     end
@@ -593,168 +593,168 @@ RSpec.describe Asset, type: :model do
       let(:asset) { described_class.new(file: load_fixture_file("asset-without-extension")) }
 
       it "returns default content type" do
-        expect(asset.content_type).to eq('application/octet-stream')
+        expect(asset.content_type).to eq("application/octet-stream")
       end
     end
 
-    it 'handles .jpg file extensions' do
-      file = Tempfile.new(['file', '.jpg'])
+    it "handles .jpg file extensions" do
+      file = Tempfile.new(["file", ".jpg"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('image/jpeg')
+      expect(asset.content_type).to eq("image/jpeg")
     end
 
-    it 'handles .jpeg file extensions' do
-      file = Tempfile.new(['file', '.jpeg'])
+    it "handles .jpeg file extensions" do
+      file = Tempfile.new(["file", ".jpeg"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('image/jpeg')
+      expect(asset.content_type).to eq("image/jpeg")
     end
 
-    it 'handles .gif file extensions' do
-      file = Tempfile.new(['file', '.gif'])
+    it "handles .gif file extensions" do
+      file = Tempfile.new(["file", ".gif"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('image/gif')
+      expect(asset.content_type).to eq("image/gif")
     end
 
-    it 'handles .png file extensions' do
-      file = Tempfile.new(['file', '.png'])
+    it "handles .png file extensions" do
+      file = Tempfile.new(["file", ".png"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('image/png')
+      expect(asset.content_type).to eq("image/png")
     end
 
-    it 'handles .pdf file extensions' do
-      file = Tempfile.new(['file', '.pdf'])
+    it "handles .pdf file extensions" do
+      file = Tempfile.new(["file", ".pdf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/pdf')
+      expect(asset.content_type).to eq("application/pdf")
     end
 
-    it 'handles .csv file extensions' do
-      file = Tempfile.new(['file', '.csv'])
+    it "handles .csv file extensions" do
+      file = Tempfile.new(["file", ".csv"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('text/csv')
+      expect(asset.content_type).to eq("text/csv")
     end
 
-    it 'handles .rtf file extensions' do
-      file = Tempfile.new(['file', '.rtf'])
+    it "handles .rtf file extensions" do
+      file = Tempfile.new(["file", ".rtf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('text/rtf')
+      expect(asset.content_type).to eq("text/rtf")
     end
 
-    it 'handles .doc file extensions' do
-      file = Tempfile.new(['file', '.doc'])
+    it "handles .doc file extensions" do
+      file = Tempfile.new(["file", ".doc"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/msword')
+      expect(asset.content_type).to eq("application/msword")
     end
 
-    it 'handles .docx file extensions' do
-      file = Tempfile.new(['file', '.docx'])
+    it "handles .docx file extensions" do
+      file = Tempfile.new(["file", ".docx"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      expect(asset.content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     end
 
-    it 'handles .xls file extensions' do
-      file = Tempfile.new(['file', '.xls'])
+    it "handles .xls file extensions" do
+      file = Tempfile.new(["file", ".xls"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.ms-excel')
+      expect(asset.content_type).to eq("application/vnd.ms-excel")
     end
 
-    it 'handles .xlsx file extensions' do
-      file = Tempfile.new(['file', '.xlsx'])
+    it "handles .xlsx file extensions" do
+      file = Tempfile.new(["file", ".xlsx"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      expect(asset.content_type).to eq("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     end
 
-    it 'handles .odt file extensions' do
-      file = Tempfile.new(['file', '.odt'])
+    it "handles .odt file extensions" do
+      file = Tempfile.new(["file", ".odt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.oasis.opendocument.text')
+      expect(asset.content_type).to eq("application/vnd.oasis.opendocument.text")
     end
 
-    it 'handles .ods file extensions' do
-      file = Tempfile.new(['file', '.ods'])
+    it "handles .ods file extensions" do
+      file = Tempfile.new(["file", ".ods"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.oasis.opendocument.spreadsheet')
+      expect(asset.content_type).to eq("application/vnd.oasis.opendocument.spreadsheet")
     end
 
-    it 'handles .svg file extensions' do
-      file = Tempfile.new(['file', '.svg'])
+    it "handles .svg file extensions" do
+      file = Tempfile.new(["file", ".svg"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('image/svg+xml')
+      expect(asset.content_type).to eq("image/svg+xml")
     end
 
-    it 'handles .dot file extensions' do
-      file = Tempfile.new(['file', '.dot'])
+    it "handles .dot file extensions" do
+      file = Tempfile.new(["file", ".dot"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/msword')
+      expect(asset.content_type).to eq("application/msword")
     end
 
-    it 'handles .ppt file extensions' do
-      file = Tempfile.new(['file', '.ppt'])
+    it "handles .ppt file extensions" do
+      file = Tempfile.new(["file", ".ppt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.ms-powerpoint')
+      expect(asset.content_type).to eq("application/vnd.ms-powerpoint")
     end
 
-    it 'handles .pptx file extensions' do
-      file = Tempfile.new(['file', '.pptx'])
+    it "handles .pptx file extensions" do
+      file = Tempfile.new(["file", ".pptx"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.openxmlformats-officedocument.presentationml.presentation')
+      expect(asset.content_type).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
     end
 
-    it 'handles .rdf file extensions' do
-      file = Tempfile.new(['file', '.rdf'])
+    it "handles .rdf file extensions" do
+      file = Tempfile.new(["file", ".rdf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/rdf+xml')
+      expect(asset.content_type).to eq("application/rdf+xml")
     end
 
-    it 'handles .xlsm file extensions' do
-      file = Tempfile.new(['file', '.xlsm'])
+    it "handles .xlsm file extensions" do
+      file = Tempfile.new(["file", ".xlsm"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.ms-excel.sheet.macroEnabled.12')
+      expect(asset.content_type).to eq("application/vnd.ms-excel.sheet.macroEnabled.12")
     end
 
-    it 'handles .xlt file extensions' do
-      file = Tempfile.new(['file', '.xlt'])
+    it "handles .xlt file extensions" do
+      file = Tempfile.new(["file", ".xlt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/vnd.ms-excel')
+      expect(asset.content_type).to eq("application/vnd.ms-excel")
     end
 
-    it 'handles .txt file extensions and adds the charset parameter' do
-      file = Tempfile.new(['file', '.txt'])
+    it "handles .txt file extensions and adds the charset parameter" do
+      file = Tempfile.new(["file", ".txt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('text/plain; charset=utf-8')
+      expect(asset.content_type).to eq("text/plain; charset=utf-8")
     end
 
-    it 'handles .gml file extensions' do
-      file = Tempfile.new(['file', '.gml'])
+    it "handles .gml file extensions" do
+      file = Tempfile.new(["file", ".gml"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/gml+xml')
+      expect(asset.content_type).to eq("application/gml+xml")
     end
 
-    it 'handles .dxf file extensions' do
-      file = Tempfile.new(['file', '.dxf'])
+    it "handles .dxf file extensions" do
+      file = Tempfile.new(["file", ".dxf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq('application/dxf')
+      expect(asset.content_type).to eq("application/dxf")
     end
   end
 
-  describe '#image?' do
+  describe "#image?" do
     let(:asset) { described_class.new }
 
     before do
       allow(asset).to receive(:extension).and_return(extension)
     end
 
-    context 'when asset is an image' do
-      let(:extension) { 'png' }
+    context "when asset is an image" do
+      let(:extension) { "png" }
 
-      it 'returns a truth-y value' do
+      it "returns a truth-y value" do
         expect(asset).to be_image
       end
     end
 
-    context 'when asset is not an image' do
-      let(:extension) { 'pdf' }
+    context "when asset is not an image" do
+      let(:extension) { "pdf" }
 
-      it 'returns a false-y value' do
+      it "returns a false-y value" do
         expect(asset).not_to be_image
       end
     end
@@ -764,7 +764,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new }
 
     let(:size) { 1024 }
-    let(:mtime) { Time.zone.parse('2017-01-01') }
+    let(:mtime) { Time.zone.parse("2017-01-01") }
     let(:stat) { instance_double(File::Stat, size: size, mtime: mtime) }
 
     before do
@@ -773,18 +773,18 @@ RSpec.describe Asset, type: :model do
     end
 
     it "returns string made up of 2 parts separated by a hyphen" do
-      parts = asset.etag_from_file.split('-')
+      parts = asset.etag_from_file.split("-")
       expect(parts.length).to eq(2)
     end
 
     it "has 1st part as file mtime (unix time in seconds written in lowercase hex)" do
-      last_modified_hex = asset.etag_from_file.split('-').first
+      last_modified_hex = asset.etag_from_file.split("-").first
       last_modified = last_modified_hex.to_i(16)
       expect(last_modified).to eq(mtime.to_i)
     end
 
     it "has 2nd part as file size (number of bytes written in lowercase hex)" do
-      size_hex = asset.etag_from_file.split('-').last
+      size_hex = asset.etag_from_file.split("-").last
       size = size_hex.to_i(16)
       expect(size).to eq(size)
     end
@@ -794,7 +794,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png"), etag: etag) }
 
     before do
-      allow(asset).to receive(:etag_from_file).and_return('etag-from-file')
+      allow(asset).to receive(:etag_from_file).and_return("etag-from-file")
     end
 
     context "when asset is created" do
@@ -805,19 +805,19 @@ RSpec.describe Asset, type: :model do
       end
 
       it "stores the value generated from the file in the database" do
-        expect(asset.reload.etag).to eq('etag-from-file')
+        expect(asset.reload.etag).to eq("etag-from-file")
       end
 
       context "when asset is updated with new file" do
         let(:new_file) { load_fixture_file("asset2.jpg") }
 
         before do
-          allow(asset).to receive(:etag_from_file).and_return('etag-from-new-file')
+          allow(asset).to receive(:etag_from_file).and_return("etag-from-new-file")
           asset.update_attributes!(file: new_file)
         end
 
         it "stores the value generated from the new file in the database" do
-          expect(asset.reload.etag).to eq('etag-from-new-file')
+          expect(asset.reload.etag).to eq("etag-from-new-file")
         end
       end
     end
@@ -827,14 +827,14 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
-      expect { asset.etag = 'etag-value' }.to raise_error(NoMethodError)
+      expect { asset.etag = "etag-value" }.to raise_error(NoMethodError)
     end
   end
 
   describe "#last_modified_from_file" do
     let(:asset) { described_class.new }
 
-    let(:mtime) { Time.zone.parse('2017-01-01') }
+    let(:mtime) { Time.zone.parse("2017-01-01") }
     let(:stat) { instance_double(File::Stat, mtime: mtime) }
 
     before do
@@ -850,8 +850,8 @@ RSpec.describe Asset, type: :model do
   describe "#last_modified" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
 
-    let(:time) { Time.parse('2002-02-02 02:02') }
-    let(:time_from_file) { Time.parse('2001-01-01 01:01') }
+    let(:time) { Time.parse("2002-02-02 02:02") }
+    let(:time_from_file) { Time.parse("2001-01-01 01:01") }
 
     before do
       allow(asset).to receive(:last_modified_from_file).and_return(time_from_file)
@@ -870,7 +870,7 @@ RSpec.describe Asset, type: :model do
 
       context "when asset is updated with new file" do
         let(:new_file) { load_fixture_file("asset2.jpg") }
-        let(:time_from_new_file) { Time.parse('2003-03-03 03:03') }
+        let(:time_from_new_file) { Time.parse("2003-03-03 03:03") }
 
         before do
           allow(asset).to receive(:last_modified_from_file).and_return(time_from_new_file)
@@ -946,7 +946,7 @@ RSpec.describe Asset, type: :model do
 
   describe "#md5_hexdigest_from_file" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
-    let(:md5_hexdigest) { 'a0d8aa55f6db670e38a14962c0652776' }
+    let(:md5_hexdigest) { "a0d8aa55f6db670e38a14962c0652776" }
 
     it "returns MD5 hex digest for asset file content" do
       expect(asset.md5_hexdigest_from_file).to eq(md5_hexdigest)
@@ -957,7 +957,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png"), md5_hexdigest: md5_hexdigest) }
 
     before do
-      allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-file')
+      allow(asset).to receive(:md5_hexdigest_from_file).and_return("md5-from-file")
     end
 
     context "when asset is created" do
@@ -968,19 +968,19 @@ RSpec.describe Asset, type: :model do
       end
 
       it "stores the value generated from the file in the database" do
-        expect(asset.reload.md5_hexdigest).to eq('md5-from-file')
+        expect(asset.reload.md5_hexdigest).to eq("md5-from-file")
       end
 
       context "when asset is updated with new file" do
         let(:new_file) { load_fixture_file("asset2.jpg") }
 
         before do
-          allow(asset).to receive(:md5_hexdigest_from_file).and_return('md5-from-new-file')
+          allow(asset).to receive(:md5_hexdigest_from_file).and_return("md5-from-new-file")
           asset.update_attributes!(file: new_file)
         end
 
         it "stores the value generated from the new file in the database" do
-          expect(asset.reload.md5_hexdigest).to eq('md5-from-new-file')
+          expect(asset.reload.md5_hexdigest).to eq("md5-from-new-file")
         end
       end
     end
@@ -990,113 +990,113 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
-      expect { asset.md5_hexdigest = 'md5-value' }.to raise_error(NoMethodError)
+      expect { asset.md5_hexdigest = "md5-value" }.to raise_error(NoMethodError)
     end
   end
 
-  describe '#mainstream?' do
+  describe "#mainstream?" do
     let(:asset) { described_class.new }
 
-    it 'returns truth-y' do
+    it "returns truth-y" do
       expect(asset).to be_mainstream
     end
   end
 
-  describe '#upload_success!' do
-    context 'when asset is unscanned' do
+  describe "#upload_success!" do
+    context "when asset is unscanned" do
       let(:asset) { FactoryBot.create(:asset) }
 
-      it 'does not allow asset state change to uploaded' do
+      it "does not allow asset state change to uploaded" do
         expect { asset.upload_success! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
 
-    context 'when asset is clean' do
+    context "when asset is clean" do
       let(:asset) { FactoryBot.create(:clean_asset) }
       let(:path) { asset.file.path }
 
-      it 'changes asset state to uploaded' do
+      it "changes asset state to uploaded" do
         asset.upload_success!
 
         expect(asset.reload).to be_uploaded
       end
 
-      it 'sets file attribute to blank' do
+      it "sets file attribute to blank" do
         asset.upload_success!
 
         expect(asset.reload.file).to be_blank
       end
 
-      it 'removes the underlying file' do
+      it "removes the underlying file" do
         asset.upload_success!
 
         expect(File.exist?(path)).to be_falsey
       end
     end
 
-    context 'when asset is infected' do
+    context "when asset is infected" do
       let(:asset) { FactoryBot.create(:infected_asset) }
 
-      it 'does not allow asset state change to uploaded' do
+      it "does not allow asset state change to uploaded" do
         expect { asset.upload_success! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
 
-    context 'when asset is uploaded' do
+    context "when asset is uploaded" do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
 
-      it 'does not allow asset state change to uploaded' do
+      it "does not allow asset state change to uploaded" do
         expect { asset.upload_success! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
   end
 
-  describe '#save' do
+  describe "#save" do
     let(:asset) { FactoryBot.create(:clean_asset) }
 
-    context 'when asset has been uploaded to cloud storage' do
+    context "when asset has been uploaded to cloud storage" do
       before do
         asset.upload_success!
       end
 
-      it 'saves asset successfully despite having no file' do
+      it "saves asset successfully despite having no file" do
         expect(asset.save).to be_truthy
       end
     end
   end
 
-  describe '#replacement' do
+  describe "#replacement" do
     let(:asset) { FactoryBot.build(:asset, replacement: replacement) }
 
-    context 'when replacement is nil' do
+    context "when replacement is nil" do
       let(:replacement) { nil }
 
-      it 'is valid' do
+      it "is valid" do
         expect(asset).to be_valid
       end
 
-      it 'has no replacement_id' do
+      it "has no replacement_id" do
         expect(asset.replacement_id).to be_nil
       end
     end
 
-    context 'when replacement is set' do
+    context "when replacement is set" do
       let(:replacement) { FactoryBot.create(:asset) }
 
-      it 'is valid' do
+      it "is valid" do
         expect(asset).to be_valid
       end
 
-      it 'persists replacement when saved' do
+      it "persists replacement when saved" do
         asset.save!
 
         expect(asset.reload.replacement).to eq(replacement)
       end
 
-      it 'persists replacement_id when saved' do
+      it "persists replacement_id when saved" do
         asset.save!
 
         expect(asset.reload.replacement_id).to eq(replacement.id)
@@ -1104,16 +1104,16 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe '#parent_document_url' do
+  describe "#parent_document_url" do
     let(:asset) { described_class.new }
 
-    it 'is nil by default' do
+    it "is nil by default" do
       expect(asset.parent_document_url).to be_nil
     end
 
-    it 'can be set' do
-      asset.parent_document_url = 'parent-document-url'
-      expect(asset.parent_document_url).to eql('parent-document-url')
+    it "can be set" do
+      asset.parent_document_url = "parent-document-url"
+      expect(asset.parent_document_url).to eql("parent-document-url")
     end
   end
 end

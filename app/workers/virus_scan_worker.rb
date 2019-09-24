@@ -1,4 +1,4 @@
-require 'services'
+require "services"
 
 class VirusScanWorker
   include Sidekiq::Worker

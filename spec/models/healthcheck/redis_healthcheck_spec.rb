@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Healthcheck::RedisHealthcheck do
   subject(:healthcheck) { described_class.new }

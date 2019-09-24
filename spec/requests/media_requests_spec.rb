@@ -16,8 +16,8 @@ RSpec.describe "Media requests", type: :request do
 
   describe "request an asset that does exist" do
     let(:cloud_storage) { instance_double(S3Storage) }
-    let(:http_method) { 'GET' }
-    let(:presigned_url) { 'https://s3-host.test/presigned-url' }
+    let(:http_method) { "GET" }
+    let(:presigned_url) { "https://s3-host.test/presigned-url" }
 
     let(:asset) { FactoryBot.create(:uploaded_asset) }
 
@@ -28,7 +28,7 @@ RSpec.describe "Media requests", type: :request do
 
       get download_media_path(id: asset, filename: "asset.png", headers: {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/assets/=/raw/"
+        "HTTP_X_ACCEL_MAPPING" => "#{Rails.root}/tmp/test_uploads/assets/=/raw/",
       })
     end
 
@@ -43,7 +43,7 @@ RSpec.describe "Media requests", type: :request do
     end
 
     it "sets the X-Frame-Options header to DENY" do
-      expect(response.headers["X-Frame-Options"]).to eq('DENY')
+      expect(response.headers["X-Frame-Options"]).to eq("DENY")
     end
   end
 
@@ -107,7 +107,7 @@ RSpec.describe "Media requests", type: :request do
           :uploaded_asset,
           draft: true,
           auth_bypass_ids: [auth_bypass_id],
-          access_limited: %w[user-id]
+          access_limited: %w[user-id],
         )
       end
 
@@ -154,7 +154,7 @@ RSpec.describe "Media requests", type: :request do
           :uploaded_asset,
           draft: true,
           auth_bypass_ids: [auth_bypass_id],
-          access_limited: [User.first.uid]
+          access_limited: [User.first.uid],
         )
       end
 
@@ -181,7 +181,7 @@ RSpec.describe "Media requests", type: :request do
           :uploaded_asset,
           draft: true,
           auth_bypass_ids: [auth_bypass_id],
-          access_limited: %w(some-other-user)
+          access_limited: %w(some-other-user),
         )
       end
 
