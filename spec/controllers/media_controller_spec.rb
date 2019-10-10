@@ -303,31 +303,55 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an access limited draft asset" do
-      let(:user) { FactoryBot.build(:user) }
-      let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
-      let(:scope) { double(:undeleted_scope) }
+      context "when a user is authenticated" do
+        let(:user) { FactoryBot.build(:user) }
+        let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
+        let(:scope) { double(:undeleted_scope) }
 
-      before do
-        allow(Asset).to receive(:undeleted).and_return(scope)
-        allow(scope).to receive(:find).with(asset.id).and_return(asset)
-        request.headers["X-Forwarded-Host"] = AssetManager.govuk.draft_assets_host
-        login_as user
+        before do
+          allow(Asset).to receive(:undeleted).and_return(scope)
+          allow(scope).to receive(:find).with(asset.id).and_return(asset)
+          request.headers["X-Forwarded-Host"] = AssetManager.govuk.draft_assets_host
+          login_as user
+        end
+
+        it "grants access to a user who is authorised to view the asset" do
+          allow(asset).to receive(:accessible_by?).with(user).and_return(true)
+
+          get :download, params
+
+          expect(response).to be_successful
+        end
+
+        it "denies access to a user who is not authorised to view the asset" do
+          allow(asset).to receive(:accessible_by?).with(user).and_return(false)
+
+          get :download, params
+
+          expect(response).to be_forbidden
+        end
       end
 
-      it "grants access to a user who is authorised to view the asset" do
-        allow(asset).to receive(:accessible_by?).with(user).and_return(true)
+      context "when a user is not authenticated" do
+        let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, access_limited: %w[id]) }
+        let(:token_with_draft_asset_manager_access) do
+          JWT.encode({ "draft_asset_manager_access" => true },
+                     Rails.application.secrets.jwt_auth_secret,
+                     "HS256")
+        end
 
-        get :download, params
+        before { not_logged_in }
 
-        expect(response).to be_successful
-      end
+        it "denies access to a user who has draft_asset_manager_access" do
+          allow(controller).to receive(:requested_from_draft_assets_host?).and_return(true)
+          allow(controller).to receive(:has_bypass_id_for_asset?).with(any_args).and_return(false)
 
-      it "denies access to a user who is not authorised to view the asset" do
-        allow(asset).to receive(:accessible_by?).with(user).and_return(false)
+          query_params = params.tap { |p| p[:params].merge!(token: token_with_draft_asset_manager_access) }
 
-        get :download, params
+          allow(controller).to receive(:authenticate_user!).and_raise("requires authentication")
 
-        expect(response).to be_forbidden
+          expect { get :download, query_params }.to raise_error("requires authentication")
+        end
       end
     end
 
@@ -340,6 +364,11 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id]) }
       let(:valid_token) do
         JWT.encode({ "sub" => auth_bypass_id },
+                   Rails.application.secrets.jwt_auth_secret,
+                   "HS256")
+      end
+      let(:token_with_draft_asset_manager_access) do
+        JWT.encode({ "draft_asset_manager_access" => true },
                    Rails.application.secrets.jwt_auth_secret,
                    "HS256")
       end
@@ -362,6 +391,17 @@ RSpec.describe MediaController, type: :controller do
           request.cookies["auth_bypass_token"] = valid_token
           expect(controller).not_to receive(:authenticate_user!)
           get :download, params
+          expect(response).to be_successful
+        end
+      end
+
+      context "when a user is not authenticated and has provided a valid token with draft_asset_manager_access" do
+        before { not_logged_in }
+
+        it "grants access to the file" do
+          expect(controller).not_to receive(:authenticate_user!)
+          query_params = params.tap { |p| p[:params].merge!(token: token_with_draft_asset_manager_access) }
+          get :download, query_params
           expect(response).to be_successful
         end
       end
