@@ -185,11 +185,11 @@ class Asset
     deleted_at.present?
   end
 
-protected
-
   def access_limited?
     access_limited.any? || access_limited_organisation_ids.any?
   end
+
+protected
 
   def store_metadata
     self.etag = etag_from_file

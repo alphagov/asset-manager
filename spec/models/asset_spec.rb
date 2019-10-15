@@ -1116,4 +1116,22 @@ RSpec.describe Asset, type: :model do
       expect(asset.parent_document_url).to eql("parent-document-url")
     end
   end
+
+  describe "#access_limited?" do
+    let(:asset) { described_class.new }
+
+    it "is true if the access is limited to a user" do
+      asset.access_limited = %w[user-id]
+      expect(asset.access_limited?).to be true
+    end
+
+    it "is true if the access is limited to an organisation" do
+      asset.access_limited_organisation_ids = %w[organisation-id]
+      expect(asset.access_limited?).to be true
+    end
+
+    it "is false if the access is not limited to neither users nor organisations" do
+      expect(asset.access_limited?).to be false
+    end
+  end
 end
