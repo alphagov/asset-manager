@@ -94,14 +94,8 @@ class Asset
     access_limited.include?(user.uid) || access_limited_organisation_ids.include?(user.organisation_content_id)
   end
 
-  def valid_auth_bypass_token?(token)
-    payload, = JWT.decode(token,
-                          Rails.application.secrets.jwt_auth_secret,
-                          true,
-                          algorithm: "HS256")
-    payload["sub"].present? && auth_bypass_ids.include?(payload["sub"])
-  rescue JWT::DecodeError
-    false
+  def valid_auth_bypass_token?(auth_bypass_id)
+    auth_bypass_ids.include?(auth_bypass_id)
   end
 
   def public_url_path
@@ -185,11 +179,11 @@ class Asset
     deleted_at.present?
   end
 
-protected
-
   def access_limited?
     access_limited.any? || access_limited_organisation_ids.any?
   end
+
+protected
 
   def store_metadata
     self.etag = etag_from_file

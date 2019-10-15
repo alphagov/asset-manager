@@ -2,6 +2,7 @@
 
 class MediaController < ApplicationController
   skip_before_action :authenticate_user!
+  before_action :set_token_payload
 
   def download
     if redirect_to_draft_assets_host_for?(asset)
@@ -59,8 +60,9 @@ class MediaController < ApplicationController
 protected
 
   def has_bypass_id_for_asset?(asset)
-    token = params.fetch(:token, cookies[:auth_bypass_token])
-    asset.valid_auth_bypass_token?(token)
+    return false if @token_payload.nil?
+
+    asset.valid_auth_bypass_token?(@token_payload["sub"])
   end
 
   def authorized_for_asset?(asset)
@@ -68,12 +70,20 @@ protected
 
     return true if has_bypass_id_for_asset?(asset)
 
+    return true if draft_asset_manager_access? && !asset.access_limited?
+
     authenticate_user!
     asset.accessible_by?(current_user)
   end
 
   def requested_from_draft_assets_host?
     request.host == AssetManager.govuk.draft_assets_host
+  end
+
+  def draft_asset_manager_access?
+    return false if @token_payload.nil?
+
+    @token_payload["draft_asset_manager_access"] == true
   end
 
   def proxy_to_s3_via_nginx(asset)
@@ -147,5 +157,15 @@ protected
 
   def temporary_redirect?
     false
+  end
+
+  def set_token_payload
+    token = params.fetch(:token, cookies[:auth_bypass_token])
+    @token_payload = if token
+                       secret = Rails.application.secrets.jwt_auth_secret
+                       JWT.decode(token, secret, true, algorithm: "HS256").first
+                     end
+  rescue JWT::DecodeError
+    @token_payload = nil
   end
 end
