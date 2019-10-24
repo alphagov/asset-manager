@@ -6,7 +6,7 @@ RSpec.describe AssetPresenter do
   let(:asset) { FactoryBot.build(:asset) }
   let(:view_context) { instance_double(ActionView::Base) }
 
-  context "#as_json" do
+  describe "#as_json" do
     let(:options) { {} }
     let(:json) { presenter.as_json(options) }
     let(:asset_url) { "asset-url" }
