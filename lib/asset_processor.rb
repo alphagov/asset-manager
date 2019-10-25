@@ -11,7 +11,7 @@ class AssetProcessor
     total = asset_ids.count
     asset_ids.each_with_index do |asset_id, index|
       count = index + 1
-      percent = "%0.0f" % (count / total.to_f * 100)
+      percent = (count / total.to_f * 100).round
       if (count % @report_progress_every).zero?
         @output.puts "#{count} of #{total} (#{percent}%) assets"
       end
