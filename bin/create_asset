@@ -2,6 +2,6 @@
 
 require File.expand_path("../config/environment", __dir__)
 
-require 'cli'
+require "cli"
 
 CLI.new.create_asset(*ARGV)
