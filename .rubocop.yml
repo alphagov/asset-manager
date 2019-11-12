@@ -1,4 +1,8 @@
 require: rubocop-rspec
+inherit_gem:
+  rubocop-govuk:
+    - "config/default.yml"
+
 inherit_from: .rubocop_todo.yml
 
 RSpec/NestedGroups:
