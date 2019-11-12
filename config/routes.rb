@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   resources :whitehall_assets, only: %i(create)
   get "/whitehall_assets/*path" => "whitehall_assets#show"
+  post "/clone_whitehall_asset_to_asset", to: "whitehall_asset_cloner#clone_whitehall_asset_to_asset"
 
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }, as: :download_media
   get "/government/uploads/*path" => "whitehall_media#download"
