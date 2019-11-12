@@ -84,7 +84,6 @@ GEM
       railties (>= 4.2.0)
     faraday (0.17.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.11.2)
     gds-api-adapters (57.4.2)
       addressable
       link_header
@@ -102,11 +101,6 @@ GEM
       warden-oauth2 (~> 0.0.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    govuk-lint (4.3.0)
-      rubocop (~> 0.76)
-      rubocop-rails (~> 2)
-      rubocop-rspec (~> 1.28)
-      scss_lint
     govuk_app_config (2.0.1)
       logstasher (>= 1.2.2, < 1.4.0)
       sentry-raven (>= 2.7.1, < 2.12.0)
@@ -225,9 +219,6 @@ GEM
     rainbow (3.0.0)
     raindrops (0.19.0)
     rake (13.0.0)
-    rb-fsevent (0.10.3)
-    rb-inotify (0.10.0)
-      ffi (~> 1.0)
     redis (4.1.0)
     redis-namespace (1.6.0)
       redis (>= 3.0.4)
@@ -261,19 +252,16 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.7)
+    rubocop-govuk (1.0.0)
+      rubocop (~> 0.76)
+      rubocop-rails (~> 2)
+      rubocop-rspec (~> 1.28)
     rubocop-rails (2.3.2)
       rack (>= 1.1)
       rubocop (>= 0.72.0)
     rubocop-rspec (1.36.0)
       rubocop (>= 0.68.1)
     ruby-progressbar (1.10.1)
-    sass (3.7.4)
-      sass-listen (~> 4.0.0)
-    sass-listen (4.0.0)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
-    scss_lint (0.59.0)
-      sass (~> 3.5, >= 3.5.5)
     sentry-raven (2.11.3)
       faraday (>= 0.7.6, < 1.0)
     sidekiq (5.2.5)
@@ -341,7 +329,6 @@ DEPENDENCIES
   database_cleaner
   factory_bot_rails
   gds-sso (~> 14.2)
-  govuk-lint
   govuk_app_config (~> 2.0)
   govuk_sidekiq (~> 3.0)
   jwt (~> 2.2)
@@ -352,9 +339,10 @@ DEPENDENCIES
   rails (= 5.2.3)
   rails-controller-testing
   rspec-rails
+  rubocop-govuk
   simplecov-rcov
   state_machines-mongoid (~> 0.2.0)
   unicorn (= 5.5.1)
 
 BUNDLED WITH
-   1.16.2
+   1.17.2

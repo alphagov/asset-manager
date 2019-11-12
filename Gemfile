@@ -22,7 +22,7 @@ group :development, :test do
   gem "climate_control"
   gem "database_cleaner"
   gem "factory_bot_rails"
-  gem "govuk-lint"
   gem "rspec-rails"
+  gem "rubocop-govuk"
   gem "simplecov-rcov"
 end
