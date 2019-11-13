@@ -16,5 +16,5 @@ production:
       options:
         read:
           mode: :primary
-        user: <%= ENV["MONGODB_USERNAME"] || null %>
-        password: <%= ENV["MONGODB_PASSWORD"] || null %>
+        user: <%= ENV["MONGODB_USERNAME"] || "" %>
+        password: <%= ENV["MONGODB_PASSWORD"] || "" %>
