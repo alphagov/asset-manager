@@ -16,24 +16,6 @@ Scanning uses [ClamAV][clamav] and occurs asynchronously via [govuk_sidekiq][sid
 
 Virus scanning expects `govuk_clamscan` to exist on the PATH, and to be symlinked to either `clamscan` or `clamdscan`, which are part of `clamav`. This is configured by [govuk-puppet][govuk-puppet].
 
-### Running the application
-
-`./startup.sh`
-
-The application runs on port `3037` by default. Within the GDS VM it's exposed on http://asset-manager.dev.gov.uk.
-
-It can also be run via bowl on the GDS dev VM:
-
-```
-bowl asset_manager
-```
-
-Newly uploaded assets return 404 until they've been scanned for viruses. Scanning for viruses is done asynchronously via govuk_sidekiq. Run the queue processor:
-
-```
-bundle exec sidekiq
-```
-
 ### Assets on S3
 
 All assets are uploaded to the S3 bucket via a separate `govuk_sidekiq` job triggered if virus scanning succeeds. Assets are currently still also saved to the NFS mount as per the original behaviour.
