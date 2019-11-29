@@ -1,5 +1,5 @@
+# rubocop:disable Rails/HttpPositionalArguments
 require "rails_helper"
-
 RSpec.describe MediaController, type: :controller do
   describe "base controller actions" do
     let(:draft_assets_host) { AssetManager.govuk.draft_assets_host }
@@ -570,3 +570,4 @@ RSpec.describe MediaController, type: :controller do
     end
   end
 end
+# rubocop:enable Rails/HttpPositionalArguments

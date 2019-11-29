@@ -117,10 +117,10 @@ RSpec.describe WhitehallAsset, type: :model do
 
   describe "#last_modified" do
     let(:asset) { described_class.new(last_modified: last_modified, legacy_last_modified: legacy_last_modified) }
-    let(:last_modified) { Time.parse("2001-01-01 01:01") }
+    let(:last_modified) { Time.zone.parse("2001-01-01 01:01") }
 
     context "when legacy_last_modified attribute is set" do
-      let(:legacy_last_modified) { Time.parse("2002-02-02 02:02") }
+      let(:legacy_last_modified) { Time.zone.parse("2002-02-02 02:02") }
 
       it "returns legacy_last_modified attribute value" do
         expect(asset.last_modified).to eq(legacy_last_modified)

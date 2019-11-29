@@ -4,7 +4,7 @@ class AssetsController < BaseAssetsController
   def update
     @asset = find_asset
 
-    if @asset.update_attributes(asset_params)
+    if @asset.update(asset_params)
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
     else
       error 422, @asset.errors.full_messages

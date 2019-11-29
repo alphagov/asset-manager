@@ -155,7 +155,7 @@ class Asset
   end
 
   def update_indirect_replacements
-    return unless replacement.present?
+    return if replacement.blank?
 
     Asset.where(replacement_id: self.id).each do |asset|
       asset.replacement = replacement
@@ -229,7 +229,7 @@ protected
   end
 
   def ensure_parent_document_url_is_valid
-    return unless parent_document_url.present?
+    return if parent_document_url.blank?
 
     begin
       uri = Addressable::URI.parse(parent_document_url)

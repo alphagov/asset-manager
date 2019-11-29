@@ -43,7 +43,7 @@ class CLI
     file = File.new(filename)
     old_asset = Asset.find(old_asset_id)
 
-    if old_asset.update_attributes(file: file)
+    if old_asset.update(file: file)
       puts "Updated!"
       puts "Asset id: #{old_asset.id}"
       puts "Asset name: #{old_asset.file.filename}"

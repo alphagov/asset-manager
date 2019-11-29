@@ -803,7 +803,7 @@ RSpec.describe Asset, type: :model do
 
         before do
           allow(asset).to receive(:etag_from_file).and_return("etag-from-new-file")
-          asset.update_attributes!(file: new_file)
+          asset.update!(file: new_file)
         end
 
         it "stores the value generated from the new file in the database" do
@@ -840,8 +840,8 @@ RSpec.describe Asset, type: :model do
   describe "#last_modified" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
 
-    let(:time) { Time.parse("2002-02-02 02:02") }
-    let(:time_from_file) { Time.parse("2001-01-01 01:01") }
+    let(:time) { Time.zone.parse("2002-02-02 02:02") }
+    let(:time_from_file) { Time.zone.parse("2001-01-01 01:01") }
 
     before do
       allow(asset).to receive(:last_modified_from_file).and_return(time_from_file)
@@ -860,11 +860,11 @@ RSpec.describe Asset, type: :model do
 
       context "when asset is updated with new file" do
         let(:new_file) { load_fixture_file("asset2.jpg") }
-        let(:time_from_new_file) { Time.parse("2003-03-03 03:03") }
+        let(:time_from_new_file) { Time.zone.parse("2003-03-03 03:03") }
 
         before do
           allow(asset).to receive(:last_modified_from_file).and_return(time_from_new_file)
-          asset.update_attributes!(file: new_file)
+          asset.update!(file: new_file)
         end
 
         it "stores the value generated from the new file in the database" do
@@ -878,7 +878,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new }
 
     it "cannot be called from outside the Asset class" do
-      expect { asset.last_modified = Time.now }.to raise_error(NoMethodError)
+      expect { asset.last_modified = Time.zone.now }.to raise_error(NoMethodError)
     end
   end
 
@@ -916,7 +916,7 @@ RSpec.describe Asset, type: :model do
 
         before do
           allow(asset).to receive(:size).and_return(new_asset_size)
-          asset.update_attributes!(file: new_file)
+          asset.update!(file: new_file)
         end
 
         it "stores the value generated from the new file in the database" do
@@ -966,7 +966,7 @@ RSpec.describe Asset, type: :model do
 
         before do
           allow(asset).to receive(:md5_hexdigest_from_file).and_return("md5-from-new-file")
-          asset.update_attributes!(file: new_file)
+          asset.update!(file: new_file)
         end
 
         it "stores the value generated from the new file in the database" do

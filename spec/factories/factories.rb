@@ -13,7 +13,7 @@ FactoryBot.define do
   end
 
   factory :deleted_asset, parent: :asset do
-    deleted_at { Time.now }
+    deleted_at { Time.zone.now }
   end
 
   factory :uploaded_asset_without_size, parent: :uploaded_asset do
@@ -28,7 +28,7 @@ FactoryBot.define do
 
     trait :with_legacy_metadata do
       sequence(:legacy_etag) { |n| "legacy-etag-#{n}" }
-      sequence(:legacy_last_modified) { |n| Time.parse("2000-01-01") + n.days }
+      sequence(:legacy_last_modified) { |n| Time.zone.parse("2000-01-01") + n.days }
     end
   end
 
