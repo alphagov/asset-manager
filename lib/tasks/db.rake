@@ -28,7 +28,7 @@ namespace :db do
   task resolve_redirect_chains: :environment do
     replaced = Asset.where(:replacement_id.ne => nil)
     replaced.each do |asset|
-      next unless asset.replacement.present?
+      next if asset.replacement.blank?
       next if asset.replacement.replacement.present?
 
       asset.update_indirect_replacements

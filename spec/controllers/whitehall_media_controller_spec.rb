@@ -264,7 +264,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
       before do
         allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(nil)
-        asset.update_attribute(:deleted_at, Time.now)
+        asset.update_attribute(:deleted_at, Time.zone.now)
       end
 
       it "responds with not found status" do

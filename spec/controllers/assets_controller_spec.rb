@@ -231,7 +231,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it "resets access_limits for an existing asset with a blank acess_limited_user_ids param" do
-        asset.update_attributes!(access_limited: %w[user-uid])
+        asset.update!(access_limited: %w[user-uid])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
@@ -242,7 +242,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it "resets access_limits for an existing asset with a blank acess_limited param" do
-        asset.update_attributes!(access_limited: %w[user-uid])
+        asset.update!(access_limited: %w[user-uid])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
@@ -260,7 +260,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it "resets access_limited_organisation_ids to an empty array for an existing asset with an access_limited_organisation_ids array" do
-        asset.update_attributes!(access_limited_organisation_ids: %w[org-id])
+        asset.update!(access_limited_organisation_ids: %w[org-id])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array
@@ -278,7 +278,7 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it "copes when auth_bypass_ids are passed in as an empty string" do
-        asset.update_attributes!(auth_bypass_ids: %w[bypass-1 bypass-2])
+        asset.update!(auth_bypass_ids: %w[bypass-1 bypass-2])
 
         # We have to use an empty string as that is what gds-api-adapters/rest-client
         # will generate instead of an empty array

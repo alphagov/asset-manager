@@ -2,6 +2,7 @@ require: rubocop-rspec
 inherit_gem:
   rubocop-govuk:
     - "config/default.yml"
+    - "config/rails.yml"
 
 inherit_from: .rubocop_todo.yml
 
@@ -22,4 +23,11 @@ RSpec/ContextWording:
   Enabled: false
 
 Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+# Mongoid doesn't support some of the methods that Rubocop prefers
+Rails/FindBy:
+  Enabled: false
+
+Rails/FindEach:
   Enabled: false
