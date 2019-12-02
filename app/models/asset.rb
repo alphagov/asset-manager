@@ -1,6 +1,8 @@
 require "virus_scanner"
 require "services"
 
+# Mongoid doesn't seem to have find_each so rubocop would break it
+# rubocop:disable Rails/FindEach
 class Asset
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -242,3 +244,4 @@ protected
     end
   end
 end
+# rubocop:enable Rails/FindEach
