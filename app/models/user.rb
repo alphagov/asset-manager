@@ -15,8 +15,6 @@ class User
   field "organisation_content_id", type: String
   field "organisation_slug", type: String
 
-  # rubocop:disable Rails/FindBy
-  # Mongoid::Criteria does not have the find_by method Rubocop prefers
   def self.find_by_email(email)
     where(email: email).first
   end
@@ -24,5 +22,4 @@ class User
   def self.find_by_uid(uid)
     where(uid: uid).first
   end
-  # rubocop:enable Rails/FindBy
 end

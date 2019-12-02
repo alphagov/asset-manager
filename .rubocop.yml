@@ -24,3 +24,10 @@ RSpec/ContextWording:
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
+
+# Mongoid doesn't support some of the methods that Rubocop prefers
+Rails/FindBy:
+  Enabled: false
+
+Rails/FindEach:
+  Enabled: false
