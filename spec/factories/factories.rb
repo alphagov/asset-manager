@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec", "fixtures", "files", "asset.png")) }
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
   end
   factory :clean_asset, parent: :asset do
     after :create, &:scanned_clean!
@@ -23,7 +23,7 @@ FactoryBot.define do
     end
   end
 
-  factory :whitehall_asset, parent: :asset, class: WhitehallAsset do
+  factory :whitehall_asset, parent: :asset, class: "WhitehallAsset" do
     sequence(:legacy_url_path) { |n| "/government/uploads/asset-#{n}.png" }
 
     trait :with_legacy_metadata do

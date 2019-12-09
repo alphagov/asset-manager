@@ -82,7 +82,7 @@ RSpec.describe "Whitehall media requests", type: :request do
 
       get path, headers: {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp", "test_uploads", "assets", "=", "raw", ""),
+        "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp/test_uploads/assets/=/raw/"),
       }
     end
 

@@ -2,7 +2,7 @@ require "csv"
 
 namespace :export do
   desc "Export CSV of mirrorable (publicly visible, non-replaced, non-redirected) assets"
-  task :mirrorable do
+  task mirrorable: :environment do
     params = {
       deleted_at: nil,
       replacement_id: nil,

@@ -13,7 +13,7 @@ class VirusScanner
     out_str, status = Open3.capture2e(clamscan_path, "--no-summary", file_path)
     case status.exitstatus
     when 0
-      return true
+      true
     when 1
       raise InfectedFile, out_str
     else
