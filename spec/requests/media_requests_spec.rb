@@ -28,7 +28,7 @@ RSpec.describe "Media requests", type: :request do
 
       get download_media_path(id: asset, filename: "asset.png", headers: {
         "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp", "test_uploads", "assets", "=", "raw", ""),
+        "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp/test_uploads/assets/=/raw/"),
       })
     end
 
