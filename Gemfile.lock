@@ -305,7 +305,7 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     unicode-display_width (1.6.0)
-    unicorn (5.5.1)
+    unicorn (5.5.2)
       kgio (~> 2.6)
       raindrops (~> 0.7)
     warden (1.2.8)
@@ -342,7 +342,7 @@ DEPENDENCIES
   rubocop-govuk
   simplecov-rcov
   state_machines-mongoid (~> 0.2.0)
-  unicorn (= 5.5.1)
+  unicorn (= 5.5.2)
 
 BUNDLED WITH
    1.17.2
