@@ -103,8 +103,8 @@ RSpec.describe "Whitehall media requests", type: :request do
       expect(response.headers["Content-Disposition"]).to eq('inline; filename="asset.png"')
     end
 
-    it "sets the Cache-Control response header to 24 hours" do
-      expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+    it "sets the Cache-Control response header to 30 minutes" do
+      expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
     end
 
     it "sets the X-Frame-Options response header to DENY" do

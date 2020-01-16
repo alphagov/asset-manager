@@ -187,10 +187,10 @@ RSpec.describe MediaController, type: :controller do
         get :download, params
       end
 
-      it "sets Cache-Control header to expire in 24 hours and be publicly cacheable" do
+      it "sets Cache-Control header to expire in 30 minutes and be publicly cacheable" do
         get :download, params
 
-        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+        expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
 
       context "when the file name in the URL represents an old version" do
@@ -510,10 +510,10 @@ RSpec.describe MediaController, type: :controller do
         expect(response).to have_http_status(:moved_permanently)
       end
 
-      it "sets the Cache-Control response header to 24 hours" do
+      it "sets the Cache-Control response header to 30 minutes" do
         get :download, params
 
-        expect(response.headers["Cache-Control"]).to eq("max-age=86400, public")
+        expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
 
       context "and the replacement is draft" do
