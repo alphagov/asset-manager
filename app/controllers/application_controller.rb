@@ -25,7 +25,7 @@ private
 
   def set_default_expiry
     unless Rails.env.development?
-      expires_in 30.minutes, public: true
+      expires_in 2.minutes, public: true
     end
   end
 end
