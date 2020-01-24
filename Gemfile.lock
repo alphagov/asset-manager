@@ -56,7 +56,7 @@ GEM
     aws-sigv4 (1.0.2)
     bson (4.2.2)
     builder (3.2.4)
-    byebug (11.1.0)
+    byebug (11.1.1)
     carrierwave (0.11.2)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
