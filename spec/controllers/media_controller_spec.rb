@@ -516,6 +516,20 @@ RSpec.describe MediaController, type: :controller do
         expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
 
+      context "and the asset is draft and is requested from not the draft host" do
+        before do
+          request.headers["X-Forwarded-Host"] = "not-#{AssetManager.govuk.draft_assets_host}"
+          asset.update_attribute(:draft, true)
+        end
+
+        it "redirects if the replacement is live" do
+          get :download, params
+
+          expected_url = "//#{AssetManager.govuk.assets_host}#{replacement.public_url_path}"
+          expect(response).to redirect_to(expected_url)
+        end
+      end
+
       context "and the replacement is draft" do
         before do
           replacement.update_attribute(:draft, true)
