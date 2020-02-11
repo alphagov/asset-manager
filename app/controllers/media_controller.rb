@@ -5,6 +5,12 @@ class MediaController < ApplicationController
   before_action :set_token_payload
 
   def download
+    if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
+      set_default_expiry
+      redirect_to_replacement_for(asset)
+      return
+    end
+
     if redirect_to_draft_assets_host_for?(asset)
       redirect_to_draft_assets_host
       return
@@ -27,12 +33,6 @@ class MediaController < ApplicationController
 
     if asset.redirect_url.present?
       redirect_to asset.redirect_url
-      return
-    end
-
-    if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
-      set_default_expiry
-      redirect_to_replacement_for(asset)
       return
     end
 
