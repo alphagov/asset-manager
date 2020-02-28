@@ -2,7 +2,7 @@
 
 library("govuk")
 
-node ('mongodb-2.4') {
+node ('mongodb-3.2') {
   govuk.buildProject(
     beforeTest: {
       govuk.setEnvar('TEST_COVERAGE', 'true')
