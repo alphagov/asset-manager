@@ -2,14 +2,13 @@
 
 library("govuk")
 
-node ('mongodb-2.4') {
+node ('mongodb-3.2') {
   govuk.buildProject(
     beforeTest: {
       govuk.setEnvar('TEST_COVERAGE', 'true')
       govuk.setEnvar('JWT_AUTH_SECRET', 'secret')
     },
     sassLint: false,
-    rubyLintDiff: false,
     publishingE2ETests: true,
     brakeman: true,
     afterTest: {
