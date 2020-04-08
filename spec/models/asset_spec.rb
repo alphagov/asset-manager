@@ -78,18 +78,24 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when replacements are replaced" do
-      let(:first_replacement) { FactoryBot.create(:asset) }
-      let(:final_replacement) { FactoryBot.create(:asset) }
+      let(:first_replacement) { FactoryBot.create(:asset, draft: false) }
+      let(:second_replacement) { FactoryBot.create(:asset, draft: true) }
 
       before do
         asset.replacement = first_replacement
-        asset.save
-        first_replacement.replacement = final_replacement
-        first_replacement.save
+        asset.save!
+        first_replacement.replacement = second_replacement
+        first_replacement.save!
       end
 
-      it "updates the original asset" do
-        expect(asset.reload.replacement_id).to eq(final_replacement.id)
+      it "doesn't update the original asset if the second replacement is a draft" do
+        expect(asset.reload.replacement_id).to eq(first_replacement.id)
+      end
+
+      it "updates the original asset when the second replacement is published" do
+        second_replacement.draft = false
+        second_replacement.save!
+        expect(asset.reload.replacement_id).to eq(second_replacement.id)
       end
     end
 
