@@ -59,7 +59,8 @@ class Asset
 
   before_save :store_metadata, unless: :uploaded?
   after_save :schedule_virus_scan
-  after_save :update_indirect_replacements
+  after_save :update_indirect_replacements_on_publish
+  after_save :backpropagate_replacement
 
   scope :deleted, -> { where(:deleted_at.ne => nil) }
   scope :undeleted, -> { where(deleted_at: nil) }
@@ -154,12 +155,23 @@ class Asset
     file_stat.size
   end
 
-  def update_indirect_replacements
-    return if replacement.blank?
+  def update_indirect_replacements_on_publish
+    return unless changes[:draft] && !draft?
 
-    Asset.where(replacement_id: self.id).each do |asset|
-      asset.replacement = replacement
-      asset.save
+    Asset.where(replacement_id: self.id).each do |replaced_by_me|
+      Asset.where(replacement_id: replaced_by_me.id).each do |indirectly_replaced_by_me|
+        indirectly_replaced_by_me.replacement = self
+        indirectly_replaced_by_me.save
+      end
+    end
+  end
+
+  def backpropagate_replacement
+    return if replacement.blank? || replacement.draft?
+
+    Asset.where(replacement_id: self.id).each do |replaced_by_me|
+      replaced_by_me.replacement = self.replacement
+      replaced_by_me.save
     end
   end
 
