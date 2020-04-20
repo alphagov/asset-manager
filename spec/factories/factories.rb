@@ -16,13 +16,6 @@ FactoryBot.define do
     deleted_at { Time.zone.now }
   end
 
-  factory :uploaded_asset_without_size, parent: :uploaded_asset do
-    after(:create) do |asset, _|
-      asset.send(:size=, nil)
-      asset.save
-    end
-  end
-
   factory :whitehall_asset, parent: :asset, class: "WhitehallAsset" do
     sequence(:legacy_url_path) { |n| "/government/uploads/asset-#{n}.png" }
 
