@@ -17,31 +17,13 @@ namespace :govuk_assets do
     puts "#{status}: #{result.written_count} documents updated"
   end
 
-  def create_or_replace_whitehall_asset(file_path, legacy_url_path)
-    begin
-      prior = WhitehallAsset.find_by(legacy_url_path: legacy_url_path)
-      prior.file = Pathname.new(file_path).open
-      prior.save!
-    rescue Mongoid::Errors::DocumentNotFound
-      WhitehallAsset.create!(
-        file: Pathname.new(file_path).open,
-        legacy_url_path: legacy_url_path,
-      )
-    end
-    puts "Uploaded '#{file_path}' to '#{legacy_url_path}'"
-  end
-
-  def create_or_replace_hmrc_asset(file_path, basename)
-    hmrc_url_base = "/government/uploads/uploaded/hmrc"
-    create_or_replace_whitehall_asset(file_path, "#{hmrc_url_base}/#{basename}")
-  end
-
   desc "Upload all *.zip files in the given directory to /government/uploads/uploaded/hmrc"
   task :create_hmrc_paye_zips, %i[directory] => :environment do |_, args|
     directory = args[:directory]
+    hmrc_url_base = "/government/uploads/uploaded/hmrc"
 
     Dir.glob(File.join(directory, "*.zip")).each do |file_path|
-      create_or_replace_hmrc_asset(file_path, File.basename(file_path))
+      WhitehallAsset.create_or_replace(file_path, "#{hmrc_url_base}/#{basename}")
     end
   end
 
@@ -54,11 +36,12 @@ namespace :govuk_assets do
       basename = args.extras[0]
     end
 
-    create_or_replace_hmrc_asset(file_path, basename)
+    hmrc_url_base = "/government/uploads/uploaded/hmrc"
+    WhitehallAsset.create_or_replace(file_path, "#{hmrc_url_base}/#{basename}")
   end
 
   desc "Create a whitehall asset with the given legacy URL path"
   task :create_whitehall_asset, %i[file_path legacy_url_path] => :environment do |_, args|
-    create_or_replace_whitehall_asset(args[:file_path], args[:legacy_url_path])
+    WhitehallAsset.create_or_replace(args[:file_path], args[:legacy_url_path])
   end
 end

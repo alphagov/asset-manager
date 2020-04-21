@@ -22,6 +22,17 @@ class WhitehallAsset < Asset
     order(updated_at: :desc).find_by(legacy_url_path: legacy_url_path)
   end
 
+  def self.create_or_replace(file_path, legacy_url_path)
+    prior = WhitehallAsset.find_by(legacy_url_path: legacy_url_path)
+    prior.file = Pathname.new(file_path).open
+    prior.save!
+  rescue Mongoid::Errors::DocumentNotFound
+    WhitehallAsset.create!(
+      file: Pathname.new(file_path).open,
+      legacy_url_path: legacy_url_path,
+    )
+  end
+
   def etag
     legacy_etag || super
   end
