@@ -53,7 +53,7 @@ RSpec.describe "Healthcheck", type: :request do
 
     expect(data.fetch(:checks)).to include(
       database: { status: "ok" },
-      redis:    { status: "ok" },
+      redis: { status: "ok" },
     )
   end
 

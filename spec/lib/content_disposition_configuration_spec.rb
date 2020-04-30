@@ -26,7 +26,7 @@ RSpec.describe ContentDispositionConfiguration do
 
   describe "#header_for" do
     it "returns Content-Disposition header value" do
-      expect(subject.header_for(asset)).to eq(%{inline; filename="asset.png"})
+      expect(subject.header_for(asset)).to eq(%(inline; filename="asset.png"))
     end
   end
 end

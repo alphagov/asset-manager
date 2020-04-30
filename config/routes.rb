@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
-  resources :assets, only: %i(show create update destroy) do
+  resources :assets, only: %i[show create update destroy] do
     member do
       post :restore
     end
   end
 
-  resources :whitehall_assets, only: %i(create)
+  resources :whitehall_assets, only: %i[create]
   get "/whitehall_assets/*path" => "whitehall_assets#show"
 
   get "/media/:id/:filename" => "media#download", :constraints => { filename: /.*/ }, as: :download_media

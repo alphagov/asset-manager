@@ -53,11 +53,19 @@ RSpec.describe CLI, type: :model do
       it "aborts execution" do
         expect(kernel).to receive(:abort)
 
-        cli.create_asset(*args) rescue nil
+        begin
+          cli.create_asset(*args)
+        rescue StandardError
+          nil
+        end
       end
 
       it "prints usage instructions" do
-        cli.create_asset(*args) rescue nil
+        begin
+          cli.create_asset(*args)
+        rescue StandardError
+          nil
+        end
 
         output.rewind
         expect(output.read).to match(/provide a filename/i)
@@ -118,11 +126,19 @@ RSpec.describe CLI, type: :model do
       it "aborts execution" do
         expect(kernel).to receive(:abort)
 
-        cli.update_asset(*args) rescue nil
+        begin
+          cli.update_asset(*args)
+        rescue StandardError
+          nil
+        end
       end
 
       it "prints usage instructions" do
-        cli.update_asset(*args) rescue nil
+        begin
+          cli.update_asset(*args)
+        rescue StandardError
+          nil
+        end
 
         output.rewind
         expect(output.read).to match(/provide a filename/i)
@@ -139,11 +155,19 @@ RSpec.describe CLI, type: :model do
       it "aborts execution" do
         expect(kernel).to receive(:abort)
 
-        cli.update_asset(*args) rescue nil
+        begin
+          cli.update_asset(*args)
+        rescue StandardError
+          nil
+        end
       end
 
       it "prints usage instructions" do
-        cli.update_asset(*args) rescue nil
+        begin
+          cli.update_asset(*args)
+        rescue StandardError
+          nil
+        end
 
         output.rewind
         expect(output.read).to match(/provide the asset id/i)
