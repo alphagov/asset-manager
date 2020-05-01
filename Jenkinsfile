@@ -10,6 +10,7 @@ node ('mongodb-3.2') {
     },
     sassLint: false,
     publishingE2ETests: true,
+    rubyLintDirs: "",
     brakeman: true,
     afterTest: {
       govuk.setEnvar('AWS_S3_BUCKET_NAME', 'asset-precompilation-test')
