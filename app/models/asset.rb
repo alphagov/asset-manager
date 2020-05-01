@@ -133,7 +133,7 @@ class Asset
   end
 
   def image?
-    %w(jpg jpeg png gif).include?(extension)
+    %w[jpg jpeg png gif].include?(extension)
   end
 
   def etag_from_file
@@ -158,7 +158,7 @@ class Asset
   def update_indirect_replacements_on_publish
     return unless changes[:draft] && !draft?
 
-    Asset.where(replacement_id: self.id).each do |replaced_by_me|
+    Asset.where(replacement_id: id).each do |replaced_by_me|
       Asset.where(replacement_id: replaced_by_me.id).each do |indirectly_replaced_by_me|
         indirectly_replaced_by_me.replacement = self
         indirectly_replaced_by_me.save
@@ -169,8 +169,8 @@ class Asset
   def backpropagate_replacement
     return if replacement.blank? || replacement.draft?
 
-    Asset.where(replacement_id: self.id).each do |replaced_by_me|
-      replaced_by_me.replacement = self.replacement
+    Asset.where(replacement_id: id).each do |replaced_by_me|
+      replaced_by_me.replacement = replacement
       replaced_by_me.save
     end
   end
@@ -215,7 +215,7 @@ protected
   end
 
   def schedule_virus_scan
-    VirusScanWorker.perform_async(self.id) if self.unscanned?
+    VirusScanWorker.perform_async(id) if unscanned?
   end
 
   def file_stat
@@ -249,7 +249,7 @@ protected
       uri = nil
     end
 
-    unless uri && %w(http https).include?(uri.scheme)
+    unless uri && %w[http https].include?(uri.scheme)
       errors.add(:parent_document_url, "must be an http(s) URL")
     end
   end

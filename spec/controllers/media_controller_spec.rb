@@ -51,7 +51,7 @@ RSpec.describe MediaController, type: :controller do
       it "sends ETag response header with quoted value" do
         get :download, params: { id: asset.id }
 
-        expect(response.headers["ETag"]).to eq(%{"599ffda8-e169"})
+        expect(response.headers["ETag"]).to eq(%("599ffda8-e169"))
       end
 
       it "sends Last-Modified response header in HTTP time format" do

@@ -47,7 +47,11 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
       end
 
       it "leaves the state of the asset set to clean" do
-        worker.perform(asset) rescue nil
+        begin
+          worker.perform(asset)
+        rescue StandardError
+          nil
+        end
 
         expect(asset.reload).to be_clean
       end

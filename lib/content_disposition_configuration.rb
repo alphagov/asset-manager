@@ -10,7 +10,7 @@ class ContentDispositionConfiguration
   end
 
   def header_for(asset)
-    %{#{type}; filename="#{filename_for(asset)}"}
+    %(#{type}; filename="#{filename_for(asset)}")
   end
 
 private

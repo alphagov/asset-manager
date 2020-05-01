@@ -75,8 +75,8 @@ RSpec.describe VirusScanWorker do
     end
 
     it "sends an exception notification" do
-      expect(GovukError).to receive(:notify).
-        with(exception, extra: { id: asset.id, filename: asset.filename })
+      expect(GovukError).to receive(:notify)
+        .with(exception, extra: { id: asset.id, filename: asset.filename })
 
       worker.perform(asset.id)
     end

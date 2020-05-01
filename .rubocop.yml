@@ -16,6 +16,9 @@ RSpec/NestedGroups:
 RSpec/MultipleExpectations:
   Max: 10
 
+RSpec/ExampleLength:
+  Enabled: false
+
 # This recently introduced cop seems to have stirred up some controversy
 Style/AccessModifierDeclarations:
   Enabled: false
