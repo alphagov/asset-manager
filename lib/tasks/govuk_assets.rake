@@ -23,7 +23,7 @@ namespace :govuk_assets do
     hmrc_url_base = "/government/uploads/uploaded/hmrc"
 
     Dir.glob(File.join(directory, "*.zip")).each do |file_path|
-      WhitehallAsset.create_or_replace(file_path, "#{hmrc_url_base}/#{basename}")
+      WhitehallAsset.create_or_replace(file_path, "#{hmrc_url_base}/#{file_path}")
     end
   end
 
