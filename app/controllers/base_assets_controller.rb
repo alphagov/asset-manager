@@ -20,23 +20,23 @@ protected
 
   def base_asset_params
     params.require(:asset).tap do |asset|
-      if asset.has_key?(:redirect_url) && asset[:redirect_url].blank?
+      if asset.key?(:redirect_url) && asset[:redirect_url].blank?
         asset[:redirect_url] = nil
       end
 
-      if asset.has_key?(:access_limited_user_ids)
+      if asset.key?(:access_limited_user_ids)
         asset[:access_limited] = asset[:access_limited_user_ids]
       end
 
-      if asset.has_key?(:access_limited) && asset[:access_limited].empty?
+      if asset.key?(:access_limited) && asset[:access_limited].empty?
         asset[:access_limited] = []
       end
 
-      if asset.has_key?(:access_limited_organisation_ids) && asset[:access_limited_organisation_ids].empty?
+      if asset.key?(:access_limited_organisation_ids) && asset[:access_limited_organisation_ids].empty?
         asset[:access_limited_organisation_ids] = []
       end
 
-      if asset.has_key?(:auth_bypass_ids) && asset[:auth_bypass_ids].empty?
+      if asset.key?(:auth_bypass_ids) && asset[:auth_bypass_ids].empty?
         asset[:auth_bypass_ids] = []
       end
     end

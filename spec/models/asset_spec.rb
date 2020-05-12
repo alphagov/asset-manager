@@ -102,13 +102,13 @@ RSpec.describe Asset, type: :model do
     context "when published asset is marked as draft" do
       let(:replacement) { nil }
       let(:redirect_url) { nil }
-      let(:attributes) {
+      let(:attributes) do
         {
           draft: false,
           replacement: replacement,
           redirect_url: redirect_url,
         }
-      }
+      end
 
       before do
         asset.save!
@@ -335,9 +335,9 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#public_url_path" do
-    subject(:asset) {
+    subject(:asset) do
       described_class.new(file: load_fixture_file("asset.png"))
-    }
+    end
 
     it "returns public URL path for mainstream asset" do
       expected_path = download_media_path(id: asset.id, filename: asset.filename)
@@ -346,9 +346,9 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#filename" do
-    let(:asset) {
+    let(:asset) do
       described_class.new(file: load_fixture_file("asset.png"))
-    }
+    end
 
     it "returns the current file attachments base name" do
       expect(asset.filename).to eq("asset.png")
@@ -356,9 +356,9 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#filename_valid?" do
-    let(:asset) {
+    let(:asset) do
       described_class.new(file: load_fixture_file("asset.png"))
-    }
+    end
 
     context "for current file" do
       it "returns true" do

@@ -2,14 +2,14 @@ require "rails_helper"
 
 RSpec.describe "Whitehall media requests", type: :request do
   shared_examples "redirects to placeholders" do
-    let(:asset) {
+    let(:asset) do
       FactoryBot.create(
         :whitehall_asset,
         file: load_fixture_file(File.basename(path)),
         legacy_url_path: path,
         state: state,
       )
-    }
+    end
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
