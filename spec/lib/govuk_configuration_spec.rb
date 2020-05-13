@@ -6,12 +6,12 @@ RSpec.describe GovukConfiguration do
 
   describe "#app_host" do
     context "when environment includes GOVUK_APP_NAME & GOVUK_APP_DOMAIN" do
-      let(:env) {
+      let(:env) do
         {
           "GOVUK_APP_NAME" => "asset-manager",
           "GOVUK_APP_DOMAIN" => "dev.gov.uk",
         }
-      }
+      end
 
       it "returns application host including protocol" do
         expect(config.app_host).to eq("http://asset-manager.dev.gov.uk")
@@ -19,11 +19,11 @@ RSpec.describe GovukConfiguration do
     end
 
     context "when environment only includes GOVUK_APP_NAME" do
-      let(:env) {
+      let(:env) do
         {
           "GOVUK_APP_NAME" => "asset-manager",
         }
-      }
+      end
 
       it "returns nil" do
         expect(config.app_host).to be_nil
@@ -31,11 +31,11 @@ RSpec.describe GovukConfiguration do
     end
 
     context "when environment only includes GOVUK_APP_DOMAIN" do
-      let(:env) {
+      let(:env) do
         {
           "GOVUK_APP_DOMAIN" => "dev.gov.uk",
         }
-      }
+      end
 
       it "returns nil" do
         expect(config.app_host).to be_nil
@@ -53,11 +53,11 @@ RSpec.describe GovukConfiguration do
 
   describe "#clamscan_path" do
     context "when environment includes an ASSET_MANAGER_CLAMSCAN_PATH value" do
-      let(:env) {
+      let(:env) do
         {
           "ASSET_MANAGER_CLAMSCAN_PATH" => "alternative-path",
         }
-      }
+      end
 
       it "returns environment variable" do
         expect(config.clamscan_path).to eq("alternative-path")

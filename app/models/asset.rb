@@ -109,9 +109,9 @@ class Asset
 
   def file=(file)
     old_filename = filename
-    super(file).tap {
+    super(file).tap do
       filename_history.push(old_filename) if old_filename
-    }
+    end
     reset_state
   end
 
@@ -137,10 +137,7 @@ class Asset
   end
 
   def etag_from_file
-    "%<mtime>x-%<size>x" % {
-      mtime: last_modified_from_file,
-      size: file_stat.size,
-    }
+    format("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size)
   end
 
   def last_modified_from_file

@@ -35,13 +35,13 @@ RSpec.describe Healthcheck do
 
   describe "#details" do
     let(:healthchecks) { [critical, warning, ok] }
-    let(:expected_checks) {
+    let(:expected_checks) do
       {
         foo: { status: :critical },
         bar: { status: :warning, errors: 7 },
         baz: { status: :ok, https: true },
       }
-    }
+    end
 
     it "returns a hash containing statuses and details for the checks" do
       expect(healthcheck.details).to eq(

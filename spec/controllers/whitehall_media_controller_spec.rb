@@ -33,14 +33,14 @@ RSpec.describe WhitehallMediaController, type: :controller do
     let(:legacy_url_path) { "/government/uploads/#{path}.#{format}" }
     let(:draft) { false }
     let(:redirect_url) { nil }
-    let(:attributes) {
+    let(:attributes) do
       {
         legacy_url_path: legacy_url_path,
         state: state,
         draft: draft,
         redirect_url: redirect_url,
       }
-    }
+    end
     let(:asset) { FactoryBot.build(:whitehall_asset, attributes) }
 
     before do
