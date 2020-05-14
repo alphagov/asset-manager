@@ -44,12 +44,13 @@ class Asset
 
   validates :file, presence: true, unless: :uploaded?
 
-  validates :uuid, presence: true,
-                   uniqueness: true,
-                   format: {
-                     with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
-                     message: "must match the format defined in rfc4122",
-                   }
+  validates :uuid,
+            presence: true,
+            uniqueness: true,
+            format: {
+              with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
+              message: "must match the format defined in rfc4122",
+            }
 
   validate :check_specified_replacement_exists
   validate :prevent_transition_from_published_to_draft_if_replaced
@@ -137,7 +138,7 @@ class Asset
   end
 
   def etag_from_file
-    format("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size)
+    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size)
   end
 
   def last_modified_from_file

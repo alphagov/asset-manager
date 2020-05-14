@@ -38,14 +38,16 @@ private
   end
 
   def asset_params
-    base_asset_params.permit(:file,
-                             :draft,
-                             :redirect_url,
-                             :replacement_id,
-                             :parent_document_url,
-                             access_limited: [],
-                             access_limited_organisation_ids: [],
-                             auth_bypass_ids: [])
+    base_asset_params.permit(
+      :file,
+      :draft,
+      :redirect_url,
+      :replacement_id,
+      :parent_document_url,
+      access_limited: [],
+      access_limited_organisation_ids: [],
+      auth_bypass_ids: [],
+    )
   end
 
   def find_asset(include_deleted: false)

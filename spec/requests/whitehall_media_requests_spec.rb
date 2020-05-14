@@ -80,10 +80,11 @@ RSpec.describe "Whitehall media requests", type: :request do
       allow(cloud_storage).to receive(:presigned_url_for)
         .with(asset, http_method: http_method).and_return(presigned_url)
 
-      get path, headers: {
-        "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp/test_uploads/assets/=/raw/"),
-      }
+      get path,
+          headers: {
+            "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
+            "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp/test_uploads/assets/=/raw/"),
+          }
     end
 
     it "responds with 200 OK" do

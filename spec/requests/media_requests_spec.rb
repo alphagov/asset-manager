@@ -26,10 +26,14 @@ RSpec.describe "Media requests", type: :request do
       allow(cloud_storage).to receive(:presigned_url_for)
         .with(asset, http_method: http_method).and_return(presigned_url)
 
-      get download_media_path(id: asset, filename: "asset.png", headers: {
-        "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
-        "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp/test_uploads/assets/=/raw/"),
-      })
+      get download_media_path(
+        id: asset,
+        filename: "asset.png",
+        headers: {
+          "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
+          "HTTP_X_ACCEL_MAPPING" => Rails.root.join("tmp/test_uploads/assets/=/raw/"),
+        },
+      )
     end
 
     it "sets the X-Accel-Redirect header" do
@@ -59,18 +63,22 @@ RSpec.describe "Media requests", type: :request do
     it "redirects to the draft host" do
       get download_media_path(id: asset, filename: "asset.png")
 
-      expect(response).to redirect_to(download_media_url(host: AssetManager.govuk.draft_assets_host,
-                                                         id: asset,
-                                                         filename: "asset.png"))
+      expect(response).to redirect_to(download_media_url(
+                                        host: AssetManager.govuk.draft_assets_host,
+                                        id: asset,
+                                        filename: "asset.png",
+                                      ))
     end
 
     it "preserves any query params" do
       get download_media_path(id: asset, filename: "asset.png", params: { foo: "bar" })
 
-      expect(response).to redirect_to(download_media_url(host: AssetManager.govuk.draft_assets_host,
-                                                         id: asset,
-                                                         filename: "asset.png",
-                                                         params: { foo: "bar" }))
+      expect(response).to redirect_to(download_media_url(
+                                        host: AssetManager.govuk.draft_assets_host,
+                                        id: asset,
+                                        filename: "asset.png",
+                                        params: { foo: "bar" },
+                                      ))
     end
   end
 

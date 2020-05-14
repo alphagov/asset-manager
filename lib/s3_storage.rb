@@ -25,11 +25,11 @@ class S3Storage
       begin
         unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
           error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
-          raise ObjectUploadFailedError.new(error_message)
+          raise ObjectUploadFailedError, error_message
         end
       rescue Aws::S3::MultipartUploadError => e
         error_message = "Aws::S3::Object#upload_file raised #{e.inspect} for asset ID: #{asset.id}"
-        raise ObjectUploadFailedError.new(error_message)
+        raise ObjectUploadFailedError, error_message
       end
     end
   end
@@ -59,7 +59,7 @@ class S3Storage
     result = head_object_for(asset)
     result.metadata
   rescue Aws::S3::Errors::NotFound
-    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+    raise ObjectNotFoundError, "S3 object not found for asset: #{asset.id}"
   end
 
 private
@@ -67,7 +67,7 @@ private
   def replication_status(asset)
     head_object_for(asset).replication_status
   rescue Aws::S3::Errors::NotFound
-    raise ObjectNotFoundError.new("S3 object not found for asset: #{asset.id}")
+    raise ObjectNotFoundError, "S3 object not found for asset: #{asset.id}"
   end
 
   def object_for(asset)

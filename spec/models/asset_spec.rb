@@ -890,7 +890,7 @@ RSpec.describe Asset, type: :model do
 
   describe "#size_from_file" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
-    let(:size) { 57705 }
+    let(:size) { 57_705 }
 
     it "returns the size of the file" do
       expect(asset.size_from_file).to eq(size)

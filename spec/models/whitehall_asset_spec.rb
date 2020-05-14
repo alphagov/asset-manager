@@ -169,8 +169,9 @@ RSpec.describe WhitehallAsset, type: :model do
     context "when path_prefix is specified" do
       it "finds Whitehall asset by legacy_url_path including path_prefix" do
         found_asset = described_class.from_params(
-          path: "path/to/asset", format: format_from_params,
-          path_prefix: "government/uploads/"
+          path: "path/to/asset",
+          format: format_from_params,
+          path_prefix: "government/uploads/",
         )
         expect(found_asset).to eq(asset)
       end
