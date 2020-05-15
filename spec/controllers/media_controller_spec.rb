@@ -335,9 +335,11 @@ RSpec.describe MediaController, type: :controller do
       context "when a user is not authenticated" do
         let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, access_limited: %w[id]) }
         let(:token_with_draft_asset_manager_access) do
-          JWT.encode({ "draft_asset_manager_access" => true },
-                     Rails.application.secrets.jwt_auth_secret,
-                     "HS256")
+          JWT.encode(
+            { "draft_asset_manager_access" => true },
+            Rails.application.secrets.jwt_auth_secret,
+            "HS256",
+          )
         end
 
         before { not_logged_in }
@@ -363,14 +365,18 @@ RSpec.describe MediaController, type: :controller do
       let(:auth_bypass_id) { "bypass-id" }
       let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id]) }
       let(:valid_token) do
-        JWT.encode({ "sub" => auth_bypass_id },
-                   Rails.application.secrets.jwt_auth_secret,
-                   "HS256")
+        JWT.encode(
+          { "sub" => auth_bypass_id },
+          Rails.application.secrets.jwt_auth_secret,
+          "HS256",
+        )
       end
       let(:token_with_draft_asset_manager_access) do
-        JWT.encode({ "draft_asset_manager_access" => true },
-                   Rails.application.secrets.jwt_auth_secret,
-                   "HS256")
+        JWT.encode(
+          { "draft_asset_manager_access" => true },
+          Rails.application.secrets.jwt_auth_secret,
+          "HS256",
+        )
       end
 
       context "when a user is not authenticated and has provided a valid token by query string" do

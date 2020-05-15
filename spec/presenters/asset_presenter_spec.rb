@@ -59,7 +59,7 @@ RSpec.describe AssetPresenter do
       end
 
       it "returns hash including asset size" do
-        expect(json).to include(size: 57705)
+        expect(json).to include(size: 57_705)
       end
     end
 

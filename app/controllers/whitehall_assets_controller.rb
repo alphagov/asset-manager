@@ -10,16 +10,18 @@ class WhitehallAssetsController < BaseAssetsController
 private
 
   def asset_params
-    base_asset_params.permit(:file,
-                             :draft,
-                             :redirect_url,
-                             :replacement_id,
-                             :legacy_url_path,
-                             :legacy_etag,
-                             :legacy_last_modified,
-                             :parent_document_url,
-                             access_limited: [],
-                             access_limited_organisation_ids: [])
+    base_asset_params.permit(
+      :file,
+      :draft,
+      :redirect_url,
+      :replacement_id,
+      :legacy_url_path,
+      :legacy_etag,
+      :legacy_last_modified,
+      :parent_document_url,
+      access_limited: [],
+      access_limited_organisation_ids: [],
+    )
   end
 
   def existing_asset_with_this_legacy_url_path
