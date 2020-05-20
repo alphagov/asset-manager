@@ -525,7 +525,7 @@ RSpec.describe MediaController, type: :controller do
       context "and the asset is draft and is requested from not the draft host" do
         before do
           request.headers["X-Forwarded-Host"] = "not-#{AssetManager.govuk.draft_assets_host}"
-          asset.update_attribute(:draft, true)
+          asset.update(draft: true)
         end
 
         it "redirects if the replacement is live" do
@@ -538,7 +538,7 @@ RSpec.describe MediaController, type: :controller do
 
       context "and the replacement is draft" do
         before do
-          replacement.update_attribute(:draft, true)
+          replacement.update(draft: true)
         end
 
         it "serves the original asset when requested via something other than the draft-assets host" do
@@ -565,7 +565,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
 
       before do
-        asset.update_attribute(:parent_document_url, nil)
+        asset.update(parent_document_url: nil)
       end
 
       it "doesn't send a Link HTTP header" do
@@ -579,7 +579,8 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
 
       before do
-        asset.update_attribute(:parent_document_url, "parent-document-url")
+        asset.parent_document_url = "parent-document-url"
+        asset.save(validate: false)
       end
 
       it "sends the parent_document_url in a Link HTTP header" do
