@@ -284,9 +284,11 @@ RSpec.describe Asset, type: :model do
     end
 
     it "cannot be changed after creation" do
-      uuid = "11111111-1111-1111-1111-11111111111111"
-      asset = FactoryBot.create(:asset, uuid: uuid)
-      expect { asset.uuid = "22222222-2222-2222-2222-222222222222" }.to raise_error(Mongoid::Errors::ReadonlyAttribute)
+      original_uuid = "11111111-1111-1111-1111-11111111111111"
+      asset = FactoryBot.create(:asset, uuid: original_uuid)
+      asset.uuid = "22222222-2222-2222-2222-222222222222"
+      asset.save
+      expect(asset.uuid).to eq(original_uuid)
     end
 
     it "cannot be empty" do
