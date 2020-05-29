@@ -12,7 +12,7 @@ gem "mongoid", "~> 7.0.7"
 gem "nokogiri", "~> 1.10.9"
 gem "plek", "~> 3.0"
 gem "rack_strip_client_ip", "0.0.2"
-gem "rails", "5.2.4.3"
+gem "rails", "6.0.3.1"
 gem "rails-controller-testing"
 gem "state_machines-mongoid", "~> 0.2.0"
 
