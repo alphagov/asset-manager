@@ -5,7 +5,7 @@ RSpec.describe "Healthcheck", type: :request do
     get "/healthcheck"
 
     expect(response.status).to eq(200)
-    expect(response.content_type).to eq("application/json")
+    expect(response.content_type).to eq("application/json; charset=utf-8")
     expect { data }.not_to raise_error
   end
 
