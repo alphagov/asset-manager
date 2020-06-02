@@ -13,10 +13,6 @@ RSpec/NamedSubject:
   Enabled: false
 
 # TODO: explain or remove this override
-RSpec/VerifiedDoubles:
-  Enabled: false
-
-# TODO: explain or remove this override
 RSpec/AnyInstance:
   Enabled: false
 

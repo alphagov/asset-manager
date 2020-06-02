@@ -23,7 +23,7 @@ RSpec.describe MediaController, type: :controller do
 
     describe "#proxy_to_s3_via_nginx" do
       let(:asset) { FactoryBot.build(:asset, id: "123") }
-      let(:cloud_storage) { double(:cloud_storage) }
+      let(:cloud_storage) { instance_double(S3Storage) }
       let(:presigned_url) { "https://s3-host.test/presigned-url" }
       let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
       let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
@@ -195,7 +195,7 @@ RSpec.describe MediaController, type: :controller do
 
       context "when the file name in the URL represents an old version" do
         let(:old_file_name) { "an_old_filename.pdf" }
-        let(:scope) { double(:undeleted_scope) }
+        let(:scope) { class_double(Asset) }
 
         before do
           allow(Asset).to receive(:undeleted).and_return(scope)
@@ -306,7 +306,7 @@ RSpec.describe MediaController, type: :controller do
       context "when a user is authenticated" do
         let(:user) { FactoryBot.build(:user) }
         let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
-        let(:scope) { double(:undeleted_scope) }
+        let(:scope) { class_double(Asset) }
 
         before do
           allow(Asset).to receive(:undeleted).and_return(scope)
