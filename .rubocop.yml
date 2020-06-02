@@ -9,10 +9,6 @@ inherit_mode:
     - Exclude
 
 # TODO: explain or remove this override
-RSpec/ContextWording:
-  Enabled: false
-
-# TODO: explain or remove this override
 RSpec/NamedSubject:
   Enabled: false
 

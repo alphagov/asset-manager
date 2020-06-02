@@ -18,7 +18,7 @@ RSpec.describe S3Storage::Fake do
     expect(described_class.public_instance_methods(false)).to include(*methods)
   end
 
-  context "saving a file" do
+  context "when saving a file" do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
     it "writes file to fake S3 storage directory" do
@@ -28,7 +28,7 @@ RSpec.describe S3Storage::Fake do
     end
   end
 
-  context "deleting the file" do
+  context "when deleting the file" do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
     before do

@@ -217,7 +217,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#accessible_by?" do
-    context "asset is live" do
+    context "when the asset is live" do
       let(:asset) { FactoryBot.build(:asset, draft: false) }
 
       it "returns true" do
@@ -225,7 +225,7 @@ RSpec.describe Asset, type: :model do
       end
     end
 
-    context "asset is a draft thats access_limited" do
+    context "when the asset is a draft thats access_limited" do
       let(:asset) do
         FactoryBot.build(
           :asset, draft: true, access_limited: %w[user-id], access_limited_organisation_ids: %w[org-id]
@@ -253,7 +253,7 @@ RSpec.describe Asset, type: :model do
       end
     end
 
-    context "asset is a draft thats not access limited" do
+    context "when the asset is a draft thats not access limited" do
       let(:asset) { FactoryBot.build(:asset, draft: true) }
 
       it "returns true" do
@@ -360,13 +360,13 @@ RSpec.describe Asset, type: :model do
       described_class.new(file: load_fixture_file("asset.png"))
     end
 
-    context "for current file" do
+    context "with current file" do
       it "returns true" do
         expect(asset).to be_filename_valid("asset.png")
       end
     end
 
-    context "for a previous file name" do
+    context "with a previous file name" do
       before do
         asset.file = load_fixture_file("asset2.jpg")
       end
@@ -376,7 +376,7 @@ RSpec.describe Asset, type: :model do
       end
     end
 
-    context "for a file that has never been attached to the asset" do
+    context "with a file that has never been attached to the asset" do
       it "returns false" do
         expect(asset).not_to be_filename_valid("never_existed.png")
       end
