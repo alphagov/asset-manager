@@ -20,21 +20,13 @@ RSpec/ExampleLength:
   Enabled: false
 
 # This recently introduced cop seems to have stirred up some controversy
-Style/AccessModifierDeclarations:
-  Enabled: false
-
-Layout/AccessModifierIndentation:
-  Enabled: false
-
 RSpec/ContextWording:
   Enabled: false
 
-Naming/MemoizedInstanceVariableName:
-  Enabled: false
-
-# Mongoid doesn't support some of the methods that Rubocop prefers
+# This isn't supported by Mongoid
 Rails/FindBy:
   Enabled: false
 
+# This isn't supported by Mongoid
 Rails/FindEach:
   Enabled: false
