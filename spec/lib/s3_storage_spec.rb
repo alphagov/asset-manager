@@ -2,8 +2,7 @@ require "rails_helper"
 require "s3_storage"
 
 RSpec.describe S3Storage do
-  subject { described_class.new(bucket_name) }
-
+  let(:storage) { described_class.new(bucket_name) }
   let(:bucket_name) { "bucket-name" }
   let(:s3_client) { instance_double(Aws::S3::Client) }
   let(:s3_object) { instance_double(Aws::S3::Object) }
@@ -19,8 +18,6 @@ RSpec.describe S3Storage do
   end
 
   describe ".build" do
-    subject { described_class.build }
-
     let(:s3_configured) { true }
     let(:s3_fake) { false }
     let(:s3_config) { instance_double(S3Configuration, bucket_name: bucket_name, configured?: s3_configured, fake?: s3_fake) }
@@ -30,7 +27,7 @@ RSpec.describe S3Storage do
     end
 
     it "builds an instance of S3Storage" do
-      expect(subject).to be_instance_of(described_class)
+      expect(described_class.build).to be_instance_of(described_class)
     end
 
     context "when S3 is not configured" do
@@ -40,7 +37,7 @@ RSpec.describe S3Storage do
         let(:s3_fake) { true }
 
         it "builds an instance of S3Storage::Fake" do
-          expect(subject).to be_instance_of(S3Storage::Fake)
+          expect(described_class.build).to be_instance_of(S3Storage::Fake)
         end
       end
 
@@ -48,7 +45,7 @@ RSpec.describe S3Storage do
         let(:s3_fake) { false }
 
         it "raises an exception" do
-          expect { subject }.to raise_error("AWS S3 bucket not correctly configured")
+          expect { described_class.build }.to raise_error("AWS S3 bucket not correctly configured")
         end
       end
     end
@@ -63,7 +60,7 @@ RSpec.describe S3Storage do
       expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
         .and_return(true)
 
-      subject.save(asset)
+      storage.save(asset)
     end
 
     it "sets md5-hexdigest custom metadata on S3 object" do
@@ -72,7 +69,7 @@ RSpec.describe S3Storage do
         .with(anything, include(metadata: include(expected_metadata)))
         .and_return(true)
 
-      subject.save(asset)
+      storage.save(asset)
     end
 
     context "when Aws::S3::Object#upload_file returns false" do
@@ -83,7 +80,7 @@ RSpec.describe S3Storage do
       it "raises ObjectUploadFailedError exception" do
         error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
 
-        expect { subject.save(asset) }
+        expect { storage.save(asset) }
           .to raise_error(S3Storage::ObjectUploadFailedError, error_message)
       end
     end
@@ -99,7 +96,7 @@ RSpec.describe S3Storage do
       it "raises ObjectUploadFailedError exception" do
         error_message = "Aws::S3::Object#upload_file raised #{exception.inspect} for asset ID: #{asset.id}"
 
-        expect { subject.save(asset) }
+        expect { storage.save(asset) }
           .to raise_error(S3Storage::ObjectUploadFailedError, error_message)
       end
     end
@@ -122,14 +119,14 @@ RSpec.describe S3Storage do
         it "does not upload file to S3" do
           expect(s3_object).not_to receive(:upload_file)
 
-          subject.save(asset)
+          storage.save(asset)
         end
 
         context "but force options is set" do
           it "uploads file to S3" do
             expect(s3_object).to receive(:upload_file).and_return(true)
 
-            subject.save(asset, force: true)
+            storage.save(asset, force: true)
           end
         end
       end
@@ -140,7 +137,7 @@ RSpec.describe S3Storage do
         it "uploads file to S3" do
           expect(s3_object).to receive(:upload_file).and_return(true)
 
-          subject.save(asset)
+          storage.save(asset)
         end
 
         context "and object has existing metadata" do
@@ -151,7 +148,7 @@ RSpec.describe S3Storage do
             expect(s3_object).to receive(:upload_file).and_return(true)
               .with(anything, include(metadata: include(existing_metadata)))
 
-            subject.save(asset)
+            storage.save(asset)
           end
         end
       end
@@ -161,7 +158,7 @@ RSpec.describe S3Storage do
   describe "#delete" do
     it "deletes the file from the S3 bucket" do
       expect(s3_object).to receive(:delete).and_return(true)
-      subject.delete(asset)
+      storage.delete(asset)
     end
   end
 
@@ -169,13 +166,13 @@ RSpec.describe S3Storage do
     it "returns presigned URL for GET request to asset on S3 by default" do
       allow(s3_object).to receive(:presigned_url)
         .with("GET", expires_in: 1.minute).and_return("presigned-url")
-      expect(subject.presigned_url_for(asset)).to eq("presigned-url")
+      expect(storage.presigned_url_for(asset)).to eq("presigned-url")
     end
 
     it "returns presigned URL for HEAD request to asset on S3 when http_method specified" do
       allow(s3_object).to receive(:presigned_url)
         .with("HEAD", expires_in: 1.minute).and_return("presigned-url")
-      expect(subject.presigned_url_for(asset, http_method: "HEAD")).to eq("presigned-url")
+      expect(storage.presigned_url_for(asset, http_method: "HEAD")).to eq("presigned-url")
     end
   end
 
@@ -188,7 +185,7 @@ RSpec.describe S3Storage do
       let(:exists_on_s3) { false }
 
       it "returns falsey" do
-        expect(subject).not_to exist(asset)
+        expect(storage).not_to exist(asset)
       end
     end
 
@@ -196,7 +193,7 @@ RSpec.describe S3Storage do
       let(:exists_on_s3) { true }
 
       it "returns truthy" do
-        expect(subject).to exist(asset)
+        expect(storage).to exist(asset)
       end
     end
   end
@@ -211,7 +208,7 @@ RSpec.describe S3Storage do
       end
 
       it "raises exception" do
-        expect { subject.never_replicated?(asset) }
+        expect { storage.never_replicated?(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
@@ -229,7 +226,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { nil }
 
         it "returns truthy" do
-          expect(subject).to be_never_replicated(asset)
+          expect(storage).to be_never_replicated(asset)
         end
       end
 
@@ -237,7 +234,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { "COMPLETED" }
 
         it "returns falsey" do
-          expect(subject).not_to be_never_replicated(asset)
+          expect(storage).not_to be_never_replicated(asset)
         end
       end
     end
@@ -253,7 +250,7 @@ RSpec.describe S3Storage do
       end
 
       it "raises exception" do
-        expect { subject.replicated?(asset) }
+        expect { storage.replicated?(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
@@ -271,7 +268,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { nil }
 
         it "returns falsey" do
-          expect(subject).not_to be_replicated(asset)
+          expect(storage).not_to be_replicated(asset)
         end
       end
 
@@ -279,7 +276,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { "COMPLETED" }
 
         it "returns truthy" do
-          expect(subject).to be_replicated(asset)
+          expect(storage).to be_replicated(asset)
         end
       end
     end
@@ -295,7 +292,7 @@ RSpec.describe S3Storage do
       end
 
       it "raises exception" do
-        expect { subject.metadata_for(asset) }
+        expect { storage.metadata_for(asset) }
           .to raise_error(S3Storage::ObjectNotFoundError)
       end
     end
@@ -311,7 +308,7 @@ RSpec.describe S3Storage do
       end
 
       it "returns metadata from S3 object" do
-        expect(subject.metadata_for(asset)).to eq(metadata)
+        expect(storage.metadata_for(asset)).to eq(metadata)
       end
     end
   end
