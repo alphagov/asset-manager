@@ -24,7 +24,7 @@ RSpec.describe S3Storage::Fake do
     it "writes file to fake S3 storage directory" do
       storage.save(asset)
 
-      expect(File.exist?(asset_path)).to be_truthy
+      expect(File).to exist(asset_path)
     end
   end
 
@@ -37,7 +37,7 @@ RSpec.describe S3Storage::Fake do
     end
 
     it "deletes the file from the S3 storage directory" do
-      expect(File.exist?(asset_path)).to be_falsey
+      expect(File).not_to exist(asset_path)
     end
   end
 
@@ -74,7 +74,7 @@ RSpec.describe S3Storage::Fake do
 
     context "when file is not saved in storage" do
       it "returns falsey" do
-        expect(storage.exists?(asset)).to be_falsey
+        expect(storage).not_to exist(asset)
       end
     end
 
@@ -84,7 +84,7 @@ RSpec.describe S3Storage::Fake do
       end
 
       it "returns truthy" do
-        expect(storage.exists?(asset)).to be_truthy
+        expect(storage).to exist(asset)
       end
     end
   end

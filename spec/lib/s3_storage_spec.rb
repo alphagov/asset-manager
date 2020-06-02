@@ -110,8 +110,10 @@ RSpec.describe S3Storage do
 
       before do
         allow(s3_object).to receive(:exists?).and_return(true)
-        allow(subject).to receive(:metadata_for)
-          .with(asset).and_return(metadata)
+
+        allow(s3_client).to receive(:head_object).and_return(
+          Aws::S3::Types::HeadObjectOutput.new(metadata: metadata),
+        )
       end
 
       context "and MD5 hex digest does match" do
@@ -186,7 +188,7 @@ RSpec.describe S3Storage do
       let(:exists_on_s3) { false }
 
       it "returns falsey" do
-        expect(subject.exists?(asset)).to be_falsey
+        expect(subject).not_to exist(asset)
       end
     end
 
@@ -194,7 +196,7 @@ RSpec.describe S3Storage do
       let(:exists_on_s3) { true }
 
       it "returns truthy" do
-        expect(subject.exists?(asset)).to be_truthy
+        expect(subject).to exist(asset)
       end
     end
   end
@@ -227,7 +229,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { nil }
 
         it "returns truthy" do
-          expect(subject.never_replicated?(asset)).to be_truthy
+          expect(subject).to be_never_replicated(asset)
         end
       end
 
@@ -235,7 +237,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { "COMPLETED" }
 
         it "returns falsey" do
-          expect(subject.never_replicated?(asset)).to be_falsey
+          expect(subject).not_to be_never_replicated(asset)
         end
       end
     end
@@ -269,7 +271,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { nil }
 
         it "returns falsey" do
-          expect(subject.replicated?(asset)).to be_falsey
+          expect(subject).not_to be_replicated(asset)
         end
       end
 
@@ -277,7 +279,7 @@ RSpec.describe S3Storage do
         let(:replication_status) { "COMPLETED" }
 
         it "returns truthy" do
-          expect(subject.replicated?(asset)).to be_truthy
+          expect(subject).to be_replicated(asset)
         end
       end
     end

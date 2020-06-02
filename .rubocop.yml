@@ -1,26 +1,27 @@
-require: rubocop-rspec
 inherit_gem:
   rubocop-govuk:
     - "config/default.yml"
     - "config/rails.yml"
-
-inherit_from: .rubocop_todo.yml
+    - "config/rspec.yml"
 
 inherit_mode:
   merge:
     - Exclude
 
-RSpec/NestedGroups:
-  Max: 4
-
-RSpec/MultipleExpectations:
-  Max: 10
-
-RSpec/ExampleLength:
+# TODO: explain or remove this override
+RSpec/ContextWording:
   Enabled: false
 
-# This recently introduced cop seems to have stirred up some controversy
-RSpec/ContextWording:
+# TODO: explain or remove this override
+RSpec/NamedSubject:
+  Enabled: false
+
+# TODO: explain or remove this override
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+# TODO: explain or remove this override
+RSpec/AnyInstance:
   Enabled: false
 
 # This isn't supported by Mongoid

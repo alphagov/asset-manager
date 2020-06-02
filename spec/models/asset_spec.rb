@@ -212,7 +212,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "writes file to filesystem" do
-      expect(File.exist?(asset.file.path)).to be_truthy
+      expect(File).to exist(asset.file.path)
     end
   end
 
@@ -362,7 +362,7 @@ RSpec.describe Asset, type: :model do
 
     context "for current file" do
       it "returns true" do
-        expect(asset.filename_valid?("asset.png")).to be_truthy
+        expect(asset).to be_filename_valid("asset.png")
       end
     end
 
@@ -372,13 +372,13 @@ RSpec.describe Asset, type: :model do
       end
 
       it "returns true" do
-        expect(asset.filename_valid?("asset.png")).to be_truthy
+        expect(asset).to be_filename_valid("asset.png")
       end
     end
 
     context "for a file that has never been attached to the asset" do
       it "returns false" do
-        expect(asset.filename_valid?("never_existed.png")).to be_falsey
+        expect(asset).not_to be_filename_valid("never_existed.png")
       end
     end
   end
@@ -1027,7 +1027,7 @@ RSpec.describe Asset, type: :model do
       it "removes the underlying file" do
         asset.upload_success!
 
-        expect(File.exist?(path)).to be_falsey
+        expect(File).not_to exist(path)
       end
     end
 
