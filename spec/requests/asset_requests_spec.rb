@@ -3,7 +3,10 @@ require "rails_helper"
 RSpec.describe "Asset requests", type: :request do
   before do
     login_as_stub_user
-    allow_any_instance_of(Plek).to receive(:asset_root).and_return("http://assets.digital.cabinet-office.gov.uk")
+  end
+
+  around do |example|
+    ClimateControl.modify(GOVUK_ASSET_ROOT: "http://assets.digital.cabinet-office.gov.uk") { example.run }
   end
 
   describe "uploading an asset" do

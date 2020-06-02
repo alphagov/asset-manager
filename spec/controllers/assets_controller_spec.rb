@@ -404,25 +404,6 @@ RSpec.describe AssetsController, type: :controller do
 
         expect(response).to have_http_status(:success)
       end
-
-      context "when Asset#destroy fails" do
-        let(:errors) { ActiveModel::Errors.new(asset) }
-
-        before do
-          errors.add(:base, "Something went wrong")
-          allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
-          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-          delete :destroy, params: { id: asset.id }
-        end
-
-        it "responds with unprocessable entity status" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "includes the errors in the response" do
-          expect(response.body).to match(/Something went wrong/)
-        end
-      end
     end
 
     context "with no existing asset" do
@@ -507,25 +488,6 @@ RSpec.describe AssetsController, type: :controller do
         restored_asset = assigns(:asset)
         expect(restored_asset).not_to be_nil
         expect(restored_asset.deleted_at).to be_nil
-      end
-
-      context "when restoring fails" do
-        let(:errors) { ActiveModel::Errors.new(asset) }
-
-        before do
-          errors.add(:base, "Something went wrong")
-          allow_any_instance_of(Asset).to receive(:restore).and_return(false)
-          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-          post :restore, params: { id: asset.id }
-        end
-
-        it "responds with unprocessable entity status" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "includes the errors in the response" do
-          expect(response.body).to match(/Something went wrong/)
-        end
       end
     end
   end

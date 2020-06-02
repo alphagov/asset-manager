@@ -178,11 +178,11 @@ class Asset
   # can be used with 'deleted' and 'undeleted' scopes.
   #
   def destroy(_options = nil)
-    update(deleted_at: Time.zone.now)
+    update!(deleted_at: Time.zone.now)
   end
 
   def restore
-    update(deleted_at: nil)
+    update!(deleted_at: nil)
   end
 
   def deleted?

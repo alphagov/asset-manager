@@ -8,10 +8,6 @@ inherit_mode:
   merge:
     - Exclude
 
-# TODO: explain or remove this override
-RSpec/AnyInstance:
-  Enabled: false
-
 # This isn't supported by Mongoid
 Rails/FindBy:
   Enabled: false
