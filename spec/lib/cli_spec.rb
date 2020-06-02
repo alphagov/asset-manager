@@ -83,7 +83,11 @@ RSpec.describe CLI, type: :model do
       it "updates existing asset" do
         cli.update_asset(*args)
 
-        expect(asset.reload.file.file.identifier).to eq("asset2.jpg")
+        # asset.reload does not refresh the file, pending this fix to carrierwave-mongoid:
+        # https://github.com/carrierwaveuploader/carrierwave-mongoid/pull/190
+        reloaded_asset = Asset.find(asset.id)
+
+        expect(reloaded_asset.file.file.identifier).to eq("asset2.jpg")
       end
 
       it "reports that asset was saved" do

@@ -85,9 +85,13 @@ class Asset
 
     after_transition to: :uploaded do |asset, _|
       asset.save!
-      asset.remove_file!
-      FileUtils.rmdir(File.dirname(asset.file.path))
+      asset.delete_file_from_nfs
     end
+  end
+
+  def delete_file_from_nfs
+    FileUtils.remove_file(file.path)
+    FileUtils.rmdir(File.dirname(file.path))
   end
 
   def accessible_by?(user)

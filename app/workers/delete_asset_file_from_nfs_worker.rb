@@ -5,8 +5,7 @@ class DeleteAssetFileFromNfsWorker
   def perform(asset_id)
     asset = Asset.find(asset_id)
     if asset.uploaded?
-      asset.remove_file!
-      FileUtils.rmdir(File.dirname(asset.file.path))
+      asset.delete_file_from_nfs
     end
   end
 end
