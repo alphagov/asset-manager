@@ -17,6 +17,7 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:not_found)
 
+    allow(Services.virus_scanner).to receive(:scan)
     VirusScanWorker.drain
 
     get download_media_path(id: asset, filename: "lorem.txt")
