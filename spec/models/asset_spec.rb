@@ -1029,6 +1029,12 @@ RSpec.describe Asset, type: :model do
 
         expect(File.exist?(path)).to be_falsey
       end
+
+      it "removes the underlying directory" do
+        asset.upload_success!
+
+        expect(File.exist?(File.dirname(path))).to be_falsey
+      end
     end
 
     context "when asset is infected" do
