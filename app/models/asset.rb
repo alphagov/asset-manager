@@ -86,7 +86,16 @@ class Asset
     after_transition to: :uploaded do |asset, _|
       asset.save!
       asset.remove_file!
-      FileUtils.rmdir(File.dirname(asset.file.path))
+      dir = File.dirname(asset.file.path)
+      begin
+        FileUtils.rmdir(dir)
+      rescue Errno::ENOTEMPTY => e
+        GovukError.notify(e, extra: {
+          asset_id: asset.id,
+          filename: asset.filename,
+          other_files_in_dir: Dir["#{dir}/*"].map { |path| File.basename(path) },
+        })
+      end
     end
   end
 
