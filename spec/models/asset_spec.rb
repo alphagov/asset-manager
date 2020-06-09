@@ -1035,18 +1035,6 @@ RSpec.describe Asset, type: :model do
 
         expect(File.exist?(File.dirname(path))).to be_falsey
       end
-
-      it "provides contextual detail to the Errno::ENOTEMPTY exception" do
-        FileUtils.cp(path, "#{File.dirname(path)}/some_other_file.csv")
-
-        expect(GovukError).to receive(:notify).with(Errno::ENOTEMPTY, extra: {
-          asset_id: asset.id,
-          filename: asset.filename,
-          other_files_in_dir: ["some_other_file.csv"],
-        })
-
-        asset.upload_success!
-      end
     end
 
     context "when asset is infected" do
