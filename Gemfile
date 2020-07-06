@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+gem "rails", "6.0.3.2"
+
 gem "addressable"
 gem "aws-sdk"
 gem "carrierwave"
@@ -12,7 +14,6 @@ gem "mongoid"
 gem "nokogiri"
 gem "plek"
 gem "rack_strip_client_ip"
-gem "rails", "5.2.4.3"
 gem "rails-controller-testing"
 gem "state_machines-mongoid"
 
