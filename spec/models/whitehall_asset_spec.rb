@@ -81,7 +81,8 @@ RSpec.describe WhitehallAsset, type: :model do
 
     context "when updating asset" do
       it "cannot be set" do
-        expect { asset.legacy_url_path = "/government/uploads/another-asset.png" }.to raise_error(Mongoid::Errors::ReadonlyAttribute)
+        expect { asset.legacy_url_path = "/government/uploads/another-asset.png" }
+          .not_to change(asset, :legacy_url_path).from("/government/uploads/asset.png")
       end
     end
   end
