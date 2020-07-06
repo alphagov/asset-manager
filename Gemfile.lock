@@ -328,27 +328,27 @@ PLATFORMS
 
 DEPENDENCIES
   addressable
-  aws-sdk (~> 2.0)
+  aws-sdk
   byebug
-  carrierwave (~> 0.11.2)
-  carrierwave-mongoid (~> 0.10.0)
+  carrierwave
+  carrierwave-mongoid
   climate_control
   database_cleaner
   factory_bot_rails
-  gds-sso (~> 15.0)
-  govuk_app_config (~> 2.2)
-  govuk_sidekiq (~> 4.0)
-  jwt (~> 2.2)
-  mongoid (~> 6.2.0)
-  nokogiri (~> 1.10.9)
-  plek (~> 4.0)
-  rack_strip_client_ip (= 0.0.2)
+  gds-sso
+  govuk_app_config
+  govuk_sidekiq
+  jwt
+  mongoid
+  nokogiri
+  plek
+  rack_strip_client_ip
   rails (= 5.2.4.3)
   rails-controller-testing
   rspec-rails
   rubocop-govuk
   simplecov-rcov
-  state_machines-mongoid (~> 0.2.0)
+  state_machines-mongoid
 
 BUNDLED WITH
    1.17.3
