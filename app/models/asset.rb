@@ -145,7 +145,7 @@ class Asset
   end
 
   def md5_hexdigest_from_file
-    @md5_hexdigest ||= Digest::MD5.hexdigest(file.file.read)
+    @md5_hexdigest_from_file ||= Digest::MD5.hexdigest(file.file.read)
   end
 
   def size_from_file
@@ -177,11 +177,11 @@ class Asset
   # can be used with 'deleted' and 'undeleted' scopes.
   #
   def destroy(_options = nil)
-    update(deleted_at: Time.zone.now)
+    update!(deleted_at: Time.zone.now)
   end
 
   def restore
-    update(deleted_at: nil)
+    update!(deleted_at: nil)
   end
 
   def deleted?

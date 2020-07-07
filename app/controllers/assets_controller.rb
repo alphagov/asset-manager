@@ -13,22 +13,14 @@ class AssetsController < BaseAssetsController
 
   def destroy
     @asset = find_asset
-
-    if @asset.destroy
-      render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
-    else
-      error 422, @asset.errors.full_messages
-    end
+    @asset.destroy
+    render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end
 
   def restore
     @asset = find_asset(include_deleted: true)
-
-    if @asset.restore
-      render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
-    else
-      error 422, @asset.errors.full_messages
-    end
+    @asset.restore
+    render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end
 
 private

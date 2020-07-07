@@ -1,6 +1,7 @@
 module AuthenticationControllerHelpers
   def login_as(user)
-    request.env["warden"] = double(
+    request.env["warden"] = instance_double(
+      Warden::Proxy,
       authenticate: true,
       authenticate!: true,
       authenticated?: true,
@@ -9,7 +10,8 @@ module AuthenticationControllerHelpers
   end
 
   def not_logged_in
-    request.env["warden"] = double(
+    request.env["warden"] = instance_double(
+      Warden::Proxy,
       authenticate: true,
       authenticate!: true,
       authenticated?: false,

@@ -91,7 +91,7 @@ RSpec.describe "Media requests", type: :request do
 
     let(:auth_bypass_id) { "bypass-id" }
 
-    context "asset is not access limited" do
+    context "when the asset is not access limited" do
       let(:asset) do
         FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id])
       end
@@ -109,7 +109,7 @@ RSpec.describe "Media requests", type: :request do
       end
     end
 
-    context "asset is access limited" do
+    context "when the asset is access limited" do
       let(:asset) do
         FactoryBot.create(
           :uploaded_asset,
@@ -138,7 +138,7 @@ RSpec.describe "Media requests", type: :request do
 
     let(:auth_bypass_id) { "bypass-id" }
 
-    context "asset is not access limited" do
+    context "when the asset is not access limited" do
       let(:asset) do
         FactoryBot.create(:uploaded_asset, draft: true, auth_bypass_ids: [auth_bypass_id])
       end
@@ -156,7 +156,7 @@ RSpec.describe "Media requests", type: :request do
       end
     end
 
-    context "asset is access limited" do
+    context "when the asset is access limited" do
       let(:asset) do
         FactoryBot.create(
           :uploaded_asset,
@@ -183,7 +183,7 @@ RSpec.describe "Media requests", type: :request do
       end
     end
 
-    context "asset is access limited to a different user" do
+    context "when the asset is access limited to a different user" do
       let(:asset) do
         FactoryBot.create(
           :uploaded_asset,

@@ -206,7 +206,7 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe "PUT update" do
-    context "an existing asset" do
+    context "with an existing asset" do
       let(:asset) { FactoryBot.create(:asset) }
       let(:file) { load_fixture_file("asset2.jpg") }
       let(:valid_attributes) { { file: file } }
@@ -390,7 +390,7 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe "DELETE destroy" do
-    context "an existing asset" do
+    context "with an existing asset" do
       let(:asset) { FactoryBot.create(:asset) }
 
       it "deletes the asset" do
@@ -404,28 +404,9 @@ RSpec.describe AssetsController, type: :controller do
 
         expect(response).to have_http_status(:success)
       end
-
-      context "when Asset#destroy fails" do
-        let(:errors) { ActiveModel::Errors.new(asset) }
-
-        before do
-          errors.add(:base, "Something went wrong")
-          allow_any_instance_of(Asset).to receive(:destroy).and_return(false)
-          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-          delete :destroy, params: { id: asset.id }
-        end
-
-        it "responds with unprocessable entity status" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "includes the errors in the response" do
-          expect(response.body).to match(/Something went wrong/)
-        end
-      end
     end
 
-    context "no existing asset" do
+    context "with no existing asset" do
       it "responds with not found status" do
         delete :destroy, params: { id: "12345" }
         expect(response).to have_http_status(:not_found)
@@ -434,7 +415,7 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe "GET show" do
-    context "an asset which exists" do
+    context "with an asset which exists" do
       let(:asset) { FactoryBot.create(:asset) }
 
       it "responds with success status" do
@@ -465,7 +446,7 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
 
-    context "an asset that has been deleted" do
+    context "with an asset that has been deleted" do
       let(:asset) { FactoryBot.create(:deleted_asset) }
 
       it "responds with success status" do
@@ -475,7 +456,7 @@ RSpec.describe AssetsController, type: :controller do
       end
     end
 
-    context "no existing asset" do
+    context "with no existing asset" do
       it "responds with not found status" do
         get :show, params: { id: "some-gif-or-other" }
 
@@ -492,7 +473,7 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe "POST restore" do
-    context "an asset marked as deleted" do
+    context "with an asset marked as deleted" do
       let(:asset) { FactoryBot.create(:asset, deleted_at: 10.minutes.ago) }
 
       before do
@@ -507,25 +488,6 @@ RSpec.describe AssetsController, type: :controller do
         restored_asset = assigns(:asset)
         expect(restored_asset).not_to be_nil
         expect(restored_asset.deleted_at).to be_nil
-      end
-
-      context "when restoring fails" do
-        let(:errors) { ActiveModel::Errors.new(asset) }
-
-        before do
-          errors.add(:base, "Something went wrong")
-          allow_any_instance_of(Asset).to receive(:restore).and_return(false)
-          allow_any_instance_of(Asset).to receive(:errors).and_return(errors)
-          post :restore, params: { id: asset.id }
-        end
-
-        it "responds with unprocessable entity status" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "includes the errors in the response" do
-          expect(response.body).to match(/Something went wrong/)
-        end
       end
     end
   end

@@ -10,7 +10,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
   describe "POST create" do
     let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, :with_legacy_metadata) }
 
-    context "a valid asset" do
+    context "with a valid asset" do
       it "is persisted" do
         post :create, params: { asset: attributes }
 
@@ -104,7 +104,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       end
     end
 
-    context "an invalid asset" do
+    context "with an invalid asset" do
       let(:attributes) { { file: nil } }
 
       it "is not persisted" do
@@ -121,7 +121,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       end
     end
 
-    context "an asset with the same legacy_url_path as an existing asset" do
+    context "with an asset with the same legacy_url_path as an existing asset" do
       let!(:existing_asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: attributes[:legacy_url_path]) }
 
       it "marks the existing asset as deleted" do
@@ -131,7 +131,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       end
     end
 
-    context "a draft asset" do
+    context "with a draft asset" do
       let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, :with_legacy_metadata, draft: true) }
 
       it "stores draft status on asset" do
@@ -148,7 +148,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       end
     end
 
-    context "an asset with a redirect URL" do
+    context "with an asset with a redirect URL" do
       let(:redirect_url) { "https://example.com/path/file.ext" }
       let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, redirect_url: redirect_url) }
 
