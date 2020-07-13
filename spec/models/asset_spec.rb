@@ -1033,7 +1033,7 @@ RSpec.describe Asset, type: :model do
       it "removes the underlying directory" do
         asset.upload_success!
 
-        expect(File.exist?(File.dirname(path))).to be_falsey
+        expect(File).not_to exist(File.dirname(path))
       end
     end
 
