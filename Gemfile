@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "addressable"
-gem "aws-sdk", "~> 2.0"
+gem "aws-sdk", "~> 3.0"
 gem "carrierwave", "~> 0.11.2"
 gem "carrierwave-mongoid", "~> 0.10.0", require: "carrierwave/mongoid"
 gem "gds-sso", "~> 15.0"
