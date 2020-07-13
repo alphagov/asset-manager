@@ -5,21 +5,30 @@ updates:
     schedule:
       interval: daily
     allow:
-      # Allow only direct updates for all dependencies (i.e. ignore subdependencies)
-      - dependency-type: direct
       # Security updates
       - dependency-name: brakeman
+        dependency-type: direct
       # Internal gems
       - dependency-name: "gds*"
+        dependency-type: direct
       - dependency-name: "gov*"
+        dependency-type: direct
       - dependency-name: "*-govuk"
+        dependency-type: direct
       - dependency-name: plek
+        dependency-type: direct
       # Framework gems
       - dependency-name: factory_bot
+        dependency-type: direct
       - dependency-name: rails
+        dependency-type: direct
       - dependency-name: rspec
+        dependency-type: direct
       - dependency-name: rspec-rails
+        dependency-type: direct
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: ruby
