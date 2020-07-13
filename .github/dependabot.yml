@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: /
+    schedule:
+      interval: daily
+    allow:
+      # Allow only direct updates for all dependencies (i.e. ignore subdependencies)
+      - dependency-type: direct
+      # Security updates
+      - dependency-name: brakeman
+      # Internal gems
+      - dependency-name: "gds*"
+      - dependency-name: "gov*"
+      - dependency-name: "*-govuk"
+      - dependency-name: plek
+      # Framework gems
+      - dependency-name: factory_bot
+      - dependency-name: rails
+      - dependency-name: rspec
+      - dependency-name: rspec-rails
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
