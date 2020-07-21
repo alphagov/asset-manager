@@ -60,7 +60,7 @@ RSpec.describe S3Storage do
       expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
         .and_return(true)
 
-      storage.save(asset)
+      storage.save!(asset)
     end
 
     it "sets md5-hexdigest custom metadata on S3 object" do
@@ -69,7 +69,7 @@ RSpec.describe S3Storage do
         .with(anything, include(metadata: include(expected_metadata)))
         .and_return(true)
 
-      storage.save(asset)
+      storage.save!(asset)
     end
 
     context "when Aws::S3::Object#upload_file returns false" do
@@ -119,7 +119,7 @@ RSpec.describe S3Storage do
         it "does not upload file to S3" do
           expect(s3_object).not_to receive(:upload_file)
 
-          storage.save(asset)
+          storage.save!(asset)
         end
 
         context "but force options is set" do
@@ -137,7 +137,7 @@ RSpec.describe S3Storage do
         it "uploads file to S3" do
           expect(s3_object).to receive(:upload_file).and_return(true)
 
-          storage.save(asset)
+          storage.save!(asset)
         end
 
         context "and object has existing metadata" do
@@ -148,7 +148,7 @@ RSpec.describe S3Storage do
             expect(s3_object).to receive(:upload_file).and_return(true)
               .with(anything, include(metadata: include(existing_metadata)))
 
-            storage.save(asset)
+            storage.save!(asset)
           end
         end
       end

@@ -1,7 +1,7 @@
 class WhitehallAssetsController < BaseAssetsController
   def create
     if existing_asset_with_this_legacy_url_path.exists?
-      existing_asset_with_this_legacy_url_path.destroy
+      existing_asset_with_this_legacy_url_path.destroy!
     end
 
     super

@@ -22,7 +22,7 @@ RSpec.describe S3Storage::Fake do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
     it "writes file to fake S3 storage directory" do
-      storage.save(asset)
+      storage.save!(asset)
 
       expect(File).to exist(asset_path)
     end
@@ -32,7 +32,7 @@ RSpec.describe S3Storage::Fake do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
     before do
-      storage.save(asset)
+      storage.save!(asset)
       storage.delete(asset)
     end
 

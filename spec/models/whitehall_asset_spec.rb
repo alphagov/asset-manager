@@ -49,7 +49,7 @@ RSpec.describe WhitehallAsset, type: :model do
           before do
             asset.legacy_url_path = existing_asset.legacy_url_path
             existing_asset.delete
-            asset.save
+            asset.save!
           end
 
           it "is valid because legacy_url_path is unique within the assets not marked as deleted" do
@@ -198,7 +198,7 @@ RSpec.describe WhitehallAsset, type: :model do
     end
 
     it "can be restored" do
-      asset.destroy
+      asset.destroy!
       expect(asset.deleted_at).not_to be_nil
       asset.restore
       expect(asset.deleted_at).to be_nil

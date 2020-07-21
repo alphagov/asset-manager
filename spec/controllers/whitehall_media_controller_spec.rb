@@ -211,7 +211,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       before do
         allow(controller).to receive(:proxy_to_s3_via_nginx)
         allow(WhitehallAsset).to receive(:from_params).and_return(asset)
-        asset.update(parent_document_url: nil)
+        asset.update!(parent_document_url: nil)
       end
 
       it "doesn't send a Link HTTP header" do
@@ -227,7 +227,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       before do
         allow(controller).to receive(:proxy_to_s3_via_nginx)
         allow(WhitehallAsset).to receive(:from_params).and_return(asset)
-        asset.update(parent_document_url: "parent-document-url")
+        asset.update!(parent_document_url: "parent-document-url")
       end
 
       it "sends the parent_document_url in a Link HTTP header" do
@@ -264,7 +264,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
       before do
         allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(nil)
-        asset.update(deleted_at: Time.zone.now)
+        asset.update!(deleted_at: Time.zone.now)
       end
 
       it "responds with not found status" do
