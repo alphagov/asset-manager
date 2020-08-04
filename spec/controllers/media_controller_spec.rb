@@ -525,7 +525,8 @@ RSpec.describe MediaController, type: :controller do
       context "and the asset is draft and is requested from not the draft host" do
         before do
           request.headers["X-Forwarded-Host"] = "not-#{AssetManager.govuk.draft_assets_host}"
-          asset.update!(draft: true)
+          asset.draft = true
+          asset.save!(validate: false)
         end
 
         it "redirects if the replacement is live" do
