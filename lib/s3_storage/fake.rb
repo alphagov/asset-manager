@@ -5,7 +5,7 @@ class S3Storage
       @target_root = Pathname.new(root_directory)
     end
 
-    def save(asset, **_args)
+    def upload(asset, **_args)
       source_path = source_path_for(asset)
       target_path = target_path_for(asset)
       FileUtils.mkdir_p(File.dirname(target_path))
