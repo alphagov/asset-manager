@@ -227,13 +227,13 @@ RSpec.describe WhitehallMediaController, type: :controller do
       before do
         allow(controller).to receive(:proxy_to_s3_via_nginx)
         allow(WhitehallAsset).to receive(:from_params).and_return(asset)
-        asset.update!(parent_document_url: "parent-document-url")
+        asset.update!(parent_document_url: "https://parent-document-url")
       end
 
       it "sends the parent_document_url in a Link HTTP header" do
         get :download, params: { path: path, format: format }
 
-        expect(response.headers["Link"]).to eql('<parent-document-url>; rel="up"')
+        expect(response.headers["Link"]).to eql('<https://parent-document-url>; rel="up"')
       end
     end
 
