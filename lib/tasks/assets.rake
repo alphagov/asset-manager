@@ -2,7 +2,7 @@ namespace :assets do
   desc "Mark an asset as deleted and (optionally) remove from S3"
   task :delete, %i[id permanent] => :environment do |_t, args|
     asset = Asset.find(args.fetch(:id))
-    asset.destroy
+    asset.destroy!
     Services.cloud_storage.delete(asset) if args[:permanent]
   end
 

@@ -66,7 +66,7 @@ RSpec.describe AssetPresenter do
     context "when the asset has been saved and then destroyed" do
       before do
         asset.save!
-        asset.destroy
+        asset.destroy!
       end
 
       it "return hash including deleted state" do

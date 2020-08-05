@@ -13,7 +13,7 @@ class AssetsController < BaseAssetsController
 
   def destroy
     @asset = find_asset
-    @asset.destroy
+    @asset.destroy!
     render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end
 

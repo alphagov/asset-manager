@@ -158,7 +158,7 @@ class Asset
     Asset.where(replacement_id: id).each do |replaced_by_me|
       Asset.where(replacement_id: replaced_by_me.id).each do |indirectly_replaced_by_me|
         indirectly_replaced_by_me.replacement = self
-        indirectly_replaced_by_me.save
+        indirectly_replaced_by_me.save!
       end
     end
   end
@@ -168,7 +168,7 @@ class Asset
 
     Asset.where(replacement_id: id).each do |replaced_by_me|
       replaced_by_me.replacement = replacement
-      replaced_by_me.save
+      replaced_by_me.save!
     end
   end
 

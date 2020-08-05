@@ -22,7 +22,7 @@ RSpec.describe S3Storage::Fake do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
     it "writes file to fake S3 storage directory" do
-      storage.save(asset)
+      storage.upload(asset)
 
       expect(File).to exist(asset_path)
     end
@@ -32,7 +32,7 @@ RSpec.describe S3Storage::Fake do
     let(:asset_path) { root_path.join(relative_path_to_asset) }
 
     before do
-      storage.save(asset)
+      storage.upload(asset)
       storage.delete(asset)
     end
 
@@ -43,7 +43,7 @@ RSpec.describe S3Storage::Fake do
 
   describe "#presigned_url_for" do
     before do
-      storage.save(asset)
+      storage.upload(asset)
     end
 
     it "returns URL with path starting with fake S3 path prefix" do
@@ -80,7 +80,7 @@ RSpec.describe S3Storage::Fake do
 
     context "when file is saved in storage" do
       before do
-        storage.save(asset)
+        storage.upload(asset)
       end
 
       it "returns truthy" do

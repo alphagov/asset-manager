@@ -60,7 +60,7 @@ RSpec.describe S3Storage do
       expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
         .and_return(true)
 
-      storage.save(asset)
+      storage.upload(asset)
     end
 
     it "sets md5-hexdigest custom metadata on S3 object" do
@@ -69,7 +69,7 @@ RSpec.describe S3Storage do
         .with(anything, include(metadata: include(expected_metadata)))
         .and_return(true)
 
-      storage.save(asset)
+      storage.upload(asset)
     end
 
     context "when Aws::S3::Object#upload_file returns false" do
@@ -80,7 +80,7 @@ RSpec.describe S3Storage do
       it "raises ObjectUploadFailedError exception" do
         error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
 
-        expect { storage.save(asset) }
+        expect { storage.upload(asset) }
           .to raise_error(S3Storage::ObjectUploadFailedError, error_message)
       end
     end
@@ -96,7 +96,7 @@ RSpec.describe S3Storage do
       it "raises ObjectUploadFailedError exception" do
         error_message = "Aws::S3::Object#upload_file raised #{exception.inspect} for asset ID: #{asset.id}"
 
-        expect { storage.save(asset) }
+        expect { storage.upload(asset) }
           .to raise_error(S3Storage::ObjectUploadFailedError, error_message)
       end
     end
@@ -119,14 +119,14 @@ RSpec.describe S3Storage do
         it "does not upload file to S3" do
           expect(s3_object).not_to receive(:upload_file)
 
-          storage.save(asset)
+          storage.upload(asset)
         end
 
         context "but force options is set" do
           it "uploads file to S3" do
             expect(s3_object).to receive(:upload_file).and_return(true)
 
-            storage.save(asset, force: true)
+            storage.upload(asset, force: true)
           end
         end
       end
@@ -137,7 +137,7 @@ RSpec.describe S3Storage do
         it "uploads file to S3" do
           expect(s3_object).to receive(:upload_file).and_return(true)
 
-          storage.save(asset)
+          storage.upload(asset)
         end
 
         context "and object has existing metadata" do
@@ -148,7 +148,7 @@ RSpec.describe S3Storage do
             expect(s3_object).to receive(:upload_file).and_return(true)
               .with(anything, include(metadata: include(existing_metadata)))
 
-            storage.save(asset)
+            storage.upload(asset)
           end
         end
       end

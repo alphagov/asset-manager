@@ -9,11 +9,11 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
 
     before do
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
-      allow(cloud_storage).to receive(:save)
+      allow(cloud_storage).to receive(:upload)
     end
 
     it "saves the asset to cloud storage" do
-      expect(cloud_storage).to receive(:save).with(asset)
+      expect(cloud_storage).to receive(:upload).with(asset)
 
       worker.perform(asset)
     end
@@ -28,7 +28,7 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
 
       it "does not save the asset to cloud storage" do
-        expect(cloud_storage).not_to receive(:save).with(asset)
+        expect(cloud_storage).not_to receive(:upload).with(asset)
 
         worker.perform(asset)
       end
@@ -42,7 +42,7 @@ RSpec.describe SaveToCloudStorageWorker, type: :worker do
 
     context "when S3Storage::ObjectUploadFailedError is raised" do
       before do
-        allow(cloud_storage).to receive(:save)
+        allow(cloud_storage).to receive(:upload)
           .and_raise(S3Storage::ObjectUploadFailedError)
       end
 
