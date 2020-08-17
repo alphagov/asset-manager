@@ -192,6 +192,18 @@ class Asset
     access_limited.any? || access_limited_organisation_ids.any?
   end
 
+  # Fixes carrierwave-mongoid gem which currently doesn't reload objects correctly
+  # in rspec
+  def reload(*)
+    @_mounters = nil
+    super
+  end
+
+  def initialize_dup(other)
+    @_mounters = nil
+    super
+  end
+
 protected
 
   def store_metadata
