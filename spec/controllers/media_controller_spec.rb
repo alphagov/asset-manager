@@ -184,11 +184,11 @@ RSpec.describe MediaController, type: :controller do
       it "proxies asset to S3 via Nginx" do
         expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-        get :download, params
+        get :download, **params
       end
 
       it "sets Cache-Control header to expire in 30 minutes and be publicly cacheable" do
-        get :download, params
+        get :download, **params
 
         expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
@@ -231,7 +231,7 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "redirects to draft assets host" do
-          get :download, params
+          get :download, **params
 
           expected_url = "http://#{draft_assets_host}#{asset.public_url_path}"
           expect(controller).to redirect_to expected_url
@@ -247,7 +247,7 @@ RSpec.describe MediaController, type: :controller do
         it "requires authentication" do
           expect(controller).to receive(:authenticate_user!)
 
-          get :download, params
+          get :download, **params
         end
       end
 
@@ -261,11 +261,11 @@ RSpec.describe MediaController, type: :controller do
         it "proxies asset to S3 via Nginx as usual" do
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params
+          get :download, **params
         end
 
         it "sets Cache-Control header to no-cache" do
-          get :download, params
+          get :download, **params
 
           expect(response.headers["Cache-Control"]).to eq("no-cache")
         end
@@ -318,7 +318,7 @@ RSpec.describe MediaController, type: :controller do
         it "grants access to a user who is authorised to view the asset" do
           allow(asset).to receive(:accessible_by?).with(user).and_return(true)
 
-          get :download, params
+          get :download, **params
 
           expect(response).to be_successful
         end
@@ -326,7 +326,7 @@ RSpec.describe MediaController, type: :controller do
         it "denies access to a user who is not authorised to view the asset" do
           allow(asset).to receive(:accessible_by?).with(user).and_return(false)
 
-          get :download, params
+          get :download, **params
 
           expect(response).to be_forbidden
         end
@@ -352,7 +352,7 @@ RSpec.describe MediaController, type: :controller do
 
           allow(controller).to receive(:authenticate_user!).and_raise("requires authentication")
 
-          expect { get :download, query_params }.to raise_error("requires authentication")
+          expect { get :download, **query_params }.to raise_error("requires authentication")
         end
       end
     end
@@ -385,7 +385,7 @@ RSpec.describe MediaController, type: :controller do
         it "grants access to the file" do
           expect(controller).not_to receive(:authenticate_user!)
           query_params = params.tap { |p| p[:params].merge!(token: valid_token) }
-          get :download, query_params
+          get :download, **query_params
           expect(response).to be_successful
         end
       end
@@ -396,7 +396,7 @@ RSpec.describe MediaController, type: :controller do
         it "grants access to the file" do
           request.cookies["auth_bypass_token"] = valid_token
           expect(controller).not_to receive(:authenticate_user!)
-          get :download, params
+          get :download, **params
           expect(response).to be_successful
         end
       end
@@ -407,7 +407,7 @@ RSpec.describe MediaController, type: :controller do
         it "grants access to the file" do
           expect(controller).not_to receive(:authenticate_user!)
           query_params = params.tap { |p| p[:params].merge!(token: token_with_draft_asset_manager_access) }
-          get :download, query_params
+          get :download, **query_params
           expect(response).to be_successful
         end
       end
@@ -418,7 +418,7 @@ RSpec.describe MediaController, type: :controller do
         it "authenticates the user" do
           cookies["auth_bypass_token"] = "bad-token"
           expect(controller).to receive(:authenticate_user!)
-          get :download, params
+          get :download, **params
         end
       end
 
@@ -426,7 +426,7 @@ RSpec.describe MediaController, type: :controller do
         before { login_as_stub_user }
 
         it "grants access to the file" do
-          get :download, params
+          get :download, **params
           expect(response).to be_successful
         end
       end
@@ -436,7 +436,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:asset) }
 
       it "responds with 404 Not Found" do
-        get :download, params
+        get :download, **params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -445,7 +445,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:clean_asset) }
 
       it "responds with 404 Not Found" do
-        get :download, params
+        get :download, **params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -455,7 +455,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
 
       it "responds with 404 Not Found" do
-        get :download, params
+        get :download, **params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -464,7 +464,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:infected_asset) }
 
       it "responds with 404 Not Found" do
-        get :download, params
+        get :download, **params
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -480,7 +480,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:deleted_asset) }
 
       before do
-        get :download, params
+        get :download, **params
       end
 
       it "responds with not found status" do
@@ -493,7 +493,7 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:uploaded_asset, redirect_url: redirect_url) }
 
       it "redirects to redirect URL" do
-        get :download, params
+        get :download, **params
 
         expect(response).to redirect_to(redirect_url)
       end
@@ -504,20 +504,20 @@ RSpec.describe MediaController, type: :controller do
       let(:asset) { FactoryBot.create(:uploaded_asset, replacement: replacement) }
 
       it "redirects to replacement for asset" do
-        get :download, params
+        get :download, **params
 
         expected_url = "//#{AssetManager.govuk.assets_host}#{replacement.public_url_path}"
         expect(response).to redirect_to(expected_url)
       end
 
       it "responds with 301 moved permanently status" do
-        get :download, params
+        get :download, **params
 
         expect(response).to have_http_status(:moved_permanently)
       end
 
       it "sets the Cache-Control response header to 30 minutes" do
-        get :download, params
+        get :download, **params
 
         expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
@@ -530,7 +530,7 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "redirects if the replacement is live" do
-          get :download, params
+          get :download, **params
 
           expected_url = "//#{AssetManager.govuk.assets_host}#{replacement.public_url_path}"
           expect(response).to redirect_to(expected_url)
@@ -547,14 +547,14 @@ RSpec.describe MediaController, type: :controller do
 
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params
+          get :download, **params
         end
 
         it "redirects to the replacement asset when requested via the draft-assets host by a signed-in user" do
           request.headers["X-Forwarded-Host"] = AssetManager.govuk.draft_assets_host
           login_as_stub_user
 
-          get :download, params
+          get :download, **params
 
           expected_url = "//#{AssetManager.govuk.draft_assets_host}#{replacement.public_url_path}"
           expect(response).to redirect_to expected_url
@@ -570,7 +570,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "doesn't send a Link HTTP header" do
-        get :download, params
+        get :download, **params
 
         expect(response.headers["Link"]).to be_nil
       end
@@ -585,7 +585,7 @@ RSpec.describe MediaController, type: :controller do
       end
 
       it "sends the parent_document_url in a Link HTTP header" do
-        get :download, params
+        get :download, **params
 
         expect(response.headers["Link"]).to eql('<parent-document-url>; rel="up"')
       end
