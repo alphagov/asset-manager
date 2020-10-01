@@ -1,4 +1,4 @@
-FROM ruby:2.7.1
+FROM ruby:2.6.6
 RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt-get clean
 RUN freshclam
 RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
