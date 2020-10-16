@@ -1,4 +1,3 @@
-# rubocop:disable Rails/HttpPositionalArguments
 require "rails_helper"
 RSpec.describe MediaController, type: :controller do
   describe "base controller actions" do
@@ -592,4 +591,3 @@ RSpec.describe MediaController, type: :controller do
     end
   end
 end
-# rubocop:enable Rails/HttpPositionalArguments
