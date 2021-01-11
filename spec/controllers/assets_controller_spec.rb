@@ -74,6 +74,13 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).parent_document_url).to eq("parent-document-url")
       end
 
+      it "stores a specified content type" do
+        attributes = valid_attributes.merge(content_type: "application/pdf")
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).content_type).to eq("application/pdf")
+      end
+
       it "responds with created status" do
         post :create, params: { asset: valid_attributes }
 
