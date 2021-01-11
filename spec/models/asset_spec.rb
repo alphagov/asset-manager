@@ -567,13 +567,13 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "content_type" do
+  describe "content_type_from_extension" do
     context "when asset file has extension" do
       context "and the extension is a recognised mime type" do
         let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
         it "returns content type based on asset file extension" do
-          expect(asset.content_type).to eq(Mime::Type.lookup("image/png").to_s)
+          expect(asset.content_type_from_extension).to eq(Mime::Type.lookup("image/png").to_s)
         end
       end
 
@@ -581,7 +581,7 @@ RSpec.describe Asset, type: :model do
         let(:asset) { described_class.new(file: Tempfile.new(["file", ".unknown-extension"])) }
 
         it "returns default content type" do
-          expect(asset.content_type).to eq("application/octet-stream")
+          expect(asset.content_type_from_extension).to eq("application/octet-stream")
         end
       end
     end
@@ -590,146 +590,146 @@ RSpec.describe Asset, type: :model do
       let(:asset) { described_class.new(file: load_fixture_file("asset-without-extension")) }
 
       it "returns default content type" do
-        expect(asset.content_type).to eq("application/octet-stream")
+        expect(asset.content_type_from_extension).to eq("application/octet-stream")
       end
     end
 
     it "handles .jpg file extensions" do
       file = Tempfile.new(["file", ".jpg"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("image/jpeg")
+      expect(asset.content_type_from_extension).to eq("image/jpeg")
     end
 
     it "handles .jpeg file extensions" do
       file = Tempfile.new(["file", ".jpeg"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("image/jpeg")
+      expect(asset.content_type_from_extension).to eq("image/jpeg")
     end
 
     it "handles .gif file extensions" do
       file = Tempfile.new(["file", ".gif"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("image/gif")
+      expect(asset.content_type_from_extension).to eq("image/gif")
     end
 
     it "handles .png file extensions" do
       file = Tempfile.new(["file", ".png"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("image/png")
+      expect(asset.content_type_from_extension).to eq("image/png")
     end
 
     it "handles .pdf file extensions" do
       file = Tempfile.new(["file", ".pdf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/pdf")
+      expect(asset.content_type_from_extension).to eq("application/pdf")
     end
 
     it "handles .csv file extensions" do
       file = Tempfile.new(["file", ".csv"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("text/csv")
+      expect(asset.content_type_from_extension).to eq("text/csv")
     end
 
     it "handles .rtf file extensions" do
       file = Tempfile.new(["file", ".rtf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("text/rtf")
+      expect(asset.content_type_from_extension).to eq("text/rtf")
     end
 
     it "handles .doc file extensions" do
       file = Tempfile.new(["file", ".doc"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/msword")
+      expect(asset.content_type_from_extension).to eq("application/msword")
     end
 
     it "handles .docx file extensions" do
       file = Tempfile.new(["file", ".docx"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+      expect(asset.content_type_from_extension).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     end
 
     it "handles .xls file extensions" do
       file = Tempfile.new(["file", ".xls"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.ms-excel")
+      expect(asset.content_type_from_extension).to eq("application/vnd.ms-excel")
     end
 
     it "handles .xlsx file extensions" do
       file = Tempfile.new(["file", ".xlsx"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+      expect(asset.content_type_from_extension).to eq("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     end
 
     it "handles .odt file extensions" do
       file = Tempfile.new(["file", ".odt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.oasis.opendocument.text")
+      expect(asset.content_type_from_extension).to eq("application/vnd.oasis.opendocument.text")
     end
 
     it "handles .ods file extensions" do
       file = Tempfile.new(["file", ".ods"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.oasis.opendocument.spreadsheet")
+      expect(asset.content_type_from_extension).to eq("application/vnd.oasis.opendocument.spreadsheet")
     end
 
     it "handles .svg file extensions" do
       file = Tempfile.new(["file", ".svg"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("image/svg+xml")
+      expect(asset.content_type_from_extension).to eq("image/svg+xml")
     end
 
     it "handles .dot file extensions" do
       file = Tempfile.new(["file", ".dot"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/msword")
+      expect(asset.content_type_from_extension).to eq("application/msword")
     end
 
     it "handles .ppt file extensions" do
       file = Tempfile.new(["file", ".ppt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.ms-powerpoint")
+      expect(asset.content_type_from_extension).to eq("application/vnd.ms-powerpoint")
     end
 
     it "handles .pptx file extensions" do
       file = Tempfile.new(["file", ".pptx"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
+      expect(asset.content_type_from_extension).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
     end
 
     it "handles .rdf file extensions" do
       file = Tempfile.new(["file", ".rdf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/rdf+xml")
+      expect(asset.content_type_from_extension).to eq("application/rdf+xml")
     end
 
     it "handles .xlsm file extensions" do
       file = Tempfile.new(["file", ".xlsm"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.ms-excel.sheet.macroEnabled.12")
+      expect(asset.content_type_from_extension).to eq("application/vnd.ms-excel.sheet.macroEnabled.12")
     end
 
     it "handles .xlt file extensions" do
       file = Tempfile.new(["file", ".xlt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/vnd.ms-excel")
+      expect(asset.content_type_from_extension).to eq("application/vnd.ms-excel")
     end
 
     it "handles .txt file extensions and adds the charset parameter" do
       file = Tempfile.new(["file", ".txt"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("text/plain; charset=utf-8")
+      expect(asset.content_type_from_extension).to eq("text/plain; charset=utf-8")
     end
 
     it "handles .gml file extensions" do
       file = Tempfile.new(["file", ".gml"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/gml+xml")
+      expect(asset.content_type_from_extension).to eq("application/gml+xml")
     end
 
     it "handles .dxf file extensions" do
       file = Tempfile.new(["file", ".dxf"])
       asset = described_class.new(file: file)
-      expect(asset.content_type).to eq("application/dxf")
+      expect(asset.content_type_from_extension).to eq("application/dxf")
     end
   end
 

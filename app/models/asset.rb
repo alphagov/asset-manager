@@ -32,6 +32,8 @@ class Asset
   field :size, type: Integer
   protected :size=
 
+  field :content_type, type: String
+
   field :access_limited, type: Array, default: []
 
   field :access_limited_organisation_ids, type: Array, default: []
@@ -127,7 +129,7 @@ class Asset
     File.extname(filename).downcase.delete(".")
   end
 
-  def content_type
+  def content_type_from_extension
     mime_type = Mime::Type.lookup_by_extension(extension)
     mime_type ? mime_type.to_s : AssetManager.default_content_type
   end

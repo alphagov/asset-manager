@@ -11,7 +11,7 @@ class AssetPresenter
       },
       id: @view_context.asset_url(@asset.id),
       name: @asset.filename,
-      content_type: @asset.content_type,
+      content_type: @asset.content_type || @asset.content_type_from_extension,
       size: @asset.size,
       file_url: URI.join(Plek.new.asset_root, Addressable::URI.encode(@asset.public_url_path)).to_s,
       state: @asset.state,
