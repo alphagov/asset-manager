@@ -5,6 +5,15 @@ class Asset
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  # based on https://tools.ietf.org/html/rfc6838#section-4.2
+  CONTENT_TYPE_FORMAT = %r{
+    \A
+    \w[\w!#&\-^_.+]+ # type
+    / # separating slash
+    \w[\w!#&\-^_.+]+ # subtype
+    \Z
+  }x.freeze
+
   index deleted_at: 1
 
   belongs_to :replacement, class_name: "Asset", optional: true, index: true
@@ -52,6 +61,13 @@ class Asset
             format: {
               with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
               message: "must match the format defined in rfc4122",
+            }
+
+  validates :content_type,
+            format: {
+              with: CONTENT_TYPE_FORMAT,
+              message: "must match the format defined in rfc6838",
+              allow_nil: true,
             }
 
   validate :check_specified_replacement_exists

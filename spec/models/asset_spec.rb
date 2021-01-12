@@ -198,6 +198,42 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
+
+    context "when content_type is not specified" do
+      it "is valid" do
+        asset.content_type = nil
+        expect(asset).to be_valid
+      end
+    end
+
+    context "when content_type is specified" do
+      it "accepts valid media types" do
+        %w[
+          text/plain
+          application/atom+xml
+          application/EDI-X12
+          application/xml-dtd
+          application/zip
+          application/vnd.openxmlformats-officedocument.presentationml
+          video/quicktime
+          very#unusual/but&valid
+        ].each do |media_type|
+          asset.content_type = media_type
+          expect(asset).to be_valid
+        end
+      end
+
+      it "is rejects an invalid media type" do
+        %w[
+          */*
+          application/with$invalid%characters
+          text/with-parameter;parameter=123
+        ].each do |media_type|
+          asset.content_type = media_type
+          expect(asset).not_to be_valid
+        end
+      end
+    end
   end
 
   describe "creation" do
