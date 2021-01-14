@@ -4,19 +4,22 @@ RUN freshclam
 RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
 RUN gem install foreman
 
+# This image is only intended to be able to run this app in a production RAILS_ENV
+ENV RAILS_ENV production
+
 ENV GOVUK_APP_NAME asset-manager
 ENV GOVUK_ASSET_ROOT http://assets-origin.dev.gov.uk
 ENV MONGODB_URI mongodb://mongo/asset-manager
 ENV PORT 3037
-ENV REDIS_HOST redis
-ENV TEST_MONGODB_URI mongodb://mongo/asset-manager-test
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
 
 WORKDIR $APP_HOME
 ADD Gemfile* $APP_HOME/
-RUN bundle install
+RUN bundle config set deployment 'true'
+RUN bundle config set without 'development test'
+RUN bundle install --jobs 4
 ADD . $APP_HOME
 
 HEALTHCHECK CMD curl --silent --fail localhost:$PORT/healthcheck || exit 1
