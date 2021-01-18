@@ -8,7 +8,6 @@ node ('mongodb-3.2') {
       govuk.setEnvar('TEST_COVERAGE', 'true')
       govuk.setEnvar('JWT_AUTH_SECRET', 'secret')
     },
-    sassLint: false,
     publishingE2ETests: true,
     brakeman: true,
     afterTest: {
