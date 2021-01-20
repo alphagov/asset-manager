@@ -53,6 +53,14 @@ RSpec.describe AssetPresenter do
       expect(json).to include(deleted: false)
     end
 
+    context "when the asset has a content type specified" do
+      let(:asset) { FactoryBot.build(:asset, content_type: "application/pdf") }
+
+      it "returns the content type set on the asset" do
+        expect(json).to include(content_type: "application/pdf")
+      end
+    end
+
     context "when the asset has been saved" do
       before do
         asset.save
