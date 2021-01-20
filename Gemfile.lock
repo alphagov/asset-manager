@@ -110,7 +110,7 @@ GEM
       ruby2_keywords
     faraday-net_http (1.0.1)
     ffi (1.13.1)
-    gds-api-adapters (67.0.1)
+    gds-api-adapters (69.1.0)
       addressable
       link_header
       null_logger
@@ -132,7 +132,7 @@ GEM
       sentry-raven (~> 3.1.1)
       statsd-ruby (~> 1.5.0)
       unicorn (>= 5.4, < 5.9)
-    govuk_sidekiq (4.0.0)
+    govuk_sidekiq (5.0.0)
       gds-api-adapters (>= 19.1.0)
       govuk_app_config (>= 1.1)
       redis-namespace (~> 1.6)
@@ -165,7 +165,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2020.0512)
+    mime-types-data (3.2020.1104)
     mimemagic (0.3.5)
     mini_magick (4.10.1)
     mini_mime (1.0.2)
@@ -303,7 +303,7 @@ GEM
     ruby-progressbar (1.10.1)
     ruby-vips (2.0.17)
       ffi (~> 1.9)
-    ruby2_keywords (0.0.2)
+    ruby2_keywords (0.0.4)
     sentry-raven (3.1.1)
       faraday (>= 1.0)
     sidekiq (5.2.9)
