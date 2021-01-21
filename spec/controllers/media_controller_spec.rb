@@ -36,7 +36,6 @@ RSpec.describe MediaController, type: :controller do
           .with(asset, http_method: http_method).and_return(presigned_url)
         allow(asset).to receive(:etag).and_return("599ffda8-e169")
         allow(asset).to receive(:last_modified).and_return(last_modified)
-        allow(asset).to receive(:content_type).and_return("content-type")
         allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
         allow(content_disposition).to receive(:header_for).with(asset).and_return("content-disposition")
       end
@@ -65,10 +64,19 @@ RSpec.describe MediaController, type: :controller do
         expect(response.headers["Content-Disposition"]).to eq("content-disposition")
       end
 
-      it "sends Content-Type response header based on asset file extension" do
+      it "sends an Asset's content_type when one is set" do
+        allow(asset).to receive(:content_type).and_return("image/jpeg")
         get :download, params: { id: asset.id }
 
-        expect(response.headers["Content-Type"]).to eq("content-type")
+        expect(response.headers["Content-Type"]).to eq("image/jpeg")
+      end
+
+      it "determines an Asset's content_type by filename when it is not set" do
+        allow(asset).to receive(:content_type).and_return(nil)
+        allow(asset).to receive(:filename).and_return("file.pdf")
+        get :download, params: { id: asset.id }
+
+        expect(response.headers["Content-Type"]).to eq("application/pdf")
       end
 
       it "instructs Nginx to proxy the request to S3" do
