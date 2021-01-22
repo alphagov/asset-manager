@@ -91,12 +91,13 @@ protected
     headers["Last-Modified"] = asset.last_modified.httpdate
     headers["Content-Disposition"] = AssetManager.content_disposition.header_for(asset)
 
-    unless request.fresh?(response)
+    if request.fresh?(response)
+      head :not_modified
+    else
       url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
       headers["X-Accel-Redirect"] = "/cloud-storage-proxy/#{url}"
+      head :ok, content_type: content_type(asset)
     end
-
-    head :ok, content_type: content_type(asset)
   end
 
   def content_type(asset)
