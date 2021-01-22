@@ -96,7 +96,11 @@ protected
       headers["X-Accel-Redirect"] = "/cloud-storage-proxy/#{url}"
     end
 
-    head :ok, content_type: asset.content_type
+    head :ok, content_type: content_type(asset)
+  end
+
+  def content_type(asset)
+    asset.content_type || asset.content_type_from_extension
   end
 
   def redirect_to_draft_assets_host_for?(asset)
