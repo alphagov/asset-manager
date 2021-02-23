@@ -1,0 +1,5 @@
+# Headers
+
+Previously, the Rails app received `X-Sendfile-Type` & `X-Accel-Mapping` request headers and set the `X-Accel-Redirect` response header which caused `Rack::Sendfile` not to send the asset file in the body of the response. Nginx would interpret the `X-Accel-Redirect` response header and serve the file directly from disk. When running the app standalone (i.e. without Nginx) the app would not receive the request headers mentioned above. This in turn caused `Rack::Sendfile` to send the asset file in the body of the response. Thus it was possible to use the app running standalone to serve asset requests.
+
+However, now the app doesn't make use of `Rack::Sendfile` and instead *always* responds to asset requests by setting the `X-Accel-Redirect` response header and *not* sending the asset file in the response body. Nginx is configured to proxy the request to the URL supplied in `X-Accel-Redirect` response header on the development VM, but if you want to run the app standalone and you want to actually serve the asset file in the response body, you'll need something (e.g. Nginx) in front of the Rails app.
