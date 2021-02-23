@@ -1,25 +1,26 @@
 {
   "ignored_warnings": [
     {
-      "warning_type": "Cross-Site Request Forgery",
-      "warning_code": 86,
-      "fingerprint": "9e450b4277235e592c083dc95e4902a07537932fa4f1bfb631d7b2438066564d",
-      "check_name": "ForgerySetting",
-      "message": "protect_from_forgery should be configured with 'with: :exception'",
-      "file": "app/controllers/application_controller.rb",
-      "line": 4,
-      "link": "https://brakemanscanner.org/docs/warning_types/cross-site_request_forgery/",
-      "code": "protect_from_forgery(:with => :null_session)",
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "208f12bca8eb9bc7a921ab15d951b863dcb3abbc4bfafbd912cb453814fba63b",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/workers/delete_asset_file_from_nfs_worker.rb",
+      "line": 10,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "FileUtils.rmdir(File.dirname(Asset.find(asset_id).file.path))",
       "render_path": null,
       "location": {
-        "type": "controller",
-        "controller": "ApplicationController"
+        "type": "method",
+        "class": "DeleteAssetFileFromNfsWorker",
+        "method": "perform"
       },
-      "user_input": null,
-      "confidence": "Medium",
-      "note": "API only, but we can't use ActionController::API because we use view_context"
+      "user_input": "Asset.find(asset_id).file",
+      "confidence": "Weak",
+      "note": ""
     }
   ],
-  "updated": "2018-08-02 07:28:51 +0100",
-  "brakeman_version": "4.3.1"
+  "updated": "2021-02-23 15:17:02 +0000",
+  "brakeman_version": "5.0.0"
 }
