@@ -46,34 +46,18 @@ However, now the app doesn't make use of `Rack::Sendfile` and instead *always* r
 
 ### API
 
-`POST /assets` expects a single file uploaded via the `asset[file]` parameter. This creates the asset and schedules it for scanning.
-
-`PUT /assets/:id` expects a file in the same format, and replaces it at the provided ID.
-
-`GET /assets/:id` returns information about the requested asset, but not the asset itself.
-
-`DELETE /assets/:id` marks the asset as having been deleted.
-
-`POST /assets/:id/restore` restores a previously deleted asset.
-
-See the `AssetPresenter` class for the return format for the above API calls. All API requests must be authenticated with a token generated in the Signon application.
-
-`GET /media/:id/:filename` serves the file to the user if it is marked as clean.
-
-`POST /whitehall_assets` expects a single file uploaded via the `asset[file]` parameter and a path set in `asset[legacy_url_path]`. The latter tells Asset Manager the URL path at which the asset should be served. Note that this is intended as a transitional measure while we move Whitehall assets into Asset Manager. The idea is that eventually all asset URLs will be rationalised and consolidated and at that point Asset Manager will tell Whitehall the URL at which the asset will be served as it currently does for Mainstream assets. This endpoint also accepts two optional parameters, `asset[legacy_etag]` & `asset[legacy_last_modified]`. These are only intended for use when we move *existing* Whitehall assets into Asset Manager so that we can avoid wholesale cache invalidation. **Note** this endpoint should only be used from the Whitehall Admin app; not from any other publishing apps.
-
-### API examples (development VM)
-
-These examples assume you're using the [Development VM](https://github.com/alphagov/govuk-puppet/tree/master/development-vm).
+See the `AssetPresenter` class for the return format for the above API calls. Unless developing locally, all API requests must be authenticated with a token generated in the Signon application.
 
 #### Create an asset
 
+`POST /assets` expects a single file uploaded via the `asset[file]` parameter. This creates the asset and schedules it for scanning.
+
 ```
 # Create a temporary file
-vagrant@development:$ echo `date` > tmp.txt
+echo `date` > tmp.txt
 
 # Upload file to Asset Manager
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets --form "asset[file]=@tmp.txt"
+curl http://asset-manager.dev.gov.uk/assets --form "asset[file]=@tmp.txt"
 {
   "_response_info":{"status":"created"},
   "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
@@ -86,9 +70,11 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets --form "asset[
 
 #### Get asset info
 
+`GET /assets/:id` returns information about the requested asset, but not the asset itself.
+
 ```
 # Before virus scanning
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
 {
   "_response_info":{"status":"ok"},
   "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
@@ -99,7 +85,7 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 }
 
 # After virus scanning
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
 {
   "_response_info":{"status":"ok"},
   "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
@@ -112,26 +98,30 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 
 #### Get asset
 
+`GET /media/:id/:filename` serves the file to the user if it is marked as clean.
+
 ```
 # Before virus scanning
-vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
+curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 {
   "_response_info":{"status":"not found"}
 }
 
 # After virus scanning
-vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
+curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 Tue 18 Jul 2017 16:18:38 BST
 ```
 
 #### Update asset
 
+`PUT /assets/:id` expects a file in the same format, and replaces it at the provided ID.
+
 ```
 # Create a new tmp file
-vagrant@development:$ echo `date` > tmp123.txt
+echo `date` > tmp123.txt
 
 # Update the file on asset-manager
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 --request PUT --form "asset[file]=@tmp123.txt"
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 --request PUT --form "asset[file]=@tmp123.txt"
 {
   "_response_info":{"status":"success"},
   "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
@@ -142,19 +132,21 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 }
 
 # Request asset using original filename
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
+curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 <html><body>You are being <a href="/media/597b098a759b743e0b759a96/tmp123.txt">redirected</a>.</body></html>
 
 # Request asset using latest filename
-vagrant@development:$ curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt
+curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt
 Tue 18 Jul 2017 17:06:41 BST
 ```
 
 #### Delete asset
 
+`DELETE /assets/:id` marks the asset as having been deleted.
+
 ```
 # Delete the asset
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
   --request DELETE
 {
   "_response_info":{"status":"success"},
@@ -166,7 +158,7 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 }
 
 # Confirm that it's been deleted
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
 {
   "_response_info":{"status":"not found"}
 }
@@ -174,9 +166,11 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 
 #### Restore asset
 
+`POST /assets/:id/restore` restores a previously deleted asset.
+
 ```
 # This assumes the asset has been deleted
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96/restore \
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96/restore \
   --request POST
 {
   "_response_info":{"status":"success"},
@@ -188,7 +182,7 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 }
 
 # Confirm that it's been restored
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
+curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
 {
   "_response_info":{"status":"ok"},
   "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
@@ -201,12 +195,14 @@ vagrant@development:$ curl http://asset-manager.dev.gov.uk/assets/597b098a759b74
 
 #### Create a Whitehall asset
 
+`POST /whitehall_assets` expects a single file uploaded via the `asset[file]` parameter and a path set in `asset[legacy_url_path]`. The latter tells Asset Manager the URL path at which the asset should be served. Note that this is intended as a transitional measure while we move Whitehall assets into Asset Manager. The idea is that eventually all asset URLs will be rationalised and consolidated and at that point Asset Manager will tell Whitehall the URL at which the asset will be served as it currently does for Mainstream assets. This endpoint also accepts two optional parameters, `asset[legacy_etag]` & `asset[legacy_last_modified]`. These are only intended for use when we move *existing* Whitehall assets into Asset Manager so that we can avoid wholesale cache invalidation. **Note** this endpoint should only be used from the Whitehall Admin app; not from any other publishing apps.
+
 ```
 # Create a temporary file
-vagrant@development:$ echo `date` > tmp.txt
+echo `date` > tmp.txt
 
 # Upload file to Asset Manager
-vagrant@development:$ curl http://asset-manager.dev.gov.uk/whitehall_assets --form "asset[file]=@tmp.txt" --form "asset[legacy_url_path]=/government/uploads/path/to/tmp.txt"
+curl http://asset-manager.dev.gov.uk/whitehall_assets --form "asset[file]=@tmp.txt" --form "asset[legacy_url_path]=/government/uploads/path/to/tmp.txt"
 {
   "_response_info":{"status":"created"},
   "id":"http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96",
