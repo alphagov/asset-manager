@@ -11,6 +11,7 @@ gem "gds-sso"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "jwt"
+gem "mimemagic", git: "https://github.com/barrucadu/mimemagic.git", ref: "e571894" # Use a GDS employee's fork until an upstream bug is fixed
 gem "mongoid"
 gem "nokogiri"
 gem "plek"
