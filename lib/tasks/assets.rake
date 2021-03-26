@@ -15,7 +15,9 @@ namespace :assets do
   desc "Mark an asset as a redirect"
   task :redirect, %i[id redirect_url] => :environment do |_t, args|
     asset = Asset.find(args.fetch(:id))
-    asset.update!(redirect_url: args.fetch(:redirect_url), deleted_at: nil)
+    redirect_url = args.fetch(:redirect_url)
+    abort "redirect_url must start with https://" unless redirect_url.start_with? "https://"
+    asset.update!(redirect_url: redirect_url, deleted_at: nil)
   end
 
   desc "Mark a Whitehall asset as a redirect"
