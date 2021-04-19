@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  get "/healthcheck/live", to: proc { [200, {}, %w[OK]] }
+  get "/healthcheck", to: GovukHealthcheck.rack_response(
+    GovukHealthcheck::ActiveRecord,
+    GovukHealthcheck::SidekiqRedis,
+  )
+
   resources :assets, only: %i[show create update destroy] do
     member do
       post :restore
@@ -15,5 +21,8 @@ Rails.application.routes.draw do
     mount Rack::File.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: "fake_s3"
   end
 
-  get "/healthcheck", to: "healthcheck#check"
+  get "/healthcheck", to: GovukHealthcheck.rack_response(
+    GovukHealthcheck::ActiveRecord,
+    GovukHealthcheck::SidekiqRedis,
+  )
 end
