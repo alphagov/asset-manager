@@ -22,6 +22,6 @@ RUN bundle config set without 'development test'
 RUN bundle install --jobs 4
 ADD . $APP_HOME
 
-HEALTHCHECK CMD curl --silent --fail localhost:$PORT/healthcheck || exit 1
+HEALTHCHECK CMD curl --silent --fail localhost:$PORT/healthcheck/ready || exit 1
 
 CMD foreman run web

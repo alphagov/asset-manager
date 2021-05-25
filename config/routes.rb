@@ -20,9 +20,4 @@ Rails.application.routes.draw do
   if AssetManager.s3.fake?
     mount Rack::File.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: "fake_s3"
   end
-
-  get "/healthcheck", to: GovukHealthcheck.rack_response(
-    GovukHealthcheck::Mongoid,
-    GovukHealthcheck::SidekiqRedis,
-  )
 end
