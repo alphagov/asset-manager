@@ -1,5 +1,5 @@
 class AssetProcessor
-  def initialize(scope: Asset, output: STDOUT, report_progress_every: 1000)
+  def initialize(scope: Asset, output: $stdout, report_progress_every: 1000)
     @scope = scope
     @output = output
     @report_progress_every = report_progress_every

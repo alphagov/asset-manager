@@ -1,5 +1,5 @@
 class CLI
-  def initialize(output = STDOUT, kernel = Kernel)
+  def initialize(output = $stdout, kernel = Kernel)
     @output = output
     @kernel = kernel
   end
