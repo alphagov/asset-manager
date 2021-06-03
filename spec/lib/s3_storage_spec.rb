@@ -57,19 +57,21 @@ RSpec.describe S3Storage do
     end
 
     it "uploads file to S3 bucket" do
-      expect(s3_object).to receive(:upload_file).with(asset.file.path, anything)
-        .and_return(true)
-
+      allow(s3_object).to receive(:upload_file).with(asset.file.path, anything).and_return(true)
       storage.upload(asset)
+      expect(s3_object).to have_received(:upload_file).with(asset.file.path, anything)
     end
 
     it "sets md5-hexdigest custom metadata on S3 object" do
       expected_metadata = { "md5-hexdigest" => asset.md5_hexdigest }
-      expect(s3_object).to receive(:upload_file)
+      allow(s3_object).to receive(:upload_file)
         .with(anything, include(metadata: include(expected_metadata)))
         .and_return(true)
 
       storage.upload(asset)
+
+      expect(s3_object).to have_received(:upload_file)
+        .with(anything, include(metadata: include(expected_metadata)))
     end
 
     context "when Aws::S3::Object#upload_file returns false" do
@@ -124,9 +126,9 @@ RSpec.describe S3Storage do
 
         context "but force options is set" do
           it "uploads file to S3" do
-            expect(s3_object).to receive(:upload_file).and_return(true)
-
+            allow(s3_object).to receive(:upload_file).and_return(true)
             storage.upload(asset, force: true)
+            expect(s3_object).to have_received(:upload_file)
           end
         end
       end
@@ -135,9 +137,9 @@ RSpec.describe S3Storage do
         let(:md5_hexdigest) { "does-not-match" }
 
         it "uploads file to S3" do
-          expect(s3_object).to receive(:upload_file).and_return(true)
-
+          allow(s3_object).to receive(:upload_file).and_return(true)
           storage.upload(asset)
+          expect(s3_object).to have_received(:upload_file)
         end
 
         context "and object has existing metadata" do
@@ -157,8 +159,9 @@ RSpec.describe S3Storage do
 
   describe "#delete" do
     it "deletes the file from the S3 bucket" do
-      expect(s3_object).to receive(:delete).and_return(true)
+      allow(s3_object).to receive(:delete).and_return(true)
       storage.delete(asset)
+      expect(s3_object).to have_received(:delete)
     end
   end
 
