@@ -57,7 +57,7 @@ RSpec.describe WhitehallAsset, type: :model do
           end
 
           it "can find the most recent (undeleted) asset" do
-            path = asset.legacy_url_path[1..-1]
+            path = asset.legacy_url_path[1..]
             expect(described_class.from_params(path: path).deleted?).to eq(false)
           end
         end
