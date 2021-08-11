@@ -20,6 +20,8 @@ updates:
       # Framework gems
       - dependency-name: factory_bot
         dependency-type: direct
+      - dependency-name: mongoid
+        dependency-name: direct
       - dependency-name: rails
         dependency-type: direct
       - dependency-name: rspec
