@@ -27,3 +27,7 @@ group :development, :test do
   gem "rubocop-govuk"
   gem "simplecov"
 end
+
+group :development do
+  gem "listen"
+end
