@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "6.0.4"
+gem "rails", "6.1.4.1"
 
 gem "addressable"
 gem "aws-sdk-core"
@@ -26,4 +26,8 @@ group :development, :test do
   gem "rspec-rails"
   gem "rubocop-govuk"
   gem "simplecov"
+end
+
+group :development do
+  gem "listen"
 end
