@@ -1,27 +1,35 @@
-FROM ruby:2.7.2
-RUN apt-get update -qq && apt-get upgrade -y && apt-get install -y clamav && apt-get clean
-RUN freshclam
-RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan
-RUN gem install foreman
+# TODO: make this default to govuk-ruby once it's being pushed somewhere public
+# (unless we decide to use Bitnami instead)
+ARG base_image=ruby:2.7.2
 
+FROM $base_image AS builder
 # This image is only intended to be able to run this app in a production RAILS_ENV
-ENV RAILS_ENV production
+ENV RAILS_ENV=production
+# TODO: have a separate build image which already contains the build-only deps.
+RUN apt-get update -qy && \
+    apt-get upgrade -y && \
+    apt-get clean
 
-ENV GOVUK_APP_NAME asset-manager
-ENV GOVUK_ASSET_ROOT http://assets-origin.dev.gov.uk
-ENV MONGODB_URI mongodb://mongo/asset-manager
-ENV PORT 3037
+RUN mkdir /app
+WORKDIR /app
+COPY Gemfile Gemfile.lock .ruby-version /app/
+RUN bundle config set deployment 'true' && \
+    bundle config set without 'development test' && \
+    bundle install --jobs 4 --retry=2
+COPY . /app
 
-ENV APP_HOME /app
-RUN mkdir $APP_HOME
+FROM $base_image
+ENV RAILS_ENV=production GOVUK_APP_NAME=asset-manager GOVUK_ASSET_ROOT=http://assets-origin.dev.gov.uk
 
-WORKDIR $APP_HOME
-ADD Gemfile* $APP_HOME/
-RUN bundle config set deployment 'true'
-RUN bundle config set without 'development test'
-RUN bundle install --jobs 4
-ADD . $APP_HOME
+# TODO: apt-get upgrade in the base image
+RUN apt-get update -qy && \
+    apt-get upgrade -y && \
+# TODO: remove Clamav from container and run it as a seperate container
+    apt-get install -y clamav
 
-HEALTHCHECK CMD curl --silent --fail localhost:$PORT/healthcheck/ready || exit 1
+RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan && freshclam
 
-CMD foreman run web
+WORKDIR /app
+COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
+COPY --from=builder /app ./
+CMD bundle exec puma
