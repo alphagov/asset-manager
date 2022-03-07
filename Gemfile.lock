@@ -132,7 +132,7 @@ GEM
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
     faraday-retry (1.0.3)
-    ffi (1.14.2)
+    ffi (1.15.5)
     gds-api-adapters (69.1.0)
       addressable
       link_header
@@ -171,7 +171,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.10.0)
       concurrent-ruby (~> 1.0)
-    image_processing (1.12.1)
+    image_processing (1.12.2)
       mini_magick (>= 4.9.5, < 5)
       ruby-vips (>= 2.0.17, < 3)
     jmespath (1.4.0)
@@ -341,8 +341,8 @@ GEM
     rubocop-rspec (2.7.0)
       rubocop (~> 1.19)
     ruby-progressbar (1.11.0)
-    ruby-vips (2.0.17)
-      ffi (~> 1.9)
+    ruby-vips (2.1.4)
+      ffi (~> 1.12)
     ruby2_keywords (0.0.5)
     sentry-rails (4.5.2)
       railties (>= 5.0)
