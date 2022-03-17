@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "6.1.5"
+gem "rails", "7.0.2.3"
 
 gem "addressable"
 gem "aws-sdk-core"
@@ -16,6 +16,7 @@ gem "nokogiri"
 gem "plek"
 gem "rack_strip_client_ip"
 gem "rails-controller-testing"
+gem "sprockets-rails"
 gem "state_machines-mongoid"
 
 group :development, :test do
