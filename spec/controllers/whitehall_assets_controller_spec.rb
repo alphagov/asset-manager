@@ -61,6 +61,13 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         expect(assigns(:asset).replacement).to eq(replacement)
       end
 
+      it "stores auth_bypass_ids on asset" do
+        attributes_with_auth_bypass = attributes.merge(auth_bypass_ids: %w[id1 id2])
+        post :create, params: { asset: attributes_with_auth_bypass }
+
+        expect(assigns(:asset).auth_bypass_ids).to eq(%w[id1 id2])
+      end
+
       it "stores parent_document_url on asset" do
         post :create, params: { asset: attributes.merge(parent_document_url: "parent-document-url") }
 
