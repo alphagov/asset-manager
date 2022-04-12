@@ -205,6 +205,84 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
     end
 
+    context "with draft uploaded asset with auth_bypass_ids" do
+      let(:user) { FactoryBot.build(:user) }
+      let(:auth_bypass_id) { "bypass-id" }
+      let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, draft: true, auth_bypass_ids: [auth_bypass_id]) }
+      let(:valid_token) do
+        JWT.encode(
+          { "sub" => auth_bypass_id },
+          Rails.application.secrets.jwt_auth_secret,
+          "HS256",
+        )
+      end
+      let(:token_with_draft_asset_manager_access) do
+        JWT.encode(
+          { "draft_asset_manager_access" => true },
+          Rails.application.secrets.jwt_auth_secret,
+          "HS256",
+        )
+      end
+      let(:state) { "uploaded" }
+
+      before do
+        allow(controller).to receive(:proxy_to_s3_via_nginx)
+        allow(WhitehallAsset).to receive(:from_params).and_return(asset)
+        request.headers["X-Forwarded-Host"] = AssetManager.govuk.draft_assets_host
+        login_as user
+      end
+
+      context "when a user is not authenticated and has provided a valid token by query string" do
+        before { not_logged_in }
+
+        it "grants access to the file" do
+          expect(controller).not_to receive(:authenticate_user!)
+          get :download, params: { path: path, format: format, token: valid_token }
+          expect(response).to be_successful
+        end
+      end
+
+      context "when a user is not authenticated and has provided a valid token by cookie" do
+        before { not_logged_in }
+
+        it "grants access to the file" do
+          request.cookies["auth_bypass_token"] = valid_token
+          expect(controller).not_to receive(:authenticate_user!)
+          get :download, params: { path: path, format: format, token: valid_token }
+          expect(response).to be_successful
+        end
+      end
+
+      context "when a user is not authenticated and has provided a valid token with draft_asset_manager_access" do
+        before { not_logged_in }
+
+        it "grants access to the file" do
+          expect(controller).not_to receive(:authenticate_user!)
+          get :download, params: { path: path, format: format, token: token_with_draft_asset_manager_access }
+          expect(response).to be_successful
+        end
+      end
+
+      context "when a user is not authenticated and has provided an invalid token" do
+        before { not_logged_in }
+
+        it "authenticates the user" do
+          cookies["auth_bypass_token"] = "bad-token"
+          expect(controller).to receive(:authenticate_user!)
+          get :download, params: { path: path, format: format }
+        end
+      end
+
+      context "when user is authenticated" do
+        before { login_as_stub_user }
+
+        it "grants access to the file" do
+          get :download, params: { path: path, format: format }
+          expect(response).to be_successful
+        end
+      end
+    end
+
     context "when the asset doesn't contain a parent_document_url" do
       let(:state) { "uploaded" }
 
