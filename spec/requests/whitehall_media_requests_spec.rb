@@ -13,7 +13,7 @@ RSpec.describe "Whitehall media requests", type: :request do
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
-        .with(asset, http_method: http_method).and_return(presigned_url)
+                                .with(asset, http_method: http_method).and_return(presigned_url)
 
       get path
     end
@@ -78,7 +78,7 @@ RSpec.describe "Whitehall media requests", type: :request do
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
-        .with(asset, http_method: http_method).and_return(presigned_url)
+                                .with(asset, http_method: http_method).and_return(presigned_url)
 
       get path,
           headers: {
@@ -110,6 +110,98 @@ RSpec.describe "Whitehall media requests", type: :request do
 
     it "sets the X-Frame-Options response header to DENY" do
       expect(response.headers["X-Frame-Options"]).to eq("DENY")
+    end
+  end
+
+  describe "requesting a draft asset while logged in" do
+    around do |example|
+      ClimateControl.modify(GDS_SSO_MOCK_INVALID: "1") { example.run }
+    end
+
+    before do
+      GDS::SSO.test_user = User.first
+      host! AssetManager.govuk.draft_assets_host
+      allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
+      allow(cloud_storage).to receive(:presigned_url_for)
+                                .with(asset, http_method: http_method).and_return("https://s3-host.test/presigned-url")
+    end
+
+    let(:path) { "/government/uploads/asset.png" }
+    let(:auth_bypass_id) { "bypass-id" }
+
+    let(:valid_token) { JWT.encode({ "sub" => auth_bypass_id }, Rails.application.secrets.jwt_auth_secret, "HS256") }
+    let(:token_without_access) { JWT.encode({ "sub" => "not-the-right-bypass-id" }, Rails.application.secrets.jwt_auth_secret, "HS256") }
+
+    context "when the asset is not access limited" do
+      let(:asset) do
+        FactoryBot.create(
+          :uploaded_whitehall_asset,
+          file: load_fixture_file(File.basename(path)),
+          draft: true,
+          auth_bypass_ids: [auth_bypass_id],
+          legacy_url_path: path,
+        )
+      end
+
+      it "serves the asset without a valid token" do
+        get path
+        expect(response).to be_successful
+      end
+
+      it "serves the asset with a valid token" do
+        get "#{path}?token=#{valid_token}"
+        expect(response).to be_successful
+      end
+    end
+
+    context "when the asset is access limited, and the user has access" do
+      let(:asset) do
+        FactoryBot.create(
+          :uploaded_whitehall_asset,
+          file: load_fixture_file(File.basename(path)),
+          draft: true,
+          auth_bypass_ids: [auth_bypass_id],
+          access_limited: [User.first.uid],
+        )
+      end
+
+      it "serves the asset without a valid token" do
+        get path
+        expect(response).to be_successful
+      end
+
+      it "serves the asset with a valid token" do
+        get "#{path}?token=#{valid_token}"
+        expect(response).to be_successful
+      end
+    end
+
+    context "when the asset is access limited to a different user" do
+      let(:asset) do
+        FactoryBot.create(
+          :uploaded_whitehall_asset,
+          file: load_fixture_file(File.basename(path)),
+          legacy_url_path: path,
+          draft: true,
+          auth_bypass_ids: [auth_bypass_id],
+          access_limited: %w[some-other-user],
+        )
+      end
+
+      it "does not serve the asset without a valid token" do
+        get path
+        expect(response).to be_forbidden
+      end
+
+      it "serves the asset with a valid token" do
+        get "#{path}?token=#{valid_token}"
+        expect(response).to be_successful
+      end
+
+      it "does not serve the asset with a token containing the wrong auth bypass id" do
+        get "#{path}?token=#{token_without_access}"
+        expect(response).to be_forbidden
+      end
     end
   end
 end
