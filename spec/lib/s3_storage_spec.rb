@@ -168,13 +168,13 @@ RSpec.describe S3Storage do
   describe "#presigned_url_for" do
     it "returns presigned URL for GET request to asset on S3 by default" do
       allow(s3_object).to receive(:presigned_url)
-        .with("GET", expires_in: 1.minute).and_return("presigned-url")
+        .with("get", expires_in: 1.minute).and_return("presigned-url")
       expect(storage.presigned_url_for(asset)).to eq("presigned-url")
     end
 
     it "returns presigned URL for HEAD request to asset on S3 when http_method specified" do
       allow(s3_object).to receive(:presigned_url)
-        .with("HEAD", expires_in: 1.minute).and_return("presigned-url")
+        .with("head", expires_in: 1.minute).and_return("presigned-url")
       expect(storage.presigned_url_for(asset, http_method: "HEAD")).to eq("presigned-url")
     end
   end
