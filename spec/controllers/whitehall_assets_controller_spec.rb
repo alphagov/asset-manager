@@ -223,14 +223,59 @@ RSpec.describe WhitehallAssetsController, type: :controller do
     end
 
     context "when the asset has been deleted" do
-      before do
-        asset.destroy
+      let(:asset) do
+        FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path, deleted_at: Time.zone.now)
       end
 
       it "returns a 200 response" do
         get :show, params: { path: "government/uploads/image", format: "png" }
 
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "when multiple iterations of the asset has been deleted" do
+      let!(:asset) do
+        FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path, deleted_at: 2.days.ago)
+      end
+
+      let(:more_recently_deleted_asset) do
+        FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path, deleted_at: 1.day.ago)
+      end
+
+      before do
+        allow(AssetPresenter).to receive(:new).with(more_recently_deleted_asset, anything).and_return(presenter)
+      end
+
+      it "presents the most recently deleted asset, regardless of the updated time" do
+        asset.update!(updated_at: 1.day.ago)
+        more_recently_deleted_asset.update!(updated_at: 2.days.ago)
+
+        get :show, params: { path: "government/uploads/image", format: "png" }
+
+        expect(AssetPresenter).to have_received(:new).with(more_recently_deleted_asset, anything)
+      end
+    end
+
+    context "when an asset has been deleted and a replacement has been created" do
+      let(:asset) do
+        FactoryBot.create(:whitehall_asset,
+                          legacy_url_path: legacy_url_path,
+                          deleted_at: Time.zone.now)
+      end
+      let(:replacement_asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
+
+      before do
+        allow(AssetPresenter).to receive(:new).with(replacement_asset, anything).and_return(presenter)
+      end
+
+      it "presents the asset that isn't deleted, regardless of the the updated time" do
+        asset.update!(updated_at: 1.day.ago)
+        replacement_asset.update!(updated_at: 2.days.ago)
+
+        get :show, params: { path: "government/uploads/image", format: "png" }
+
+        expect(AssetPresenter).to have_received(:new).with(replacement_asset, anything)
       end
     end
   end

@@ -30,8 +30,13 @@ private
   end
 
   def find_asset(include_deleted: false)
-    scope = include_deleted ? WhitehallAsset : WhitehallAsset.undeleted
-    scope.from_params(
+    WhitehallAsset.undeleted.from_params(
+      path: params[:path], format: params[:format],
+    )
+  rescue Mongoid::Errors::DocumentNotFound => e
+    raise e unless include_deleted
+
+    WhitehallAsset.deleted.order(deleted_at: :desc).from_params(
       path: params[:path], format: params[:format],
     )
   end
