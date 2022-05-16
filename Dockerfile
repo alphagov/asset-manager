@@ -27,9 +27,13 @@ RUN apt-get update -qy && \
 # TODO: remove Clamav from container and run it as a seperate container
     apt-get install -y clamav
 
-RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan && freshclam
+RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan && \
+    freshclam && \
+    sed -i '/UpdateLogFile/d' /etc/clamav/freshclam.conf
 
 WORKDIR /app
+
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=builder /app ./
+
 CMD bundle exec puma
