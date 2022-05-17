@@ -19,7 +19,7 @@ RUN bundle config set deployment 'true' && \
 COPY . /app
 
 FROM $base_image
-ENV RAILS_ENV=production GOVUK_APP_NAME=asset-manager GOVUK_ASSET_ROOT=http://assets-origin.dev.gov.uk
+ENV GOVUK_PROMETHEUS_EXPORTER=true RAILS_ENV=production GOVUK_APP_NAME=asset-manager GOVUK_ASSET_ROOT=http://assets-origin.dev.gov.uk
 
 # TODO: apt-get upgrade in the base image
 RUN apt-get update -qy && \
