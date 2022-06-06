@@ -27,6 +27,8 @@ RUN apt-get update -qy && \
 # TODO: remove Clamav from container and run it as a seperate container
     apt-get install -y clamav
 
+RUN mkdir /app && ln -fs /tmp /app
+
 RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan && \
     freshclam && \
     sed -i '/UpdateLogFile/d' /etc/clamav/freshclam.conf
