@@ -11,6 +11,7 @@ gem "gds-sso"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "jwt"
+gem "mongo", "~> 2.15.0"
 gem "mongoid"
 gem "nokogiri"
 gem "plek"
@@ -25,9 +26,12 @@ group :development, :test do
   gem "climate_control"
   gem "database_cleaner"
   gem "factory_bot_rails"
+  gem "pact", require: false
+  gem "pact_broker-client", require: false
   gem "rspec-rails"
   gem "rubocop-govuk"
   gem "simplecov"
+  gem "webmock", require: false
 end
 
 group :development do
