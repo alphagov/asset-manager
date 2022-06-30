@@ -1,8 +1,11 @@
+require "healthcheck/cloud_storage"
+
 Rails.application.routes.draw do
   get "/healthcheck/live", to: proc { [200, {}, %w[OK]] }
   get "/healthcheck/ready", to: GovukHealthcheck.rack_response(
     GovukHealthcheck::Mongoid,
     GovukHealthcheck::SidekiqRedis,
+    Healthcheck::CloudStorage,
   )
 
   resources :assets, only: %i[show create update destroy] do

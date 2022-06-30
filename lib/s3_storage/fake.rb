@@ -53,5 +53,9 @@ class S3Storage
     def relative_path_for(asset)
       source_path_for(asset).relative_path_from(@source_root)
     end
+
+    def healthy?
+      true
+    end
   end
 end

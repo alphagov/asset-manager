@@ -315,4 +315,33 @@ RSpec.describe S3Storage do
       end
     end
   end
+
+  describe "#healthy?" do
+    let(:head_bucket_params) { { bucket: bucket_name } }
+
+    let(:response) { instance_double("Seahorse::Client::Response") }
+
+    it "returns true when s3 bucket is reachable" do
+      allow(response).to receive(:successful?).and_return(true)
+      allow(s3_client).to receive(:head_bucket)
+                            .with(head_bucket_params).and_return(response)
+
+      expect(storage.healthy?).to eq true
+    end
+
+    it "returns false when struct returns returns false to successful?" do
+      allow(response).to receive(:successful?).and_return(false)
+      allow(s3_client).to receive(:head_bucket)
+                            .with(head_bucket_params).and_return(response)
+
+      expect(storage.healthy?).to eq false
+    end
+
+    it "returns false when calling head_bucket returns an error" do
+      allow(s3_client).to receive(:head_bucket)
+                            .with(head_bucket_params).and_raise(Aws::S3::Errors::NotFound.new(nil, nil))
+
+      expect(storage.healthy?).to eq false
+    end
+  end
 end

@@ -62,6 +62,16 @@ class S3Storage
     raise ObjectNotFoundError, "S3 object not found for asset: #{asset.id}"
   end
 
+  def healthy?
+    response = client.head_bucket({ bucket: @bucket_name })
+    # We expect that not being able to connect to the bucket should raise an exception, but the following line
+    # guards against the possibility that it returns an unsuccessful response instead as there is some ambiguity in the
+    # documentation vs observed behaviour
+    response.successful?
+  rescue Aws::S3::Errors::ServiceError
+    false
+  end
+
 private
 
   def replication_status(asset)
