@@ -22,6 +22,7 @@ gem "sprockets-rails"
 gem "state_machines-mongoid"
 
 group :development, :test do
+  gem "brakeman"
   gem "byebug"
   gem "climate_control"
   gem "database_cleaner"
