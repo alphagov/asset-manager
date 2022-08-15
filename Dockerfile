@@ -1,6 +1,6 @@
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:2.7.6
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:2.7.6
- 
+
 FROM $builder_image AS builder
 
 WORKDIR /app
@@ -22,15 +22,13 @@ FROM $base_image
 ENV GOVUK_APP_NAME=asset-manager GOVUK_ASSET_ROOT=http://assets-origin.dev.gov.uk
 
 RUN apt update && \
-    apt install -y clamav shared-mime-info
+    apt install -y --no-install-recommends clamav clamav-daemon shared-mime-info && \
+    rm -fr /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN ln -fs /tmp /app/tmp
-
-RUN ln -sf /usr/bin/clamscan /usr/bin/govuk_clamscan && \
-    freshclam && \
-    sed -i '/UpdateLogFile/d' /etc/clamav/freshclam.conf
+RUN ln -fs /tmp /app/tmp && \
+    chown -R app:app /etc/clamav /var/lib/clamav
 
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=builder /app /app/
