@@ -14,7 +14,7 @@ RUN apt update && \
 COPY . /app
 
 # TODO: investigate if this is needed.
-RUN rm -rf /app/tmp
+#RUN rm -rf /app/tmp
 
 
 FROM $base_image
