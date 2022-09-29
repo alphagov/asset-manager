@@ -133,7 +133,7 @@ RSpec.describe AssetPresenter do
       end
 
       it "returns hash including parent_document_url" do
-        expect(json).to include(parent_document_url: parent_document_url)
+        expect(json).to include(parent_document_url:)
       end
     end
 
@@ -178,7 +178,7 @@ RSpec.describe AssetPresenter do
       end
 
       it "returns hash including replacement_id" do
-        expect(json).to include(replacement_id: replacement_id)
+        expect(json).to include(replacement_id:)
       end
     end
   end

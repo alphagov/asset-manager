@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe DeleteAssetFileFromNfsWorker, type: :worker do
   subject(:worker) { described_class.new }
 
-  let(:asset) { FactoryBot.create(:asset, state: state) }
+  let(:asset) { FactoryBot.create(:asset, state:) }
   let(:path) { asset.file.path }
 
   context "when asset is not uploaded" do

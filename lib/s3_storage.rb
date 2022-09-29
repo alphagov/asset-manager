@@ -23,7 +23,7 @@ class S3Storage
     if force || metadata["md5-hexdigest"] != asset.md5_hexdigest
       metadata["md5-hexdigest"] = asset.md5_hexdigest
       begin
-        unless object_for(asset).upload_file(asset.file.path, metadata: metadata)
+        unless object_for(asset).upload_file(asset.file.path, metadata:)
           error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
           raise ObjectUploadFailedError, error_message
         end

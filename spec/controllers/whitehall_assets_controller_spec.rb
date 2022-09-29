@@ -56,7 +56,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
       it "stores replacement on asset" do
         replacement = FactoryBot.create(:asset)
         replacement_id = replacement.id.to_s
-        post :create, params: { asset: { replacement_id: replacement_id } }
+        post :create, params: { asset: { replacement_id: } }
 
         expect(assigns(:asset).replacement).to eq(replacement)
       end
@@ -157,7 +157,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
     context "with an asset with a redirect URL" do
       let(:redirect_url) { "https://example.com/path/file.ext" }
-      let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, redirect_url: redirect_url) }
+      let(:attributes) { FactoryBot.attributes_for(:whitehall_asset, redirect_url:) }
 
       it "returns JSON response including redirect URL of new asset" do
         post :create, params: { asset: attributes }
@@ -180,7 +180,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
   describe "GET show" do
     let(:legacy_url_path) { "/government/uploads/image.png" }
-    let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
+    let(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path:) }
     let(:presenter) { instance_double(AssetPresenter) }
 
     before do
@@ -224,7 +224,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
     context "when the asset has been deleted" do
       let(:asset) do
-        FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path, deleted_at: Time.zone.now)
+        FactoryBot.create(:whitehall_asset, legacy_url_path:, deleted_at: Time.zone.now)
       end
 
       it "returns a 200 response" do
@@ -236,11 +236,11 @@ RSpec.describe WhitehallAssetsController, type: :controller do
 
     context "when multiple iterations of the asset has been deleted" do
       let!(:asset) do
-        FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path, deleted_at: 2.days.ago)
+        FactoryBot.create(:whitehall_asset, legacy_url_path:, deleted_at: 2.days.ago)
       end
 
       let(:more_recently_deleted_asset) do
-        FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path, deleted_at: 1.day.ago)
+        FactoryBot.create(:whitehall_asset, legacy_url_path:, deleted_at: 1.day.ago)
       end
 
       before do
@@ -260,10 +260,10 @@ RSpec.describe WhitehallAssetsController, type: :controller do
     context "when an asset has been deleted and a replacement has been created" do
       let(:asset) do
         FactoryBot.create(:whitehall_asset,
-                          legacy_url_path: legacy_url_path,
+                          legacy_url_path:,
                           deleted_at: Time.zone.now)
       end
-      let(:replacement_asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
+      let(:replacement_asset) { FactoryBot.create(:whitehall_asset, legacy_url_path:) }
 
       before do
         allow(AssetPresenter).to receive(:new).with(replacement_asset, anything).and_return(presenter)

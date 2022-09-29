@@ -16,10 +16,10 @@ class User
   field "organisation_slug", type: String
 
   def self.find_by_email(email)
-    where(email: email).first
+    where(email:).first
   end
 
   def self.find_by_uid(uid)
-    where(uid: uid).first
+    where(uid:).first
   end
 end

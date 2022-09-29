@@ -7,7 +7,7 @@ RSpec.describe VirusScanner do
 
     let(:file_path) { "/path/to/file" }
     let(:output) { "" }
-    let(:status) { instance_double("Process::Status", exitstatus: exitstatus) }
+    let(:status) { instance_double("Process::Status", exitstatus:) }
     let(:exitstatus) { 0 }
 
     before do

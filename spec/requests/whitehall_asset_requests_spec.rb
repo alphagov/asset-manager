@@ -12,8 +12,8 @@ RSpec.describe "Asset requests", type: :request do
     before do
       post "/whitehall_assets",
            params: { asset: {
-             file: file,
-             legacy_url_path: legacy_url_path,
+             file:,
+             legacy_url_path:,
            } }
     end
 

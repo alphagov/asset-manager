@@ -10,7 +10,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:image) { true }
 
       it "redirects to thumbnail-placeholder image" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(controller).to redirect_to(described_class.helpers.image_path("thumbnail-placeholder.png"))
       end
@@ -20,7 +20,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:image) { false }
 
       it "redirects to government placeholder page" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(controller).to redirect_to("/government/placeholder")
       end
@@ -35,17 +35,17 @@ RSpec.describe WhitehallMediaController, type: :controller do
     let(:redirect_url) { nil }
     let(:attributes) do
       {
-        legacy_url_path: legacy_url_path,
-        state: state,
-        draft: draft,
-        redirect_url: redirect_url,
+        legacy_url_path:,
+        state:,
+        draft:,
+        redirect_url:,
       }
     end
     let(:asset) { FactoryBot.build(:whitehall_asset, attributes) }
 
     before do
       not_logged_in
-      allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(asset)
+      allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path:).and_return(asset)
     end
 
     context "when asset is uploaded" do
@@ -54,7 +54,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       it "proxies asset to S3 via Nginx" do
         expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
       end
 
       context "and legacy_url_path has no format" do
@@ -63,7 +63,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
         it "proxies asset to S3 via Nginx" do
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params: { path: path, format: nil }
+          get :download, params: { path:, format: nil }
         end
       end
     end
@@ -79,9 +79,9 @@ RSpec.describe WhitehallMediaController, type: :controller do
         end
 
         it "redirects to draft assets host" do
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
 
-          expect(controller).to redirect_to(host: draft_assets_host, path: path, format: format)
+          expect(controller).to redirect_to(host: draft_assets_host, path:, format:)
         end
       end
 
@@ -95,19 +95,19 @@ RSpec.describe WhitehallMediaController, type: :controller do
           not_logged_in
           expect(controller).to receive(:authenticate_user!)
 
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
         end
 
         it "proxies asset to S3 via Nginx as usual" do
           login_as_stub_user
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
         end
 
         it "sets Cache-Control header to no-cache" do
           login_as_stub_user
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
 
           expect(response.headers["Cache-Control"]).to eq("no-cache")
         end
@@ -119,7 +119,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:redirect_url) { "https://example.com/path/file.ext" }
 
       it "redirects to redirect URL" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response).to redirect_to(redirect_url)
       end
@@ -134,20 +134,20 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
 
       it "redirects to replacement for asset" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expected_url = "//#{AssetManager.govuk.assets_host}#{replacement.public_url_path}"
         expect(response).to redirect_to(expected_url)
       end
 
       it "responds with 301 moved permanently status" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response).to have_http_status(:moved_permanently)
       end
 
       it "sets the Cache-Control response header to 30 minutes" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response.headers["Cache-Control"]).to eq("max-age=1800, public")
       end
@@ -162,14 +162,14 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
         end
 
         it "redirects to the replacement asset when requested via the draft-assets host by a signed-in user" do
           request.headers["X-Forwarded-Host"] = AssetManager.govuk.draft_assets_host
           login_as_stub_user
 
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
 
           expected_url = "//#{AssetManager.govuk.draft_assets_host}#{replacement.public_url_path}"
           expect(response).to redirect_to(expected_url)
@@ -191,7 +191,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       it "grants access to a user who is authorised to view the asset" do
         allow(asset).to receive(:accessible_by?).with(user).and_return(true)
 
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response).to be_successful
       end
@@ -199,7 +199,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       it "denies access to a user who is not authorised to view the asset" do
         allow(asset).to receive(:accessible_by?).with(user).and_return(false)
 
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response).to be_forbidden
       end
@@ -237,7 +237,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
         it "grants access to the file" do
           expect(controller).not_to receive(:authenticate_user!)
-          get :download, params: { path: path, format: format, token: valid_token }
+          get :download, params: { path:, format:, token: valid_token }
           expect(response).to be_successful
         end
       end
@@ -248,7 +248,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
         it "grants access to the file" do
           request.cookies["auth_bypass_token"] = valid_token
           expect(controller).not_to receive(:authenticate_user!)
-          get :download, params: { path: path, format: format, token: valid_token }
+          get :download, params: { path:, format:, token: valid_token }
           expect(response).to be_successful
         end
       end
@@ -258,7 +258,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
         it "grants access to the file" do
           expect(controller).not_to receive(:authenticate_user!)
-          get :download, params: { path: path, format: format, token: token_with_draft_asset_manager_access }
+          get :download, params: { path:, format:, token: token_with_draft_asset_manager_access }
           expect(response).to be_successful
         end
       end
@@ -269,7 +269,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
         it "authenticates the user" do
           cookies["auth_bypass_token"] = "bad-token"
           expect(controller).to receive(:authenticate_user!)
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
         end
       end
 
@@ -277,7 +277,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
         before { login_as_stub_user }
 
         it "grants access to the file" do
-          get :download, params: { path: path, format: format }
+          get :download, params: { path:, format: }
           expect(response).to be_successful
         end
       end
@@ -293,7 +293,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
 
       it "doesn't send a Link HTTP header" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response.headers["Link"]).to be_nil
       end
@@ -309,7 +309,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       end
 
       it "sends the parent_document_url in a Link HTTP header" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response.headers["Link"]).to eql('<https://parent-document-url>; rel="up"')
       end
@@ -331,7 +331,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:state) { "infected" }
 
       it "responds with 404 Not Found" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response).to have_http_status(:not_found)
       end
@@ -341,12 +341,12 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:state) { "uploaded" }
 
       before do
-        allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path: legacy_url_path).and_return(nil)
+        allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path:).and_return(nil)
         asset.update!(deleted_at: Time.zone.now)
       end
 
       it "responds with not found status" do
-        get :download, params: { path: path, format: format }
+        get :download, params: { path:, format: }
 
         expect(response).to have_http_status(:not_found)
       end
