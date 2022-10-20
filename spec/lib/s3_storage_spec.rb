@@ -8,8 +8,8 @@ RSpec.describe S3Storage do
   let(:s3_object) { instance_double(Aws::S3::Object) }
   let(:asset) { FactoryBot.create(:asset) }
   let(:key) { asset.uuid }
-  let(:s3_object_params) { { bucket_name: bucket_name, key: key } }
-  let(:s3_head_object_params) { { bucket: bucket_name, key: key } }
+  let(:s3_object_params) { { bucket_name:, key: } }
+  let(:s3_head_object_params) { { bucket: bucket_name, key: } }
 
   before do
     allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
@@ -20,7 +20,7 @@ RSpec.describe S3Storage do
   describe ".build" do
     let(:s3_configured) { true }
     let(:s3_fake) { false }
-    let(:s3_config) { instance_double(S3Configuration, bucket_name: bucket_name, configured?: s3_configured, fake?: s3_fake) }
+    let(:s3_config) { instance_double(S3Configuration, bucket_name:, configured?: s3_configured, fake?: s3_fake) }
 
     before do
       allow(AssetManager).to receive(:s3).and_return(s3_config)
@@ -111,7 +111,7 @@ RSpec.describe S3Storage do
         allow(s3_object).to receive(:exists?).and_return(true)
 
         allow(s3_client).to receive(:head_object).and_return(
-          Aws::S3::Types::HeadObjectOutput.new(metadata: metadata),
+          Aws::S3::Types::HeadObjectOutput.new(metadata:),
         )
       end
 
@@ -217,7 +217,7 @@ RSpec.describe S3Storage do
     end
 
     context "when asset does exist on S3" do
-      let(:attributes) { { replication_status: replication_status } }
+      let(:attributes) { { replication_status: } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
@@ -259,7 +259,7 @@ RSpec.describe S3Storage do
     end
 
     context "when asset does exist on S3" do
-      let(:attributes) { { replication_status: replication_status } }
+      let(:attributes) { { replication_status: } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do
@@ -302,7 +302,7 @@ RSpec.describe S3Storage do
 
     context "when S3 object does exist" do
       let(:metadata) { { "key" => "value" } }
-      let(:attributes) { { metadata: metadata } }
+      let(:attributes) { { metadata: } }
       let(:s3_result) { Aws::S3::Types::HeadObjectOutput.new(attributes) }
 
       before do

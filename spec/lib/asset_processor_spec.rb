@@ -4,7 +4,7 @@ require "asset_processor"
 RSpec.describe AssetProcessor do
   subject(:processor) { described_class.new(**args) }
 
-  let(:args) { { output: output, report_progress_every: report_progress_every } }
+  let(:args) { { output:, report_progress_every: } }
   let(:output) { StringIO.new }
   let(:report_progress_every) { 1 }
 
@@ -56,7 +56,7 @@ RSpec.describe AssetProcessor do
   end
 
   context "when scope is set to deleted assets" do
-    let(:args) { { scope: scope, output: output } }
+    let(:args) { { scope:, output: } }
     let(:scope) { Asset.deleted }
 
     before do

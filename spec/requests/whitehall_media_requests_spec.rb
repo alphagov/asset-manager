@@ -7,13 +7,13 @@ RSpec.describe "Whitehall media requests", type: :request do
         :whitehall_asset,
         file: load_fixture_file(File.basename(path)),
         legacy_url_path: path,
-        state: state,
+        state:,
       )
     end
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
-                                .with(asset, http_method: http_method).and_return(presigned_url)
+                                .with(asset, http_method:).and_return(presigned_url)
 
       get path
     end
@@ -78,7 +78,7 @@ RSpec.describe "Whitehall media requests", type: :request do
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
-                                .with(asset, http_method: http_method).and_return(presigned_url)
+                                .with(asset, http_method:).and_return(presigned_url)
 
       get path,
           headers: {
@@ -123,7 +123,7 @@ RSpec.describe "Whitehall media requests", type: :request do
       host! AssetManager.govuk.draft_assets_host
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
       allow(cloud_storage).to receive(:presigned_url_for)
-                                .with(asset, http_method: http_method).and_return("https://s3-host.test/presigned-url")
+                                .with(asset, http_method:).and_return("https://s3-host.test/presigned-url")
     end
 
     let(:path) { "/government/uploads/asset.png" }

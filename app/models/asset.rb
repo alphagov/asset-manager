@@ -12,7 +12,7 @@ class Asset
     / # separating slash
     \w[\w!#&\-^_.+]+ # subtype
     \Z
-  }x.freeze
+  }x
 
   index deleted_at: 1
 

@@ -24,7 +24,7 @@ RSpec.describe "Media requests", type: :request do
     before do
       allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
       allow(cloud_storage).to receive(:presigned_url_for)
-        .with(asset, http_method: http_method).and_return(presigned_url)
+        .with(asset, http_method:).and_return(presigned_url)
 
       get download_media_path(
         id: asset,

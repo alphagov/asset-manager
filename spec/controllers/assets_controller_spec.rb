@@ -10,7 +10,7 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe "POST create" do
-    let(:valid_attributes) { { file: file } }
+    let(:valid_attributes) { { file: } }
 
     context "when attributes are valid" do
       it "persists asset" do
@@ -138,7 +138,7 @@ RSpec.describe AssetsController, type: :controller do
 
     context "when attributes include a redirect URL" do
       let(:redirect_url) { "https://example.com/path/file.ext" }
-      let(:attributes) { valid_attributes.merge(redirect_url: redirect_url) }
+      let(:attributes) { valid_attributes.merge(redirect_url:) }
 
       it "stores redirect URL on asset" do
         post :create, params: { asset: attributes }
@@ -160,7 +160,7 @@ RSpec.describe AssetsController, type: :controller do
     context "when attributes include a replacement_id" do
       let(:replacement) { FactoryBot.create(:asset) }
       let(:replacement_id) { replacement.id.to_s }
-      let(:attributes) { valid_attributes.merge(replacement_id: replacement_id) }
+      let(:attributes) { valid_attributes.merge(replacement_id:) }
 
       it "stores replacement asset" do
         post :create, params: { asset: attributes }
@@ -216,7 +216,7 @@ RSpec.describe AssetsController, type: :controller do
     context "with an existing asset" do
       let(:asset) { FactoryBot.create(:asset) }
       let(:file) { load_fixture_file("asset2.jpg") }
-      let(:valid_attributes) { { file: file } }
+      let(:valid_attributes) { { file: } }
 
       it "persists new attributes on existing asset" do
         put :update, params: { id: asset.id, asset: valid_attributes }
@@ -297,7 +297,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it "stores redirect_url on existing asset" do
         redirect_url = "https://example.com/path/file.ext"
-        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        attributes = valid_attributes.merge(redirect_url:)
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
@@ -305,7 +305,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it "stores blank redirect_url as nil on existing asset" do
         redirect_url = ""
-        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        attributes = valid_attributes.merge(redirect_url:)
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).redirect_url).to be_nil
@@ -313,7 +313,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it "removes existing redirect_url from existing asset if empty one is sent" do
         redirect_url = "https://example.com/path/file.ext"
-        attributes = valid_attributes.merge(redirect_url: redirect_url)
+        attributes = valid_attributes.merge(redirect_url:)
         put :update, params: { id: asset.id, asset: attributes }
         expect(assigns(:asset).redirect_url).to eq(redirect_url)
 
@@ -325,7 +325,7 @@ RSpec.describe AssetsController, type: :controller do
       it "stores replacement on existing asset" do
         replacement = FactoryBot.create(:asset)
         replacement_id = replacement.id.to_s
-        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        attributes = valid_attributes.merge(replacement_id:)
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).replacement).to eq(replacement)
@@ -333,7 +333,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it "stores replacement_id as nil if replacement_id is blank" do
         replacement_id = ""
-        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        attributes = valid_attributes.merge(replacement_id:)
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(assigns(:asset).replacement_id).to be_nil
@@ -341,7 +341,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it "responds with unprocessable entity status if replacement is not found" do
         replacement_id = "non-existent-asset-id"
-        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        attributes = valid_attributes.merge(replacement_id:)
         put :update, params: { id: asset.id, asset: attributes }
 
         expect(response).to have_http_status(:unprocessable_entity)
@@ -349,7 +349,7 @@ RSpec.describe AssetsController, type: :controller do
 
       it "includes error message in response if replacement is not found" do
         replacement_id = "non-existent-asset-id"
-        attributes = valid_attributes.merge(replacement_id: replacement_id)
+        attributes = valid_attributes.merge(replacement_id:)
         put :update, params: { id: asset.id, asset: attributes }
 
         body = JSON.parse(response.body)

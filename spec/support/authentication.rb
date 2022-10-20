@@ -5,7 +5,7 @@ module AuthenticationControllerHelpers
       authenticate: true,
       authenticate!: true,
       authenticated?: true,
-      user: user,
+      user:,
     )
   end
 

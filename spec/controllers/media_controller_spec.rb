@@ -33,7 +33,7 @@ RSpec.describe MediaController, type: :controller do
         allow(Asset).to receive(:find).with(asset.id).and_return(asset)
         allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
         allow(cloud_storage).to receive(:presigned_url_for)
-          .with(asset, http_method: http_method).and_return(presigned_url)
+          .with(asset, http_method:).and_return(presigned_url)
         allow(asset).to receive(:etag).and_return("599ffda8-e169")
         allow(asset).to receive(:last_modified).and_return(last_modified)
         allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
@@ -487,7 +487,7 @@ RSpec.describe MediaController, type: :controller do
 
     context "when asset has a redirect URL" do
       let(:redirect_url) { "https://example.com/path/file.ext" }
-      let(:asset) { FactoryBot.create(:uploaded_asset, redirect_url: redirect_url) }
+      let(:asset) { FactoryBot.create(:uploaded_asset, redirect_url:) }
 
       it "redirects to redirect URL" do
         get :download, **params
@@ -498,7 +498,7 @@ RSpec.describe MediaController, type: :controller do
 
     context "when asset has a replacement" do
       let(:replacement) { FactoryBot.create(:uploaded_asset) }
-      let(:asset) { FactoryBot.create(:uploaded_asset, replacement: replacement) }
+      let(:asset) { FactoryBot.create(:uploaded_asset, replacement:) }
 
       it "redirects to replacement for asset" do
         get :download, **params

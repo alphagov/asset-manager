@@ -58,7 +58,7 @@ RSpec.describe WhitehallAsset, type: :model do
 
           it "can find the most recent (undeleted) asset" do
             path = asset.legacy_url_path[1..]
-            expect(described_class.from_params(path: path).deleted?).to eq(false)
+            expect(described_class.from_params(path:).deleted?).to eq(false)
           end
         end
       end
@@ -97,7 +97,7 @@ RSpec.describe WhitehallAsset, type: :model do
 
   describe "#etag" do
     let(:etag) { "etag-value" }
-    let(:asset) { described_class.new(etag: etag, legacy_etag: legacy_etag) }
+    let(:asset) { described_class.new(etag:, legacy_etag:) }
 
     context "when legacy_etag attribute is set" do
       let(:legacy_etag) { "legacy-etag-value" }
@@ -117,7 +117,7 @@ RSpec.describe WhitehallAsset, type: :model do
   end
 
   describe "#last_modified" do
-    let(:asset) { described_class.new(last_modified: last_modified, legacy_last_modified: legacy_last_modified) }
+    let(:asset) { described_class.new(last_modified:, legacy_last_modified:) }
     let(:last_modified) { Time.zone.parse("2001-01-01 01:01") }
 
     context "when legacy_last_modified attribute is set" do
@@ -149,7 +149,7 @@ RSpec.describe WhitehallAsset, type: :model do
     let(:format_from_params) { "png" }
     let(:path_from_params) { "government/uploads/path/to/asset" }
     let(:legacy_url_path) { "/#{path_from_params}.#{format_from_params}" }
-    let!(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path: legacy_url_path) }
+    let!(:asset) { FactoryBot.create(:whitehall_asset, legacy_url_path:) }
 
     it "finds Whitehall asset by legacy_url_path" do
       found_asset = described_class.from_params(

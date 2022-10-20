@@ -39,7 +39,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when replacement_id is specified" do
-      let(:attributes) { { replacement_id: replacement_id } }
+      let(:attributes) { { replacement_id: } }
 
       context "and replacement asset exists" do
         let(:replacement) { FactoryBot.create(:asset) }
@@ -105,8 +105,8 @@ RSpec.describe Asset, type: :model do
       let(:attributes) do
         {
           draft: false,
-          replacement: replacement,
-          redirect_url: redirect_url,
+          replacement:,
+          redirect_url:,
         }
       end
 
@@ -321,7 +321,7 @@ RSpec.describe Asset, type: :model do
 
     it "cannot be changed after creation" do
       uuid = "11111111-1111-1111-1111-11111111111111"
-      asset = FactoryBot.create(:asset, uuid: uuid)
+      asset = FactoryBot.create(:asset, uuid:)
       expect { asset.uuid = "22222222-2222-2222-2222-222222222222" }
         .not_to change(asset, :uuid)
     end
@@ -334,8 +334,8 @@ RSpec.describe Asset, type: :model do
 
     it "must be unique" do
       uuid = "11111111-1111-1111-1111-11111111111111"
-      FactoryBot.create(:asset, uuid: uuid)
-      asset = FactoryBot.build(:asset, uuid: uuid)
+      FactoryBot.create(:asset, uuid:)
+      asset = FactoryBot.build(:asset, uuid:)
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("is already taken")
     end
@@ -460,7 +460,7 @@ RSpec.describe Asset, type: :model do
 
   describe "when an asset is marked as clean" do
     let(:state) { "unscanned" }
-    let(:asset) { FactoryBot.build(:asset, state: state) }
+    let(:asset) { FactoryBot.build(:asset, state:) }
 
     before do
       allow(SaveToCloudStorageWorker).to receive(:perform_async)
@@ -508,7 +508,7 @@ RSpec.describe Asset, type: :model do
 
   describe "when an asset is marked as infected" do
     let(:state) { "unscanned" }
-    let(:asset) { FactoryBot.build(:asset, state: state) }
+    let(:asset) { FactoryBot.build(:asset, state:) }
 
     it "does not schedule saving the asset to cloud storage" do
       expect(SaveToCloudStorageWorker).not_to receive(:perform_async).with(asset.id)
@@ -632,139 +632,139 @@ RSpec.describe Asset, type: :model do
 
     it "handles .jpg file extensions" do
       file = Tempfile.new(["file", ".jpg"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("image/jpeg")
     end
 
     it "handles .jpeg file extensions" do
       file = Tempfile.new(["file", ".jpeg"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("image/jpeg")
     end
 
     it "handles .gif file extensions" do
       file = Tempfile.new(["file", ".gif"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("image/gif")
     end
 
     it "handles .png file extensions" do
       file = Tempfile.new(["file", ".png"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("image/png")
     end
 
     it "handles .pdf file extensions" do
       file = Tempfile.new(["file", ".pdf"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/pdf")
     end
 
     it "handles .csv file extensions" do
       file = Tempfile.new(["file", ".csv"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("text/csv")
     end
 
     it "handles .rtf file extensions" do
       file = Tempfile.new(["file", ".rtf"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("text/rtf")
     end
 
     it "handles .doc file extensions" do
       file = Tempfile.new(["file", ".doc"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/msword")
     end
 
     it "handles .docx file extensions" do
       file = Tempfile.new(["file", ".docx"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     end
 
     it "handles .xls file extensions" do
       file = Tempfile.new(["file", ".xls"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.ms-excel")
     end
 
     it "handles .xlsx file extensions" do
       file = Tempfile.new(["file", ".xlsx"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     end
 
     it "handles .odt file extensions" do
       file = Tempfile.new(["file", ".odt"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.oasis.opendocument.text")
     end
 
     it "handles .ods file extensions" do
       file = Tempfile.new(["file", ".ods"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.oasis.opendocument.spreadsheet")
     end
 
     it "handles .svg file extensions" do
       file = Tempfile.new(["file", ".svg"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("image/svg+xml")
     end
 
     it "handles .dot file extensions" do
       file = Tempfile.new(["file", ".dot"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/msword")
     end
 
     it "handles .ppt file extensions" do
       file = Tempfile.new(["file", ".ppt"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.ms-powerpoint")
     end
 
     it "handles .pptx file extensions" do
       file = Tempfile.new(["file", ".pptx"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
     end
 
     it "handles .rdf file extensions" do
       file = Tempfile.new(["file", ".rdf"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/rdf+xml")
     end
 
     it "handles .xlsm file extensions" do
       file = Tempfile.new(["file", ".xlsm"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.ms-excel.sheet.macroEnabled.12")
     end
 
     it "handles .xlt file extensions" do
       file = Tempfile.new(["file", ".xlt"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/vnd.ms-excel")
     end
 
     it "handles .txt file extensions and adds the charset parameter" do
       file = Tempfile.new(["file", ".txt"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("text/plain; charset=utf-8")
     end
 
     it "handles .gml file extensions" do
       file = Tempfile.new(["file", ".gml"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/gml+xml")
     end
 
     it "handles .dxf file extensions" do
       file = Tempfile.new(["file", ".dxf"])
-      asset = described_class.new(file: file)
+      asset = described_class.new(file:)
       expect(asset.content_type_from_extension).to eq("application/dxf")
     end
   end
@@ -798,7 +798,7 @@ RSpec.describe Asset, type: :model do
 
     let(:size) { 1024 }
     let(:mtime) { Time.zone.parse("2017-01-01") }
-    let(:stat) { instance_double(File::Stat, size: size, mtime: mtime) }
+    let(:stat) { instance_double(File::Stat, size:, mtime:) }
 
     before do
       asset.file = load_fixture_file("asset.png")
@@ -824,7 +824,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#etag" do
-    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), etag: etag) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), etag:) }
 
     before do
       allow(asset).to receive(:etag_from_file).and_return("etag-from-file")
@@ -868,7 +868,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { described_class.new }
 
     let(:mtime) { Time.zone.parse("2017-01-01") }
-    let(:stat) { instance_double(File::Stat, mtime: mtime) }
+    let(:stat) { instance_double(File::Stat, mtime:) }
 
     before do
       asset.file = load_fixture_file("asset.png")
@@ -881,7 +881,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#last_modified" do
-    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), last_modified: last_modified) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), last_modified:) }
 
     let(:time) { Time.zone.parse("2002-02-02 02:02") }
     let(:time_from_file) { Time.zone.parse("2001-01-01 01:01") }
@@ -935,7 +935,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#size" do
-    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), size: size) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), size:) }
     let(:asset_size) { 100 }
 
     before do
@@ -987,7 +987,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#md5_hexdigest" do
-    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), md5_hexdigest: md5_hexdigest) }
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), md5_hexdigest:) }
 
     before do
       allow(asset).to receive(:md5_hexdigest_from_file).and_return("md5-from-file")
@@ -1108,7 +1108,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#replacement" do
-    let(:asset) { FactoryBot.build(:asset, replacement: replacement) }
+    let(:asset) { FactoryBot.build(:asset, replacement:) }
 
     context "when replacement is nil" do
       let(:replacement) { nil }

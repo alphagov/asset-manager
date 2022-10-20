@@ -19,17 +19,17 @@ class WhitehallAsset < Asset
   def self.from_params(path:, format: nil, path_prefix: nil)
     legacy_url_path = "/#{path_prefix}#{path}"
     legacy_url_path += ".#{format}" if format.present?
-    order(updated_at: :desc).find_by(legacy_url_path: legacy_url_path)
+    order(updated_at: :desc).find_by(legacy_url_path:)
   end
 
   def self.create_or_replace(file_path, legacy_url_path)
-    prior = WhitehallAsset.find_by(legacy_url_path: legacy_url_path)
+    prior = WhitehallAsset.find_by(legacy_url_path:)
     prior.file = Pathname.new(file_path).open
     prior.save!
   rescue Mongoid::Errors::DocumentNotFound
     WhitehallAsset.create!(
       file: Pathname.new(file_path).open,
-      legacy_url_path: legacy_url_path,
+      legacy_url_path:,
     )
   end
 

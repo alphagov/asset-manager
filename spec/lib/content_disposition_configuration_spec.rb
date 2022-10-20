@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ContentDispositionConfiguration do
-  let(:config) { described_class.new(type: type) }
+  let(:config) { described_class.new(type:) }
   let(:type) { "inline" }
   let(:asset) { FactoryBot.build(:asset) }
 
