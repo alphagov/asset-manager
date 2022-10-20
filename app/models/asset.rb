@@ -242,7 +242,7 @@ protected
   end
 
   def schedule_virus_scan
-    VirusScanWorker.perform_async(id) if unscanned?
+    VirusScanWorker.perform_async(id) if unscanned? && !redirect_url.present?
   end
 
   def file_stat
