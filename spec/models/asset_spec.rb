@@ -456,6 +456,14 @@ RSpec.describe Asset, type: :model do
 
       a.save!
     end
+
+    it "does not schedule a scan if a redirect url is present" do
+      a = FactoryBot.create(:asset, redirect_url: "/some-redirect")
+
+      expect(VirusScanWorker).not_to receive(:perform_async)
+
+      a.save!
+    end
   end
 
   describe "when an asset is marked as clean" do

@@ -147,4 +147,30 @@ RSpec.describe "Asset requests", type: :request do
       expect(response).to be_successful
     end
   end
+
+  describe "creating then redirecting an asset" do
+    it "does not result in an invalid transition error when a redirect is received in short succession after a create" do
+      # use threads to simulate multiple sidekiq workers
+      threads = []
+      allow(VirusScanWorker).to receive(:perform_async) do |asset_id|
+        threads << Thread.new do
+          sleep(0.5)
+          asset = Asset.find(asset_id)
+          asset.scanned_clean!
+        end
+      end
+
+      post "/assets", params: { asset: { file: load_fixture_file("lorem.txt") } }
+      asset_id = Asset.last.id
+      put "/assets/#{asset_id}", params: { asset: { file: load_fixture_file("lorem.txt"), redirect_url: "/some-redirect" } }
+
+      # run the thread(s) concurrently - instead of doing Worker.drain to ensure they're processed concurrently
+      threads.each(&:join)
+
+      asset = Asset.find(asset_id)
+
+      expect(asset.state).to eq("clean")
+      expect(asset.redirect_url).to eq("/some-redirect")
+    end
+  end
 end
