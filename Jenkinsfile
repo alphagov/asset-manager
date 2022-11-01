@@ -14,6 +14,7 @@ node {
     brakeman: true,
     afterTest: {
       govuk.setEnvar('AWS_S3_BUCKET_NAME', 'asset-precompilation-test')
-    }
+    },
+    overrideTestTask: { sh("bundle exec rake rubocop spec") }
   )
 }
