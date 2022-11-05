@@ -13,8 +13,8 @@ FROM $base_image
 
 ENV GOVUK_APP_NAME=asset-manager
 # TODO: move ClamAV into a completely separate service.
-RUN apt update && \
-    apt install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
         clamav clamav-daemon clamdscan shared-mime-info && \
     rm -fr /var/lib/apt/lists/*
 
@@ -30,4 +30,4 @@ RUN sed -Ei 's/\/var\/log\/clamav\/\w+\.log/\/dev\/stderr/; \
 RUN mkdir -p /var/run/clamav && chown app:app /var/run/clamav /var/lib/clamav
 
 USER app
-CMD bundle exec puma
+CMD ["bundle", "exec", "puma"]
