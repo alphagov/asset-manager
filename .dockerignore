@@ -1,8 +1,12 @@
+.dockerignore
 .git
 .gitignore
+Dockerfile
 Jenkinsfile
+Procfile
 README.md
-CONTRIBUTING.md
-LICENSE
-log/*
+coverage
+docs
+log
+spec
 tmp
