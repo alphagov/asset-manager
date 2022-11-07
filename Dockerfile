@@ -12,6 +12,7 @@ COPY . /app
 FROM $base_image
 
 ENV GOVUK_APP_NAME=asset-manager
+ENV GOVUK_UPLOADS_ROOT=/tmp/uploads
 # TODO: move ClamAV into a completely separate service.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

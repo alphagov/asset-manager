@@ -1,5 +1,7 @@
 directory = if Rails.env.test?
               Rails.root.join("tmp/test_uploads")
+            elsif ENV["GOVUK_UPLOADS_ROOT"]
+              ENV["GOVUK_UPLOADS_ROOT"]
             elsif ENV["GOVUK_APP_ROOT"]
               "#{ENV['GOVUK_APP_ROOT']}/uploads"
             else
