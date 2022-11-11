@@ -1,6 +1,8 @@
 # API
 
-See the `AssetPresenter` class for the return format for the above API calls. Unless developing locally, all API requests must be authenticated with a token generated in the Signon application.
+See the `AssetPresenter` class for the return format for the above API calls.
+
+Unless developing locally, all API requests must be authenticated with a bearer token generated in the Signon application. With the `curl` example commands below, you can send a bearer token by appending `-H "authorization: Bearer $ASSET_MANAGER_BEARER_TOKEN"`.
 
 ## Create an asset
 
@@ -8,7 +10,7 @@ See the `AssetPresenter` class for the return format for the above API calls. Un
 
 ```
 # Create a temporary file
-echo `date` > tmp.txt
+date > tmp.txt
 
 # Upload file to Asset Manager
 curl http://asset-manager.dev.gov.uk/assets --form "asset[file]=@tmp.txt"
@@ -72,7 +74,7 @@ Tue 18 Jul 2017 16:18:38 BST
 
 ```
 # Create a new tmp file
-echo `date` > tmp123.txt
+date > tmp123.txt
 
 # Update the file on asset-manager
 curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 --request PUT --form "asset[file]=@tmp123.txt"
@@ -153,7 +155,7 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
 
 ```
 # Create a temporary file
-echo `date` > tmp.txt
+date > tmp.txt
 
 # Upload file to Asset Manager
 curl http://asset-manager.dev.gov.uk/whitehall_assets --form "asset[file]=@tmp.txt" --form "asset[legacy_url_path]=/government/uploads/path/to/tmp.txt"
