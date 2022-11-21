@@ -86,7 +86,7 @@ GEM
       aws-sigv4 (~> 1.4)
     aws-sigv4 (1.5.2)
       aws-eventstream (~> 1, >= 1.0.2)
-    brakeman (5.3.1)
+    brakeman (5.4.0)
     bson (4.15.0)
     builder (3.2.4)
     byebug (11.1.3)
