@@ -1,5 +1,5 @@
 class GovukConfiguration
-  def initialize(env = ENV, plek = Plek.new)
+  def initialize(env = ENV, plek = Plek)
     @env = env
     @plek = plek
   end

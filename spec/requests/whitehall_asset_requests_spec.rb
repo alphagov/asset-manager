@@ -48,7 +48,7 @@ RSpec.describe "Asset requests", type: :request do
 
     it "responds with JSON containing new asset URL" do
       body = JSON.parse(response.body)
-      expect(body["file_url"]).to eq("#{Plek.new.asset_root}#{legacy_url_path}")
+      expect(body["file_url"]).to eq("#{Plek.asset_root}#{legacy_url_path}")
     end
 
     context "when file is not supplied" do

@@ -84,7 +84,7 @@ RSpec.describe AssetPresenter do
 
     it "returns hash including public asset URL as file_url" do
       uri = URI.parse(json[:file_url])
-      expect("#{uri.scheme}://#{uri.host}").to eq(Plek.new.asset_root)
+      expect("#{uri.scheme}://#{uri.host}").to eq(Plek.asset_root)
       expect(uri.path).to eq(public_url_path)
     end
 

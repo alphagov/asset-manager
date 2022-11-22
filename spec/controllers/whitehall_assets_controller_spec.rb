@@ -106,7 +106,7 @@ RSpec.describe WhitehallAssetsController, type: :controller do
         post :create, params: { asset: attributes }
 
         body = JSON.parse(response.body)
-        expected_path = "#{Plek.new.asset_root}#{attributes[:legacy_url_path]}"
+        expected_path = "#{Plek.asset_root}#{attributes[:legacy_url_path]}"
         expect(body["file_url"]).to eq(expected_path)
       end
     end
