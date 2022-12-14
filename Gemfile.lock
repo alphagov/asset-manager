@@ -489,6 +489,7 @@ DEPENDENCIES
   govuk_sidekiq
   jwt
   listen
+  mail (~> 2.7.1)
   mongo (~> 2.16.3)
   mongoid
   nokogiri
