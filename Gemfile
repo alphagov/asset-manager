@@ -11,7 +11,7 @@ gem "gds-sso"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "jwt"
-gem "mail", "~> 2.7.1"  # TODO: remove once https://github.com/mikel/mail/issues/1489 is fixed.
+gem "mail", "~> 2.8.0"  # TODO: remove once https://github.com/mikel/mail/issues/1489 is fixed.
 gem "mongo", "~> 2.16.3"
 gem "mongoid"
 gem "nokogiri"
