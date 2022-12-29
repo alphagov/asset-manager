@@ -15,11 +15,6 @@ jobs:
     name: Cache dependencies
     uses: alphagov/govuk-infrastructure/.github/workflows/cache-dependencies.yaml@main
 
-  precompile-assets:
-    name: Precompile Rails assets
-    needs: cache-dependencies
-    uses: alphagov/govuk-infrastructure/.github/workflows/precompile-rails-assets.yaml@main
-
   security-analysis:
     name: Security Analysis
     needs: cache-dependencies
@@ -32,9 +27,12 @@ jobs:
 
   test-ruby:
     name: Test Ruby
-    needs: precompile-assets
+    needs: cache-dependencies
     runs-on: ubuntu-latest
     steps:
+      - name: Setup MongoDB
+        uses: alphagov/govuk-infrastructure/.github/actions/setup-mongodb@main
+
       - name: Setup Redis
         uses: alphagov/govuk-infrastructure/.github/actions/setup-redis@main
 
@@ -46,8 +44,10 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Precompile assets
-        uses: alphagov/govuk-infrastructure/.github/actions/precompile-rails-assets@main
+      - name: Initialize database
+        env:
+          RAILS_ENV: test
+        run: bundle exec rails db:setup
 
       - name: Run Rspec
         env:
