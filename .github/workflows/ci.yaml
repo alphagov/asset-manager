@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
   push:
     branches:
       - main
@@ -11,8 +11,46 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Test Rails
-    uses: alphagov/govuk-infrastructure/.github/workflows/test-rails.yaml@main
-    with:
-      requiresMongoDB: true
+  cache-dependencies:
+    name: Cache dependencies
+    uses: alphagov/govuk-infrastructure/.github/workflows/cache-dependencies.yaml@main
+
+  precompile-assets:
+    name: Precompile Rails assets
+    needs: cache-dependencies
+    uses: alphagov/govuk-infrastructure/.github/workflows/precompile-rails-assets.yaml@main
+
+  security-analysis:
+    name: Security Analysis
+    needs: cache-dependencies
+    uses: alphagov/govuk-infrastructure/.github/workflows/brakeman.yaml@main
+
+  lint-ruby:
+    name: Lint Ruby
+    needs: cache-dependencies
+    uses: alphagov/govuk-infrastructure/.github/workflows/rubocop.yaml@main
+
+  test-ruby:
+    name: Test Ruby
+    needs: precompile-assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Redis
+        uses: alphagov/govuk-infrastructure/.github/actions/setup-redis@main
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Precompile assets
+        uses: alphagov/govuk-infrastructure/.github/actions/precompile-rails-assets@main
+
+      - name: Run Rspec
+        env:
+          RAILS_ENV: test
+        run: bundle exec rake spec
+
