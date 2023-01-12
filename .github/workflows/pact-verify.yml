@@ -7,19 +7,16 @@
 name: Run Pact tests
 
 on:
-  pull_request:
-  push:
   workflow_call:
     inputs:
-      # what branch or Git SHA to clone this app with, only applies when
-      # called as a workflow, so current commit applies to push/pull requests
       commitish:
         required: false
         type: string
         default: main
       pact_consumer_version:
-        required: true
+        required: false
         type: string
+        default: branch-main
 
 jobs:
   pact_verify:
@@ -31,14 +28,14 @@ jobs:
         ports: ["27017:27017"]
         options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
     env:
-      PACT_CONSUMER_VERSION: ${{ inputs.pact_consumer_version || 'branch-main' }}
+      PACT_CONSUMER_VERSION: ${{ inputs.pact_consumer_version }}
       TEST_MONGODB_URI: "mongodb://localhost:27017/test-db"
       RAILS_ENV: test
     steps:
       - uses: actions/checkout@v3
         with:
           repository: alphagov/asset-manager
-          ref: ${{ inputs.commitish || github.sha }}
+          ref: ${{ inputs.commitish }}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
