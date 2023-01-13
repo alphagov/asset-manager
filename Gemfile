@@ -5,6 +5,7 @@ gem "rails", "7.0.4"
 gem "addressable"
 gem "aws-sdk-core"
 gem "aws-sdk-s3"
+gem "bootsnap", require: false
 gem "carrierwave"
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "gds-sso"

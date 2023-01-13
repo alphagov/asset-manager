@@ -1,28 +1,31 @@
-ARG base_image=ghcr.io/alphagov/govuk-ruby-base:3.1.2
-ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:3.1.2
+ARG ruby_version=3.1.2
+ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
+ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
+
 
 FROM $builder_image AS builder
 
-WORKDIR /app
-COPY Gemfile Gemfile.lock .ruby-version /app/
+WORKDIR $APP_HOME
+COPY Gemfile Gemfile.lock .ruby-version ./
 RUN bundle install
-COPY . /app
+COPY . .
+RUN bootsnap precompile --gemfile .
 
 
 FROM $base_image
 
 ENV GOVUK_APP_NAME=asset-manager
-# TODO: move ClamAV into a completely separate service.
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        clamav clamav-daemon clamdscan shared-mime-info && \
-    rm -fr /etc/clamav/* && \
-    rm -fr /var/lib/apt/lists/*
 
-WORKDIR /app
-COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
-COPY --from=builder /app /app/
-RUN mkdir -p /var/run/clamav && chown app:app /var/run/clamav /var/lib/clamav
+# TODO: move ClamAV into a completely separate service.
+RUN install_packages clamav clamav-daemon clamdscan shared-mime-info && \
+    rm -fr /etc/clamav/* && \
+    mkdir -p /var/run/clamav && \
+    chown app:app /var/run/clamav /var/lib/clamav
+
+WORKDIR $APP_HOME
+COPY --from=builder $BUNDLE_PATH $BUNDLE_PATH
+COPY --from=builder $BOOTSNAP_CACHE_DIR $BOOTSNAP_CACHE_DIR
+COPY --from=builder $APP_HOME .
 
 USER app
-CMD ["bundle", "exec", "puma"]
+CMD ["puma"]
