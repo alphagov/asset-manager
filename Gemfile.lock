@@ -180,7 +180,7 @@ GEM
       ruby-vips (>= 2.0.17, < 3)
     jmespath (1.6.2)
     json (2.6.3)
-    jwt (2.6.0)
+    jwt (2.7.0)
     kgio (2.11.4)
     link_header (0.0.8)
     listen (3.8.0)
