@@ -90,7 +90,7 @@ class Asset
     end
 
     after_transition to: :clean do |asset, _|
-      SaveToCloudStorageWorker.perform_async(asset.id)
+      SaveToCloudStorageWorker.perform_async(asset.id.to_s)
     end
 
     event :scanned_infected do
@@ -242,7 +242,7 @@ protected
   end
 
   def schedule_virus_scan
-    VirusScanWorker.perform_async(id) if unscanned? && redirect_url.blank?
+    VirusScanWorker.perform_async(id.to_s) if unscanned? && redirect_url.blank?
   end
 
   def file_stat

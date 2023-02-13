@@ -5,7 +5,7 @@ namespace :govuk_assets do
   task delete_file_from_nfs_for_assets_uploaded_to_s3: :environment do
     processor = AssetProcessor.new(scope: Asset.where(state: "uploaded"))
     processor.process_all_assets_with do |asset_id|
-      DeleteAssetFileFromNfsWorker.perform_async(asset_id)
+      DeleteAssetFileFromNfsWorker.perform_async(asset_id.to_s)
     end
   end
 
