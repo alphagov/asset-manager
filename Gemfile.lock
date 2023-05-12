@@ -148,7 +148,7 @@ GEM
       warden-oauth2 (~> 0.0.1)
     globalid (1.1.0)
       activesupport (>= 5.0)
-    govuk_app_config (7.2.0)
+    govuk_app_config (7.2.1)
       logstasher (~> 2.1)
       plek (>= 4, < 6)
       prometheus_exporter (~> 2.0)
@@ -186,9 +186,9 @@ GEM
     logstasher (2.1.5)
       activesupport (>= 5.2)
       request_store
-    loofah (2.20.0)
+    loofah (2.21.2)
       crass (~> 1.0.2)
-      nokogiri (>= 1.5.9)
+      nokogiri (>= 1.12.0)
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -446,7 +446,7 @@ GEM
     table_print (1.5.7)
     term-ansicolor (1.7.1)
       tins (~> 1.0)
-    thor (1.2.1)
+    thor (1.2.2)
     timeout (0.3.2)
     tins (1.32.1)
       sync
