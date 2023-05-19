@@ -11,7 +11,7 @@ class VirusScanner
 
   def scan(file_path)
     clamscan_path = AssetManager.govuk.clamscan_path
-    out_str, status = Open3.capture2e(clamscan_path, "--no-summary", file_path)
+    out_str, status = Open3.capture2e(clamscan_path, "--no-summary --max-filesize=500M --max-scansize=500M", file_path)
     case status.exitstatus
     when 0
       true
