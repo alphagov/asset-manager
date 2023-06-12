@@ -17,7 +17,7 @@ module DiagramGenerator
       puts "node AssetManager {"
       model_underscored = @model_class.underscore
 
-      assets = Asset.all.filter {|asset| asset.legacy_url_path =~ /\/system\/uploads\/#{model_underscored}\/[^\/]+\/#{@model_id}\// }
+      assets = Asset.unscoped.all.filter {|asset| asset.legacy_url_path =~ /\/system\/uploads\/#{model_underscored}\/[^\/]+\/#{@model_id}\// }
 
       assets.each do |asset|
         emit_object(asset, %i[state draft redirect_url content_type deleted_at file legacy_url_path])
