@@ -221,10 +221,24 @@ RSpec.describe MediaController, type: :controller do
     context "with draft uploaded asset" do
       let(:asset) { FactoryBot.create(:uploaded_asset, draft: true) }
       let(:draft_assets_host) { AssetManager.govuk.draft_assets_host }
+      let(:internal_host) { URI.parse(Plek.find("asset-manager")).host }
 
       context "when requested from host other than draft-assets" do
         before do
           request.headers["X-Forwarded-Host"] = "not-#{draft_assets_host}"
+        end
+
+        it "redirects to draft assets host" do
+          get :download, **params
+
+          expected_url = "http://#{draft_assets_host}#{asset.public_url_path}"
+          expect(controller).to redirect_to expected_url
+        end
+      end
+
+      context "when requested from host other than internal host" do
+        before do
+          request.headers["X-Forwarded-Host"] = "not-#{internal_host}"
         end
 
         it "redirects to draft assets host" do
@@ -248,9 +262,42 @@ RSpec.describe MediaController, type: :controller do
         end
       end
 
+      context "when requested from internal host and not authenticated" do
+        before do
+          request.headers["X-Forwarded-Host"] = internal_host
+          allow(controller).to receive(:authenticate_user!)
+        end
+
+        it "requires authentication" do
+          expect(controller).to receive(:authenticate_user!)
+
+          get :download, **params
+        end
+      end
+
       context "when requested from draft-assets host and authenticated" do
         before do
           request.headers["X-Forwarded-Host"] = draft_assets_host
+          login_as_stub_user
+          allow(controller).to receive(:proxy_to_s3_via_nginx)
+        end
+
+        it "proxies asset to S3 via Nginx as usual" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, **params
+        end
+
+        it "sets Cache-Control header to no-cache" do
+          get :download, **params
+
+          expect(response.headers["Cache-Control"]).to eq("no-cache")
+        end
+      end
+
+      context "when requested from internal host and authenticated" do
+        before do
+          request.headers["X-Forwarded-Host"] = internal_host
           login_as_stub_user
           allow(controller).to receive(:proxy_to_s3_via_nginx)
         end

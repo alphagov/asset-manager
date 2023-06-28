@@ -41,7 +41,7 @@ class MediaController < ApplicationController
       return
     end
 
-    if requested_from_draft_assets_host?
+    if requested_from_draft_assets_host? || requested_from_internal_host?
       expires_now
     else
       set_default_expiry
@@ -50,7 +50,7 @@ class MediaController < ApplicationController
     add_frame_header
     proxy_to_s3_via_nginx(asset)
   rescue Mongoid::Errors::DocumentNotFound
-    if requested_from_draft_assets_host? && !user_signed_in?
+    if (requested_from_draft_assets_host? || requested_from_internal_host?) && !user_signed_in?
       authenticate_user!
     else
       raise
@@ -66,7 +66,7 @@ protected
   end
 
   def authorized_for_asset?(asset)
-    return true unless requested_from_draft_assets_host?
+    return true unless requested_from_draft_assets_host? || requested_from_internal_host?
 
     return true if has_bypass_id_for_asset?(asset)
 
@@ -78,6 +78,10 @@ protected
 
   def requested_from_draft_assets_host?
     request.host == AssetManager.govuk.draft_assets_host
+  end
+
+  def requested_from_internal_host?
+    request.host == URI.parse(Plek.find("asset-manager")).host
   end
 
   def draft_asset_manager_access?
@@ -105,7 +109,7 @@ protected
   end
 
   def redirect_to_draft_assets_host_for?(asset)
-    asset.draft? && !requested_from_draft_assets_host?
+    asset.draft? && !requested_from_draft_assets_host? && !requested_from_internal_host?
   end
 
   def redirect_to_draft_assets_host
