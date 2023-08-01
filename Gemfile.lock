@@ -687,7 +687,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   byebug
-  carrierwave
+  carrierwave (< 3)
   carrierwave-mongoid
   climate_control
   database_cleaner
