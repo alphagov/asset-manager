@@ -337,7 +337,7 @@ RSpec.describe Asset, type: :model do
       FactoryBot.create(:asset, uuid:)
       asset = FactoryBot.build(:asset, uuid:)
       expect(asset).not_to be_valid
-      expect(asset.errors[:uuid]).to include("is already taken")
+      expect(asset.errors[:uuid]).to include("has already been taken")
     end
 
     it "must be in the format defined in rfc4122" do

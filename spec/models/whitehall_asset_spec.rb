@@ -42,7 +42,7 @@ RSpec.describe WhitehallAsset, type: :model do
 
         it "is not valid" do
           expect(asset).not_to be_valid
-          expect(asset.errors[:legacy_url_path]).to include("is already taken")
+          expect(asset.errors[:legacy_url_path]).to include("has already been taken")
         end
 
         context "but the existing asset has been marked as deleted" do
