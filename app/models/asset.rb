@@ -171,7 +171,7 @@ class Asset
   end
 
   def update_indirect_replacements_on_publish
-    return unless changes[:draft] && !draft?
+    return unless saved_change_to_attribute(:draft) && !draft?
 
     Asset.where(replacement_id: id).each do |replaced_by_me|
       Asset.where(replacement_id: replaced_by_me.id).each do |indirectly_replaced_by_me|
