@@ -1,7 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "Media requests", type: :request do
+  let(:s3) { S3Configuration.build }
+
   before do
+    allow(AssetManager).to receive(:s3).and_return(s3)
+    allow(s3).to receive(:fake?).and_return(false)
     not_logged_in
     # create a user that can be used automatically with GDS SSO mock
     stub_user

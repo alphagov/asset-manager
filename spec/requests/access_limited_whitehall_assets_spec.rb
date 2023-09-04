@@ -4,8 +4,11 @@ RSpec.describe "Access limited Whitehall assets", type: :request do
   let(:user_1) { FactoryBot.create(:user, uid: "user-1-id") }
   let(:user_2) { FactoryBot.create(:user, uid: "user-2-id") }
   let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, draft: true, access_limited: ["user-1-id"]) }
+  let(:s3) { S3Configuration.build }
 
   before do
+    allow(AssetManager).to receive(:s3).and_return(s3)
+    allow(s3).to receive(:fake?).and_return(false)
     host! AssetManager.govuk.draft_assets_host
   end
 

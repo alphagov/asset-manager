@@ -26,6 +26,7 @@ RSpec.describe MediaController, type: :controller do
       let(:presigned_url) { "https://s3-host.test/presigned-url" }
       let(:last_modified) { Time.zone.parse("2017-01-01 00:00") }
       let(:content_disposition) { instance_double(ContentDispositionConfiguration) }
+      let(:s3) { S3Configuration.build }
       let(:http_method) { "GET" }
 
       before do
@@ -38,142 +39,167 @@ RSpec.describe MediaController, type: :controller do
         allow(asset).to receive(:last_modified).and_return(last_modified)
         allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
         allow(content_disposition).to receive(:header_for).with(asset).and_return("content-disposition")
+        allow(AssetManager).to receive(:s3).and_return(s3)
       end
 
-      shared_examples "a download response" do
-        it "instructs Nginx to proxy the request to S3" do
+      context "when using real s3 in non-local environment" do
+        before do
+          allow(s3).to receive(:fake?).and_return(false)
+        end
+
+        shared_examples "a download response" do
+          it "instructs Nginx to proxy the request to S3" do
+            get :download, params: { id: asset.id }
+
+            expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
+          end
+
+          it "returns an ok response" do
+            get :download, params: { id: asset.id }
+
+            expect(response).to have_http_status(:ok)
+          end
+        end
+
+        shared_examples "a not modified response" do
+          it "does not instruct Nginx to proxy the request to S3" do
+            get :download, params: { id: asset.id }
+
+            expect(response.headers).not_to include("X-Accel-Redirect")
+          end
+
+          it "returns a not modified response" do
+            get :download, params: { id: asset.id }
+
+            expect(response).to have_http_status(:not_modified)
+          end
+        end
+
+        it "sends ETag response header with quoted value" do
           get :download, params: { id: asset.id }
 
-          expect(response.headers["X-Accel-Redirect"]).to match("/cloud-storage-proxy/#{presigned_url}")
+          expect(response.headers["ETag"]).to eq(%("599ffda8-e169"))
         end
 
-        it "returns an ok response" do
+        it "sends Last-Modified response header in HTTP time format" do
           get :download, params: { id: asset.id }
 
-          expect(response).to have_http_status(:ok)
+          expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
         end
-      end
 
-      shared_examples "a not modified response" do
-        it "does not instruct Nginx to proxy the request to S3" do
+        it "sends Content-Disposition response header based on asset filename" do
           get :download, params: { id: asset.id }
 
-          expect(response.headers).not_to include("X-Accel-Redirect")
+          expect(response.headers["Content-Disposition"]).to eq("content-disposition")
         end
 
-        it "returns a not modified response" do
+        it "sends an Asset's content_type when one is set" do
+          allow(asset).to receive(:content_type).and_return("image/jpeg")
           get :download, params: { id: asset.id }
 
-          expect(response).to have_http_status(:not_modified)
+          expect(response.headers["Content-Type"]).to eq("image/jpeg")
+        end
+
+        it "determines an Asset's content_type by filename when it is not set" do
+          allow(asset).to receive(:content_type).and_return(nil)
+          allow(asset).to receive(:filename).and_return("file.pdf")
+          get :download, params: { id: asset.id }
+
+          expect(response.headers["Content-Type"]).to eq("application/pdf")
+        end
+
+        context "when there aren't conditional headers" do
+          it_behaves_like "a download response"
+        end
+
+        context "when a conditional request is made using an ETag that matches the asset ETag" do
+          before { request.headers["If-None-Match"] = %("#{asset.etag}") }
+
+          it_behaves_like "a not modified response"
+        end
+
+        context "when conditional request is made using an ETag that does not match the asset ETag" do
+          before { request.headers["If-None-Match"] = %("made-up-etag") }
+
+          it_behaves_like "a download response"
+        end
+
+        context "when a conditional request is made using a timestamp that matches the asset timestamp" do
+          before do
+            request.headers["If-Modified-Since"] = asset.last_modified.httpdate
+          end
+
+          it_behaves_like "a not modified response"
+        end
+
+        context "when a conditional request is made using a timestamp that is earlier than the asset timestamp" do
+          before do
+            request.headers["If-Modified-Since"] = (asset.last_modified - 1.day).httpdate
+          end
+
+          it_behaves_like "a download response"
+        end
+
+        context "when a conditional request is made using a timestamp that is later than the asset timestamp" do
+          before do
+            request.headers["If-Modified-Since"] = (asset.last_modified + 1.day).httpdate
+          end
+
+          it_behaves_like "a not modified response"
+        end
+
+        context "when a conditional request is made using an Etag and timestamp that match the asset" do
+          before do
+            request.headers["If-None-Match"] = %("#{asset.etag}")
+            request.headers["If-Modified-Since"] = asset.last_modified.httpdate
+          end
+
+          it_behaves_like "a not modified response"
+        end
+
+        context "when a conditional request is made using an Etag that matches and timestamp that does not match the asset" do
+          before do
+            request.headers["If-None-Match"] = %("#{asset.etag}")
+            request.headers["If-Modified-Since"] = (asset.last_modified - 1.day).httpdate
+          end
+
+          it_behaves_like "a download response"
+        end
+
+        context "when a conditional request is made using an Etag that does not match and a timestamp that matches the asset" do
+          before do
+            request.headers["If-None-Match"] = "made-up-etag"
+            request.headers["If-Modified-Since"] = asset.last_modified.httpdate
+          end
+
+          it_behaves_like "a download response"
         end
       end
 
-      it "sends ETag response header with quoted value" do
-        get :download, params: { id: asset.id }
-
-        expect(response.headers["ETag"]).to eq(%("599ffda8-e169"))
-      end
-
-      it "sends Last-Modified response header in HTTP time format" do
-        get :download, params: { id: asset.id }
-
-        expect(response.headers["Last-Modified"]).to eq("Sun, 01 Jan 2017 00:00:00 GMT")
-      end
-
-      it "sends Content-Disposition response header based on asset filename" do
-        get :download, params: { id: asset.id }
-
-        expect(response.headers["Content-Disposition"]).to eq("content-disposition")
-      end
-
-      it "sends an Asset's content_type when one is set" do
-        allow(asset).to receive(:content_type).and_return("image/jpeg")
-        get :download, params: { id: asset.id }
-
-        expect(response.headers["Content-Type"]).to eq("image/jpeg")
-      end
-
-      it "determines an Asset's content_type by filename when it is not set" do
-        allow(asset).to receive(:content_type).and_return(nil)
-        allow(asset).to receive(:filename).and_return("file.pdf")
-        get :download, params: { id: asset.id }
-
-        expect(response.headers["Content-Type"]).to eq("application/pdf")
-      end
-
-      context "when there aren't conditional headers" do
-        it_behaves_like "a download response"
-      end
-
-      context "when a conditional request is made using an ETag that matches the asset ETag" do
-        before { request.headers["If-None-Match"] = %("#{asset.etag}") }
-
-        it_behaves_like "a not modified response"
-      end
-
-      context "when conditional request is made using an ETag that does not match the asset ETag" do
-        before { request.headers["If-None-Match"] = %("made-up-etag") }
-
-        it_behaves_like "a download response"
-      end
-
-      context "when a conditional request is made using a timestamp that matches the asset timestamp" do
+      context "when using fake s3 in local environment" do
         before do
-          request.headers["If-Modified-Since"] = asset.last_modified.httpdate
+          allow(s3).to receive(:fake?).and_return(true)
         end
 
-        it_behaves_like "a not modified response"
-      end
+        it "redirects to presigned fake s3 url directly instead of Nginx proxy" do
+          get :download, params: { id: asset.id }
 
-      context "when a conditional request is made using a timestamp that is earlier than the asset timestamp" do
-        before do
-          request.headers["If-Modified-Since"] = (asset.last_modified - 1.day).httpdate
+          expected_url = presigned_url
+          expect(controller).to redirect_to expected_url
         end
-
-        it_behaves_like "a download response"
-      end
-
-      context "when a conditional request is made using a timestamp that is later than the asset timestamp" do
-        before do
-          request.headers["If-Modified-Since"] = (asset.last_modified + 1.day).httpdate
-        end
-
-        it_behaves_like "a not modified response"
-      end
-
-      context "when a conditional request is made using an Etag and timestamp that match the asset" do
-        before do
-          request.headers["If-None-Match"] = %("#{asset.etag}")
-          request.headers["If-Modified-Since"] = asset.last_modified.httpdate
-        end
-
-        it_behaves_like "a not modified response"
-      end
-
-      context "when a conditional request is made using an Etag that matches and timestamp that does not match the asset" do
-        before do
-          request.headers["If-None-Match"] = %("#{asset.etag}")
-          request.headers["If-Modified-Since"] = (asset.last_modified - 1.day).httpdate
-        end
-
-        it_behaves_like "a download response"
-      end
-
-      context "when a conditional request is made using an Etag that does not match and a timestamp that matches the asset" do
-        before do
-          request.headers["If-None-Match"] = "made-up-etag"
-          request.headers["If-Modified-Since"] = asset.last_modified.httpdate
-        end
-
-        it_behaves_like "a download response"
       end
     end
   end
 
   describe "GET 'download'" do
-    before { not_logged_in }
+    before do
+      allow(AssetManager).to receive(:s3).and_return(s3)
+      allow(s3).to receive(:fake?).and_return(false)
+      not_logged_in
+    end
 
     let(:params) { { params: { id: asset, filename: asset.filename } } }
+    let(:s3) { S3Configuration.build }
 
     context "with a valid uploaded file" do
       let(:asset) { FactoryBot.create(:uploaded_asset) }
