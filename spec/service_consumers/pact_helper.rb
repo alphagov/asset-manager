@@ -55,6 +55,12 @@ Pact.provider_states_for "GDS API Adapters" do
     end
   end
 
+  provider_state "an asset exists with id 4dca570c2975bc0d6d437491 and filename asset.png" do
+    set_up do
+      FactoryBot.create(:uploaded_asset, id: "4dca570c2975bc0d6d437491")
+    end
+  end
+
   provider_state "a whitehall asset exists with legacy url path /government/uploads/some-edition/hello.txt and id 4dca570c2975bc0d6d437491" do
     set_up do
       FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: "/government/uploads/some-edition/hello.txt", id: "4dca570c2975bc0d6d437491")
