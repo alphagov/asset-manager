@@ -42,7 +42,11 @@ RSpec.describe S3Storage::Fake do
   end
 
   describe "#presigned_url_for" do
+    let(:s3) { S3Configuration.build }
+
     before do
+      allow(AssetManager).to receive(:s3).and_return(s3)
+      allow(s3).to receive(:fake?).and_return(false)
       storage.upload(asset)
     end
 

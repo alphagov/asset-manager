@@ -1,7 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "Virus scanning of uploaded images", type: :request, disable_cloud_storage_stub: true do
+  let(:s3) { S3Configuration.build }
+
   before do
+    allow(AssetManager).to receive(:s3).and_return(s3)
+    allow(s3).to receive(:fake?).and_return(true)
     login_as_stub_user
   end
 
@@ -26,11 +30,10 @@ RSpec.describe "Virus scanning of uploaded images", type: :request, disable_clou
     SaveToCloudStorageWorker.drain
 
     get download_media_path(id: asset, filename: "lorem.txt")
-    expect(response).to have_http_status(:success)
+    expect(response).to have_http_status(:found)
 
-    redirect_url = headers["X-Accel-Redirect"]
-    cloud_url = redirect_url.match(%r{^/cloud-storage-proxy/(.*)$})[1]
-    get cloud_url
+    redirect_url = headers["location"]
+    get redirect_url
     expect(response).to have_http_status(:success)
   end
 end

@@ -10,11 +10,13 @@ RSpec.describe "Whitehall media requests", type: :request do
         state:,
       )
     end
+    let(:s3) { S3Configuration.build }
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
                                 .with(asset, http_method:).and_return(presigned_url)
-
+      allow(AssetManager).to receive(:s3).and_return(s3)
+      allow(s3).to receive(:fake?).and_return(false)
       get path
     end
 
@@ -75,11 +77,13 @@ RSpec.describe "Whitehall media requests", type: :request do
   describe "request for an uploaded asset" do
     let(:path) { "/government/uploads/asset.png" }
     let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
+    let(:s3) { S3Configuration.build }
 
     before do
       allow(cloud_storage).to receive(:presigned_url_for)
                                 .with(asset, http_method:).and_return(presigned_url)
-
+      allow(AssetManager).to receive(:s3).and_return(s3)
+      allow(s3).to receive(:fake?).and_return(false)
       get path,
           headers: {
             "HTTP_X_SENDFILE_TYPE" => "X-Accel-Redirect",
@@ -142,6 +146,12 @@ RSpec.describe "Whitehall media requests", type: :request do
           legacy_url_path: path,
         )
       end
+      let(:s3) { S3Configuration.build }
+
+      before do
+        allow(AssetManager).to receive(:s3).and_return(s3)
+        allow(s3).to receive(:fake?).and_return(false)
+      end
 
       it "serves the asset without a valid token" do
         get path
@@ -186,6 +196,12 @@ RSpec.describe "Whitehall media requests", type: :request do
           auth_bypass_ids: [auth_bypass_id],
           access_limited: %w[some-other-user],
         )
+      end
+      let(:s3) { S3Configuration.build }
+
+      before do
+        allow(AssetManager).to receive(:s3).and_return(s3)
+        allow(s3).to receive(:fake?).and_return(false)
       end
 
       it "does not serve the asset without a valid token" do

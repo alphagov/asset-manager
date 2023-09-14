@@ -6,8 +6,11 @@ RSpec.describe "Access limited assets", type: :request do
   let(:user_3) { FactoryBot.create(:user, uid: "user-3-id", organisation_content_id: "org-a") }
   let(:user_4) { FactoryBot.create(:user, uid: "user-4-id", organisation_content_id: "org-b") }
   let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, access_limited: ["user-1-id"], access_limited_organisation_ids: %w[org-a]) }
+  let(:s3) { S3Configuration.build }
 
   before do
+    allow(AssetManager).to receive(:s3).and_return(s3)
+    allow(s3).to receive(:fake?).and_return(false)
     host! AssetManager.govuk.draft_assets_host
   end
 

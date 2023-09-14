@@ -37,6 +37,8 @@ Pact.provider_states_for "GDS API Adapters" do
     WebMock.reset!
     DatabaseCleaner.clean_with :truncation
     GDS::SSO.test_user = create(:user)
+    AssetManager.s3 = S3Configuration.build
+    allow(AssetManager.s3).to receive(:fake?).and_return(false)
   end
 
   tear_down do

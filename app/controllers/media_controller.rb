@@ -97,6 +97,9 @@ protected
 
     if request.fresh?(response)
       head :not_modified
+    elsif AssetManager.s3.fake?
+      url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
+      redirect_to url
     else
       url = Services.cloud_storage.presigned_url_for(asset, http_method: request.request_method)
       headers["X-Accel-Redirect"] = "/cloud-storage-proxy/#{url}"
