@@ -44,8 +44,4 @@ class WhitehallAsset < Asset
   def public_url_path
     legacy_url_path
   end
-
-  def mainstream?
-    false
-  end
 end

@@ -376,7 +376,7 @@ RSpec.describe Asset, type: :model do
       described_class.new(file: load_fixture_file("asset.png"))
     end
 
-    it "returns public URL path for mainstream asset" do
+    it "returns public URL path for asset" do
       expected_path = download_media_path(id: asset.id, filename: asset.filename)
       expect(asset.public_url_path).to eq(expected_path)
     end
@@ -1032,14 +1032,6 @@ RSpec.describe Asset, type: :model do
 
     it "cannot be called from outside the Asset class" do
       expect { asset.md5_hexdigest = "md5-value" }.to raise_error(NoMethodError)
-    end
-  end
-
-  describe "#mainstream?" do
-    let(:asset) { described_class.new }
-
-    it "returns truth-y" do
-      expect(asset).to be_mainstream
     end
   end
 
