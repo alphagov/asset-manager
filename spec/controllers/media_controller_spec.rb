@@ -210,6 +210,16 @@ RSpec.describe MediaController, type: :controller do
         get :download, **params
       end
 
+      context "with a whitehall asset" do
+        let(:asset) { FactoryBot.create(:uploaded_whitehall_asset) }
+
+        it "proxies whitehall asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, **params
+        end
+      end
+
       it "sets Cache-Control header to expire in 30 minutes and be publicly cacheable" do
         get :download, **params
 
@@ -513,16 +523,6 @@ RSpec.describe MediaController, type: :controller do
 
     context "with a valid clean file" do
       let(:asset) { FactoryBot.create(:clean_asset) }
-
-      it "responds with 404 Not Found" do
-        get :download, **params
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context "with an otherwise servable whitehall asset" do
-      let(:path) { "/government/uploads/asset.png" }
-      let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
 
       it "responds with 404 Not Found" do
         get :download, **params

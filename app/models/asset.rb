@@ -121,10 +121,6 @@ class Asset
     "/media/#{id}/#{filename}"
   end
 
-  def mainstream?
-    true
-  end
-
   def file=(file)
     old_filename = filename
     super(file).tap do

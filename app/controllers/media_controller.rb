@@ -150,8 +150,7 @@ protected
 
   def asset_servable?
     asset.filename_valid?(params[:filename]) &&
-      asset.uploaded? &&
-      asset.mainstream?
+      asset.uploaded?
   end
 
   def asset

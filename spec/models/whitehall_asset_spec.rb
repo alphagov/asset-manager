@@ -137,14 +137,6 @@ RSpec.describe WhitehallAsset, type: :model do
     end
   end
 
-  describe "#mainstream?" do
-    let(:asset) { described_class.new }
-
-    it "returns false-y" do
-      expect(asset).not_to be_mainstream
-    end
-  end
-
   describe ".from_params" do
     let(:format_from_params) { "png" }
     let(:path_from_params) { "government/uploads/path/to/asset" }
