@@ -86,7 +86,7 @@ GEM
       aws-sigv4 (~> 1.6)
     aws-sigv4 (1.6.0)
       aws-eventstream (~> 1, >= 1.0.2)
-    bootsnap (1.16.0)
+    bootsnap (1.17.0)
       msgpack (~> 1.2)
     brakeman (6.0.1)
     bson (4.15.0)
@@ -222,7 +222,7 @@ GEM
     mongoid-grid_fs (2.5.0)
       mime-types (>= 1.0, < 4.0)
       mongoid (>= 3.0, < 9.0)
-    msgpack (1.6.0)
+    msgpack (1.7.2)
     multi_xml (0.6.0)
     net-imap (0.3.7)
       date
