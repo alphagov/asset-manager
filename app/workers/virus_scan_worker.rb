@@ -12,6 +12,8 @@ class VirusScanWorker
       rescue VirusScanner::InfectedFile => e
         GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
         asset.scanned_infected!
+      rescue VirusScanner::Error => e
+        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
       end
     end
   end
