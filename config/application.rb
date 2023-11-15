@@ -32,6 +32,9 @@ module AssetManager
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Don't generate system test files.
+    config.generators.system_tests = nil
+
     # This app frequently redirects to different hosts (GOV.UK redirects,
     # between draft and live hosts).
     config.action_controller.raise_on_open_redirects = false

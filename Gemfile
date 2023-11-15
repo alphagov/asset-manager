@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "7.0.8"
+gem "rails", "7.1.2"
 
 gem "addressable"
 gem "aws-sdk-core"
@@ -26,7 +26,7 @@ group :development, :test do
   gem "brakeman"
   gem "byebug"
   gem "climate_control"
-  gem "database_cleaner"
+  gem "database_cleaner-mongoid"
   gem "factory_bot_rails"
   gem "pact", require: false
   gem "pact_broker-client", require: false
