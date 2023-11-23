@@ -85,6 +85,11 @@ class Asset
   scope :undeleted, -> { where(deleted_at: nil) }
 
   state_machine :state, initial: :unscanned do
+    around_transition do |asset, transition, block|
+      Rails.logger.info("#{asset.id} - Asset#state_machine - event: #{transition.event}")
+      block.call
+    end
+
     event :scanned_clean do
       transition unscanned: :clean
     end
@@ -104,6 +109,7 @@ class Asset
     after_transition to: :uploaded do |asset, _|
       asset.save!
       FileUtils.rm_rf(File.dirname(asset.file.path))
+      Rails.logger.info("#{asset.id} - Asset#state_machine - File removed")
     end
   end
 
