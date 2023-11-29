@@ -173,7 +173,7 @@ protected
   def set_token_payload
     token = params.fetch(:token, cookies[:auth_bypass_token])
     @token_payload = if token
-                       secret = Rails.application.secrets.jwt_auth_secret
+                       secret = Rails.application.config_for(:secrets).jwt_auth_secret
                        JWT.decode(token, secret, true, algorithm: "HS256").first
                      end
   rescue JWT::DecodeError

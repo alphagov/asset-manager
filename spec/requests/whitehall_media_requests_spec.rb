@@ -133,8 +133,8 @@ RSpec.describe "Whitehall media requests", type: :request do
     let(:path) { "/government/uploads/asset.png" }
     let(:auth_bypass_id) { "bypass-id" }
 
-    let(:valid_token) { JWT.encode({ "sub" => auth_bypass_id }, Rails.application.secrets.jwt_auth_secret, "HS256") }
-    let(:token_without_access) { JWT.encode({ "sub" => "not-the-right-bypass-id" }, Rails.application.secrets.jwt_auth_secret, "HS256") }
+    let(:valid_token) { JWT.encode({ "sub" => auth_bypass_id }, Rails.application.config_for(:secrets).jwt_auth_secret, "HS256") }
+    let(:token_without_access) { JWT.encode({ "sub" => "not-the-right-bypass-id" }, Rails.application.config_for(:secrets).jwt_auth_secret, "HS256") }
 
     context "when the asset is not access limited" do
       let(:asset) do

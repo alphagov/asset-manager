@@ -44,7 +44,7 @@ module AssetManager
 
     config.assets.prefix = "/asset-manager"
 
-    unless Rails.application.secrets.jwt_auth_secret
+    unless Rails.application.config_for(:secrets).jwt_auth_secret
       raise "JWT auth secret is not configured. See config/secrets.yml"
     end
   end
