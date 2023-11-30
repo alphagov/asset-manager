@@ -417,7 +417,7 @@ RSpec.describe MediaController, type: :controller do
         let(:token_with_draft_asset_manager_access) do
           JWT.encode(
             { "draft_asset_manager_access" => true },
-            Rails.application.secrets.jwt_auth_secret,
+            Rails.application.config_for(:secrets).jwt_auth_secret,
             "HS256",
           )
         end
@@ -447,14 +447,14 @@ RSpec.describe MediaController, type: :controller do
       let(:valid_token) do
         JWT.encode(
           { "sub" => auth_bypass_id },
-          Rails.application.secrets.jwt_auth_secret,
+          Rails.application.config_for(:secrets).jwt_auth_secret,
           "HS256",
         )
       end
       let(:token_with_draft_asset_manager_access) do
         JWT.encode(
           { "draft_asset_manager_access" => true },
-          Rails.application.secrets.jwt_auth_secret,
+          Rails.application.config_for(:secrets).jwt_auth_secret,
           "HS256",
         )
       end

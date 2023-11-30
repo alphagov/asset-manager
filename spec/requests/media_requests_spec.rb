@@ -106,7 +106,7 @@ RSpec.describe "Media requests", type: :request do
       end
 
       it "serves the asset with a valid token" do
-        secret = Rails.application.secrets.jwt_auth_secret
+        secret = Rails.application.config_for(:secrets).jwt_auth_secret
         valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
         get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
         expect(response).to be_successful
@@ -129,7 +129,7 @@ RSpec.describe "Media requests", type: :request do
       end
 
       it "serves the asset with a valid token" do
-        secret = Rails.application.secrets.jwt_auth_secret
+        secret = Rails.application.config_for(:secrets).jwt_auth_secret
         valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
         get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
         expect(response).to be_successful
@@ -153,7 +153,7 @@ RSpec.describe "Media requests", type: :request do
       end
 
       it "serves the asset with a valid token" do
-        secret = Rails.application.secrets.jwt_auth_secret
+        secret = Rails.application.config_for(:secrets).jwt_auth_secret
         valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
         get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
         expect(response).to be_successful
@@ -180,7 +180,7 @@ RSpec.describe "Media requests", type: :request do
       end
 
       it "serves the asset with a valid token" do
-        secret = Rails.application.secrets.jwt_auth_secret
+        secret = Rails.application.config_for(:secrets).jwt_auth_secret
         valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
         get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
         expect(response).to be_successful
@@ -203,7 +203,7 @@ RSpec.describe "Media requests", type: :request do
       end
 
       it "serves the asset with a valid token" do
-        secret = Rails.application.secrets.jwt_auth_secret
+        secret = Rails.application.config_for(:secrets).jwt_auth_secret
         valid_token = JWT.encode({ "sub" => auth_bypass_id }, secret, "HS256")
         get download_media_path(id: asset, filename: "asset.png", params: { token: valid_token })
         expect(response).to be_successful
