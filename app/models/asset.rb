@@ -76,7 +76,7 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
-  before_save :store_metadata, unless: :uploaded?
+  before_save :store_metadata, unless: :uploaded?, if: -> { changes.include?(:file) }
   after_save :schedule_virus_scan
   after_save :update_indirect_replacements_on_publish
   after_save :backpropagate_replacement
