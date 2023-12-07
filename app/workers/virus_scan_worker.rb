@@ -3,6 +3,8 @@ require "services"
 class VirusScanWorker
   include Sidekiq::Worker
 
+  sidekiq_options lock: :until_and_while_executing
+
   def perform(asset_id)
     asset = Asset.find(asset_id)
     if asset.unscanned?

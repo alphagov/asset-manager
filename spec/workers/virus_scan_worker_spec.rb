@@ -1,5 +1,6 @@
 require "rails_helper"
 require "services"
+require "sidekiq_unique_jobs/testing"
 
 RSpec.describe VirusScanWorker do
   let(:worker) { described_class.new }
@@ -8,6 +9,15 @@ RSpec.describe VirusScanWorker do
 
   before do
     allow(Services).to receive(:virus_scanner).and_return(scanner)
+  end
+
+  specify { expect(described_class).to have_valid_sidekiq_options }
+
+  it "does not permit multiple jobs to be enqueued for the same asset" do
+    SidekiqUniqueJobs.use_config(enabled: true) do
+      expect { described_class.perform_in(1.minute, asset.id.to_s) }.to enqueue_sidekiq_job(described_class)
+      expect { described_class.perform_in(1.minute, asset.id.to_s) }.not_to enqueue_sidekiq_job(described_class)
+    end
   end
 
   it "calls out to the VirusScanner to scan the file" do
