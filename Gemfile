@@ -32,6 +32,7 @@ group :development, :test do
   gem "pact", require: false
   gem "pact_broker-client", require: false
   gem "rspec-rails"
+  gem "rspec-sidekiq"
   gem "rubocop-govuk"
   gem "simplecov"
   gem "webmock", require: false
