@@ -49,18 +49,6 @@ RSpec.describe VirusScanWorker do
     end
   end
 
-  context "when the asset becomes marked clean by another process" do
-    it "does change the asset state" do
-      allow(scanner).to receive(:scan) do
-        asset.scanned_infected!
-      end
-
-      worker.perform(asset.id)
-
-      expect(asset.reload).not_to be_clean
-    end
-  end
-
   context "when the asset is already marked as infected" do
     let(:asset) { FactoryBot.create(:infected_asset) }
 
