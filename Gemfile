@@ -19,6 +19,7 @@ gem "plek"
 gem "rack_strip_client_ip"
 gem "rails-controller-testing"
 gem "sentry-sidekiq"
+gem "sidekiq-unique-jobs"
 gem "sprockets-rails"
 gem "state_machines-mongoid"
 
@@ -31,6 +32,7 @@ group :development, :test do
   gem "pact", require: false
   gem "pact_broker-client", require: false
   gem "rspec-rails"
+  gem "rspec-sidekiq"
   gem "rubocop-govuk"
   gem "simplecov"
   gem "webmock", require: false
