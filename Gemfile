@@ -9,7 +9,7 @@ gem "bootsnap", require: false
 gem "carrierwave", "< 3" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "gds-sso"
-gem "govuk_app_config"
+gem "govuk_app_config", ">= 9.8.0"
 gem "govuk_sidekiq"
 gem "jwt"
 gem "mongo", "~> 2.19.3"
@@ -29,7 +29,7 @@ group :development, :test do
   gem "climate_control"
   gem "database_cleaner-mongoid"
   gem "factory_bot_rails"
-  gem "pact", require: false
+  gem "pact", ">= 1.64.0", require: false
   gem "pact_broker-client", require: false
   gem "rspec-rails"
   gem "rspec-sidekiq"
