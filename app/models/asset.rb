@@ -53,7 +53,7 @@ class Asset
 
   field :deleted_at, type: Time
 
-  validates :file, presence: true, unless: :uploaded?
+  validates :file, presence: true, if: :unscanned?
 
   validates :uuid,
             presence: true,
