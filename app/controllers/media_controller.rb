@@ -6,6 +6,7 @@ class MediaController < ApplicationController
 
   def download
     logger.info("DOWNLOAD")
+    logger.info(request.original_url)
     logger.info("PARAMS :filename = #{params[:filename]}")
     logger.info("asset.filename = #{asset.filename}")
     logger.info(asset.replacement.inspect)
@@ -175,7 +176,7 @@ protected
 
   def asset
     @asset ||= Asset.undeleted.find(params[:id])
-    @asset.tap { |a| logger.info(a.inspect) }
+    #@asset.tap { |a| logger.info(a.inspect) }
   end
 
   def redirect_to_current_filename
