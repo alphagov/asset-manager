@@ -5,54 +5,70 @@ class MediaController < ApplicationController
   before_action :set_token_payload
 
   def download
+    logger.info("DOWNLOAD")
     if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
+      logger.info("REDIRECT_TO_REPLACEMENT")
       set_default_expiry
       redirect_to_replacement_for(asset)
       return
     end
 
     if redirect_to_draft_assets_host_for?(asset)
+      logger.info("REDIRECT_TO_DRAFT")
       redirect_to_draft_assets_host
       return
     end
 
     unless authorized_for_asset?(asset)
+      logger.info("UNAUTHORISED")
       error_403
       return
     end
 
     unless asset_servable?
+      logger.info("UNSERVABLE")
       error_404
       return
     end
 
     unless filename_current?
+      logger.info("REDIRECT_TO_CURRENT_FILENAME")
       redirect_to_current_filename
       return
     end
 
     if asset.redirect_url.present?
+      logger.info("REDIRECT_TO_REDIRECT_URL")
       redirect_to asset.redirect_url
       return
     end
 
     if temporary_redirect?
+      logger.info("TEMPORARY_REDIRECT")
       perform_temporary_redirect
       return
     end
 
     if requested_from_draft_assets_host? || requested_from_internal_host?
+      logger.info("EXPIRES_NOW")
       expires_now
     else
+      logger.info("SET_DEFAULT_EXPIRY")
       set_default_expiry
     end
+    logger.info("ADD_LINK_HEADER")
     add_link_header(asset)
+    logger.info("ADD_FRAME_HEADER")
     add_frame_header
+    logger.info("PROXY_TO_S3_VIA_NGINX")
     proxy_to_s3_via_nginx(asset)
-  rescue Mongoid::Errors::DocumentNotFound
+  rescue Mongoid::Errors::DocumentNotFound => e
+    logger.error(e.full_message)
     if (requested_from_draft_assets_host? || requested_from_internal_host?) && !user_signed_in?
+      logger.info("AUTHENTICATE_USER")
       authenticate_user!
     else
+      logger.info("RAISE")
       raise
     end
   end
