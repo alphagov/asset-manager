@@ -6,6 +6,9 @@ class MediaController < ApplicationController
 
   def download
     logger.info("DOWNLOAD")
+    logger.info("PARAMS :filename = #{params[:filename]}")
+    logger.info("asset.filename = #{asset.filename}")
+    logger.info(asset.replacement.inspect)
     if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
       logger.info("REDIRECT_TO_REPLACEMENT")
       set_default_expiry
