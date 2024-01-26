@@ -23,3 +23,7 @@
 /spec/examples.txt
 
 /fake-s3
+
+# vim swap files and tags
+*.sw[a-z]
+/tags
