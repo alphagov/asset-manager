@@ -171,6 +171,7 @@ protected
 
   def asset
     @asset ||= Asset.undeleted.find(params[:id])
+    @asset.tap { |a| logger.info(a.inspect) }
   end
 
   def redirect_to_current_filename
