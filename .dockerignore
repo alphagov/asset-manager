@@ -2,7 +2,6 @@
 .git
 .gitignore
 Dockerfile
-Jenkinsfile
 Procfile
 README.md
 coverage
