@@ -20,7 +20,11 @@ curl http://asset-manager.dev.gov.uk/assets --form "asset[file]=@tmp.txt"
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
-  "state":"unscanned"
+  "state":"unscanned",
+  "draft": false,
+  "access_limited": [],
+  "access_limited_organisation_ids": [],
+  "auth_bypass_ids": []
 }
 ```
 
@@ -37,7 +41,8 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
-  "state":"unscanned"
+  "state":"unscanned",
+  "draft": false
 }
 
 # After virus scanning
@@ -48,7 +53,8 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
-  "state":"clean"
+  "state":"clean",
+  "draft": false
 }
 ```
 
@@ -84,7 +90,11 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 --request P
   "name":"tmp123.txt",
   "content_type":"text/plain",
   "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt",
-  "state":"unscanned"
+  "state":"unscanned",
+  "draft": false,
+  "access_limited": [],
+  "access_limited_organisation_ids": [],
+  "auth_bypass_ids": []
 }
 
 # Request asset using original filename
