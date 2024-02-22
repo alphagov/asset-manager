@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "7.1.3"
+gem "rails", "7.1.3.2"
 
 gem "addressable"
 gem "aws-sdk-core"
