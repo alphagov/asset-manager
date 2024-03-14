@@ -19,10 +19,13 @@ class S3Storage
   end
 
   def upload(asset, force: false)
+    Rails.logger.info("#{asset.id} - S3Storage#upload")
     metadata = exists?(asset) ? metadata_for(asset) : {}
+    Rails.logger.info("#{asset.id} - Remote #{metadata["md5-hexdigest"]} - Model #{asset.md5_hexdigest}")
     if force || metadata["md5-hexdigest"] != asset.md5_hexdigest
       metadata["md5-hexdigest"] = asset.md5_hexdigest
       begin
+        Rails.logger.info("#{asset.id} - S3Storage#upload - uploading file")
         unless object_for(asset).upload_file(asset.file.path, metadata:)
           error_message = "Aws::S3::Object#upload_file returned false for asset ID: #{asset.id}"
           raise ObjectUploadFailedError, error_message
