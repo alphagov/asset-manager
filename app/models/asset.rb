@@ -76,6 +76,7 @@ class Asset
 
   mount_uploader :file, AssetUploader
 
+  before_save :log_things
   before_save :store_metadata, unless: :uploaded?, if: -> { changes.include?(:file) }
   after_save :schedule_virus_scan
   after_save :update_indirect_replacements_on_publish
@@ -226,7 +227,13 @@ class Asset
 
 protected
 
+  def log_things
+    Rails.logger.info("#{id} - Asset#before_save - uploaded?: #{uploaded?} - changes include file: #{changes.include?(:file)}")
+  end
+
   def store_metadata
+    Rails.logger.info("#{id} - Asset#store_metadata)}")
+
     self.etag = etag_from_file
     self.last_modified = last_modified_from_file
     self.md5_hexdigest = md5_hexdigest_from_file
