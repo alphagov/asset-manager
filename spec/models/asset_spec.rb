@@ -1105,6 +1105,19 @@ RSpec.describe Asset, type: :model do
         expect(asset.save).to be_truthy
       end
     end
+
+    context "when the file name is unchanged" do
+      let(:saved_asset) { FactoryBot.create(:asset) }
+      let(:md5_hexdigest) { saved_asset.md5_hexdigest }
+      let(:original_filename) { saved_asset.file.send(:original_filename) }
+
+      it "updates the md5 hexdigest" do
+        asset = described_class.find(saved_asset.id) # find to clear memoization
+        asset.update!(file: load_fixture_file("lorem.txt", named: original_filename))
+
+        expect(asset.md5_hexdigest).not_to eq md5_hexdigest
+      end
+    end
   end
 
   describe "#replacement" do
