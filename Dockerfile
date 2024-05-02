@@ -3,7 +3,7 @@ ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
 ARG clam_engine=clamav-1.2.1.linux.x86_64.deb
 
-FROM $builder_image AS builder
+FROM --platform=$TARGETPLATFORM $builder_image AS builder
 
 WORKDIR $APP_HOME
 COPY Gemfile Gemfile.lock .ruby-version ./
@@ -12,7 +12,7 @@ COPY . .
 RUN bootsnap precompile --gemfile .
 
 
-FROM $base_image
+FROM --platform=$TARGETPLATFORM $base_image
 
 ARG clam_engine
 ENV GOVUK_APP_NAME=asset-manager
