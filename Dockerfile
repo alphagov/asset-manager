@@ -3,7 +3,7 @@ ARG ruby_version=3.3
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
 
-FROM --platform=$TARGETPLATFORM index.docker.io/library/ubuntu:22.04 AS clam_builder
+FROM --platform=$TARGETPLATFORM public.ecr.aws/lts/ubuntu:22.04_stable AS clam_builder
 
 ARG clamav_version
 
