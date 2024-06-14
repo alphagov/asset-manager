@@ -1,11 +1,11 @@
-ARG clamav_binary_src=https://www.clamav.net/downloads/production/clamav-1.3.1.tar.gz
+ARG clamav_version=1.3.1
 ARG ruby_version=3.3
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
 
 FROM --platform=$TARGETPLATFORM index.docker.io/library/ubuntu:22.04 AS clam_builder
 
-ARG clamav_binary_src
+ARG clamav_version
 
 WORKDIR /src
 
@@ -41,8 +41,8 @@ RUN apt update && apt install -y \
         wget \
     && \
     rm -rf /var/cache/apt/archives && \
-    wget $clamav_binary_src && \
-    tar -zxf clamav-1.3.1.tar.gz -C /src --strip-components=1 && ls && \
+    wget https://www.clamav.net/downloads/production/clamav-${clamav_version}.tar.gz && \
+    tar -zxf clamav-${clamav_version}.tar.gz -C /src --strip-components=1 && \
     # Using rustup to install Rust rather than rust:1.62.1-bullseye, because there is no rust:1.62.1-bullseye image for ppc64le at this time.
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && \
