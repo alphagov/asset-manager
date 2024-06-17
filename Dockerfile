@@ -41,7 +41,7 @@ RUN apt update && apt install -y \
         wget \
     && \
     rm -rf /var/cache/apt/archives && \
-    wget https://www.clamav.net/downloads/production/clamav-${clamav_version}.tar.gz && \
+    wget https://github.com/Cisco-Talos/clamav/releases/download/clamav-${clamav_version}/clamav-${clamav_version}.tar.gz && \
     tar -zxf clamav-${clamav_version}.tar.gz -C /src --strip-components=1 && \
     # Using rustup to install Rust rather than rust:1.62.1-bullseye, because there is no rust:1.62.1-bullseye image for ppc64le at this time.
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
