@@ -3,7 +3,7 @@ ARG ruby_version=3.3
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
 
-FROM --platform=$TARGETPLATFORM public.ecr.aws/lts/ubuntu:22.04_stable AS clam_builder
+FROM --platform=$TARGETPLATFORM public.ecr.aws/lts/ubuntu:24.04_stable AS clam_builder
 
 ARG clamav_version
 
@@ -125,7 +125,7 @@ RUN apt update && apt-get install -y libbz2-1.0 \
         libxml2 \
         zlib1g \
         tzdata \
-        netcat && \
+        netcat-traditional && \
     mkdir -p /var/run/clamav /var/lib/clamav /usr/local/share/clamav && \
     chown app:app /var/run/clamav /var/lib/clamav /usr/local/share/clamav
 
