@@ -125,7 +125,7 @@ RUN apt update && apt-get install -y libbz2-1.0 \
         libxml2 \
         zlib1g \
         tzdata \
-        netcat-traditional && \
+        netcat-openbsd && \
     mkdir -p /var/run/clamav /var/lib/clamav /usr/local/share/clamav && \
     chown app:app /var/run/clamav /var/lib/clamav /usr/local/share/clamav
 
