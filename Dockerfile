@@ -133,6 +133,9 @@ RUN apt update && apt-get install -y libbz2-1.0 \
 WORKDIR $APP_HOME
 
 COPY --from=clam_builder "/clamav" "/"
+
+RUN ln -s /usr/bin/clam* /usr/local/bin
+
 COPY --from=app_builder $BUNDLE_PATH $BUNDLE_PATH
 COPY --from=app_builder $BOOTSNAP_CACHE_DIR $BOOTSNAP_CACHE_DIR
 COPY --from=app_builder $APP_HOME .
