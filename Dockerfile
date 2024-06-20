@@ -77,13 +77,13 @@ RUN apt update && apt install -y \
         -e "s|.*\(LocalSocket\) .*|\1 /tmp/clamd.sock|" \
         -e "s|.*\(TCPSocket\) .*|\1 3310|" \
         -e "s|.*\(TCPAddr\) .*|#\1 0.0.0.0|" \
-        -e "s|.*\(User\) .*|\1 clamav|" \
+        -e "s|.*\(User\) .*|\1 app|" \
         -e "s|^\#\(LogFile\) .*|\1 /var/log/clamav/clamd.log|" \
         -e "s|^\#\(LogTime\).*|\1 yes|" \
         "/clamav/etc/clamav/clamd.conf.sample" > "/clamav/etc/clamav/clamd.conf" && \
     sed -e "s|^\(Example\)|\# \1|" \
         -e "s|.*\(PidFile\) .*|\1 /tmp/freshclam.pid|" \
-        -e "s|.*\(DatabaseOwner\) .*|\1 clamav|" \
+        -e "s|.*\(DatabaseOwner\) .*|\1 app|" \
         -e "s|^\#\(UpdateLogFile\) .*|\1 /var/log/clamav/freshclam.log|" \
         -e "s|^\#\(NotifyClamd\).*|\1 /etc/clamav/clamd.conf|" \
         -e "s|^\#\(ScriptedUpdates\).*|\1 yes|" \
@@ -134,7 +134,8 @@ WORKDIR $APP_HOME
 
 COPY --from=clam_builder "/clamav" "/"
 
-RUN ln -s /usr/bin/clam* /usr/local/bin
+RUN ln -s /usr/bin/clam* /usr/local/bin && \
+    ln -s /usr/bin/freshclam /usr/local/bin
 
 COPY --from=app_builder $BUNDLE_PATH $BUNDLE_PATH
 COPY --from=app_builder $BOOTSNAP_CACHE_DIR $BOOTSNAP_CACHE_DIR
