@@ -135,8 +135,7 @@ WORKDIR $APP_HOME
 COPY --from=clam_builder "/clamav" "/"
 
 RUN ln -s /usr/bin/clam* /usr/local/bin && \
-    ln -s /usr/bin/freshclam /usr/local/bin && \
-    chown 0755 /usr/local/bin/clam* /usr/local/bin/freshclam
+    ln -s /usr/bin/freshclam /usr/local/bin
 
 COPY --from=app_builder $BUNDLE_PATH $BUNDLE_PATH
 COPY --from=app_builder $BOOTSNAP_CACHE_DIR $BOOTSNAP_CACHE_DIR
