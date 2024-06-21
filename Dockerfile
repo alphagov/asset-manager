@@ -57,7 +57,7 @@ RUN apt update && apt install -y \
           -DCMAKE_BUILD_TYPE="Release" \
           -DCMAKE_INSTALL_PREFIX="/usr" \
           -DCMAKE_INSTALL_LIBDIR="/usr/lib" \
-          -DAPP_CONFIG_DIRECTORY="/etc/clamav" \
+          -DAPP_CONFIG_DIRECTORY="/usr/local/etc" \
           -DDATABASE_DIRECTORY="/var/lib/clamav" \
           -DENABLE_CLAMONACC=OFF \
           -DENABLE_EXAMPLES=OFF \
@@ -71,32 +71,6 @@ RUN apt update && apt install -y \
     rm -r \
        "/clamav/usr/include" \
        "/clamav/usr/lib/pkgconfig/" \
-    && \
-    sed -e "s|^\(Example\)|\# \1|" \
-        -e "s|.*\(PidFile\) .*|\1 /tmp/clamd.pid|" \
-        -e "s|.*\(LocalSocket\) .*|\1 /tmp/clamd.sock|" \
-        -e "s|.*\(TCPSocket\) .*|\1 3310|" \
-        -e "s|.*\(TCPAddr\) .*|#\1 0.0.0.0|" \
-        -e "s|.*\(User\) .*|\1 app|" \
-        -e "s|^\#\(LogFile\) .*|\1 /dev/stdout|" \
-        -e "s|^\#\(LogTime\).*|\1 yes|" \
-        "/clamav/etc/clamav/clamd.conf.sample" > "/clamav/etc/clamav/clamd.conf" && \
-    sed -e "s|^\(Example\)|\# \1|" \
-        -e "s|.*\(PidFile\) .*|\1 /tmp/freshclam.pid|" \
-        -e "s|.*\(DatabaseOwner\) .*|\1 app|" \
-        -e "s|^\#\(UpdateLogFile\) .*|\1 /dev/stdout|" \
-        -e "s|^\#\(NotifyClamd\).*|\1 /etc/clamav/clamd.conf|" \
-        -e "s|^\#\(ScriptedUpdates\).*|\1 yes|" \
-        "/clamav/etc/clamav/freshclam.conf.sample" > "/clamav/etc/clamav/freshclam.conf" && \
-    sed -e "s|^\(Example\)|\# \1|" \
-        -e "s|.*\(PidFile\) .*|\1 /tmp/clamav-milter.pid|" \
-        -e "s|.*\(MilterSocket\) .*|\1 inet:7357|" \
-        -e "s|.*\(User\) .*|\1 clamav|" \
-        -e "s|^\#\(LogFile\) .*|\1 /dev/stdout|" \
-        -e "s|^\#\(LogTime\).*|\1 yes|" \
-        -e "s|.*\(\ClamdSocket\) .*|\1 unix:/tmp/clamd.sock|" \
-        "/clamav/etc/clamav/clamav-milter.conf.sample" > "/clamav/etc/clamav/clamav-milter.conf" || \
-    exit 1 \
     && \
     ctest -V
 
