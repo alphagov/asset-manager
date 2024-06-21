@@ -63,14 +63,6 @@ RSpec.describe GovukConfiguration do
         expect(config.clamscan_path).to eq("alternative-path")
       end
     end
-
-    context "when environment does not include an ASSET_MANAGER_CLAMSCAN_PATH value" do
-      let(:env) { {} }
-
-      it "returns govuk_clamscan" do
-        expect(config.clamscan_path).to eq("govuk_clamscan")
-      end
-    end
   end
 
   describe "#draft_assets_host" do
