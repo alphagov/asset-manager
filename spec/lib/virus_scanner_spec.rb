@@ -15,7 +15,7 @@ RSpec.describe VirusScanner do
     end
 
     it "calls out to clamdscan" do
-      expect(Open3).to receive(:capture2e).with("govuk_clamscan", "--no-summary", file_path)
+      expect(Open3).to receive(:capture2e).with("clamdscan", "--no-summary", file_path)
 
       scanner.scan(file_path)
     end

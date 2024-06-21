@@ -2,8 +2,8 @@ require "open3"
 
 # Simple wrapper around ClamAV
 #
-# This expects govuk_clamscan to exist on the PATH, and be a symlink
-# to either clamscan or clamdscan
+# This expects AssetManager.govuk.clamscan_path to be an executable command
+# that is compatible with clamscan or clamdscan.
 class VirusScanner
   class Error < StandardError; end
 
