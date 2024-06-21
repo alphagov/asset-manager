@@ -1,78 +1,37 @@
-ARG clamav_version=1.3.1
+ARG clam_version=1.3.1
 ARG ruby_version=3.3
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
 
-FROM --platform=$TARGETPLATFORM public.ecr.aws/lts/ubuntu:24.04_stable AS clam_builder
 
-ARG clamav_version
+FROM --platform=$TARGETPLATFORM $builder_image AS clam_builder
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+
+ARG clam_version
+ARG clam_url_prefix=https://github.com/Cisco-Talos/clamav/releases/download
+ARG clam_url=$clam_url_prefix/clamav-${clam_version}/clamav-${clam_version}.tar.gz
 
 WORKDIR /src
+RUN curl -SLfso - "$clam_url" | tar -zxf - --strip-components=1
 
-COPY . /src/
-
-ENV DEBIAN_FRONTEND noninteractive
-ENV CARGO_HOME /src/build
-
-RUN apt update && apt install -y \
-        cmake \
-        bison \
-        flex \
-        gcc \
-        git \
-        make \
-        man-db \
-        net-tools \
-        pkg-config \
-        python3 \
-        python3-pip \
-        python3-pytest \
-        check \
-        libbz2-dev \
-        libcurl4-openssl-dev \
-        libjson-c-dev \
-        libmilter-dev \
-        libncurses-dev \
-        libpcre2-dev \
-        libssl-dev \
-        libxml2-dev \
-        zlib1g-dev \
-        curl \
-        wget \
-    && \
-    rm -rf /var/cache/apt/archives && \
-    wget https://github.com/Cisco-Talos/clamav/releases/download/clamav-${clamav_version}/clamav-${clamav_version}.tar.gz && \
-    tar -zxf clamav-${clamav_version}.tar.gz -C /src --strip-components=1 && \
-    # Using rustup to install Rust rather than rust:1.62.1-bullseye, because there is no rust:1.62.1-bullseye image for ppc64le at this time.
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && \
-    . $CARGO_HOME/env \
-    && \
-    rustup update \
-    && \
-    mkdir -p "./build" && cd "./build" \
-    && \
+WORKDIR /src/build
+RUN install_packages \
+      cmake pkg-config check libbz2-dev libcurl4-openssl-dev libjson-c-dev \
+      libncurses-dev libpcre2-dev libxml2-dev zlib1g-dev cargo rustc \
+      ; \
     cmake .. \
-          -DCARGO_HOME=$CARGO_HOME \
-          -DCMAKE_BUILD_TYPE="Release" \
-          -DCMAKE_INSTALL_PREFIX="/usr" \
-          -DCMAKE_INSTALL_LIBDIR="/usr/lib" \
-          -DAPP_CONFIG_DIRECTORY="/usr/local/etc" \
-          -DDATABASE_DIRECTORY="/var/lib/clamav" \
-          -DENABLE_CLAMONACC=OFF \
-          -DENABLE_EXAMPLES=OFF \
-          -DENABLE_JSON_SHARED=ON \
-          -DENABLE_MAN_PAGES=OFF \
-          -DENABLE_MILTER=ON \
-          -DENABLE_STATIC_LIB=OFF \
-    && \
-    make DESTDIR="/clamav" -j$(($(nproc) - 1)) install \
-    && \
-    rm -r \
-       "/clamav/usr/include" \
-       "/clamav/usr/lib/pkgconfig/" \
-    && \
-    ctest -V
+      -DCLAMAV_USER=app \
+      -DCLAMAV_GROUP=app \
+      -DCMAKE_BUILD_TYPE="Release" \
+      -DDATABASE_DIRECTORY="/var/lib/clamav" \
+      -DENABLE_CLAMONACC=OFF \
+      -DENABLE_JSON_SHARED=OFF \
+      -DENABLE_MAN_PAGES=OFF \
+      -DENABLE_MILTER=OFF \
+      ; \
+    make DESTDIR=/clamav -j$(nproc) install ; \
+    rm -r /clamav/usr/local/{bin/clambc,include,lib/pkgconfig,share/doc}
+
 
 FROM --platform=$TARGETPLATFORM $builder_image AS app_builder
 
@@ -82,35 +41,26 @@ RUN bundle install
 COPY . .
 RUN bootsnap precompile --gemfile .
 
+
 FROM --platform=$TARGETPLATFORM $base_image
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV GOVUK_APP_NAME=asset-manager
 
-# TODO: move ClamAV into a completely separate service.
-RUN apt update && apt-get install -y libbz2-1.0 \
-        wget \
-        shared-mime-info \
-        libcurl4 \
-        libssl-dev \
-        libjson-c5 \
-        libmilter1.0.1 \
-        libncurses6 \
-        libpcre2-8-0 \
-        libxml2 \
-        zlib1g \
-        tzdata \
-        netcat-openbsd && \
-    mkdir -p /var/run/clamav /var/lib/clamav /usr/local/share/clamav && \
-    install -d -m 755 -g "app" -o "app" "/var/log/clamav" && \
-    chown -R app:app /var/run/clamav /var/lib/clamav /usr/local/share/clamav
+# TODO: move ClamAV into a completely separate service or (better) stop trying
+# to run our own antimalware and use a hosted service (such as VirusTotal or
+# S3 Malware Scanning or similar).
+RUN install_packages shared-mime-info netcat-openbsd ; \
+    mkdir -p /var/lib/clamav ; \
+    chown app:app /var/lib/clamav
+COPY --from=clam_builder /clamav /
+# Crude smoke test and print library versions.
+RUN echo -n clamd:\ ; clamd --version -c /dev/null ; \
+    ldd $(which clamd) ; \
+    echo -n clamdscan:\ ; clamdscan --version -c /dev/null ; \
+    ldd $(which clamdscan)
 
 WORKDIR $APP_HOME
-
-COPY --from=clam_builder "/clamav" "/"
-
-RUN ln -s /usr/bin/clam* /usr/local/bin && \
-    ln -s /usr/bin/freshclam /usr/local/bin
-
 COPY --from=app_builder $BUNDLE_PATH $BUNDLE_PATH
 COPY --from=app_builder $BOOTSNAP_CACHE_DIR $BOOTSNAP_CACHE_DIR
 COPY --from=app_builder $APP_HOME .
