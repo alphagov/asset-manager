@@ -23,6 +23,6 @@ class GovukConfiguration
   end
 
   def clamscan_path
-    @env.fetch("ASSET_MANAGER_CLAMSCAN_PATH", "govuk_clamscan")
+    @env.fetch("ASSET_MANAGER_CLAMSCAN_PATH", "clamdscan")
   end
 end
