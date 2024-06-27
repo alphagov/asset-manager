@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe Healthcheck::CloudStorage do
   describe "#status" do
-    let(:storage) { instance_double("S3Storage") }
+    let(:storage) { instance_double(S3Storage) }
 
     before do
       allow(Services).to receive(:cloud_storage).and_return(storage)

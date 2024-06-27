@@ -7,7 +7,7 @@ RSpec.describe VirusScanner do
 
     let(:file_path) { "/path/to/file" }
     let(:output) { "" }
-    let(:status) { instance_double("Process::Status", exitstatus:) }
+    let(:status) { instance_double(Process::Status, exitstatus:) }
     let(:exitstatus) { 0 }
 
     before do
@@ -24,7 +24,7 @@ RSpec.describe VirusScanner do
       let(:exitstatus) { 0 }
 
       it "returns true" do
-        expect(scanner.scan(file_path)).to eq(true)
+        expect(scanner.scan(file_path)).to be(true)
       end
     end
 

@@ -5,7 +5,7 @@ RSpec.describe CLI, type: :model do
   subject(:cli) { described_class.new(output, kernel) }
 
   let(:output) { StringIO.new }
-  let(:kernel) { class_double("Kernel") }
+  let(:kernel) { class_double(Kernel) }
   let(:path) { fixture_file_path("asset.png") }
 
   describe "#create_asset" do
@@ -31,7 +31,7 @@ RSpec.describe CLI, type: :model do
         end
 
         it "does not create an asset" do
-          expect { cli.create_asset(*args) }.to change(Asset, :count).by 0
+          expect { cli.create_asset(*args) }.not_to change(Asset, :count)
         end
 
         it "reports that asset was not saved" do

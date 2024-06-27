@@ -78,7 +78,7 @@ RSpec.describe S3Configuration do
 
     context "when AWS_S3_BUCKET_NAME env var is not present" do
       it "returns nil" do
-        expect(config.bucket_name).to eq(nil)
+        expect(config.bucket_name).to be_nil
       end
     end
   end

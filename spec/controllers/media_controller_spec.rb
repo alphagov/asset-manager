@@ -35,11 +35,9 @@ RSpec.describe MediaController, type: :controller do
         allow(Services).to receive(:cloud_storage).and_return(cloud_storage)
         allow(cloud_storage).to receive(:presigned_url_for)
           .with(asset, http_method:).and_return(presigned_url)
-        allow(asset).to receive(:etag).and_return("599ffda8-e169")
-        allow(asset).to receive(:last_modified).and_return(last_modified)
-        allow(AssetManager).to receive(:content_disposition).and_return(content_disposition)
+        allow(asset).to receive_messages(etag: "599ffda8-e169", last_modified:)
         allow(content_disposition).to receive(:header_for).with(asset).and_return("content-disposition")
-        allow(AssetManager).to receive(:s3).and_return(s3)
+        allow(AssetManager).to receive_messages(content_disposition:, s3:)
       end
 
       context "when using real s3 in non-local environment" do
@@ -101,8 +99,7 @@ RSpec.describe MediaController, type: :controller do
         end
 
         it "determines an Asset's content_type by filename when it is not set" do
-          allow(asset).to receive(:content_type).and_return(nil)
-          allow(asset).to receive(:filename).and_return("file.pdf")
+          allow(asset).to receive_messages(content_type: nil, filename: "file.pdf")
           get :download, params: { id: asset.id }
 
           expect(response.headers["Content-Type"]).to eq("application/pdf")
