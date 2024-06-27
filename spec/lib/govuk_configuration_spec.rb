@@ -69,7 +69,7 @@ RSpec.describe GovukConfiguration do
     subject(:config) { described_class.new(env, plek) }
 
     let(:env) { {} }
-    let(:plek) { instance_double("Plek") }
+    let(:plek) { instance_double(Plek) }
 
     before do
       allow(plek).to receive(:external_url_for).with("draft-assets")

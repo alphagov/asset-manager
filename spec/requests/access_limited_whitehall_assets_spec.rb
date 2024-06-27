@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Access limited Whitehall assets", type: :request do
-  let(:user_1) { FactoryBot.create(:user, uid: "user-1-id") }
-  let(:user_2) { FactoryBot.create(:user, uid: "user-2-id") }
+  let(:authorised_user) { FactoryBot.create(:user, uid: "user-1-id") }
+  let(:unauthorised_user) { FactoryBot.create(:user, uid: "user-2-id") }
   let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, draft: true, access_limited: ["user-1-id"]) }
   let(:s3) { S3Configuration.build }
 
@@ -13,7 +13,7 @@ RSpec.describe "Access limited Whitehall assets", type: :request do
   end
 
   it "are accessible to users who are authorised to view them" do
-    login_as user_1
+    login_as authorised_user
 
     get asset.legacy_url_path
 
@@ -21,7 +21,7 @@ RSpec.describe "Access limited Whitehall assets", type: :request do
   end
 
   it "are not accessible to users who are not authorised to view them" do
-    login_as user_2
+    login_as unauthorised_user
 
     get asset.legacy_url_path
 

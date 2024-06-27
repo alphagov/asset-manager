@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Virus scanning of uploaded images", type: :request, disable_cloud_storage_stub: true do
+RSpec.describe "Virus scanning of uploaded images", :disable_cloud_storage_stub, type: :request do
   let(:s3) { S3Configuration.build }
 
   before do

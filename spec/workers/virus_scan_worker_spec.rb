@@ -5,7 +5,7 @@ require "sidekiq_unique_jobs/testing"
 RSpec.describe VirusScanWorker do
   let(:worker) { described_class.new }
   let(:asset) { FactoryBot.create(:asset) }
-  let(:scanner) { instance_double("VirusScanner") }
+  let(:scanner) { instance_double(VirusScanner) }
 
   before do
     allow(Services).to receive(:virus_scanner).and_return(scanner)

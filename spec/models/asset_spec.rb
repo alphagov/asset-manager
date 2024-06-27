@@ -826,8 +826,8 @@ RSpec.describe Asset, type: :model do
 
     it "has 2nd part as file size (number of bytes written in lowercase hex)" do
       size_hex = asset.etag_from_file.split("-").last
-      size = size_hex.to_i(16)
-      expect(size).to eq(size)
+      asset_size = size_hex.to_i(16)
+      expect(asset_size).to eq(size)
     end
   end
 
