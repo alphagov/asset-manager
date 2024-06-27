@@ -8,15 +8,15 @@ RSpec.describe AssetProcessor do
   let(:output) { StringIO.new }
   let(:report_progress_every) { 1 }
 
-  let!(:asset_1) { FactoryBot.create(:asset) }
-  let!(:asset_2) { FactoryBot.create(:asset) }
+  let!(:first_asset) { FactoryBot.create(:asset) }
+  let!(:second_asset) { FactoryBot.create(:asset) }
 
   it "iterates over all assets" do
     asset_ids = []
     processor.process_all_assets_with do |asset_id|
       asset_ids << asset_id
     end
-    expect(asset_ids).to contain_exactly(asset_1.id.to_s, asset_2.id.to_s)
+    expect(asset_ids).to contain_exactly(first_asset.id.to_s, second_asset.id.to_s)
   end
 
   it "reports progress for every asset" do
@@ -60,7 +60,7 @@ RSpec.describe AssetProcessor do
     let(:scope) { Asset.deleted }
 
     before do
-      asset_1.destroy
+      first_asset.destroy
     end
 
     it "iterates over all deleted assets" do
@@ -68,7 +68,7 @@ RSpec.describe AssetProcessor do
       processor.process_all_assets_with do |asset_id|
         asset_ids << asset_id
       end
-      expect(asset_ids).to contain_exactly(asset_1.id.to_s)
+      expect(asset_ids).to contain_exactly(first_asset.id.to_s)
     end
   end
 
