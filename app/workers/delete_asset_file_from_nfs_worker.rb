@@ -4,10 +4,9 @@ class DeleteAssetFileFromNfsWorker
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    asset_path = asset.file.path
     if asset.uploaded?
-      asset.remove_file!
-      FileUtils.rmdir(File.dirname(asset_path))
+      FileUtils.rm_rf(File.dirname(asset.file.path))
+      Rails.logger.info("#{asset.id} - DeleteAssetFileFromNfsWorker - File removed")
     end
   end
 end

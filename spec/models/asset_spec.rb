@@ -1055,22 +1055,9 @@ RSpec.describe Asset, type: :model do
         expect(asset.reload).to be_uploaded
       end
 
-      it "sets file attribute to blank" do
+      it "triggers the delete asset file worker" do
+        expect(DeleteAssetFileFromNfsWorker).to receive(:perform_in)
         asset.upload_success!
-
-        expect(asset.reload.file).to be_blank
-      end
-
-      it "removes the underlying file" do
-        asset.upload_success!
-
-        expect(File).not_to exist(path)
-      end
-
-      it "removes the underlying directory" do
-        asset.upload_success!
-
-        expect(File).not_to exist(File.dirname(path))
       end
     end
 
