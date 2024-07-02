@@ -3,13 +3,13 @@
     {
       "warning_type": "File Access",
       "warning_code": 16,
-      "fingerprint": "208f12bca8eb9bc7a921ab15d951b863dcb3abbc4bfafbd912cb453814fba63b",
+      "fingerprint": "cafb3c946b3ea6de50534f77286cf66f551d21910ceab7916651d888f5eb2280",
       "check_name": "FileAccess",
       "message": "Model attribute used in file name",
       "file": "app/workers/delete_asset_file_from_nfs_worker.rb",
-      "line": 10,
+      "line": 8,
       "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
-      "code": "FileUtils.rmdir(File.dirname(Asset.find(asset_id).file.path))",
+      "code": "FileUtils.rm_rf(File.dirname(Asset.find(asset_id).file.path))",
       "render_path": null,
       "location": {
         "type": "method",
@@ -18,9 +18,12 @@
       },
       "user_input": "Asset.find(asset_id).file",
       "confidence": "Weak",
+      "cwe_id": [
+        22
+      ],
       "note": ""
     }
   ],
-  "updated": "2021-02-23 15:17:02 +0000",
-  "brakeman_version": "5.0.0"
+  "updated": "2024-07-01 17:54:35 +0100",
+  "brakeman_version": "6.1.2"
 }

@@ -108,8 +108,7 @@ class Asset
 
     after_transition to: :uploaded do |asset, _|
       asset.save!
-      FileUtils.rm_rf(File.dirname(asset.file.path))
-      Rails.logger.info("#{asset.id} - Asset#state_machine - File removed")
+      DeleteAssetFileFromNfsWorker.perform_in(5.minutes, asset.id.to_s)
     end
   end
 
