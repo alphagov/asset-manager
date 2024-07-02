@@ -81,7 +81,7 @@ private
   end
 
   def object_for(asset)
-    Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.uuid)
+    Aws::S3::Object.new(bucket_name: @bucket_name, key: asset.uuid, client:)
   end
 
   def head_object_for(asset)
@@ -89,6 +89,6 @@ private
   end
 
   def client
-    Aws::S3::Client.new
+    @client ||= Aws::S3::Client.new
   end
 end

@@ -14,7 +14,7 @@ RSpec.describe S3Storage do
   before do
     allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
     allow(Aws::S3::Object).to receive(:new)
-      .with(s3_object_params).and_return(s3_object)
+      .with(hash_including(s3_object_params)).and_return(s3_object)
   end
 
   describe ".build" do
