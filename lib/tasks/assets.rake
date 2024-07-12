@@ -25,4 +25,11 @@ namespace :assets do
     asset = WhitehallAsset.find_by!(legacy_url_path: args.fetch(:legacy_url_path))
     Rake::Task["assets:redirect"].invoke(asset.id, args.fetch(:redirect_url))
   end
+
+  desc "Get a Whitehall asset's ID by its legacy_url_path, e.g. /government/uploads/system/uploads/attachment_data/file/1234/document.pdf"
+  task :get_id_by_legacy_url_path, %i[legacy_url_path] => :environment do |_t, args|
+    legacy_url_path = args.fetch(:legacy_url_path)
+    asset = WhitehallAsset.find_by!(legacy_url_path:)
+    puts "Asset ID for #{legacy_url_path} is #{asset.id}."
+  end
 end
