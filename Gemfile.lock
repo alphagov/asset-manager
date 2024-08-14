@@ -286,6 +286,7 @@ GEM
       rack (>= 1.2, < 4)
       snaky_hash (~> 2.0)
       version_gem (~> 1.1)
+    observer (0.1.2)
     omniauth (2.1.2)
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
@@ -768,6 +769,7 @@ DEPENDENCIES
   mongo (~> 2.20.1)
   mongoid
   nokogiri
+  observer
   pact
   pact_broker-client
   plek
