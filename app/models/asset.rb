@@ -280,5 +280,9 @@ protected
     unless uri && %w[http https].include?(uri.scheme)
       errors.add(:parent_document_url, "must be an http(s) URL")
     end
+
+    if uri && uri.host.start_with?("draft-origin") && !draft?
+      errors.add(:parent_document_url, "must be a public GOV.UK URL")
+    end
   end
 end

@@ -197,6 +197,38 @@ RSpec.describe Asset, type: :model do
           expect(asset.errors[:parent_document_url]).to include(message)
         end
       end
+
+      context "and the URL points to the draft stack" do
+        before do
+          asset.parent_document_url = "https://draft-origin.publishing.service.gov.uk/government/news/test"
+        end
+
+        context "when the asset is a draft" do
+          before do
+            asset.draft = true
+          end
+
+          it "is valid" do
+            expect(asset).to be_valid
+          end
+        end
+
+        context "when the asset is published" do
+          before do
+            asset.draft = false
+          end
+
+          it "is invalid" do
+            expect(asset).not_to be_valid
+          end
+
+          it "has the expected error message" do
+            asset.valid?
+            message = "must be a public GOV.UK URL"
+            expect(asset.errors[:parent_document_url]).to include(message)
+          end
+        end
+      end
     end
 
     context "when content_type is not specified" do

@@ -68,10 +68,10 @@ RSpec.describe AssetsController, type: :controller do
       end
 
       it "stores parent_document_url on asset" do
-        attributes = valid_attributes.merge(parent_document_url: "parent-document-url")
+        attributes = valid_attributes.merge(parent_document_url: "http://parent-document-url")
         post :create, params: { asset: attributes }
 
-        expect(assigns(:asset).parent_document_url).to eq("parent-document-url")
+        expect(assigns(:asset).parent_document_url).to eq("http://parent-document-url")
       end
 
       it "stores a specified content type" do
