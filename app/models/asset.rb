@@ -156,19 +156,19 @@ class Asset
   end
 
   def etag_from_file
-    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size)
+    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size) if file_exists?
   end
 
   def last_modified_from_file
-    file_stat.mtime
+    file_stat.mtime if file_exists?
   end
 
   def md5_hexdigest_from_file
-    @md5_hexdigest_from_file ||= Digest::MD5.hexdigest(file.file.read)
+    @md5_hexdigest_from_file ||= Digest::MD5.hexdigest(file.file.read) if file_exists?
   end
 
   def size_from_file
-    file_stat.size
+    file_stat.size if file_exists?
   end
 
   def update_indirect_replacements_on_publish
@@ -244,6 +244,10 @@ protected
 
   def schedule_virus_scan
     VirusScanWorker.perform_async(id.to_s) if unscanned? && redirect_url.blank?
+  end
+
+  def file_exists?
+    File.exist?(file.path)
   end
 
   def file_stat
