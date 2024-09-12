@@ -615,6 +615,19 @@ RSpec.describe Asset, type: :model do
       asset.restore
       expect(asset.deleted_at).to be_nil
     end
+
+    context "when the file has already been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "adds a deleted_at timestamp to the record" do
+        expect(asset.deleted_at).not_to be_nil
+      end
+    end
   end
 
   describe "extension" do
@@ -861,6 +874,19 @@ RSpec.describe Asset, type: :model do
       asset_size = size_hex.to_i(16)
       expect(asset_size).to eq(size)
     end
+
+    context "when the file has been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(asset.etag_from_file).to be_nil
+      end
+    end
   end
 
   describe "#etag" do
@@ -918,6 +944,19 @@ RSpec.describe Asset, type: :model do
     it "returns time file was last modified" do
       expect(asset.last_modified_from_file).to eq(mtime)
     end
+
+    context "when the file has been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(asset.last_modified_from_file).to be_nil
+      end
+    end
   end
 
   describe "#last_modified" do
@@ -972,6 +1011,19 @@ RSpec.describe Asset, type: :model do
     it "returns the size of the file" do
       expect(asset.size_from_file).to eq(size)
     end
+
+    context "when the file has been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(asset.size_from_file).to be_nil
+      end
+    end
   end
 
   describe "#size" do
@@ -1023,6 +1075,19 @@ RSpec.describe Asset, type: :model do
 
     it "returns MD5 hex digest for asset file content" do
       expect(asset.md5_hexdigest_from_file).to eq(md5_hexdigest)
+    end
+
+    context "when the file has been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(asset.md5_hexdigest_from_file).to be_nil
+      end
     end
   end
 
