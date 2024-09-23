@@ -2,7 +2,7 @@ require "rails_helper"
 require "services"
 require "sidekiq_unique_jobs/testing"
 
-RSpec.describe VirusScanWorker do
+RSpec.describe VirusScanJob do
   let(:worker) { described_class.new }
   let(:asset) { FactoryBot.create(:asset) }
   let(:scanner) { instance_double(VirusScanner) }

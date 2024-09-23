@@ -456,7 +456,7 @@ RSpec.describe Asset, type: :model do
     it "schedules a scan after create" do
       a = described_class.new(file: load_fixture_file("asset.png"))
 
-      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+      expect(VirusScanJob).to receive(:perform_async).with(a.id)
 
       a.save!
     end
@@ -465,7 +465,7 @@ RSpec.describe Asset, type: :model do
       a = FactoryBot.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
 
-      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+      expect(VirusScanJob).to receive(:perform_async).with(a.id)
 
       a.save!
     end
@@ -475,7 +475,7 @@ RSpec.describe Asset, type: :model do
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
 
-      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+      expect(VirusScanJob).to receive(:perform_async).with(a.id)
 
       a.save!
     end
@@ -484,7 +484,7 @@ RSpec.describe Asset, type: :model do
       a = FactoryBot.create(:clean_asset)
       a.created_at = 5.days.ago
 
-      expect(VirusScanWorker).not_to receive(:perform_async)
+      expect(VirusScanJob).not_to receive(:perform_async)
 
       a.save!
     end
@@ -492,7 +492,7 @@ RSpec.describe Asset, type: :model do
     it "does not schedule a scan if a redirect url is present" do
       a = FactoryBot.create(:asset, redirect_url: "/some-redirect")
 
-      expect(VirusScanWorker).not_to receive(:perform_async)
+      expect(VirusScanJob).not_to receive(:perform_async)
 
       a.save!
     end
