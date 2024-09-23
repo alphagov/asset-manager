@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe DeleteAssetFileFromNfsWorker, type: :worker do
+RSpec.describe DeleteAssetFileFromNfsJob, type: :worker do
   subject(:worker) { described_class.new }
 
   let(:asset) { FactoryBot.create(:asset, state:) }

@@ -1153,7 +1153,7 @@ RSpec.describe Asset, type: :model do
       end
 
       it "triggers the delete asset file worker" do
-        expect(DeleteAssetFileFromNfsWorker).to receive(:perform_in)
+        expect(DeleteAssetFileFromNfsJob).to receive(:perform_in)
         asset.upload_success!
       end
     end

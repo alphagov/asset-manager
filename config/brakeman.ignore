@@ -13,7 +13,7 @@
       "render_path": null,
       "location": {
         "type": "method",
-        "class": "DeleteAssetFileFromNfsWorker",
+        "class": "DeleteAssetFileFromNfsJob",
         "method": "perform"
       },
       "user_input": "Asset.find(asset_id).file",

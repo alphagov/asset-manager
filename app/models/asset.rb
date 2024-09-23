@@ -108,7 +108,7 @@ class Asset
 
     after_transition to: :uploaded do |asset, _|
       asset.save!
-      DeleteAssetFileFromNfsWorker.perform_in(5.minutes, asset.id.to_s)
+      DeleteAssetFileFromNfsJob.perform_in(5.minutes, asset.id.to_s)
     end
   end
 
