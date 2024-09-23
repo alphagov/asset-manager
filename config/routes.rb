@@ -20,4 +20,7 @@ Rails.application.routes.draw do
   if AssetManager.s3.fake?
     mount Rack::File.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: "fake_s3"
   end
+
+  require "sidekiq_unique_jobs/web"
+  mount Sidekiq::Web, at: "/sidekiq"
 end
