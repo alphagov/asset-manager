@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "7.1.4"
+gem "rails", "7.2.1"
 
 gem "addressable"
 gem "aws-sdk-core"
@@ -15,6 +15,7 @@ gem "jwt"
 gem "mongo", "~> 2.21.0"
 gem "mongoid"
 gem "nokogiri"
+gem "observer"
 gem "plek"
 gem "rack_strip_client_ip"
 gem "rails-controller-testing"
