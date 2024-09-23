@@ -95,7 +95,7 @@ class Asset
     end
 
     after_transition to: :clean do |asset, _|
-      SaveToCloudStorageWorker.perform_async(asset.id.to_s)
+      SaveToCloudStorageJob.perform_async(asset.id.to_s)
     end
 
     event :scanned_infected do

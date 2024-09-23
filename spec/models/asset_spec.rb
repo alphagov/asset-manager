@@ -503,7 +503,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     before do
-      allow(SaveToCloudStorageWorker).to receive(:perform_async)
+      allow(SaveToCloudStorageJob).to receive(:perform_async)
     end
 
     it "sets the asset state to clean" do
@@ -513,7 +513,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules saving the asset to cloud storage" do
-      expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
+      expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
 
       asset.scanned_clean!
     end
@@ -551,7 +551,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     it "does not schedule saving the asset to cloud storage" do
-      expect(SaveToCloudStorageWorker).not_to receive(:perform_async).with(asset.id)
+      expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
 
       asset.scanned_infected!
     end

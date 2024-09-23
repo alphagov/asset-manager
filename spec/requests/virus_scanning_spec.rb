@@ -27,7 +27,7 @@ RSpec.describe "Virus scanning of uploaded images", :disable_cloud_storage_stub,
     get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:not_found)
 
-    SaveToCloudStorageWorker.drain
+    SaveToCloudStorageJob.drain
 
     get download_media_path(id: asset, filename: "lorem.txt")
     expect(response).to have_http_status(:found)

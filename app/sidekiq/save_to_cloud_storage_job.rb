@@ -1,7 +1,7 @@
 require "services"
 
-class SaveToCloudStorageWorker
-  include Sidekiq::Worker
+class SaveToCloudStorageJob
+  include Sidekiq::Job
 
   def perform(asset_id)
     asset = Asset.undeleted.find(asset_id)
