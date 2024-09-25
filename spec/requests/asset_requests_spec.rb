@@ -152,7 +152,7 @@ RSpec.describe "Asset requests", type: :request do
     it "does not result in an invalid transition error when a redirect is received in short succession after a create" do
       # use threads to simulate multiple sidekiq workers
       threads = []
-      allow(VirusScanWorker).to receive(:perform_async) do |asset_id|
+      allow(VirusScanJob).to receive(:perform_async) do |asset_id|
         threads << Thread.new do
           sleep(0.5)
           asset = Asset.find(asset_id)

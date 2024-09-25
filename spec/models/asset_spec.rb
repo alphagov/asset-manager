@@ -456,7 +456,7 @@ RSpec.describe Asset, type: :model do
     it "schedules a scan after create" do
       a = described_class.new(file: load_fixture_file("asset.png"))
 
-      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+      expect(VirusScanJob).to receive(:perform_async).with(a.id)
 
       a.save!
     end
@@ -465,7 +465,7 @@ RSpec.describe Asset, type: :model do
       a = FactoryBot.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
 
-      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+      expect(VirusScanJob).to receive(:perform_async).with(a.id)
 
       a.save!
     end
@@ -475,7 +475,7 @@ RSpec.describe Asset, type: :model do
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
 
-      expect(VirusScanWorker).to receive(:perform_async).with(a.id)
+      expect(VirusScanJob).to receive(:perform_async).with(a.id)
 
       a.save!
     end
@@ -484,7 +484,7 @@ RSpec.describe Asset, type: :model do
       a = FactoryBot.create(:clean_asset)
       a.created_at = 5.days.ago
 
-      expect(VirusScanWorker).not_to receive(:perform_async)
+      expect(VirusScanJob).not_to receive(:perform_async)
 
       a.save!
     end
@@ -492,7 +492,7 @@ RSpec.describe Asset, type: :model do
     it "does not schedule a scan if a redirect url is present" do
       a = FactoryBot.create(:asset, redirect_url: "/some-redirect")
 
-      expect(VirusScanWorker).not_to receive(:perform_async)
+      expect(VirusScanJob).not_to receive(:perform_async)
 
       a.save!
     end
@@ -503,7 +503,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     before do
-      allow(SaveToCloudStorageWorker).to receive(:perform_async)
+      allow(SaveToCloudStorageJob).to receive(:perform_async)
     end
 
     it "sets the asset state to clean" do
@@ -513,7 +513,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules saving the asset to cloud storage" do
-      expect(SaveToCloudStorageWorker).to receive(:perform_async).with(asset.id)
+      expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
 
       asset.scanned_clean!
     end
@@ -551,7 +551,7 @@ RSpec.describe Asset, type: :model do
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     it "does not schedule saving the asset to cloud storage" do
-      expect(SaveToCloudStorageWorker).not_to receive(:perform_async).with(asset.id)
+      expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
 
       asset.scanned_infected!
     end
@@ -1153,7 +1153,7 @@ RSpec.describe Asset, type: :model do
       end
 
       it "triggers the delete asset file worker" do
-        expect(DeleteAssetFileFromNfsWorker).to receive(:perform_in)
+        expect(DeleteAssetFileFromNfsJob).to receive(:perform_in)
         asset.upload_success!
       end
     end

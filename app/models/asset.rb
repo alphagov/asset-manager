@@ -95,7 +95,7 @@ class Asset
     end
 
     after_transition to: :clean do |asset, _|
-      SaveToCloudStorageWorker.perform_async(asset.id.to_s)
+      SaveToCloudStorageJob.perform_async(asset.id.to_s)
     end
 
     event :scanned_infected do
@@ -108,7 +108,7 @@ class Asset
 
     after_transition to: :uploaded do |asset, _|
       asset.save!
-      DeleteAssetFileFromNfsWorker.perform_in(5.minutes, asset.id.to_s)
+      DeleteAssetFileFromNfsJob.perform_in(5.minutes, asset.id.to_s)
     end
   end
 
@@ -243,7 +243,7 @@ protected
   end
 
   def schedule_virus_scan
-    VirusScanWorker.perform_async(id.to_s) if unscanned? && redirect_url.blank?
+    VirusScanJob.perform_async(id.to_s) if unscanned? && redirect_url.blank?
   end
 
   def file_exists?

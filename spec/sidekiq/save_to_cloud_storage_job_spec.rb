@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe SaveToCloudStorageWorker, type: :worker do
+RSpec.describe SaveToCloudStorageJob, type: :worker do
   let(:worker) { described_class.new }
 
   describe "#perform" do

@@ -20,7 +20,7 @@ gem "plek"
 gem "rack_strip_client_ip"
 gem "rails-controller-testing"
 gem "sentry-sidekiq"
-gem "sidekiq-unique-jobs"
+gem "sidekiq-unique-jobs", "< 8.0.8"
 gem "sprockets-rails"
 gem "state_machines-mongoid"
 

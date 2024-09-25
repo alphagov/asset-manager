@@ -1,7 +1,7 @@
 require "services"
 
-class VirusScanWorker
-  include Sidekiq::Worker
+class VirusScanJob
+  include Sidekiq::Job
 
   sidekiq_options lock: :until_and_while_executing
 
@@ -9,7 +9,7 @@ class VirusScanWorker
     asset = Asset.find(asset_id)
     if asset.unscanned?
       begin
-        Rails.logger.info("#{asset_id} - VirusScanWorker#perform - Virus scan started")
+        Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus scan started")
         Services.virus_scanner.scan(asset.file.path)
         asset.scanned_clean!
       rescue VirusScanner::InfectedFile => e
