@@ -10,3 +10,5 @@ class DeleteAssetFileFromNfsJob
     end
   end
 end
+
+DeleteAssetFileFromNfsWorker = DeleteAssetFileFromNfsJob

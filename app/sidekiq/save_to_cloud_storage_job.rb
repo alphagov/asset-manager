@@ -11,3 +11,5 @@ class SaveToCloudStorageJob
     end
   end
 end
+
+SaveToCloudStorageWorker = SaveToCloudStorageJob
