@@ -32,4 +32,22 @@ namespace :assets do
     asset = WhitehallAsset.find_by!(legacy_url_path:)
     puts "Asset ID for #{legacy_url_path} is #{asset.id}."
   end
+
+  desc "Soft delete assets and check deleted invalid state"
+  task :bulk_soft_delete, %i[csv_path] => :environment do |_t, args|
+    csv_path = args.fetch(:csv_path)
+
+    CSV.foreach(csv_path, headers: false) do |row|
+      asset_id = row[0]
+      asset = Asset.find(asset_id)
+      asset.state = "uploaded" if asset.state == "deleted"
+
+      begin
+        asset.destroy!
+        print "."
+      rescue Mongoid::Errors::Validations
+        puts "Failed to delete asset of ID #{asset_id}: #{asset.errors.full_messages}"
+      end
+    end
+  end
 end
