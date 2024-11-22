@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   get "/government/uploads/*path" => "whitehall_media#download"
 
   if AssetManager.s3.fake?
-    mount Rack::File.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: "fake_s3"
+    mount Rack::Files.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: "fake_s3"
   end
 
   require "sidekiq_unique_jobs/web"
