@@ -80,7 +80,7 @@ namespace :assets do
         if is_replacement && replacement_asset.nil? && original_asset.draft?
           begin
             delete_and_update_draft(original_asset)
-            puts "Asset ID: #{original_asset_id} - is a replacement. Asset deleted and updated to false."
+            puts "Asset ID: #{original_asset_id} - OK. Asset is a replacement. Asset deleted and updated to false."
           rescue StandardError
             puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{original_asset.errors.full_messages}."
           end
@@ -93,7 +93,7 @@ namespace :assets do
         end
 
         begin
-          original_asset.destroy!
+          delete_and_update_draft(original_asset, should_update_draft: false)
           puts "Asset ID: #{original_asset_id} - OK. Asset has been deleted."
         rescue StandardError
           puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{original_asset.errors.full_messages}."
@@ -103,8 +103,21 @@ namespace :assets do
   end
 end
 
-def delete_and_update_draft(asset)
+def delete_and_update_draft(asset, should_update_draft: true)
+  if asset.state.to_s == "deleted"
+    asset.state = "uploaded"
+    puts "Patched state: #{asset.id}"
+  end
+
+  if asset.parent_document_url&.include?("draft-origin")
+    asset.parent_document_url = nil
+    puts "Patched Parent URL: #{asset.id}"
+  end
+
   asset.destroy! unless asset.deleted?
+
+  return unless should_update_draft
+
   asset.draft = false
   asset.save!
 end

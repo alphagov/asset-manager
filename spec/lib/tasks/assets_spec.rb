@@ -66,8 +66,22 @@ RSpec.describe "assets.rake" do
         expect(replacement.reload.draft).to be false
       end
 
-      it "deletes the asset replacement and updates the draft state if the replacement is not deleted" do
-        replacement = FactoryBot.create(:asset, draft: true, deleted_at: nil, replacement_id: nil)
+      it "deletes the asset replacement, updates the draft state, and turn draft parent_url to nil if the replacement is not deleted" do
+        replacement = FactoryBot.create(:asset, draft: true, deleted_at: nil, replacement_id: nil, parent_document_url: "https://draft-origin.publishing.service.gov.uk/example")
+        FactoryBot.create(:asset, id: asset_id, replacement_id: replacement.id)
+
+        expected_output = <<~OUTPUT
+          Patched Parent URL: #{replacement.id}
+          Asset ID: #{asset_id} - OK. Draft replacement #{replacement.id} deleted and updated to false.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+        expect(replacement.reload.deleted_at).not_to be_nil
+        expect(replacement.reload.draft).to be false
+        expect(replacement.reload.parent_document_url).to be_nil
+      end
+
+      it "deletes the asset replacement, updates the draft state, and leave live parent_url alone if the replacement is not deleted" do
+        replacement = FactoryBot.create(:asset, draft: true, deleted_at: nil, replacement_id: nil, parent_document_url: nil)
         FactoryBot.create(:asset, id: asset_id, replacement_id: replacement.id)
 
         expected_output = <<~OUTPUT
@@ -76,6 +90,23 @@ RSpec.describe "assets.rake" do
         expect { task.invoke(filepath) }.to output(expected_output).to_stdout
         expect(replacement.reload.deleted_at).not_to be_nil
         expect(replacement.reload.draft).to be false
+        expect(replacement.reload.parent_document_url).to be_nil
+      end
+
+      it "deletes the asset replacement and fixes invalid upload state if the replacement is not deleted" do
+        replacement = FactoryBot.create(:asset, draft: true, deleted_at: nil)
+        FactoryBot.create(:asset, id: asset_id, replacement_id: replacement.id)
+        replacement.state = "deleted"
+        replacement.save!(validate: false)
+
+        expected_output = <<~OUTPUT
+          Patched state: #{replacement.id}
+          Asset ID: #{asset_id} - OK. Draft replacement #{replacement.id} deleted and updated to false.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+        expect(replacement.reload.deleted_at).not_to be_nil
+        expect(replacement.reload.draft).to be false
+        expect(replacement.reload.state).to eq "uploaded"
       end
 
       it "only updates the draft state if the asset is already deleted (asset is a replacement)" do
@@ -83,23 +114,54 @@ RSpec.describe "assets.rake" do
         FactoryBot.create(:asset, replacement_id: asset.id)
 
         expected_output = <<~OUTPUT
-          Asset ID: #{asset_id} - is a replacement. Asset deleted and updated to false.
+          Asset ID: #{asset_id} - OK. Asset is a replacement. Asset deleted and updated to false.
         OUTPUT
         expect { task.invoke(filepath) }.to output(expected_output).to_stdout
         expect(asset.reload.deleted_at).not_to be_nil
         expect(asset.reload.draft).to be false
       end
 
-      it "deletes the asset and updates the draft state if the asset is not deleted (asset is a replacement)" do
-        asset = FactoryBot.create(:asset, id: asset_id, draft: true, deleted_at: nil)
+      it "deletes the asset, updates the draft state, and turn draft parent_url into nil if the asset is not deleted (asset is a replacement)" do
+        asset = FactoryBot.create(:asset, id: asset_id, draft: true, deleted_at: nil, parent_document_url: "https://draft-origin.publishing.service.gov.uk/example")
         FactoryBot.create(:asset, replacement_id: asset.id)
 
         expected_output = <<~OUTPUT
-          Asset ID: #{asset_id} - is a replacement. Asset deleted and updated to false.
+          Patched Parent URL: #{asset_id}
+          Asset ID: #{asset_id} - OK. Asset is a replacement. Asset deleted and updated to false.
         OUTPUT
         expect { task.invoke(filepath) }.to output(expected_output).to_stdout
         expect(asset.reload.deleted_at).not_to be_nil
         expect(asset.reload.draft).to be false
+        expect(asset.reload.parent_document_url).to be_nil
+      end
+
+      it "deletes the asset, updates the draft state, and leaves live parent_url alone if the asset is not deleted (asset is a replacement)" do
+        asset = FactoryBot.create(:asset, id: asset_id, draft: true, deleted_at: nil, parent_document_url: nil)
+        FactoryBot.create(:asset, replacement_id: asset.id)
+
+        expected_output = <<~OUTPUT
+          Asset ID: #{asset_id} - OK. Asset is a replacement. Asset deleted and updated to false.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+        expect(asset.reload.deleted_at).not_to be_nil
+        expect(asset.reload.draft).to be false
+        expect(asset.reload.parent_document_url).to be_nil
+      end
+
+      it "deletes the asset and fixes invalid upload state if the asset is not deleted (asset is a replacement)" do
+        asset = FactoryBot.create(:asset, id: asset_id, draft: true, deleted_at: nil)
+        FactoryBot.create(:asset, replacement_id: asset.id)
+        asset.state = "deleted"
+        asset.save!(validate: false)
+
+        expected_output = <<~OUTPUT
+          Patched state: #{asset_id}
+          Asset ID: #{asset_id} - OK. Asset is a replacement. Asset deleted and updated to false.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+        expect(asset.reload.deleted_at).not_to be_nil
+        expect(asset.reload.draft).to be false
+        expect(asset.reload.state).to eq "uploaded"
       end
 
       it "skips the asset if asset is itself redirected (and not replaced by draft or itself a replacement)" do
