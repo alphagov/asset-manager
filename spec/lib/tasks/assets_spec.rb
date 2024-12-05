@@ -55,6 +55,45 @@ RSpec.describe "assets.rake" do
         expect { task.invoke(filepath) }.to output(expected_output).to_stdout
       end
 
+      it "skips already processed replacement assets" do
+        file.open
+        csv_file = <<~CSV
+          6592008029c8c3e4dc76256c
+          6592008029c8c3e4dc76256d
+        CSV
+        file.write(csv_file)
+        file.close
+
+        replacement = FactoryBot.create(:asset, draft: true, deleted_at: nil, replacement_id: nil)
+        FactoryBot.create(:asset, id: "6592008029c8c3e4dc76256c", replacement_id: replacement.id)
+        FactoryBot.create(:asset, id: "6592008029c8c3e4dc76256d", replacement_id: replacement.id)
+
+        expected_output = <<~OUTPUT
+          Asset ID: 6592008029c8c3e4dc76256c - OK. Draft replacement #{replacement.id} deleted and updated to false.
+          Asset ID: 6592008029c8c3e4dc76256d - PROCESSED. Replacement #{replacement.id} already processed.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+      end
+
+      it "skips already processed assets" do
+        file.open
+        csv_file = <<~CSV
+          6592008029c8c3e4dc76256c
+          6592008029c8c3e4dc76256d
+        CSV
+        file.write(csv_file)
+        file.close
+
+        replacement = FactoryBot.create(:asset, id: "6592008029c8c3e4dc76256d", draft: true, deleted_at: nil, replacement_id: nil)
+        FactoryBot.create(:asset, id: "6592008029c8c3e4dc76256c", replacement_id: replacement.id)
+
+        expected_output = <<~OUTPUT
+          Asset ID: 6592008029c8c3e4dc76256c - OK. Draft replacement #{replacement.id} deleted and updated to false.
+          Asset ID: 6592008029c8c3e4dc76256d - PROCESSED. Asset already processed.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+      end
+
       it "only updates the draft state of the replacement if the asset replacement is already deleted" do
         replacement = FactoryBot.create(:asset, draft: true, deleted_at: Time.zone.now, replacement_id: nil)
         FactoryBot.create(:asset, id: asset_id, replacement_id: replacement.id)

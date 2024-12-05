@@ -55,6 +55,9 @@ namespace :assets do
     desc "Fix assets and draft replacements"
     task :fix_assets_and_draft_replacements, %i[csv_path] => :environment do |_t, args|
       csv_path = args.fetch(:csv_path)
+
+      processed_asset_ids = {}
+
       process_file_in_memory(csv_path) do |row|
         original_asset_id = row[0]
         original_asset = Asset.where(_id: original_asset_id)&.first
@@ -67,9 +70,15 @@ namespace :assets do
 
         replacement_asset = original_asset.replacement
 
+        if replacement_asset && processed_asset_ids[replacement_asset.id.to_s]
+          puts "Asset ID: #{original_asset_id} - PROCESSED. Replacement #{replacement_asset.id} already processed."
+          next
+        end
+
         if replacement_asset && replacement_asset.replacement.nil? && replacement_asset.draft?
           begin
             delete_and_update_draft(replacement_asset)
+            processed_asset_ids[replacement_asset.id.to_s] = true
             puts "Asset ID: #{original_asset_id} - OK. Draft replacement #{replacement_asset.id} deleted and updated to false."
           rescue StandardError
             puts "Asset ID: #{original_asset_id} - ERROR. Asset replacement failed to save. Error: #{replacement_asset.errors.full_messages}."
@@ -80,10 +89,16 @@ namespace :assets do
         if is_replacement && replacement_asset.nil? && original_asset.draft?
           begin
             delete_and_update_draft(original_asset)
+            processed_asset_ids[original_asset_id] = true
             puts "Asset ID: #{original_asset_id} - OK. Asset is a replacement. Asset deleted and updated to false."
           rescue StandardError
             puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{original_asset.errors.full_messages}."
           end
+          next
+        end
+
+        if processed_asset_ids[original_asset_id]
+          puts "Asset ID: #{original_asset_id} - PROCESSED. Asset already processed."
           next
         end
 
@@ -94,6 +109,7 @@ namespace :assets do
 
         begin
           delete_and_update_draft(original_asset, should_update_draft: false)
+          processed_asset_ids[original_asset_id] = true
           puts "Asset ID: #{original_asset_id} - OK. Asset has been deleted."
         rescue StandardError
           puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{original_asset.errors.full_messages}."
