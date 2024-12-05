@@ -80,8 +80,9 @@ namespace :assets do
             delete_and_update_draft(replacement_asset)
             processed_asset_ids[replacement_asset.id.to_s] = true
             puts "Asset ID: #{original_asset_id} - OK. Draft replacement #{replacement_asset.id} deleted and updated to false."
-          rescue StandardError
-            puts "Asset ID: #{original_asset_id} - ERROR. Asset replacement failed to save. Error: #{replacement_asset.errors.full_messages}."
+          rescue StandardError => e
+            message = replacement_asset.errors.full_messages.empty? ? e.message : replacement_asset.errors.full_messages
+            puts "Asset ID: #{original_asset_id} - ERROR. Asset replacement #{replacement_asset.id} failed to save. Error: #{message}."
           end
           next
         end
@@ -91,8 +92,9 @@ namespace :assets do
             delete_and_update_draft(original_asset)
             processed_asset_ids[original_asset_id] = true
             puts "Asset ID: #{original_asset_id} - OK. Asset is a replacement. Asset deleted and updated to false."
-          rescue StandardError
-            puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{original_asset.errors.full_messages}."
+          rescue StandardError => e
+            message = original_asset.errors.full_messages.empty? ? e.message : original_asset.errors.full_messages
+            puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{message}."
           end
           next
         end
@@ -111,8 +113,9 @@ namespace :assets do
           delete_and_update_draft(original_asset, should_update_draft: false)
           processed_asset_ids[original_asset_id] = true
           puts "Asset ID: #{original_asset_id} - OK. Asset has been deleted."
-        rescue StandardError
-          puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{original_asset.errors.full_messages}."
+        rescue StandardError => e
+          message = original_asset.errors.full_messages.empty? ? e : original_asset.errors.full_messages
+          puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{message}."
         end
       end
     end
