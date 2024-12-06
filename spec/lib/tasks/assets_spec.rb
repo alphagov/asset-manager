@@ -137,15 +137,6 @@ RSpec.describe "assets.rake" do
           expect { task.invoke(filepath) }.to output(expected_output).to_stdout
         end
 
-        it "skips the asset if asset is itself in draft (and not replaced by draft or itself a replacement)" do
-          FactoryBot.create(:asset, id: asset_id, draft: true)
-
-          expected_output = <<~OUTPUT
-            Asset ID: #{asset_id} - SKIPPED. Asset is draft (true), deleted (false), replaced (false), or redirected (false).
-          OUTPUT
-          expect { task.invoke(filepath) }.to output(expected_output).to_stdout
-        end
-
         it "skips the asset, if the asset is already deleted (and is not itself a replacement)" do
           FactoryBot.create(:asset, id: asset_id, deleted_at: Time.zone.now)
 
@@ -380,6 +371,16 @@ RSpec.describe "assets.rake" do
           Asset ID: #{asset_id} - OK. Asset has been deleted.
         OUTPUT
         expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+      end
+
+      it "deletes but not update draft status of the asset if asset is itself in draft, not deleted, not redirected, not replaced" do
+        asset = FactoryBot.create(:asset, id: asset_id, draft: true)
+
+        expected_output = <<~OUTPUT
+          Asset ID: #{asset_id} - OK. Asset has been deleted.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+        expect(asset.reload.draft).to be true
       end
 
       it "marks a line as 'done' in the CSV if line is processed" do

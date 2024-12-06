@@ -104,7 +104,7 @@ namespace :assets do
           next
         end
 
-        if original_asset.draft? || original_asset.deleted? || replacement_asset || original_asset.redirect_url
+        if original_asset.deleted? || replacement_asset || original_asset.redirect_url
           puts "Asset ID: #{original_asset_id} - SKIPPED. Asset is draft (#{original_asset.draft?}), deleted (#{original_asset.deleted?}), replaced (#{!replacement_asset.nil?}), or redirected (#{!original_asset.redirect_url.nil?})."
           next
         end
