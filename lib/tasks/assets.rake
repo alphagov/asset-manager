@@ -75,7 +75,7 @@ namespace :assets do
           next
         end
 
-        if replacement_asset && replacement_asset.replacement.nil? && replacement_asset.draft?
+        if replacement_asset&.draft?
           begin
             delete_and_update_draft(replacement_asset)
             processed_asset_ids[replacement_asset.id.to_s] = true

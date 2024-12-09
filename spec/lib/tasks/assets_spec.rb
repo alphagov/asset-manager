@@ -309,6 +309,17 @@ RSpec.describe "assets.rake" do
         expect(replacement.reload.state).to eq "uploaded"
       end
 
+      it "deletes the asset replacement, updates the draft state, if the asset has further replacements and the replacement is in draft" do
+        further_replacement = FactoryBot.create(:asset, draft: false)
+        replacement = FactoryBot.create(:asset, draft: true, replacement_id: further_replacement.id)
+        FactoryBot.create(:asset, id: asset_id, replacement_id: replacement.id)
+
+        expected_output = <<~OUTPUT
+          Asset ID: #{asset_id} - OK. Draft replacement #{replacement.id} deleted and updated to false.
+        OUTPUT
+        expect { task.invoke(filepath) }.to output(expected_output).to_stdout
+      end
+
       it "only updates the draft state if the asset is already deleted (asset is a replacement)" do
         asset = FactoryBot.create(:asset, id: asset_id, draft: true, deleted_at: Time.zone.now)
         FactoryBot.create(:asset, replacement_id: asset.id)
