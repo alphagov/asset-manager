@@ -50,4 +50,112 @@ namespace :assets do
       end
     end
   end
+
+  namespace :bulk_fix do
+    desc "Fix assets and draft replacements"
+    task :fix_assets_and_draft_replacements, %i[csv_path] => :environment do |_t, args|
+      csv_path = args.fetch(:csv_path)
+
+      processed_asset_ids = {}
+
+      process_file_in_memory(csv_path) do |row|
+        original_asset_id = row[0]
+        original_asset = Asset.where(_id: original_asset_id)&.first
+        is_replacement = Asset.where(replacement_id: original_asset_id).any?
+
+        if original_asset.nil?
+          puts "Asset ID: #{original_asset_id} - SKIPPED. No asset found."
+          next
+        end
+
+        replacement_asset = original_asset.replacement
+
+        if replacement_asset && processed_asset_ids[replacement_asset.id.to_s]
+          puts "Asset ID: #{original_asset_id} - PROCESSED. Replacement #{replacement_asset.id} already processed."
+          next
+        end
+
+        if replacement_asset&.draft?
+          begin
+            delete_and_update_draft(replacement_asset)
+            processed_asset_ids[replacement_asset.id.to_s] = true
+            puts "Asset ID: #{original_asset_id} - OK. Draft replacement #{replacement_asset.id} deleted and updated to false."
+          rescue StandardError => e
+            message = replacement_asset.errors.full_messages.empty? ? e.message : replacement_asset.errors.full_messages
+            puts "Asset ID: #{original_asset_id} - ERROR. Asset replacement #{replacement_asset.id} failed to save. Error: #{message}."
+          end
+          next
+        end
+
+        if is_replacement && replacement_asset.nil? && original_asset.draft?
+          begin
+            delete_and_update_draft(original_asset)
+            processed_asset_ids[original_asset_id] = true
+            puts "Asset ID: #{original_asset_id} - OK. Asset is a replacement. Asset deleted and updated to false."
+          rescue StandardError => e
+            message = original_asset.errors.full_messages.empty? ? e.message : original_asset.errors.full_messages
+            puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{message}."
+          end
+          next
+        end
+
+        if processed_asset_ids[original_asset_id]
+          puts "Asset ID: #{original_asset_id} - PROCESSED. Asset already processed."
+          next
+        end
+
+        if original_asset.deleted? || replacement_asset || original_asset.redirect_url
+          puts "Asset ID: #{original_asset_id} - SKIPPED. Asset is draft (#{original_asset.draft?}), deleted (#{original_asset.deleted?}), replaced (#{!replacement_asset.nil?}), or redirected (#{!original_asset.redirect_url.nil?})."
+          next
+        end
+
+        begin
+          delete_and_update_draft(original_asset, should_update_draft: false)
+          processed_asset_ids[original_asset_id] = true
+          puts "Asset ID: #{original_asset_id} - OK. Asset has been deleted."
+        rescue StandardError => e
+          message = original_asset.errors.full_messages.empty? ? e : original_asset.errors.full_messages
+          puts "Asset ID: #{original_asset_id} - ERROR. Asset failed to save. Error: #{message}."
+        end
+      end
+    end
+  end
+end
+
+def delete_and_update_draft(asset, should_update_draft: true)
+  if asset.state.to_s == "deleted"
+    asset.state = "uploaded"
+    puts "Patched state: #{asset.id}"
+  end
+
+  if asset.parent_document_url&.include?("draft-origin")
+    asset.parent_document_url = nil
+    puts "Patched Parent URL: #{asset.id}"
+  end
+
+  asset.destroy! unless asset.deleted?
+
+  return unless should_update_draft
+
+  asset.draft = false
+  asset.save!
+end
+
+def process_file_in_memory(filepath)
+  File.open(filepath, "r+") do |file|
+    lines = file.readlines
+    file.rewind
+
+    lines.each do |line|
+      row = line.split(",").map(&:strip)
+      if row.last == "DONE"
+        file.puts line
+        next
+      end
+
+      yield row
+
+      file.puts "#{line.strip},DONE\n"
+    end
+  end
 end
