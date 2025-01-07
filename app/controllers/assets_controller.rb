@@ -2,7 +2,7 @@ class AssetsController < BaseAssetsController
   before_action :restrict_request_format
 
   def update
-    @asset = find_asset
+    @asset = Asset.undeleted.or(Asset.where(draft: true)).find(params[:id])
 
     if @asset.update(asset_params)
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
