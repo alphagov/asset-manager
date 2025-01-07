@@ -46,6 +46,19 @@ module AssetManager
     # Disable Rack::Cache
     config.action_dispatch.rack_cache = nil
 
+    # ActionDispatch strict freshness
+    #
+    # Configures whether the ActionDispatch::ETag middleware should prefer the
+    # ETag header over the Last-Modified header when both are present in the
+    # response.
+    #
+    # If set to true, when both headers are present only the ETag is considered
+    # as specified by RFC 7232 section 6.
+    #
+    # If set to false, when both headers are present, both headers are checked
+    # and both need to match for the response to be considered fresh.
+    config.action_dispatch.strict_freshness = false
+
     config.assets.prefix = "/asset-manager"
 
     unless Rails.application.config_for(:secrets).jwt_auth_secret
