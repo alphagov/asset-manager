@@ -392,6 +392,22 @@ RSpec.describe AssetsController, type: :controller do
 
           expect(body["draft"]).to be_truthy
         end
+
+        it "changes draft state for draft deleted asset" do
+          asset.update!(deleted_at: 1.hour.ago, draft: true)
+
+          put :update, params: { id: asset.id, asset: attributes.merge(draft: false) }
+
+          expect(asset.reload).not_to be_draft
+        end
+
+        it "preserves draft state for live deleted asset" do
+          asset.update!(deleted_at: 1.hour.ago, draft: false)
+
+          put :update, params: { id: asset.id, asset: attributes.merge(draft: true) }
+
+          expect(asset.reload).not_to be_draft
+        end
       end
     end
   end
