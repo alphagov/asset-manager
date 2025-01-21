@@ -2,17 +2,16 @@ require_relative "boot"
 
 require "rails"
 # Pick the frameworks you want:
-# require "active_model/railtie"
-# require "active_job/railtie"
+require "active_model/railtie"
+require "active_job/railtie"
 # require "active_record/railtie"
 # require "active_storage/engine"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 # require "action_mailbox/engine"
 # require "action_text/engine"
-# require "action_view/railtie"
+require "action_view/railtie"
 # require "action_cable/engine"
-require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -22,7 +21,7 @@ Bundler.require(*Rails.groups)
 module AssetManager
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
@@ -46,6 +45,19 @@ module AssetManager
 
     # Disable Rack::Cache
     config.action_dispatch.rack_cache = nil
+
+    # ActionDispatch strict freshness
+    #
+    # Configures whether the ActionDispatch::ETag middleware should prefer the
+    # ETag header over the Last-Modified header when both are present in the
+    # response.
+    #
+    # If set to true, when both headers are present only the ETag is considered
+    # as specified by RFC 7232 section 6.
+    #
+    # If set to false, when both headers are present, both headers are checked
+    # and both need to match for the response to be considered fresh.
+    config.action_dispatch.strict_freshness = false
 
     config.assets.prefix = "/asset-manager"
 
