@@ -43,7 +43,11 @@ To view the UI run:
 kubectl -n apps port-forward deployment/asset-manager 8080:8080
 ```
 
-and then navigate to localhost:8080/sidekiq
+Navigate to:
+
+```
+localhost:8080/sidekiq
+```
 
 ## Licence
 
