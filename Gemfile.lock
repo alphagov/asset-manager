@@ -128,7 +128,7 @@ GEM
       database_cleaner-core (~> 2.0.0)
       mongoid
     date (3.4.1)
-    diff-lcs (1.5.1)
+    diff-lcs (1.6.0)
     dig_rb (1.0.1)
     docile (1.4.1)
     domain_name (0.6.20240107)
@@ -617,7 +617,7 @@ GEM
       ffi (~> 1.0)
     rdoc (6.12.0)
       psych (>= 4.0.0)
-    redis-client (0.23.2)
+    redis-client (0.24.0)
       connection_pool
     regexp_parser (2.10.0)
     reline (0.6.0)
@@ -650,11 +650,11 @@ GEM
       rspec-expectations (~> 3.13)
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
-    rspec-sidekiq (5.0.0)
+    rspec-sidekiq (5.1.0)
       rspec-core (~> 3.0)
       rspec-expectations (~> 3.0)
       rspec-mocks (~> 3.0)
-      sidekiq (>= 5, < 8)
+      sidekiq (>= 5, < 9)
     rspec-support (3.13.2)
     rubocop (1.70.0)
       json (~> 2.3)
@@ -700,7 +700,7 @@ GEM
     sentry-sidekiq (5.22.4)
       sentry-ruby (~> 5.22.4)
       sidekiq (>= 3.0)
-    sidekiq (7.3.8)
+    sidekiq (7.3.9)
       base64
       connection_pool (>= 2.3.0)
       logger
