@@ -1,5 +1,5 @@
 ARG clam_version=1.3.1
-ARG ruby_version=3.3
+ARG ruby_version=3.4
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
 
