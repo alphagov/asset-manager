@@ -117,6 +117,19 @@ RSpec.describe "Whitehall media requests", type: :request do
     end
   end
 
+  describe "request for a previously uploaded asset which no longer exists" do
+    let(:path) { "/government/uploads/asset.png" }
+    let(:asset) { FactoryBot.create(:uploaded_whitehall_asset, legacy_url_path: path) }
+
+    it "responds with 410 Gone status" do
+      asset.update!(deleted_at: Time.zone.now)
+
+      get path
+
+      expect(response).to have_http_status(:gone)
+    end
+  end
+
   describe "requesting a draft asset while logged in" do
     around do |example|
       ClimateControl.modify(GDS_SSO_MOCK_INVALID: "1") { example.run }

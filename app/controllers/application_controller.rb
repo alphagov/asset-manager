@@ -19,6 +19,10 @@ private
     error 404, "not found"
   end
 
+  def error_410
+    error 410, "gone"
+  end
+
   def error(code, message)
     render json: { _response_info: { status: message } }, status: code
   end

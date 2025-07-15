@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 class MediaController < ApplicationController
+  class AssetDeleted < StandardError; end
+
   skip_before_action :authenticate_user!
   before_action :set_token_payload
+  rescue_from MediaController::AssetDeleted, with: :error_410
 
   def download
     if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
@@ -154,7 +157,14 @@ protected
   end
 
   def asset
-    @asset ||= Asset.undeleted.find(params[:id])
+    @asset ||= Asset.find(params[:id])
+    if @asset.nil?
+      raise Mongoid::Errors::DocumentNotFound
+    elsif @asset.deleted?
+      raise AssetDeleted
+    end
+
+    @asset
   end
 
   def redirect_to_current_filename

@@ -18,6 +18,15 @@ RSpec.describe "Media requests", type: :request do
     end
   end
 
+  describe "request for a previously uploaded asset which no longer exists" do
+    let(:asset) { FactoryBot.create(:deleted_asset) }
+
+    it "responds with 410 Gone status" do
+      get download_media_path(id: asset.id, filename: asset.filename)
+      expect(response).to have_http_status(:gone)
+    end
+  end
+
   describe "request an asset that does exist" do
     let(:cloud_storage) { instance_double(S3Storage) }
     let(:http_method) { "GET" }
