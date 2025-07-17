@@ -8,6 +8,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
   rescue_from Mongoid::Errors::DocumentNotFound, with: :error_404
+  rescue_from MediaErrors::AssetNotFound, with: :error_404
+  rescue_from MediaErrors::AssetDeleted, with: :error_410
 
 private
 

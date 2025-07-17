@@ -1,20 +1,14 @@
 class WhitehallMediaController < MediaController
 protected
 
-  class WhitehallAssetNotFound < StandardError; end
-  class WhitehallAssetDeleted < StandardError; end
-
-  rescue_from WhitehallAssetNotFound, with: :error_404
-  rescue_from WhitehallAssetDeleted, with: :error_410
-
   def asset
     @asset ||= WhitehallAsset.from_params(
       path: params[:path], format: params[:format], path_prefix: "government/uploads/",
     )
     if @asset.nil?
-      raise WhitehallAssetNotFound
+      raise MediaErrors::AssetNotFound
     elsif @asset.deleted?
-      raise WhitehallAssetDeleted
+      raise MediaErrors::AssetDeleted
     end
 
     @asset
