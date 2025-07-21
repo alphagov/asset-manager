@@ -8,6 +8,7 @@ gem "aws-sdk-s3"
 gem "bootsnap", require: false
 gem "carrierwave", "< 3" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
+gem "csv"
 gem "gds-sso"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
