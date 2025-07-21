@@ -53,7 +53,7 @@ class MediaController < ApplicationController
     if (requested_from_draft_assets_host? || requested_from_internal_host?) && !user_signed_in?
       authenticate_user!
     else
-      raise
+      raise MediaErrors::AssetNotFound
     end
   end
 
@@ -154,7 +154,14 @@ protected
   end
 
   def asset
-    @asset ||= Asset.undeleted.find(params[:id])
+    @asset ||= Asset.find(params[:id])
+    if @asset.nil?
+      raise MediaErrors::AssetNotFound
+    elsif @asset.deleted?
+      raise MediaErrors::AssetDeleted
+    end
+
+    @asset
   end
 
   def redirect_to_current_filename

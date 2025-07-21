@@ -341,14 +341,13 @@ RSpec.describe WhitehallMediaController, type: :controller do
       let(:state) { "uploaded" }
 
       before do
-        allow(WhitehallAsset).to receive(:find_by).with(legacy_url_path:).and_return(nil)
         asset.update!(deleted_at: Time.zone.now)
       end
 
-      it "responds with not found status" do
+      it "responds with 410 Gone status" do
         get :download, params: { path:, format: }
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:gone)
       end
     end
   end
