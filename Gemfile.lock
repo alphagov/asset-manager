@@ -811,6 +811,7 @@ DEPENDENCIES
   carrierwave (< 3)
   carrierwave-mongoid
   climate_control
+  csv
   database_cleaner-mongoid
   factory_bot_rails
   gds-sso
