@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class MediaController < ApplicationController
   skip_before_action :authenticate_user!
   before_action :set_token_payload
