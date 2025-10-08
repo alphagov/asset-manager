@@ -56,16 +56,10 @@ private
         asset[:access_limited] = asset[:access_limited_user_ids]
       end
 
-      if asset.key?(:access_limited) && asset[:access_limited].empty?
-        asset[:access_limited] = []
-      end
-
-      if asset.key?(:access_limited_organisation_ids) && asset[:access_limited_organisation_ids].empty?
-        asset[:access_limited_organisation_ids] = []
-      end
-
-      if asset.key?(:auth_bypass_ids) && asset[:auth_bypass_ids].empty?
-        asset[:auth_bypass_ids] = []
+      %i[access_limited access_limited_organisation_ids auth_bypass_ids].each do |key|
+        if asset.key?(key) && asset[key].empty?
+          asset[key] = []
+        end
       end
     }.permit(
       :file,
