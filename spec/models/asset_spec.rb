@@ -99,6 +99,24 @@ RSpec.describe Asset, type: :model do
       end
     end
 
+    context "when replacements are replaced but the original asset has an invalid parent_document_url" do
+      let(:first_replacement) { FactoryBot.create(:asset, draft: false) }
+      let(:second_replacement) { FactoryBot.create(:asset, draft: false) }
+
+      before do
+        asset.replacement = first_replacement
+        asset.parent_document_url = "http://draft-origin"
+        asset.save!(validate: false)
+      end
+
+      it "does not raise an error if the previously replaced asset has an invalid parent_document_url" do
+        expect {
+          first_replacement.replacement = second_replacement
+          first_replacement.save!
+        }.not_to raise_error
+      end
+    end
+
     context "when published asset is marked as draft" do
       let(:replacement) { nil }
       let(:redirect_url) { nil }
