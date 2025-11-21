@@ -46,7 +46,7 @@ jobs:
       TEST_MONGODB_URI: "mongodb://localhost:27017/test-db"
       RAILS_ENV: test
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: alphagov/asset-manager
           ref: ${{ inputs.ref }}
