@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     Healthcheck::CloudStorage,
   )
 
+  get "/favicon.ico" => redirect("https://www.gov.uk/favicon.ico")
+
   resources :assets, only: %i[show create update destroy] do
     member do
       post :restore
