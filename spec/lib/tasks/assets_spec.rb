@@ -30,6 +30,89 @@ RSpec.describe "assets.rake" do
     end
   end
 
+  describe "publish_draft_replacement" do
+    let(:task) { Rake::Task["assets:publish_draft_replacement"] }
+    let(:replacement_id) { "56789" }
+    let(:mock_config) { instance_double(GovukConfiguration) }
+
+    before do
+      task.reenable # without this, calling `invoke` does nothing after first test
+
+      allow(GovukConfiguration).to receive(:new).and_return(mock_config)
+      allow(mock_config).to receive_messages(
+        draft_assets_host: "draft-origin.publishing.service.gov.uk",
+        assets_host: "assets.publishing.service.gov.uk",
+      )
+    end
+
+    it "publishes draft replacement asset" do
+      replacement = FactoryBot.create(:asset, id: replacement_id, draft: true)
+
+      task.invoke(replacement_id, "true")
+
+      expect(replacement.reload.draft).to be false
+    end
+
+    it "updates parent_document_url from draft host to live host" do
+      replacement = FactoryBot.create(
+        :asset,
+        id: replacement_id,
+        draft: true,
+        parent_document_url: "https://draft-origin.publishing.service.gov.uk/government/publications/test",
+      )
+
+      task.invoke(replacement_id, "true")
+
+      expect(replacement.reload.parent_document_url).to eq("https://assets.publishing.service.gov.uk/government/publications/test")
+      expect(replacement.reload.draft).to be false
+    end
+
+    it "does not modify parent_document_url if it does not contain draft host" do
+      replacement = FactoryBot.create(
+        :asset,
+        id: replacement_id,
+        draft: true,
+        parent_document_url: "https://assets.publishing.service.gov.uk/government/publications/test",
+      )
+
+      task.invoke(replacement_id, "true")
+
+      expect(replacement.reload.parent_document_url).to eq("https://assets.publishing.service.gov.uk/government/publications/test")
+      expect(replacement.reload.draft).to be false
+    end
+
+    it "skips replacement that is already published" do
+      replacement = FactoryBot.create(:asset, id: replacement_id, draft: false)
+
+      expect(replacement).not_to receive(:save)
+
+      task.invoke(replacement_id, "true")
+    end
+
+    it "does not save changes when apply is omitted (default)" do
+      replacement = FactoryBot.create(:asset, id: replacement_id, draft: true)
+
+      expect(replacement).not_to receive(:save)
+
+      task.invoke(replacement_id)
+    end
+
+    it "raises exception if replacement not found" do
+      expect { task.invoke("nonexistent", "true") }.to raise_error(Mongoid::Errors::DocumentNotFound)
+    end
+
+    it "aborts if save fails" do
+      replacement = FactoryBot.create(:asset, id: replacement_id, draft: true)
+      errors_double = instance_double(ActiveModel::Errors, full_messages: ["Validation failed"])
+      allow(replacement).to receive_messages(save: false, errors: errors_double)
+      allow(Asset).to receive(:find_by).and_return(replacement)
+
+      expect { task.invoke(replacement_id, "true") }.to raise_error(SystemExit) do |error|
+        expect(error.status).to eq(1)
+      end
+    end
+  end
+
   # rubocop:disable RSpec/AnyInstance
   context "when running a bulk fix" do
     let(:asset_id) { BSON::ObjectId("6592008029c8c3e4dc76256c") }
