@@ -51,6 +51,42 @@ namespace :assets do
     end
   end
 
+  desc "Publish draft replacement asset"
+  task :publish_draft_replacement, %i[replacement_id apply] => :environment do |_t, args|
+    replacement_id = args.fetch(:replacement_id)
+    dry_run = args[:apply] != "true"
+    config = GovukConfiguration.new
+    live_host = config.assets_host
+
+    if dry_run
+      puts "DRY RUN MODE - No changes will be saved"
+      puts "To apply changes, run: rake assets:publish_draft_replacement[#{replacement_id},true]"
+    end
+
+    replacement = Asset.find_by(id: replacement_id)
+    next puts "SKIP - Replacement #{replacement_id} already published" unless replacement.draft?
+
+    if dry_run
+      puts "DRY RUN - Would publish replacement #{replacement_id}"
+      if replacement.parent_document_url&.include?("draft-origin")
+        new_url = replacement.parent_document_url.sub(%r{draft-origin\.[^/]+}, live_host)
+        puts "DRY RUN - Would update URL from '#{replacement.parent_document_url}' to '#{new_url}'"
+      end
+    else
+      replacement.draft = false
+
+      if replacement.parent_document_url&.include?("draft-origin")
+        replacement.parent_document_url = replacement.parent_document_url.sub(%r{draft-origin\.[^/]+}, live_host)
+      end
+
+      if replacement.save
+        puts "OK - Replacement #{replacement_id} published"
+      else
+        abort "ERROR - #{replacement.errors.full_messages.join(', ')}"
+      end
+    end
+  end
+
   namespace :bulk_fix do
     desc "Fix assets and draft replacements"
     task :fix_assets_and_draft_replacements, %i[csv_path] => :environment do |_t, args|
