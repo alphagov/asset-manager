@@ -9,7 +9,7 @@ class CLI
 
     unless filename
       puts "You need to provide a filename as first argument when running this script"
-      abort
+      abort # rubocop:disable Rails/Exit
     end
 
     file = File.new(filename)
@@ -32,12 +32,12 @@ class CLI
 
     unless old_asset_id
       puts "You need to provide the asset ID as first argument when running this script"
-      abort
+      abort # rubocop:disable Rails/Exit
     end
 
     unless filename
       puts "You need to provide a filename as second argument when running this script"
-      abort
+      abort # rubocop:disable Rails/Exit
     end
 
     file = File.new(filename)
