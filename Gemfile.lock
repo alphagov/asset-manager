@@ -257,7 +257,7 @@ GEM
     mini_mime (1.1.5)
     minitest (6.0.1)
       prism (~> 1.5)
-    mongo (2.22.0)
+    mongo (2.23.0)
       base64
       bson (>= 4.14.1, < 6.0.0)
     mongoid (9.0.10)
@@ -781,7 +781,7 @@ DEPENDENCIES
   govuk_sidekiq
   jwt
   listen
-  mongo (~> 2.22.0)
+  mongo (~> 2.23.0)
   mongoid
   nokogiri
   observer
