@@ -22,5 +22,5 @@ Rails.application.routes.draw do
   end
 
   require "sidekiq_unique_jobs/web"
-  mount Sidekiq::Web, at: "/sidekiq"
+  # mount Sidekiq::Web, at: "/sidekiq"
 end
