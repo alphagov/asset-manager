@@ -1,3 +1,4 @@
+require "govuk_sidekiq/gds_sso_middleware"
 require "healthcheck/cloud_storage"
 
 Rails.application.routes.draw do
@@ -21,6 +22,5 @@ Rails.application.routes.draw do
     mount Rack::Files.new(AssetManager.fake_s3.root), at: AssetManager.fake_s3.path_prefix, as: "fake_s3"
   end
 
-  require "sidekiq_unique_jobs/web"
-  # mount Sidekiq::Web, at: "/sidekiq"
+  mount GovukSidekiq::GdsSsoMiddleware, at: "/sidekiq"
 end
