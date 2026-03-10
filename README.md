@@ -30,24 +30,18 @@ Check the [docs](docs/) directory for detailed instructions, including API docum
 
 ## Viewing the Sidekiq UI
 
-We have access to the Sidekiq UI but because Asset Manager doesn't have a
-frontend we have to use port forwarding to see it in our live environments.
+We have access to the Sidekiq UI at the following paths:
 
-You'll need to have access to our EKS clusters before you can follow these
-instructions. There's [documentation here](https://docs.publishing.service.gov.uk/kubernetes/get-started/access-eks-cluster/#access-a-cluster-that-you-have-accessed-before) on how to do that. This means that
-you'll need full production access before you can view the Sidekiq UI.
+- [integration](https://draft-assets.integration.publishing.service.gov.uk/sidekiq/)
+- [staging](https://draft-assets.staging.publishing.service.gov.uk/sidekiq/)
+- [production](https://draft-assets.publishing.service.gov.uk/sidekiq/)
 
-To view the UI run:
+This endpoint is authenticated and accessible by adding the 'Sidekiq Admin' permission
+to your account for Asset Manager in Signon for the relevant environment.
 
-```
-kubectl -n apps port-forward deployment/asset-manager 8080:8080
-```
-
-Navigate to:
-
-```
-localhost:8080/sidekiq
-```
+> This is only accessible through the `draft-assets` host, as Signon's redirect URI
+for Asset Manager has been configured to this host, as it is used for serving access
+restricted draft assets.
 
 ## Licence
 
