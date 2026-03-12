@@ -1,8 +1,8 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins Plek.find("whitehall-admin", external: true)
+    origins "*"
 
-    resource "/media/*",
+    resource "*",
              headers: :any,
              methods: [:get]
   end
