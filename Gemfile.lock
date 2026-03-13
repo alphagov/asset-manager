@@ -542,6 +542,9 @@ GEM
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.5)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-protection (4.1.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
@@ -791,6 +794,7 @@ DEPENDENCIES
   pact
   pact_broker-client
   plek
+  rack-cors
   rack_strip_client_ip
   rails (= 8.0.4)
   rails-controller-testing
