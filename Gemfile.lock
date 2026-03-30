@@ -600,7 +600,7 @@ GEM
       erb
       psych (>= 4.0.0)
       tsort
-    redis-client (0.27.0)
+    redis-client (0.28.0)
       connection_pool
     regexp_parser (2.11.3)
     reline (0.6.3)
@@ -696,9 +696,9 @@ GEM
       logger
       rack (>= 2.2.4, < 3.3)
       redis-client (>= 0.23.0, < 1)
-    sidekiq-unique-jobs (8.0.7)
+    sidekiq-unique-jobs (8.1.0)
       concurrent-ruby (~> 1.0, >= 1.0.5)
-      sidekiq (>= 7.0.0, < 8.0.0)
+      sidekiq (>= 7.0.0, < 9.0.0)
       thor (>= 1.0, < 3.0)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -799,7 +799,7 @@ DEPENDENCIES
   rspec-sidekiq
   rubocop-govuk
   sentry-sidekiq
-  sidekiq-unique-jobs (< 8.0.8)
+  sidekiq-unique-jobs (< 8.1.1)
   simplecov
   sprockets-rails
   state_machines-mongoid
