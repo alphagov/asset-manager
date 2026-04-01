@@ -789,7 +789,7 @@ DEPENDENCIES
   mongoid
   nokogiri
   observer
-  pact
+  pact (~> 1.67)
   pact_broker-client
   plek
   rack_strip_client_ip

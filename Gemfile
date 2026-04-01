@@ -31,7 +31,7 @@ group :development, :test do
   gem "climate_control"
   gem "database_cleaner-mongoid"
   gem "factory_bot_rails"
-  gem "pact", require: false
+  gem "pact", "~> 1.67", require: false
   gem "pact_broker-client", require: false
   gem "rspec-rails"
   gem "rubocop-govuk"
