@@ -155,7 +155,7 @@ GEM
     ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
     find_a_port (1.0.1)
-    gds-api-adapters (103.1.0)
+    gds-api-adapters (103.2.0)
       addressable
       link_header
       null_logger
@@ -173,13 +173,13 @@ GEM
       warden-oauth2 (~> 0.0.1)
     globalid (1.3.0)
       activesupport (>= 6.1)
-    google-protobuf (4.34.0-aarch64-linux-gnu)
+    google-protobuf (4.34.1-aarch64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
-    google-protobuf (4.34.0-arm64-darwin)
+    google-protobuf (4.34.1-arm64-darwin)
       bigdecimal
       rake (~> 13.3)
-    google-protobuf (4.34.0-x86_64-linux-gnu)
+    google-protobuf (4.34.1-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
     googleapis-common-protos-types (1.22.0)
@@ -197,7 +197,7 @@ GEM
       sentry-rails (>= 5.3, < 7.0)
       sentry-ruby (>= 5.3, < 7.0)
       statsd-ruby (~> 1.5)
-    govuk_sidekiq (11.0.1)
+    govuk_sidekiq (11.1.2)
       gds-api-adapters (>= 19.1.0)
       govuk_app_config (>= 1.1)
       redis-client (>= 0.22.2)
@@ -252,11 +252,11 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2026.0303)
+    mime-types-data (3.2026.0331)
     mini_magick (5.3.0)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.2)
+    minitest (6.0.3)
       drb (~> 2.0)
       prism (~> 1.5)
     mongo (2.23.0)
@@ -424,7 +424,7 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-lmdb (0.25.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-mongo (0.25.0)
+    opentelemetry-instrumentation-mongo (0.25.1)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-mysql2 (0.33.0)
       opentelemetry-helpers-mysql
@@ -542,7 +542,7 @@ GEM
     puma (7.2.0)
       nio4r (~> 2.0)
     racc (1.8.1)
-    rack (3.2.5)
+    rack (3.2.6)
     rack-protection (4.1.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
