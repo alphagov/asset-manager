@@ -114,7 +114,7 @@ RSpec.describe AssetsController, type: :controller do
       it "responds with unprocessable entity status" do
         post :create, params: { asset: invalid_attributes }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -190,7 +190,7 @@ RSpec.describe AssetsController, type: :controller do
         it "responds with unprocessable entity status" do
           post :create, params: { asset: attributes }
 
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "includes error message in response" do
@@ -344,7 +344,7 @@ RSpec.describe AssetsController, type: :controller do
         attributes = valid_attributes.merge(replacement_id:)
         put :update, params: { id: asset.id, asset: attributes }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "includes error message in response if replacement is not found" do

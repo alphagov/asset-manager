@@ -1,4 +1,9 @@
 class WhitehallMediaController < MediaController
+  def download
+    request.formats = [Mime::NullType] if params[:format].blank?
+    super
+  end
+
 protected
 
   def asset

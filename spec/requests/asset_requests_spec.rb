@@ -27,7 +27,7 @@ RSpec.describe "Asset requests", type: :request do
       post "/assets", params: { asset: { file: nil } }
       body = JSON.parse(response.body)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
   end
@@ -56,7 +56,7 @@ RSpec.describe "Asset requests", type: :request do
       post "/assets", params: { asset: { file: nil } }
       body = JSON.parse(response.body)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
   end

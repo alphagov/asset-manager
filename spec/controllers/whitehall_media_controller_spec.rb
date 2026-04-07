@@ -57,13 +57,31 @@ RSpec.describe WhitehallMediaController, type: :controller do
         get :download, params: { path:, format: }
       end
 
-      context "and legacy_url_path has no format" do
+      context "and legacy_url_path has no format key or value" do
+        let(:legacy_url_path) { "/government/uploads/#{path}" }
+
+        it "proxies asset to S3 via Nginx" do
+          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
+
+          get :download, params: { path: }
+
+          expect(request.fullpath).to eq(legacy_url_path)
+          expect(request.query_parameters).to be_empty
+          expect(request.format).to be_an_instance_of(Mime::NullType)
+        end
+      end
+
+      context "and legacy_url_path has no format value" do
         let(:legacy_url_path) { "/government/uploads/#{path}" }
 
         it "proxies asset to S3 via Nginx" do
           expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
 
           get :download, params: { path:, format: nil }
+
+          expect(request.fullpath).to eq("#{legacy_url_path}?format")
+          expect(request.query_parameters).to match(hash_including(format: nil))
+          expect(request.format).to be_an_instance_of(Mime::NullType)
         end
       end
     end
