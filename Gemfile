@@ -17,6 +17,7 @@ gem "mongo", "~> 2.23.0"
 gem "mongoid"
 gem "nokogiri"
 gem "observer"
+gem "ostruct" # Remove once included in mongoid
 gem "plek"
 gem "rack_strip_client_ip"
 gem "rails-controller-testing"
