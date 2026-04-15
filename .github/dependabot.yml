@@ -4,6 +4,7 @@ updates:
     directory: /
     cooldown:
       default-days: 3
+    open-pull-requests-limit: 25
     schedule:
       interval: daily
     groups:
@@ -30,6 +31,7 @@ updates:
     directory: /
     cooldown:
       default-days: 7
+    open-pull-requests-limit: 25
     schedule:
       interval: weekly
     ignore:
@@ -38,5 +40,6 @@ updates:
     directory: /
     cooldown:
       default-days: 3
+    open-pull-requests-limit: 25
     schedule:
       interval: daily
