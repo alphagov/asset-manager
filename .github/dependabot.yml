@@ -6,6 +6,20 @@ updates:
       default-days: 3
     schedule:
       interval: daily
+    groups:
+      test:
+        patterns:
+          - "climate_control"
+          - "database_cleaner-*"
+          - "factory_bot*"
+          - "pact*"
+          - "rspec-*"
+          - "simplecov"
+          - "webmock"
+      mongo: 
+        patterns:
+          - "mongo*"
+          - "*-mongoid"
 
   # Ruby needs to be upgraded manually in multiple places, so cannot
   # be upgraded by Dependabot. That effectively makes the below
