@@ -2,13 +2,15 @@ version: 2
 updates:
   - package-ecosystem: bundler
     directory: /
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: "07:00"
     allow:
       - dependency-type: direct
     cooldown:
       default-days: 3
     open-pull-requests-limit: 25
-    schedule:
-      interval: daily
     groups:
       test:
         patterns:
@@ -31,17 +33,22 @@ updates:
   # config will save a dev from trying to upgrade ruby via Dependabot.
   - package-ecosystem: docker
     directory: /
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: "07:00"
     cooldown:
       default-days: 7
     open-pull-requests-limit: 25
-    schedule:
-      interval: weekly
     ignore:
       - dependency-name: ruby
+
   - package-ecosystem: github-actions
     directory: /
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: "07:00"
     cooldown:
       default-days: 3
     open-pull-requests-limit: 25
-    schedule:
-      interval: daily
