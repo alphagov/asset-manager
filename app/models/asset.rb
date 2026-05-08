@@ -102,6 +102,10 @@ class Asset
       transition unscanned: :infected
     end
 
+    event :scanned_svg_unsafe do
+      transition unscanned: :svg_unsafe
+    end
+
     event :upload_success do
       transition clean: :uploaded
     end
