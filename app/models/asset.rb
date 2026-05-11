@@ -90,8 +90,12 @@ class Asset
       block.call
     end
 
+    event :begun_scan do
+      transition unscanned: :scanning
+    end
+
     event :scanned_clean do
-      transition unscanned: :clean
+      transition scanning: :clean
     end
 
     after_transition to: :clean do |asset, _|
@@ -99,7 +103,7 @@ class Asset
     end
 
     event :scanned_infected do
-      transition unscanned: :infected
+      transition scanning: :infected
     end
 
     event :upload_success do

@@ -524,7 +524,13 @@ RSpec.describe Asset, type: :model do
       allow(SaveToCloudStorageJob).to receive(:perform_async)
     end
 
+    it "cannot transition asset state straight to scanned clean" do
+      expect { asset.scanned_clean! }
+         .to raise_error(StateMachines::InvalidTransition)
+    end
+
     it "sets the asset state to clean" do
+      asset.begun_scan!
       asset.scanned_clean!
 
       expect(asset.reload).to be_clean
@@ -533,6 +539,7 @@ RSpec.describe Asset, type: :model do
     it "schedules saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
 
+      asset.begun_scan!
       asset.scanned_clean!
     end
 
@@ -568,13 +575,20 @@ RSpec.describe Asset, type: :model do
     let(:state) { "unscanned" }
     let(:asset) { FactoryBot.build(:asset, state:) }
 
+    it "cannot transition asset state straight to scanned infected" do
+      expect { asset.scanned_infected! }
+         .to raise_error(StateMachines::InvalidTransition)
+    end
+
     it "does not schedule saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
 
+      asset.begun_scan!
       asset.scanned_infected!
     end
 
     it "sets the asset state to infected" do
+      asset.begun_scan!
       asset.scanned_infected!
 
       expect(asset.reload).to be_infected

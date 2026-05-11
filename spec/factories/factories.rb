@@ -3,10 +3,16 @@ FactoryBot.define do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
   end
   factory :clean_asset, parent: :asset do
-    after :create, &:scanned_clean!
+    after :create do |a|
+      a.begun_scan!
+      a.scanned_clean!
+    end
   end
   factory :infected_asset, parent: :asset do
-    after :create, &:scanned_infected!
+    after :create do |a|
+      a.begun_scan!
+      a.scanned_infected!
+    end
   end
   factory :uploaded_asset, parent: :clean_asset do
     after :create, &:upload_success!
@@ -26,7 +32,10 @@ FactoryBot.define do
   end
 
   factory :clean_whitehall_asset, parent: :whitehall_asset do
-    after :create, &:scanned_clean!
+    after :create do |a|
+      a.begun_scan!
+      a.scanned_clean!
+    end
   end
 
   factory :uploaded_whitehall_asset, parent: :clean_whitehall_asset do
