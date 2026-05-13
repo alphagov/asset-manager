@@ -1,7 +1,7 @@
 require "rails_helper"
 require "cli"
 
-RSpec.describe CLI, type: :model do
+RSpec.describe CLI, type: :file_handler do
   subject(:cli) { described_class.new(output, kernel) }
 
   let(:output) { StringIO.new }
