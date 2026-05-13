@@ -1,7 +1,7 @@
 require "rails_helper"
 require "svg_scanner"
 
-RSpec.describe SvgScanner, type: :model do
+RSpec.describe SvgScanner, type: :file_handler do
   describe "scanning an SVG file" do
     subject(:scanner) { described_class.new }
 
