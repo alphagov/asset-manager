@@ -31,6 +31,20 @@ RSpec.describe VirusScanJob do
       allow(scanner).to receive(:scan).and_return(true)
     end
 
+    context "but no longer matches the file associated with the asset" do
+      before do
+        allow(asset).to receive(:md5_hexdigest).twice.and_return("foo", "bar")
+        allow(Asset).to receive(:find).with(asset.id).and_return(asset)
+        allow(Rails.logger).to receive(:info).at_least(:once)
+      end
+
+      it "logs the job failure and does not update the asset's state" do
+        worker.perform(asset.id)
+        expect(Rails.logger).to have_received(:info).with("#{asset.id} VirusScanJob checksum failed").once
+        expect(asset.reload).not_to be_clean
+      end
+    end
+
     it "sets the state to clean" do
       worker.perform(asset.id)
 
