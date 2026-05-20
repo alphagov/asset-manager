@@ -2,14 +2,40 @@ FactoryBot.define do
   factory :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
   end
+
   factory :clean_asset, parent: :asset do
-    after :create, &:scanned_clean!
+    after :create, &:virus_scanned_clean!
   end
+
   factory :infected_asset, parent: :asset do
     after :create, &:scanned_infected!
   end
+
   factory :uploaded_asset, parent: :clean_asset do
     after :create, &:upload_success!
+  end
+
+  factory :svg_asset_safe, parent: :asset do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-safe.svg")) }
+  end
+
+  factory :svg_asset_clean, parent: :svg_asset_safe do
+    after :create do |asset|
+      asset.virus_scanned_clean!
+      asset.svg_scanned_clean!
+    end
+  end
+
+  factory :svg_asset_unsafe_element, parent: :asset do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-element.svg")) }
+  end
+
+  factory :svg_asset_unsafe_event_handler, parent: :asset do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-event-handler.svg")) }
+  end
+
+  factory :svg_asset_unsafe_uri, parent: :asset do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-uri.svg")) }
   end
 
   factory :deleted_asset, parent: :asset do
@@ -26,7 +52,7 @@ FactoryBot.define do
   end
 
   factory :clean_whitehall_asset, parent: :whitehall_asset do
-    after :create, &:scanned_clean!
+    after :create, &:virus_scanned_clean!
   end
 
   factory :uploaded_whitehall_asset, parent: :clean_whitehall_asset do

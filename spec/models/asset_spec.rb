@@ -516,8 +516,30 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "scheduling an SVG scan" do
+    it "schedules a scan after a clean virus scan" do
+      a = described_class.new(file: load_fixture_file("asset.svg"))
+
+      expect(SvgScanJob).to receive(:perform_async).with(a.id)
+
+      a.virus_scanned_clean!
+    end
+
+    it "schedules a scan after save if the file is changed" do
+      a = FactoryBot.create(:svg_asset_clean)
+      a.file = load_fixture_file("asset-safe.svg")
+
+      expect(SvgScanJob).to receive(:perform_async).with(a.id)
+
+      a.save!
+
+      allow(Services.virus_scanner).to receive(:scan)
+      VirusScanJob.drain
+    end
+  end
+
   describe "when an asset is marked as clean" do
-    let(:state) { "unscanned" }
+    let(:state) { "virus_scanned_clean" }
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     before do
@@ -525,7 +547,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "sets the asset state to clean" do
-      asset.scanned_clean!
+      asset.svg_scanned_clean!
 
       expect(asset.reload).to be_clean
     end
@@ -533,14 +555,14 @@ RSpec.describe Asset, type: :model do
     it "schedules saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
 
-      asset.scanned_clean!
+      asset.svg_scanned_clean!
     end
 
     context "when asset is already clean" do
       let(:state) { "clean" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_clean! }
+        expect { asset.virus_scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -549,7 +571,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "infected" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_clean! }
+        expect { asset.virus_scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -558,7 +580,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "uploaded" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_clean! }
+        expect { asset.virus_scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end

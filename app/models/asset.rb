@@ -90,8 +90,20 @@ class Asset
       block.call
     end
 
-    event :scanned_clean do
-      transition unscanned: :clean
+    event :virus_scanned_clean do
+      transition unscanned: :virus_scanned_clean
+    end
+
+    after_transition to: :virus_scanned_clean do |asset, _|
+      asset.schedule_svg_scan
+    end
+
+    event :svg_scan_skipped do
+      transition virus_scanned_clean: :clean
+    end
+
+    event :svg_scanned_clean do
+      transition virus_scanned_clean: :clean
     end
 
     after_transition to: :clean do |asset, _|
@@ -219,6 +231,17 @@ class Asset
   def initialize_dup(other)
     @_mounters = nil
     super
+  end
+
+  # must be a public method for the state machine to call it
+  def schedule_svg_scan
+    begin
+      mimetype = Services.mimetype_inferrer.infer(file.path)
+    rescue MimetypeInferrer::MimetypeInferenceError => e
+      GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+      svg_scan_skipped!
+    end
+    mimetype == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
 protected

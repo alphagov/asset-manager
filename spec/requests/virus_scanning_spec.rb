@@ -36,4 +36,35 @@ RSpec.describe "Virus scanning of uploaded images", :disable_cloud_storage_stub,
     get redirect_url
     expect(response).to have_http_status(:success)
   end
+
+  specify "a clean SVG asset is available after virus scanning & uploading to cloud storage" do
+    post "/assets", params: { asset: { file: load_fixture_file("asset-safe.svg") } }
+    expect(response).to have_http_status(:created)
+
+    asset = Asset.last
+
+    asset_details = JSON.parse(response.body)
+    expect(asset_details["id"]).to match(%r{http://www.example.com/assets/#{asset.id}})
+
+    get download_media_path(id: asset, filename: "asset-safe.svg")
+    expect(response).to have_http_status(:not_found)
+
+    allow(Services.virus_scanner).to receive(:scan)
+    VirusScanJob.drain
+
+    allow(Services.svg_scanner).to receive(:scan)
+    SvgScanJob.drain
+
+    get download_media_path(id: asset, filename: "asset-safe.svg")
+    expect(response).to have_http_status(:not_found)
+
+    SaveToCloudStorageJob.drain
+
+    get download_media_path(id: asset, filename: "asset-safe.svg")
+    expect(response).to have_http_status(:found)
+
+    redirect_url = headers["location"]
+    get redirect_url
+    expect(response).to have_http_status(:success)
+  end
 end
