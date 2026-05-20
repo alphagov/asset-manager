@@ -65,6 +65,20 @@ RSpec.describe GovukConfiguration do
     end
   end
 
+  describe "#file_utility_path" do
+    context "when environment includes an ASSET_MANAGER_FILE_UTILITY_PATH value" do
+      let(:env) do
+        {
+          "ASSET_MANAGER_FILE_UTILITY_PATH" => "alternative-path",
+        }
+      end
+
+      it "returns environment variable" do
+        expect(config.file_utility_path).to eq("alternative-path")
+      end
+    end
+  end
+
   describe "#draft_assets_host" do
     subject(:config) { described_class.new(env, plek) }
 
