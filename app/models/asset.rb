@@ -90,7 +90,7 @@ class Asset
       block.call
     end
 
-    event :scanned_clean do
+    event :virus_scanned_clean do
       transition unscanned: :clean
     end
 

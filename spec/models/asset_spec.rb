@@ -525,7 +525,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "sets the asset state to clean" do
-      asset.scanned_clean!
+      asset.virus_scanned_clean!
 
       expect(asset.reload).to be_clean
     end
@@ -533,14 +533,14 @@ RSpec.describe Asset, type: :model do
     it "schedules saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
 
-      asset.scanned_clean!
+      asset.virus_scanned_clean!
     end
 
     context "when asset is already clean" do
       let(:state) { "clean" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_clean! }
+        expect { asset.virus_scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -549,7 +549,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "infected" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_clean! }
+        expect { asset.virus_scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -558,7 +558,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "uploaded" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_clean! }
+        expect { asset.virus_scanned_clean! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
