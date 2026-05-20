@@ -25,4 +25,8 @@ class GovukConfiguration
   def clamscan_path
     @env.fetch("ASSET_MANAGER_CLAMSCAN_PATH", "clamdscan")
   end
+
+  def file_utility_path
+    @env.fetch("ASSET_MANAGER_FILE_UTILITY_PATH", "file")
+  end
 end

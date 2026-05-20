@@ -233,10 +233,16 @@ class Asset
     super
   end
 
-  def schedule_svg_scan # must be a public method for the state machine to call it
-    # TODO: filetype inference
-    is_svg = false
-    is_svg ? SvgScanJob.perform_async(id.to_s) : self.svg_scan_skipped!
+  # must be a public method for the state machine to call it
+  def schedule_svg_scan
+    begin
+      mimetype = Services.mimetype_inferrer.infer(file.path)
+    rescue
+      rescue MimetypeInferrer::MimetypeInferenceError => e
+        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+        self.svg_scan_skipped!
+    end
+    mimetype == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : self.svg_scan_skipped!
   end
 
 protected
