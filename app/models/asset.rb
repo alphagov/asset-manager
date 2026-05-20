@@ -91,7 +91,19 @@ class Asset
     end
 
     event :virus_scanned_clean do
-      transition unscanned: :clean
+      transition unscanned: :virus_scanned_clean
+    end
+
+    after_transition to: :virus_scanned_clean do |asset, _|
+      asset.schedule_svg_scan
+    end
+
+    event :svg_scan_skipped do
+      transition virus_scanned_clean: :clean
+    end
+
+    event :svg_scanned_clean do
+      transition virus_scanned_clean: :clean
     end
 
     after_transition to: :clean do |asset, _|
@@ -100,10 +112,6 @@ class Asset
 
     event :scanned_infected do
       transition unscanned: :infected
-    end
-
-    event :scanned_svg_unsafe do
-      transition unscanned: :svg_unsafe
     end
 
     event :upload_success do
@@ -223,6 +231,12 @@ class Asset
   def initialize_dup(other)
     @_mounters = nil
     super
+  end
+
+  def schedule_svg_scan # must be a public method for the state machine to call it
+    # TODO: filetype inference
+    is_svg = false
+    is_svg ? SvgScanJob.perform_async(id.to_s) : self.svg_scan_skipped!
   end
 
 protected
