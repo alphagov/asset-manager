@@ -8,7 +8,7 @@ class SvgScanJob
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    if asset.scanned_clean?
+    if asset.virus_scanned_clean?
       begin
         Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG scan started")
         ensure_file_is_same_after_scan(asset, "SvgScanJob", :svg_scanned_clean!) do
