@@ -12,6 +12,19 @@ FactoryBot.define do
     after :create, &:upload_success!
   end
 
+  factory :svg_asset_safe do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-safe.svg")) }
+  end
+  factory :svg_asset_unsafe_element do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-element.svg")) }
+  end
+  factory :svg_asset_unsafe_event_handler do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-event-handler.svg")) }
+  end
+  factory :svg_asset_unsafe_uri do
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-uri.svg")) }
+  end
+
   factory :deleted_asset, parent: :asset do
     deleted_at { Time.zone.now }
   end
