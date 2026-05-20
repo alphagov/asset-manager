@@ -15,45 +15,26 @@ Assets must be in draft for certain authorisation protocols to apply. See [docum
 2. `state`
 
 This is a representation of the internal Asset Manager processing of the asset, particularly around uploading and virus scanning status.
-The state machine includes `scanned_clean`, `clean`, `scanned_infected`, `infected`, `upload_success`, `uploaded`.
 
 NB: There are some invalid remnants of a previous state machine, including state values such as `deleted`, in the database. These should be removed.
 
-```
-┌──────────────┐
-│  Unscanned   │
-│  (Initial)   │
-└──────┬───────┘
-       │
-       ▼
-[VirusScanJob triggered]
-       │
-       ▼
-[Virus scan performed]
-           │
-   ┌───────┴────────┐
-   │                │
-   ▼                ▼
-(scanned_clean)   (scanned_infected)
-   │                │
-   ▼                ▼
-┌──────────┐    ┌────────────┐
-│  Clean   │    │  Infected  │
-└────┬─────┘    └────────────┘
-     │
-     ▼
-[SaveToCloudStorageJob triggered]
-     │
-     ▼
-[Asset uploaded to AWS S3 bucket]
-     │
-     ▼
-(upload_success)
-     │
-     ▼
-┌──────────┐
-│ Uploaded │
-└──────────┘
+```mermaid
+flowchart TD
+    Unscanned("Unscanned\n(Initial)") --> TriggerVirusScan["VirusScanJob triggered"]
+    TriggerVirusScan --> VirusScanPerformed["Virus scan performed"]
+
+    VirusScanPerformed -->|virus_scanned_clean| VirusScannedClean("Virus Scanned Clean")
+    VirusScanPerformed -->|scanned_infected| Infected("Infected")
+
+    VirusScannedClean --> TriggerSvgScan["SvgScanJob triggered"]
+    TriggerSvgScan --> SvgScanPerformed["SVG scan performed"]
+
+    SvgScanPerformed -->|svg_scanned_clean| Clean("Clean")
+    SvgScanPerformed -->|scanned_infected| Infected("Infected")
+
+    Clean --> TriggerSaveToCloudStorageJob["SaveToCloudStorageJob triggered"]
+    TriggerSaveToCloudStorageJob --> Upload["Asset uploaded to AWS S3 bucket"]
+    Upload -->|upload_success| Uploaded("Uploaded")
 ```
 
 3. `deleted_at`
@@ -63,14 +44,14 @@ A `nil` value means the asset has not been deleted (default).
 
 4. `replacement_id`
 
-This is a BSON object ID, set by the publishing app when the user uploads a new file in the place of an old one, typically with the intention of preserving some contextual document metadata. 
+This is a BSON object ID, set by the publishing app when the user uploads a new file in the place of an old one, typically with the intention of preserving some contextual document metadata.
 Default is `nil`. The replaced asset redirects to its replacement, provided the replacement is not in draft.
 
 Whilst deletion and replacements are mutually exclusive (an asset should not logically have both), they do coexist in the database.
 Deletion, replacement, and draft work together to support previewing of draft content. An asset will not redirect to its replacement if the replacement is in draft.
 This ensures that until the publish event is fired, the users can preview images and documents on the draft stack.
 
-Publishing applications only send the next-in-line `replacement_id`. 
+Publishing applications only send the next-in-line `replacement_id`.
 It is Asset Manager that deals with backpropagating the replacement - see the `update_indirect_replacements_on_publish` [callback](https://github.com/alphagov/asset-manager/blob/13d68aee4d0c8cf2c81be7fafef309dc36436ca3/app/models/asset.rb#L174).
 This ensures that all assets in a chain of replacements redirect to the latest one.
 

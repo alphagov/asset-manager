@@ -13,7 +13,7 @@ class VirusScanJob
     if asset.unscanned?
       begin
         Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus scan started")
-        ensure_file_is_same_after_scan(asset, "VirusScanJob", :scanned_clean!) do
+        ensure_file_is_same_after_scan(asset, "VirusScanJob", :virus_scanned_clean!) do
           Services.virus_scanner.scan(asset.file.path)
         end
       rescue VirusScanner::InfectedFile => e
