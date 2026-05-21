@@ -15,9 +15,46 @@ Assets must be in draft for certain authorisation protocols to apply. See [docum
 2. `state`
 
 This is a representation of the internal Asset Manager processing of the asset, particularly around uploading and virus scanning status.
-The state machine includes `scanned_clean`, `clean`, `scanned_infected`, `upload_success`, `uploaded`.
+The state machine includes `scanned_clean`, `clean`, `scanned_infected`, `infected`, `upload_success`, `uploaded`.
 
 NB: There are some invalid remnants of a previous state machine, including state values such as `deleted`, in the database. These should be removed.
+
+```
+┌──────────────┐
+│  Unscanned   │
+│  (Initial)   │
+└──────┬───────┘
+       │
+       ▼
+[VirusScanJob triggered]
+       │
+       ▼
+[Virus scan performed]
+           │
+   ┌───────┴────────┐
+   │                │
+   ▼                ▼
+(scanned_clean)   (scanned_infected)
+   │                │
+   ▼                ▼
+┌──────────┐    ┌────────────┐
+│  Clean   │    │  Infected  │
+└────┬─────┘    └────────────┘
+     │
+     ▼
+[SaveToCloudStorageJob triggered]
+     │
+     ▼
+[Asset uploaded to AWS S3 bucket]
+     │
+     ▼
+(upload_success)
+     │
+     ▼
+┌──────────┐
+│ Uploaded │
+└──────────┘
+```
 
 3. `deleted_at`
 
