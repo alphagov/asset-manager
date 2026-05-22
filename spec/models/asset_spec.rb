@@ -480,7 +480,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules a scan after save if the file is changed" do
-      a = FactoryBot.create(:clean_asset)
+      a = FactoryBot.create(:virus_clean_asset)
       a.file = load_fixture_file("lorem.txt")
 
       expect(VirusScanJob).to receive(:perform_async).with(a.id)
@@ -489,7 +489,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules a scan after save if the file is changed even if filename is unchanged" do
-      a = FactoryBot.create(:clean_asset)
+      a = FactoryBot.create(:virus_clean_asset)
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
 
@@ -499,7 +499,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "does not schedule a scan after update if the file is unchanged" do
-      a = FactoryBot.create(:clean_asset)
+      a = FactoryBot.create(:virus_clean_asset)
       a.created_at = 5.days.ago
 
       expect(VirusScanJob).not_to receive(:perform_async)
@@ -516,8 +516,54 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "scheduling an SVG scan" do
+    # it "schedules a scan after a clean virus scan" do
+    #   a = FactoryBot.create(:virus_clean_asset)
+    #
+    #   expect(SvgScanJob).to receive(:perform_async).with(a.id)
+    #
+    #   a.save!
+    # end
+    #
+    # it "schedules a scan after save if the file is changed" do
+    #   a = FactoryBot.create(:clean_asset)
+    #   a.file = load_fixture_file("lorem.txt")
+    #
+    #   expect(SvgScanJob).to receive(:perform_async).with(a.id)
+    #
+    #   a.save!
+    # end
+    #
+    # it "schedules a scan after save if the file is changed even if filename is unchanged" do
+    #   a = FactoryBot.create(:clean_asset)
+    #   original_filename = a.file.send(:original_filename)
+    #   a.file = load_fixture_file("lorem.txt", named: original_filename)
+    #
+    #   expect(SvgScanJob).to receive(:perform_async).with(a.id)
+    #
+    #   a.save!
+    # end
+    #
+    # it "does not schedule a scan after update if the file is unchanged" do
+    #   a = FactoryBot.create(:clean_asset)
+    #   a.created_at = 5.days.ago
+    #
+    #   expect(SvgScanJob).not_to receive(:perform_async)
+    #
+    #   a.save!
+    # end
+    #
+    # it "does not schedule a scan if a redirect url is present" do
+    #   a = FactoryBot.create(:asset, redirect_url: "/some-redirect")
+    #
+    #   expect(SvgScanJob).not_to receive(:perform_async)
+    #
+    #   a.save!
+    # end
+  end
+
   describe "when an asset is marked as clean" do
-    let(:state) { "unscanned" }
+    let(:state) { "virus_scanned_clean" }
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     before do
@@ -525,7 +571,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "sets the asset state to clean" do
-      asset.virus_scanned_clean!
+      asset.svg_scanned_clean!
 
       expect(asset.reload).to be_clean
     end
@@ -533,7 +579,7 @@ RSpec.describe Asset, type: :model do
     it "schedules saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
 
-      asset.virus_scanned_clean!
+      asset.svg_scanned_clean!
     end
 
     context "when asset is already clean" do
