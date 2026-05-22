@@ -517,13 +517,13 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "scheduling an SVG scan" do
-    # it "schedules a scan after a clean virus scan" do
-    #   a = FactoryBot.create(:virus_clean_asset)
-    #
-    #   expect(SvgScanJob).to receive(:perform_async).with(a.id)
-    #
-    #   a.save!
-    # end
+    it "schedules a scan after a clean virus scan" do
+      a = described_class.new(file: load_fixture_file("asset.svg"))
+
+      expect(SvgScanJob).to receive(:perform_async).with(a.id)
+
+      a.virus_scanned_clean!
+    end
     #
     # it "schedules a scan after save if the file is changed" do
     #   a = FactoryBot.create(:clean_asset)

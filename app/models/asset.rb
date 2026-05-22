@@ -242,7 +242,9 @@ class Asset
         GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
         self.svg_scan_skipped!
     end
+
     mimetype == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : self.svg_scan_skipped!
+    
   end
 
 protected
