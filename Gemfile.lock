@@ -262,10 +262,10 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
-    mongo (2.23.0)
+    mongo (2.24.0)
       base64
       bson (>= 4.14.1, < 6.0.0)
-    mongoid (9.0.11)
+    mongoid (9.1.0)
       activemodel (>= 5.1, < 8.2, != 7.0.0)
       concurrent-ruby (>= 1.0.5, < 2.0)
       mongo (>= 2.18.0, < 3.0.0)
@@ -791,7 +791,7 @@ DEPENDENCIES
   govuk_sidekiq
   jwt
   listen
-  mongo (~> 2.23.0)
+  mongo (~> 2.24.0)
   mongoid
   nokogiri
   observer
