@@ -1,30 +1,34 @@
 FactoryBot.define do
   factory :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.svg")) }
+    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
   end
-  factory :virus_clean_asset, parent: :asset do
+
+  factory :clean_asset, parent: :asset do
     after :create, &:virus_scanned_clean!
+    #virus_scanned_clean immediately triggers svg scanning, so seperate scg scan states for testing are pointless
   end
-  factory :clean_asset, parent: :virus_clean_asset do
-    after :create, &:svg_scanned_clean!
-  end
+
   factory :infected_asset, parent: :asset do
     after :create, &:scanned_infected!
   end
+
   factory :uploaded_asset, parent: :clean_asset do
     after :create, &:upload_success!
   end
 
-  factory :svg_asset_safe do
+  factory :svg_asset_safe, parent: :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-safe.svg")) }
   end
-  factory :svg_asset_unsafe_element do
+
+  factory :svg_asset_unsafe_element, parent: :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-element.svg")) }
   end
-  factory :svg_asset_unsafe_event_handler do
+
+  factory :svg_asset_unsafe_event_handler, parent: :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-event-handler.svg")) }
   end
-  factory :svg_asset_unsafe_uri do
+
+  factory :svg_asset_unsafe_uri, parent: :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-uri.svg")) }
   end
 

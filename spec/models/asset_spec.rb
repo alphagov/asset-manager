@@ -480,7 +480,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules a scan after save if the file is changed" do
-      a = FactoryBot.create(:virus_clean_asset)
+      a = FactoryBot.create(:clean_asset)
       a.file = load_fixture_file("lorem.txt")
 
       expect(VirusScanJob).to receive(:perform_async).with(a.id)
@@ -489,7 +489,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "schedules a scan after save if the file is changed even if filename is unchanged" do
-      a = FactoryBot.create(:virus_clean_asset)
+      a = FactoryBot.create(:clean_asset)
       original_filename = a.file.send(:original_filename)
       a.file = load_fixture_file("lorem.txt", named: original_filename)
 
@@ -499,7 +499,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "does not schedule a scan after update if the file is unchanged" do
-      a = FactoryBot.create(:virus_clean_asset)
+      a = FactoryBot.create(:clean_asset)
       a.created_at = 5.days.ago
 
       expect(VirusScanJob).not_to receive(:perform_async)
