@@ -7,15 +7,14 @@ class SvgScanJob
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
-    if asset.virus_scanned_clean?
-      begin
-        Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG scan started")
-        Services.svg_scanner.scan(asset.file.path)
-        asset.reload.md5_hexdigest == initial_digest ? asset.svg_scanned_clean! : Rails.logger.info("#{asset.id} SvgScanJob checksum failed")
-      rescue SvgScanner::UnsafeSvgError => e
-        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
-        asset.scanned_infected!
-      end
+    begin
+      initial_digest = asset.md5_hexdigest
+      Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG scan started")
+      Services.svg_scanner.scan(asset.file.path)
+      asset.reload.md5_hexdigest == initial_digest ? asset.svg_scanned_clean! : Rails.logger.info("#{asset.id} SvgScanJob checksum failed")
+    rescue SvgScanner::UnsafeSvgError => e
+      GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+      asset.scanned_infected!
     end
   end
 end
