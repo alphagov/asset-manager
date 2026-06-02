@@ -156,7 +156,7 @@ RSpec.describe "Asset requests", type: :request do
         threads << Thread.new do
           sleep(0.5)
           asset = Asset.find(asset_id)
-          asset.scanned_clean!
+          asset.virus_scanned_clean!
         end
       end
 
