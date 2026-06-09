@@ -4,7 +4,7 @@ class SvgScanJob
   include ApplicationHelper
   include Sidekiq::Job
 
-  sidekiq_options lock: :until_and_while_executing
+  sidekiq_options lock: :until_executing
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
