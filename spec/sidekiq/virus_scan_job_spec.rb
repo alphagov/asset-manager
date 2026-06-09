@@ -97,12 +97,5 @@ RSpec.describe VirusScanJob do
       asset.reload
       expect(asset).to be_infected
     end
-
-    it "sends an exception notification" do
-      expect(GovukError).to receive(:notify)
-        .with(exception, extra: { id: asset.id, filename: asset.filename })
-
-      worker.perform(asset.id)
-    end
   end
 end

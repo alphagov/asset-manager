@@ -15,8 +15,8 @@ class VirusScanJob
         Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus scan started")
         Services.virus_scanner.scan(asset.file.path)
         asset.reload.md5_hexdigest == initial_digest ? asset.scanned_clean! : Rails.logger.info("#{asset.id} VirusScanJob checksum failed")
-      rescue VirusScanner::InfectedFile => e
-        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+      rescue VirusScanner::InfectedFile
+        Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus detected")
         asset.scanned_infected!
       end
     end
