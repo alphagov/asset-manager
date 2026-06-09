@@ -21,5 +21,3 @@ class SvgScanJob
     end
   end
 end
-
-SvgScanWorker = SvgScanJob

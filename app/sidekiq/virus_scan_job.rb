@@ -23,5 +23,3 @@ class VirusScanJob
     end
   end
 end
-
-VirusScanWorker = VirusScanJob
