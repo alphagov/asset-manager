@@ -1,6 +1,7 @@
 require "services"
 
 class VirusScanJob
+  include ApplicationHelper
   include Sidekiq::Job
 
   sidekiq_options lock: :until_executing
@@ -11,10 +12,10 @@ class VirusScanJob
     asset = Asset.find(asset_id)
     if asset.unscanned?
       begin
-        initial_digest = asset.md5_hexdigest
         Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus scan started")
-        Services.virus_scanner.scan(asset.file.path)
-        asset.reload.md5_hexdigest == initial_digest ? asset.virus_scanned_clean! : Rails.logger.info("#{asset.id} VirusScanJob checksum failed")
+        ensure_file_is_same_after_scan(asset, "VirusScanJob", :virus_scanned_clean!) do
+          Services.virus_scanner.scan(asset.file.path)
+        end
       rescue VirusScanner::InfectedFile => e
         GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
         asset.scanned_infected!
