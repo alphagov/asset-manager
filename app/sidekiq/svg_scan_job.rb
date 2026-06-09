@@ -14,7 +14,7 @@ class SvgScanJob
         Services.svg_scanner.scan(asset.file.path)
       end
     rescue SvgScanner::UnsafeSvgError => e
-      GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+      Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG unsafe")
       asset.scanned_infected!
     end
   end

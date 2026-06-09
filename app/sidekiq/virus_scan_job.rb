@@ -17,7 +17,7 @@ class VirusScanJob
           Services.virus_scanner.scan(asset.file.path)
         end
       rescue VirusScanner::InfectedFile => e
-        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+        Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus detected")
         asset.scanned_infected!
       end
     end
