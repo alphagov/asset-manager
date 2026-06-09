@@ -33,7 +33,9 @@ class SvgScanner
     svg_scanner = SvgDocument.new
     parser = Nokogiri::XML::SAX::Parser.new(svg_scanner)
 
-    parser.parse(File.read(file_path))
+    File.open(file_path) do |file|
+      parser.parse_io(file)
+    end
     true
   end
 end
