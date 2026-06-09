@@ -13,7 +13,7 @@ class SvgScanJob
       ensure_file_is_same_after_scan(asset, "SvgScanJob", :svg_scanned_clean!) do
         Services.svg_scanner.scan(asset.file.path)
       end
-    rescue SvgScanner::UnsafeSvgError => e
+    rescue SvgScanner::UnsafeSvg => e
       Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG unsafe")
       asset.scanned_infected!
     end
