@@ -114,6 +114,10 @@ class Asset
       transition unscanned: :infected
     end
 
+    event :scanned_infected do
+      transition virus_scanned_clean: :infected
+    end
+
     event :upload_success do
       transition clean: :uploaded
     end
