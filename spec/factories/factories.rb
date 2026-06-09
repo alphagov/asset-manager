@@ -17,11 +17,13 @@ FactoryBot.define do
 
   factory :svg_asset_safe, parent: :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-safe.svg")) }
+    after :create do |asset|
+      asset.virus_scanned_clean!
+    end
   end
 
   factory :svg_asset_clean, parent: :svg_asset_safe do
     after :create do |asset|
-      asset.virus_scanned_clean!
       asset.svg_scanned_clean!
     end
   end
@@ -36,6 +38,14 @@ FactoryBot.define do
 
   factory :svg_asset_unsafe_uri, parent: :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-uri.svg")) }
+  end
+
+  factory :svg_infected_asset, parent: :svg_asset_safe do
+    after :create, &:scanned_infected!
+  end
+
+  factory :svg_uploaded_asset, parent: :svg_asset_clean do
+    after :create, &:upload_success!
   end
 
   factory :deleted_asset, parent: :asset do
