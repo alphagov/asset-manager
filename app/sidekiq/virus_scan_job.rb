@@ -2,6 +2,7 @@ require "services"
 
 class VirusScanJob
   include Sidekiq::Job
+  include EnsureFile
 
   sidekiq_options lock: :until_executing
 
@@ -11,10 +12,10 @@ class VirusScanJob
     asset = Asset.find(asset_id)
     if asset.unscanned?
       begin
-        initial_digest = asset.md5_hexdigest
         Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus scan started")
-        Services.virus_scanner.scan(asset.file.path)
-        asset.reload.md5_hexdigest == initial_digest ? asset.scanned_clean! : Rails.logger.info("#{asset.id} VirusScanJob checksum failed")
+        ensure_file_is_same_after_scan(asset, "VirusScanJob", :scanned_clean!) do
+          Services.virus_scanner.scan(asset.file.path)
+        end
       rescue VirusScanner::InfectedFile
         Rails.logger.info("#{asset_id} - VirusScanJob#perform - Virus detected")
         asset.scanned_infected!
