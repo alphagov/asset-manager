@@ -2,13 +2,13 @@ require "rails_helper"
 require "services"
 require "sidekiq_unique_jobs/testing"
 
-RSpec.describe VirusScanJob do
+RSpec.describe SvgScanJob do
   let(:worker) { described_class.new }
-  let(:asset) { FactoryBot.create(:asset) }
-  let(:scanner) { instance_double(VirusScanner) }
+  let(:asset) { FactoryBot.create(:svg_asset_safe) }
+  let(:scanner) { instance_double(SvgScanner) }
 
   before do
-    allow(Services).to receive(:virus_scanner).and_return(scanner)
+    allow(Services).to receive(:svg_scanner).and_return(scanner)
   end
 
   specify { expect(described_class).to have_valid_sidekiq_options }
@@ -20,7 +20,7 @@ RSpec.describe VirusScanJob do
     end
   end
 
-  it "calls out to the VirusScanner to scan the file" do
+  it "calls out to the SvgScanner to scan the file" do
     expect(scanner).to receive(:scan).with(asset.file.path)
 
     worker.perform(asset.id)
@@ -40,7 +40,7 @@ RSpec.describe VirusScanJob do
 
       it "logs the job failure and does not update the asset's state" do
         worker.perform(asset.id)
-        expect(Rails.logger).to have_received(:info).with("#{asset.id} VirusScanJob checksum failed").once
+        expect(Rails.logger).to have_received(:info).with("#{asset.id} SvgScanJob checksum failed").once
         expect(asset.reload).not_to be_clean
       end
     end
@@ -54,9 +54,9 @@ RSpec.describe VirusScanJob do
   end
 
   context "when the asset is already marked as clean" do
-    let(:asset) { FactoryBot.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:svg_asset_clean) }
 
-    it "does not virus scan file" do
+    it "does not SVG scan file" do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)
@@ -64,9 +64,9 @@ RSpec.describe VirusScanJob do
   end
 
   context "when the asset is already marked as infected" do
-    let(:asset) { FactoryBot.create(:infected_asset) }
+    let(:asset) { FactoryBot.create(:svg_infected_asset) }
 
-    it "does not virus scan file" do
+    it "does not SVG scan file" do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)
@@ -74,24 +74,24 @@ RSpec.describe VirusScanJob do
   end
 
   context "when the asset is already marked as uploaded" do
-    let(:asset) { FactoryBot.create(:uploaded_asset) }
+    let(:asset) { FactoryBot.create(:svg_uploaded_asset) }
 
-    it "does not virus scan file" do
+    it "does not SVG scan file" do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)
     end
   end
 
-  context "when a virus is found" do
-    let(:exception_message) { "/path/to/file: Eicar-Test-Signature FOUND" }
-    let(:exception) { VirusScanner::InfectedFile.new(exception_message) }
+  context "when the SVG asset is unsafe" do
+    let(:exception_message) { "SVG: Unsafe element detected: <script>" }
+    let(:exception) { SvgDocument::UnsafeSvg.new(exception_message) }
 
     before do
       allow(scanner).to receive(:scan).and_raise(exception)
     end
 
-    it "sets the state to infected if a virus is found" do
+    it "sets the state to infected if the SVG asset is unsafe" do
       worker.perform(asset.id)
 
       asset.reload
