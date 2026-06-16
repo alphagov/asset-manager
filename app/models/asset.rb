@@ -90,8 +90,20 @@ class Asset
       block.call
     end
 
-    event :scanned_clean do
-      transition unscanned: :clean
+    event :virus_scanned_clean do
+      transition unscanned: :virus_scanned_clean
+    end
+
+    after_transition to: :virus_scanned_clean do |asset, _|
+      asset.schedule_svg_scan
+    end
+
+    event :svg_scan_skipped do
+      transition virus_scanned_clean: :clean
+    end
+
+    event :svg_scanned_clean do
+      transition virus_scanned_clean: :clean
     end
 
     after_transition to: :clean do |asset, _|
@@ -100,6 +112,10 @@ class Asset
 
     event :scanned_infected do
       transition unscanned: :infected
+    end
+
+    event :scanned_infected do
+      transition virus_scanned_clean: :infected
     end
 
     event :upload_success do
@@ -219,6 +235,10 @@ class Asset
   def initialize_dup(other)
     @_mounters = nil
     super
+  end
+
+  def schedule_svg_scan
+    Marcel::MimeType.for(Pathname.new(file.path)) == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
 protected
