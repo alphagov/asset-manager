@@ -7,7 +7,11 @@ class MediaController < ApplicationController
   def download
     if asset.replacement.present? && (!asset.replacement.draft? || requested_from_draft_assets_host?)
       set_default_expiry
-      redirect_to_replacement_for(asset)
+      if asset.mime_type == asset.replacement.mime_type
+        redirect_to_replacement_for(asset)
+      else
+        render :redirect_changed_type, formats: [:html]
+      end
       return
     end
 

@@ -221,6 +221,12 @@ class Asset
     super
   end
 
+  def mime_type
+    # Do something here to get the asset mime type (or set it when publishing and backill all existing records)
+    # Only comparing extensions for now, but this is not reliable
+    filename.split(".").last.downcase
+  end
+
 protected
 
   def store_metadata
