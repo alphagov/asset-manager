@@ -119,6 +119,11 @@ namespace :assets do
         end
       end
     end
+
+    desc "Scan all existing assets for SVG vulnerabilities"
+    task schedule_svg_scan_of_all_assets: :environment do
+      Asset.all.each(&:schedule_svg_bulk_scan)
+    end
   end
 end
 
