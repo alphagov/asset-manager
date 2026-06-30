@@ -14,8 +14,8 @@ class SvgScanJob
         ensure_file_is_same_after_scan(asset, "SvgScanJob", :svg_scanned_clean!) do
           Services.svg_scanner.scan(asset.file.path)
         end
-      rescue SvgDocument::UnsafeSvg => e
-        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+      rescue SvgDocument::UnsafeSvg
+        Rails.logger.warn("#{asset_id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe")
         asset.scanned_infected!
       end
     end
