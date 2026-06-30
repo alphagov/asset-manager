@@ -89,6 +89,7 @@ RSpec.describe SvgScanJob do
 
     before do
       allow(scanner).to receive(:scan).and_raise(exception)
+      allow(Rails.logger).to receive(:warn).at_least(:once)
     end
 
     it "sets the state to infected if the SVG asset is unsafe" do
@@ -98,11 +99,10 @@ RSpec.describe SvgScanJob do
       expect(asset).to be_infected
     end
 
-    it "sends an exception notification" do
-      expect(GovukError).to receive(:notify)
-        .with(exception, extra: { id: asset.id, filename: asset.filename })
-
+    it "logs the failure" do
       worker.perform(asset.id)
+
+      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe").once
     end
   end
 end

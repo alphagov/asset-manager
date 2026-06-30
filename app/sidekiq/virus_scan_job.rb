@@ -16,8 +16,8 @@ class VirusScanJob
         ensure_file_is_same_after_scan(asset, "VirusScanJob", :virus_scanned_clean!) do
           Services.virus_scanner.scan(asset.file.path)
         end
-      rescue VirusScanner::InfectedFile => e
-        GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
+      rescue VirusScanner::InfectedFile
+        Rails.logger.warn("#{asset_id} - VirusScanJob#perform - File #{asset.filename} marked as infected")
         asset.scanned_infected!
       end
     end
