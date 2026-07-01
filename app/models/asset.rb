@@ -241,6 +241,10 @@ class Asset
     Marcel::MimeType.for(Pathname.new(file.path)) == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
+  def schedule_svg_bulk_scan
+    SvgScanBulkJob.perform_async(id.to_s)
+  end
+
 protected
 
   def store_metadata

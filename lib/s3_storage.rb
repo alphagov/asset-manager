@@ -1,3 +1,4 @@
+require "tempfile"
 require "s3_storage/fake"
 
 class S3Storage
@@ -32,6 +33,15 @@ class S3Storage
         raise ObjectUploadFailedError, error_message
       end
     end
+  end
+
+  def download(asset, file: Tempfile.new(asset.uuid))
+    client.get_object(
+      bucket: @bucket_name,
+      key: asset.uuid,
+      response_target: file.path,
+    )
+    file
   end
 
   def delete(asset)
