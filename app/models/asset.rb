@@ -267,6 +267,10 @@ class Asset
     mime_type == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
+  def schedule_svg_batch_scan
+    SvgScanBatchJob.perform_async(id.to_s)
+  end
+
 protected
 
   def store_metadata
