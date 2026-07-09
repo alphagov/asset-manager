@@ -51,6 +51,41 @@ namespace :assets do
     end
   end
 
+  desc "Scan a batch of files yet to be scanned for SVG vulnerabilites"
+  task :bulk_scan_svgs, %i[batch_size] => :environment do |_t, args|
+    if Sidekiq::Queue.new("batch").any?
+      message = "Not enqueuing assets for bulk SVG scanning: previous batch still in progress"
+      Rails.logger.info(message)
+      puts message
+
+      next
+    end
+
+    batch_size = args.fetch(:batch_size, nil)&.to_i
+
+    unless batch_size&.positive?
+      raise ArgumentError, "Invalid batch size for bulk SVG scanning: #{batch_size.inspect}"
+    end
+
+    message = "Enqueuing up to #{batch_size} assets for bulk SVG scanning"
+    Rails.logger.info(message)
+    puts message
+
+    scope = Asset
+      .where(
+        state: "uploaded",
+        deleted_at: nil,
+        redirect_url: nil,
+        svg_scan_state: nil,
+        :mime_type.in => [nil, "image/svg+xml"],
+      )
+      .limit(batch_size)
+
+    raise "No assets found to enqueue for bulk SVG scanning" unless scope.any?
+
+    scope.each(&:schedule_svg_batch_scan)
+  end
+
   namespace :bulk_fix do
     desc "Fix assets and draft replacements"
     task :fix_assets_and_draft_replacements, %i[csv_path] => :environment do |_t, args|
