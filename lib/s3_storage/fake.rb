@@ -12,6 +12,13 @@ class S3Storage
       File.write(target_path, File.read(source_path))
     end
 
+    def download(asset, **_args)
+      source_path = source_path_for(asset)
+      download_path = download_path_for(asset)
+      FileUtils.mkdir_p(File.dirname(download_path))
+      File.write(download_path, File.read(source_path))
+    end
+
     def delete(asset, **_args)
       target_path = target_path_for(asset)
       File.delete(target_path)
@@ -48,6 +55,10 @@ class S3Storage
     def target_path_for(asset)
       relative_path = relative_path_for(asset)
       @target_root.join(relative_path)
+    end
+
+    def download_path_for(asset)
+      Tempfile.new(asset.uuid).path
     end
 
     def relative_path_for(asset)
