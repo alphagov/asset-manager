@@ -1,6 +1,6 @@
 class WhitehallMediaController < MediaController
   def download
-    request.formats = [Mime::NullType] if params[:format].blank?
+    error_404 if params[:format].blank?
     super
   end
 
