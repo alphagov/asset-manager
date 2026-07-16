@@ -67,7 +67,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
           expect(request.fullpath).to eq(legacy_url_path)
           expect(request.query_parameters).to be_empty
-          expect(request.format).to be_an_instance_of(Mime::NullType)
+          expect(response).to have_http_status(:not_found)
         end
       end
 
@@ -81,7 +81,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
 
           expect(request.fullpath).to eq("#{legacy_url_path}?format")
           expect(request.query_parameters).to match(hash_including(format: nil))
-          expect(request.format).to be_an_instance_of(Mime::NullType)
+          expect(response).to have_http_status(:not_found)
         end
       end
     end
