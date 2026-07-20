@@ -60,9 +60,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       context "and legacy_url_path has no format key or value" do
         let(:legacy_url_path) { "/government/uploads/#{path}" }
 
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
-
+        it "returns a 404 response" do
           get :download, params: { path: }
 
           expect(request.fullpath).to eq(legacy_url_path)
@@ -74,9 +72,7 @@ RSpec.describe WhitehallMediaController, type: :controller do
       context "and legacy_url_path has no format value" do
         let(:legacy_url_path) { "/government/uploads/#{path}" }
 
-        it "proxies asset to S3 via Nginx" do
-          expect(controller).to receive(:proxy_to_s3_via_nginx).with(asset)
-
+        it "returns a 404 response" do
           get :download, params: { path:, format: nil }
 
           expect(request.fullpath).to eq("#{legacy_url_path}?format")
