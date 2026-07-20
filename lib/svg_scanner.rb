@@ -31,6 +31,5 @@ class SvgScanner
     File.open(file_path) do |file|
       parser.parse_io(file)
     end
-    true
   end
 end
