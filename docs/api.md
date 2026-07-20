@@ -28,6 +28,12 @@ curl http://asset-manager.dev.gov.uk/assets --form "asset[file]=@tmp.txt"
 }
 ```
 
+### Error responses
+
+| Status                     | Description                           |
+| -------------------------- | ------------------------------------- |
+| `413 Payload Too Large`    | Uploaded file exceeds permitted size. |
+
 ## Get asset info
 
 `GET /assets/:id` returns information about the requested asset, but not the asset itself.
@@ -105,6 +111,12 @@ curl http://asset-manager.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt
 curl http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp123.txt
 Tue 18 Jul 2017 17:06:41 BST
 ```
+
+### Error responses
+
+| Status                     | Description                           |
+| -------------------------- | ------------------------------------- |
+| `413 Payload Too Large`    | Uploaded file exceeds permitted size. |
 
 ## Delete asset
 
