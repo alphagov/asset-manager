@@ -53,6 +53,10 @@ class Asset
 
   field :deleted_at, type: Time
 
+  field :svg_scanned_at, type: Time
+
+  field :svg_scanned_safe, type: Boolean
+
   validates :file, presence: true, if: :unscanned?
 
   validates :uuid,
@@ -239,6 +243,10 @@ class Asset
 
   def schedule_svg_scan
     Marcel::MimeType.for(Pathname.new(file.path)) == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
+  end
+
+  def schedule_svg_batch_scan
+    SvgScanBatchJob.perform_async(id.to_s)
   end
 
 protected

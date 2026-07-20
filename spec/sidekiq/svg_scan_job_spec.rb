@@ -51,6 +51,20 @@ RSpec.describe SvgScanJob do
       asset.reload
       expect(asset).to be_clean
     end
+
+    it "records that svg_scanned_safe is true" do
+      worker.perform(asset.id)
+
+      asset.reload
+      expect(asset.svg_scanned_safe).to be true
+    end
+
+    it "records the datetime of the scan" do
+      worker.perform(asset.id)
+
+      asset.reload
+      expect(asset.svg_scanned_at).not_to be_nil
+    end
   end
 
   context "when the asset is already marked as clean" do
@@ -97,6 +111,20 @@ RSpec.describe SvgScanJob do
 
       asset.reload
       expect(asset).to be_infected
+    end
+
+    it "records that svg_scanned_safe is false" do
+      worker.perform(asset.id)
+
+      asset.reload
+      expect(asset.svg_scanned_safe).to be false
+    end
+
+    it "records the datetime of the scan" do
+      worker.perform(asset.id)
+
+      asset.reload
+      expect(asset.svg_scanned_at).not_to be_nil
     end
 
     it "logs the failure" do

@@ -17,7 +17,9 @@ class SvgScanJob
       rescue SvgDocument::UnsafeSvg
         Rails.logger.warn("#{asset_id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe")
         asset.scanned_infected!
+        asset.set(svg_scanned_safe: false)
       end
+      asset.set(svg_scanned_at: Time.zone.now)
     end
   end
 end

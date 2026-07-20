@@ -5,6 +5,12 @@ module EnsureFile
     initial_digest = asset.md5_hexdigest
     Rails.logger.info("#{asset.id} - #{job_name}#perform - scan started")
     yield
-    asset.reload.md5_hexdigest == initial_digest ? asset.send(next_state) : Rails.logger.info("#{asset.id} #{job_name} checksum failed")
+    if asset.reload.md5_hexdigest == initial_digest
+      asset.send(next_state)
+      asset.set(svg_scanned_safe: true)
+      asset.set(svg_scanned_at: Time.zone.now)
+    else
+      Rails.logger.info("#{asset.id} #{job_name} checksum failed")
+    end
   end
 end
