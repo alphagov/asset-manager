@@ -295,7 +295,7 @@ RSpec.describe Asset, type: :model do
       end
 
       it "does not accept otherwise valid states" do
-        %w[svg_clean svg_infected].each do |svg_scan_state|
+        %w[svg_clean svg_infected file_missing_from_s3].each do |svg_scan_state|
           asset.svg_scan_state = svg_scan_state
 
           expect(asset).to be_invalid
@@ -319,7 +319,7 @@ RSpec.describe Asset, type: :model do
       end
 
       it "accept valid states" do
-        %w[svg_clean svg_infected].each do |svg_scan_state|
+        %w[svg_clean svg_infected file_missing_from_s3].each do |svg_scan_state|
           asset.svg_scan_state = svg_scan_state
 
           expect(asset).to be_valid
