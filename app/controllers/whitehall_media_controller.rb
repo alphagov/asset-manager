@@ -1,6 +1,7 @@
 class WhitehallMediaController < MediaController
   def download
-    error_404 if params[:format].blank?
+    return error_404 if params[:format].blank?
+
     super
   end
 
