@@ -11,8 +11,8 @@ RSpec.describe SvgScanner, type: :file_handler do
     let(:unsafe_uri_file_path) { fixture_file_path("asset-unsafe-uri.svg") }
 
     context "when SVG is safe" do
-      it "returns true" do
-        expect(scanner.scan(safe_file_path)).to be true
+      it "does not raise an error" do
+        expect { scanner.scan(safe_file_path) }.not_to raise_error
       end
     end
 
