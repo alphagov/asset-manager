@@ -78,7 +78,7 @@ class Asset
 
   validates :svg_scan_state,
             inclusion: {
-              in: %w[svg_clean svg_infected],
+              in: %w[svg_clean svg_infected file_missing_from_s3],
               message: "%{value} is not a valid svg_scan_state",
             },
             allow_nil: true
