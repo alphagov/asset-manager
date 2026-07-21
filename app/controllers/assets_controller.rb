@@ -1,5 +1,8 @@
 class AssetsController < ApplicationController
+  MAX_FILE_SIZE = Rails.configuration.max_file_size
+
   before_action :restrict_request_format
+  before_action :check_request_size, only: %i[create update]
 
   def show
     @asset = find_asset(include_deleted: true)
@@ -81,5 +84,11 @@ private
 
   def build_asset
     Asset.new(asset_params)
+  end
+
+  def check_request_size
+    if request.content_length.to_i > MAX_FILE_SIZE
+      head :payload_too_large
+    end
   end
 end

@@ -30,6 +30,15 @@ RSpec.describe "Asset requests", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
     end
+
+    it "rejects requests that are larger than the defined size" do
+      post "/assets", params: { asset: { file: load_fixture_file("asset.png") } },
+                      headers: {
+                        "CONTENT_LENGTH" => (AssetsController::MAX_FILE_SIZE + 1).to_s,
+                      }
+
+      expect(response).to have_http_status(:payload_too_large)
+    end
   end
 
   describe "updating an asset" do
@@ -58,6 +67,15 @@ RSpec.describe "Asset requests", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(body["_response_info"]["status"]).to eq(["File can't be blank"])
+    end
+
+    it "rejects requests that are larger than the defined size" do
+      put "/assets/#{asset_id}", params: { asset: { file: load_fixture_file("asset.png") } },
+                                 headers: {
+                                   "CONTENT_LENGTH" => (AssetsController::MAX_FILE_SIZE + 1).to_s,
+                                 }
+
+      expect(response).to have_http_status(:payload_too_large)
     end
   end
 

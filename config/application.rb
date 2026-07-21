@@ -61,6 +61,8 @@ module AssetManager
 
     config.assets.prefix = "/asset-manager"
 
+    config.max_file_size = ENV.fetch("MAX_FILE_SIZE", 20).to_i.megabytes
+
     unless Rails.application.config_for(:secrets).jwt_auth_secret
       raise "JWT auth secret is not configured. See config/secrets.yml"
     end
