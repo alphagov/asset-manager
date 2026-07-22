@@ -31,7 +31,7 @@ private
     asset.set(svg_scanned_safe: true)
   rescue SvgDocument::UnsafeSvg => e
     asset.set(svg_scanned_safe: false)
-    Rails.logger.info("#{asset.id} - SvgScanBatchJob#perform - SVG unsafe")
+    Rails.logger.warn("#{asset.id} - SVG Scan - File #{asset.filename} marked as unsafe")
     GovukError.notify(e, extra: { id: asset.id, filename: asset.filename })
   ensure
     asset.set(svg_scanned_at: Time.zone.now)

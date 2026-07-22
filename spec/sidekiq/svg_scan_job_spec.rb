@@ -130,7 +130,7 @@ RSpec.describe SvgScanJob do
     it "logs the failure" do
       worker.perform(asset.id)
 
-      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe").once
+      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - SVG Scan - File #{asset.filename} marked as unsafe").once
     end
   end
 end

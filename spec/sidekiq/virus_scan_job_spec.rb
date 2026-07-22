@@ -102,7 +102,7 @@ RSpec.describe VirusScanJob do
     it "logs the failure" do
       worker.perform(asset.id)
 
-      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob#perform - File #{asset.filename} marked as infected").once
+      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - Virus Scan - File #{asset.filename} marked as infected").once
     end
   end
 end

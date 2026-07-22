@@ -8,7 +8,7 @@ FactoryBot.define do
   end
 
   factory :infected_asset, parent: :asset do
-    after :create, &:scanned_infected!
+    after :create, &:virus_scanned_infected!
   end
 
   factory :uploaded_asset, parent: :clean_asset do
@@ -37,7 +37,7 @@ FactoryBot.define do
   end
 
   factory :svg_infected_asset, parent: :svg_asset_safe do
-    after :create, &:scanned_infected!
+    after :create, &:svg_scanned_infected!
   end
 
   factory :svg_uploaded_asset, parent: :svg_asset_clean do

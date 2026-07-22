@@ -84,7 +84,7 @@ RSpec.describe SvgScanBatchJob do
 
       before do
         allow(scanner).to receive(:scan).and_raise(exception)
-        allow(Rails.logger).to receive(:info).at_least(:once)
+        allow(Rails.logger).to receive(:warn).at_least(:once)
         allow(GovukError).to receive(:notify).at_least(:once)
       end
 
@@ -98,7 +98,7 @@ RSpec.describe SvgScanBatchJob do
       it "logs the failure" do
         worker.perform(asset.id)
 
-        expect(Rails.logger).to have_received(:info).with("#{asset.id} - SvgScanBatchJob#perform - SVG unsafe").once
+        expect(Rails.logger).to have_received(:warn).with("#{asset.id} - SVG Scan - File #{asset.filename} marked as unsafe").once
         expect(GovukError).to have_received(:notify).with(exception, extra: { id: asset.id, filename: asset.filename })
       end
 
