@@ -53,6 +53,10 @@ class Asset
 
   field :deleted_at, type: Time
 
+  field :svg_scanned_at, type: Time
+
+  field :svg_scanned_safe, type: Boolean
+
   validates :file, presence: true, if: :unscanned?
 
   validates :uuid,
@@ -110,11 +114,11 @@ class Asset
       SaveToCloudStorageJob.perform_async(asset.id.to_s)
     end
 
-    event :scanned_infected do
+    event :virus_scanned_infected do
       transition unscanned: :infected
     end
 
-    event :scanned_infected do
+    event :svg_scanned_infected do
       transition virus_scanned_clean: :infected
     end
 
@@ -125,6 +129,21 @@ class Asset
     after_transition to: :uploaded do |asset, _|
       asset.save!
       DeleteAssetFileFromNfsJob.perform_in(5.minutes, asset.id.to_s)
+    end
+
+    after_transition on: :virus_scanned_infected do |asset, _|
+      Rails.logger.warn("#{asset.id} - Virus Scan - File #{asset.filename} marked as infected")
+    end
+
+    after_transition on: :svg_scanned_clean do |asset, _|
+      asset.set(svg_scanned_at: Time.zone.now)
+      asset.set(svg_scanned_safe: true)
+    end
+
+    after_transition on: :svg_scanned_infected do |asset, _|
+      asset.set(svg_scanned_safe: false)
+      asset.set(svg_scanned_at: Time.zone.now)
+      Rails.logger.warn("#{asset.id} - SVG Scan - File #{asset.filename} marked as unsafe")
     end
   end
 
@@ -239,6 +258,10 @@ class Asset
 
   def schedule_svg_scan
     Marcel::MimeType.for(Pathname.new(file.path)) == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
+  end
+
+  def schedule_svg_batch_scan
+    SvgScanBatchJob.perform_async(id.to_s)
   end
 
 protected

@@ -119,6 +119,21 @@ namespace :assets do
         end
       end
     end
+
+    desc "Scan a batch of assets for SVG vulnerabilites that haven't yet been scanned"
+    task :scan_next_svg_batch, %i[batch_size] => :environment do |_t, args|
+      if SvgScanBatchJob.jobs.empty?
+        Rails.logger.info("Enqueuing next SVG scan batch")
+        puts "Enqueuing next SVG scan batch"
+        batch_size = args.fetch(:batch_size)
+        Asset.where(state: "uploaded", deleted_at: nil, redirect_url: nil, svg_scanned_at: nil)
+          .limit(batch_size)
+          .each(&:schedule_svg_batch_scan)
+      else
+        Rails.logger.info("Not enqueuing next SVG scan batch: previous batch still in progress")
+        puts "Not enqueuing next SVG scan batch: previous batch still in progress"
+      end
+    end
   end
 end
 

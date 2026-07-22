@@ -399,6 +399,34 @@ RSpec.describe "assets.rake" do
         task.invoke(filepath)
         expect(File.read(filepath)).to eq "6592008029c8c3e4dc76256c,DONE\n"
       end
+
+      describe "assets:bulk_fix:scan_next_svg_batch" do
+        let(:task) { Rake::Task["assets:bulk_fix:scan_next_svg_batch"] }
+
+        Sidekiq::Testing.fake! do
+          it "does nothing if the batch queue is not empty" do
+            SvgScanBatchJob.perform_async("a")
+            allow(Rails.logger).to receive(:info).at_least(:once)
+            task.invoke(1)
+            expect(Rails.logger).to have_received(:info).with("Not enqueuing next SVG scan batch: previous batch still in progress").once
+          end
+
+          it "schedules the next batch if the batch queue is empty" do
+            allow(Rails.logger).to receive(:info).at_least(:once)
+            task.invoke(1)
+            expect(Rails.logger).to have_received(:info).with("Enqueuing next SVG scan batch").once
+          end
+
+          it "limits the batch size to the given number" do
+            FactoryBot.create(:uploaded_asset)
+            FactoryBot.create(:uploaded_asset)
+            allow(Rails.logger).to receive(:info).at_least(:once)
+            task.invoke(1)
+            expect(Rails.logger).to have_received(:info).with("Enqueuing next SVG scan batch").once
+            expect(SvgScanBatchJob.jobs.size).to eq(1)
+          end
+        end
+      end
     end
   end
   # rubocop:enable RSpec/AnyInstance

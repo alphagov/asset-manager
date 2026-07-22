@@ -11,12 +11,11 @@ class SvgScanJob
     if asset.virus_scanned_clean?
       begin
         Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG scan started")
-        ensure_file_is_same_after_scan(asset, "SvgScanJob", :svg_scanned_clean!) do
+        ensure_file_is_same_after_scan(asset, "SvgScanJob", -> { asset.svg_scanned_clean! }) do
           Services.svg_scanner.scan(asset.file.path)
         end
       rescue SvgDocument::UnsafeSvg
-        Rails.logger.warn("#{asset_id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe")
-        asset.scanned_infected!
+        asset.svg_scanned_infected!
       end
     end
   end

@@ -157,6 +157,15 @@ RSpec.describe S3Storage do
     end
   end
 
+  describe "#download" do
+    it "downloads the file from the S3 bucket" do
+      allow(s3_client).to receive(:get_object)
+      file = storage.download(asset)
+      expect(s3_client).to have_received(:get_object)
+      expect(File).to exist(file.path)
+    end
+  end
+
   describe "#delete" do
     it "deletes the file from the S3 bucket" do
       allow(s3_object).to receive(:delete).and_return(true)

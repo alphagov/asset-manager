@@ -586,27 +586,36 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "when an asset is marked as infected" do
+  describe "when an asset is marked as being infected by a virus" do
     let(:state) { "unscanned" }
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     it "does not schedule saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
 
-      asset.scanned_infected!
+      asset.virus_scanned_infected!
     end
 
     it "sets the asset state to infected" do
-      asset.scanned_infected!
+      asset.virus_scanned_infected!
 
       expect(asset.reload).to be_infected
+    end
+
+    context "when asset is clean of virus" do
+      let(:state) { "virus_scanned_clean" }
+
+      it "does not allow the state transition" do
+        expect { asset.virus_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
     end
 
     context "when asset is clean" do
       let(:state) { "clean" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_infected! }
+        expect { asset.virus_scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -615,7 +624,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "infected" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_infected! }
+        expect { asset.virus_scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -624,7 +633,51 @@ RSpec.describe Asset, type: :model do
       let(:state) { "uploaded" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_infected! }
+        expect { asset.virus_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+  end
+
+  describe "when an asset is marked as being an unsafe SVG" do
+    let(:state) { "virus_scanned_clean" }
+    let(:asset) { FactoryBot.build(:asset, state:) }
+
+    it "does not schedule saving the asset to cloud storage" do
+      expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
+
+      asset.svg_scanned_infected!
+    end
+
+    it "sets the asset state to infected" do
+      asset.svg_scanned_infected!
+
+      expect(asset.reload).to be_infected
+    end
+
+    context "when asset is safe" do
+      let(:state) { "clean" }
+
+      it "does not allow the state transition" do
+        expect { asset.svg_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when asset is already infected" do
+      let(:state) { "infected" }
+
+      it "does not allow the state transition" do
+        expect { asset.svg_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when asset is already uploaded" do
+      let(:state) { "uploaded" }
+
+      it "does not allow the state transition" do
+        expect { asset.svg_scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
