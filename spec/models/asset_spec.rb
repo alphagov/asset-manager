@@ -586,18 +586,18 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "when an asset is marked as infected" do
+  describe "when an asset is marked as infected by a virus" do
     let(:state) { "unscanned" }
     let(:asset) { FactoryBot.build(:asset, state:) }
 
     it "does not schedule saving the asset to cloud storage" do
       expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
 
-      asset.scanned_infected!
+      asset.virus_scanned_infected!
     end
 
     it "sets the asset state to infected" do
-      asset.scanned_infected!
+      asset.virus_scanned_infected!
 
       expect(asset.reload).to be_infected
     end
@@ -606,7 +606,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "clean" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_infected! }
+        expect { asset.virus_scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -615,7 +615,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "infected" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_infected! }
+        expect { asset.virus_scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end
@@ -624,7 +624,7 @@ RSpec.describe Asset, type: :model do
       let(:state) { "uploaded" }
 
       it "does not allow the state transition" do
-        expect { asset.scanned_infected! }
+        expect { asset.virus_scanned_infected! }
           .to raise_error(StateMachines::InvalidTransition)
       end
     end

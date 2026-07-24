@@ -110,11 +110,11 @@ class Asset
       SaveToCloudStorageJob.perform_async(asset.id.to_s)
     end
 
-    event :scanned_infected do
+    event :virus_scanned_infected do
       transition unscanned: :infected
     end
 
-    event :scanned_infected do
+    event :svg_scanned_infected do
       transition virus_scanned_clean: :infected
     end
 
