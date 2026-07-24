@@ -18,7 +18,7 @@ class VirusScanJob
         end
       rescue VirusScanner::InfectedFile
         Rails.logger.warn("#{asset_id} - VirusScanJob#perform - File #{asset.filename} marked as infected")
-        asset.scanned_infected!
+        asset.virus_scanned_infected!
       end
     end
   end
