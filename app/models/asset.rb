@@ -90,6 +90,10 @@ class Asset
       block.call
     end
 
+    event :virus_scanned_infected do
+      transition unscanned: :infected
+    end
+
     event :virus_scanned_clean do
       transition unscanned: :virus_scanned_clean
     end
@@ -98,24 +102,20 @@ class Asset
       asset.schedule_svg_scan
     end
 
-    event :svg_scan_skipped do
-      transition virus_scanned_clean: :clean
+    event :svg_scanned_infected do
+      transition virus_scanned_clean: :infected
     end
 
     event :svg_scanned_clean do
       transition virus_scanned_clean: :clean
     end
 
+    event :svg_scan_skipped do
+      transition virus_scanned_clean: :clean
+    end
+
     after_transition to: :clean do |asset, _|
       SaveToCloudStorageJob.perform_async(asset.id.to_s)
-    end
-
-    event :virus_scanned_infected do
-      transition unscanned: :infected
-    end
-
-    event :svg_scanned_infected do
-      transition virus_scanned_clean: :infected
     end
 
     event :upload_success do
