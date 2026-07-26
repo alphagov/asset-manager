@@ -97,7 +97,7 @@ RSpec.describe "Asset requests", type: :request do
     end
 
     it "returns details about an infected asset" do
-      asset = FactoryBot.create(:infected_asset)
+      asset = FactoryBot.create(:virus_infected_asset)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
