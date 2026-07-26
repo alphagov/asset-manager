@@ -492,7 +492,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when updating an asset with a new file" do
-      let(:asset) { FactoryBot.create(:clean_asset) }
+      let(:asset) { FactoryBot.create(:virus_free_asset) }
 
       it "schedules a virus scan" do
         expect(VirusScanJob).to receive(:perform_async).with(asset.id)
@@ -513,7 +513,7 @@ RSpec.describe Asset, type: :model do
     end
 
     context "when updating an asset but the file is unchanged" do
-      let(:asset) { FactoryBot.create(:clean_asset) }
+      let(:asset) { FactoryBot.create(:virus_free_asset) }
 
       it "does not schedule a virus scan" do
         expect(VirusScanJob).not_to receive(:perform_async).with(asset.id)
@@ -593,7 +593,7 @@ RSpec.describe Asset, type: :model do
     context "when file passes SVG scan" do
       let(:asset) do
         FactoryBot.create(
-          :clean_asset,
+          :virus_free_asset,
           file: load_fixture_file("asset-safe.svg"),
         )
       end
@@ -614,7 +614,7 @@ RSpec.describe Asset, type: :model do
     context "when file fails SVG scan" do
       let(:asset) do
         FactoryBot.create(
-          :clean_asset,
+          :virus_free_asset,
           file: load_fixture_file("asset-safe.svg"),
         )
       end
@@ -635,7 +635,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#upload_success!" do
-    let(:asset) { FactoryBot.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:virus_free_asset) }
 
     it "changes asset state to uploaded" do
       asset.upload_success!
@@ -1366,7 +1366,7 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#save" do
-    let(:asset) { FactoryBot.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:virus_free_asset) }
 
     context "when asset has been uploaded to cloud storage" do
       before do

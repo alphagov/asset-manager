@@ -4,7 +4,7 @@ require "sidekiq_unique_jobs/testing"
 
 RSpec.describe SvgScanJob do
   let(:worker) { described_class.new }
-  let(:asset) { FactoryBot.create(:svg_asset_safe) }
+  let(:asset) { FactoryBot.create(:virus_free_svg_asset) }
   let(:scanner) { instance_double(SvgScanner) }
 
   before do
@@ -54,7 +54,7 @@ RSpec.describe SvgScanJob do
   end
 
   context "when the asset is already marked as clean" do
-    let(:asset) { FactoryBot.create(:svg_asset_clean) }
+    let(:asset) { FactoryBot.create(:clean_svg_asset) }
 
     it "does not SVG scan file" do
       expect(scanner).not_to receive(:scan)
@@ -74,7 +74,7 @@ RSpec.describe SvgScanJob do
   end
 
   context "when the asset is already marked as uploaded" do
-    let(:asset) { FactoryBot.create(:svg_uploaded_asset) }
+    let(:asset) { FactoryBot.create(:uploaded_svg_asset) }
 
     it "does not SVG scan file" do
       expect(scanner).not_to receive(:scan)

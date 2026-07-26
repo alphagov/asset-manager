@@ -515,7 +515,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with a valid clean file" do
-      let(:asset) { FactoryBot.create(:clean_asset) }
+      let(:asset) { FactoryBot.create(:virus_free_asset) }
 
       it "responds with 404 Not Found" do
         get :download, **params
@@ -524,7 +524,7 @@ RSpec.describe MediaController, type: :controller do
     end
 
     context "with an infected file" do
-      let(:asset) { FactoryBot.create(:infected_asset) }
+      let(:asset) { FactoryBot.create(:virus_infected_asset) }
 
       it "responds with 404 Not Found" do
         get :download, **params
