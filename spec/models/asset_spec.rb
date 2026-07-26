@@ -470,6 +470,340 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "scanning files" do
+    context "when creating an asset" do
+      let(:asset) { FactoryBot.build(:asset) }
+
+      it "schedules a virus scan" do
+        expect(VirusScanJob).to receive(:perform_async).with(asset.id)
+
+        asset.save!
+      end
+
+      context "but there's a redirect_url" do
+        before { asset.redirect_url = "/some-redirect" }
+
+        it "does not schedule a virus scan" do
+          expect(VirusScanJob).not_to receive(:perform_async).with(asset.id)
+
+          asset.save!
+        end
+      end
+    end
+
+    context "when updating an asset with a new file" do
+      let(:asset) { FactoryBot.create(:clean_asset) }
+
+      it "schedules a virus scan" do
+        expect(VirusScanJob).to receive(:perform_async).with(asset.id)
+
+        asset.update!(file: load_fixture_file("lorem.txt"))
+      end
+
+      context "but the filename is the same" do
+        it "schedules a virus scan" do
+          original_filename = asset.file.send(:original_filename)
+          expect(VirusScanJob).to receive(:perform_async).with(asset.id)
+
+          asset.update!(file: load_fixture_file(
+            "lorem.txt", named: original_filename
+          ))
+        end
+      end
+    end
+
+    context "when updating an asset but the file is unchanged" do
+      let(:asset) { FactoryBot.create(:clean_asset) }
+
+      it "does not schedule a virus scan" do
+        expect(VirusScanJob).not_to receive(:perform_async).with(asset.id)
+
+        asset.update!(created_at: 5.days.ago)
+      end
+    end
+
+    context "when file passes virus scan" do
+      let(:asset) { FactoryBot.build(:asset) }
+
+      it "schedules the file to be uploaded to cloud storage" do
+        expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
+
+        asset.virus_scanned_clean!
+      end
+
+      it "marks the asset as clean" do
+        asset.virus_scanned_clean!
+
+        expect(asset).to be_clean
+      end
+
+      context "but the file is an SVG" do
+        before { asset.update!(file: load_fixture_file("asset-safe.svg")) }
+
+        it "schedules an SVG scan" do
+          expect(SvgScanJob).to receive(:perform_async).with(asset.id)
+
+          asset.virus_scanned_clean!
+        end
+
+        it "does not schedule the file to be uploaded to cloud storage" do
+          expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
+
+          asset.virus_scanned_clean!
+        end
+
+        it "marks the asset as virus scanned clean" do
+          asset.virus_scanned_clean!
+
+          expect(asset).to be_virus_scanned_clean
+        end
+      end
+    end
+
+    context "when file fails virus scan" do
+      let(:asset) { FactoryBot.build(:asset) }
+
+      it "does not schedule the file to be uploaded to cloud storage" do
+        expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
+
+        asset.virus_scanned_infected!
+      end
+
+      it "marks the asset as infected" do
+        asset.virus_scanned_infected!
+
+        expect(asset).to be_infected
+      end
+
+      context "but the file is an SVG" do
+        before { asset.update!(file: load_fixture_file("asset-safe.svg")) }
+
+        it "does not schedule an SVG scan" do
+          expect(SvgScanJob).not_to receive(:perform_async).with(asset.id)
+
+          asset.virus_scanned_infected!
+        end
+      end
+    end
+
+    context "when file passes SVG scan" do
+      let(:asset) do
+        FactoryBot.create(
+          :clean_asset,
+          file: load_fixture_file("asset-safe.svg"),
+        )
+      end
+
+      it "schedules the file to be uploaded to cloud storage" do
+        expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
+
+        asset.svg_scanned_clean!
+      end
+
+      it "marks the file as clean" do
+        asset.svg_scanned_clean!
+
+        expect(asset).to be_clean
+      end
+    end
+
+    context "when file fails SVG scan" do
+      let(:asset) do
+        FactoryBot.create(
+          :clean_asset,
+          file: load_fixture_file("asset-safe.svg"),
+        )
+      end
+
+      it "does not schedule the file to be uploaded to cloud storage" do
+        expect(SaveToCloudStorageJob)
+          .not_to receive(:perform_async).with(asset.id)
+
+        asset.svg_scanned_infected!
+      end
+
+      it "marks the file as infected" do
+        asset.svg_scanned_infected!
+
+        expect(asset).to be_infected
+      end
+    end
+  end
+
+  describe "invalid events" do
+    let(:asset) { FactoryBot.build(:asset, state:) }
+
+    context "when asset is unscanned" do
+      let(:state) { "unscanned" }
+
+      it "allows recording a successful virus scan" do
+        expect { asset.virus_scanned_clean! }
+          .not_to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "allows recording an unsuccessful virus scan" do
+        expect { asset.virus_scanned_infected! }
+          .not_to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful SVG scan" do
+        expect { asset.svg_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful SVG scan" do
+        expect { asset.svg_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a skipped SVG scan" do
+        expect { asset.svg_scan_skipped! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful upload" do
+        expect { asset.upload_success! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when asset is infected" do
+      let(:state) { "infected" }
+
+      it "does not allow recording a successful virus scan" do
+        expect { asset.virus_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful virus scan" do
+        expect { asset.virus_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful SVG scan" do
+        expect { asset.svg_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful SVG scan" do
+        expect { asset.svg_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a skipped SVG scan" do
+        expect { asset.svg_scan_skipped! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful upload" do
+        expect { asset.upload_success! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when asset is marked as virus scanned clean" do
+      let(:state) { "virus_scanned_clean" }
+
+      it "does not allow recording a successful virus scan" do
+        expect { asset.virus_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful virus scan" do
+        expect { asset.virus_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "allows recording a successful SVG scan" do
+        expect { asset.svg_scanned_clean! }
+          .not_to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "allows recording an unsuccessful SVG scan" do
+        expect { asset.svg_scanned_infected! }
+          .not_to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "allows recording a skipped SVG scan" do
+        expect { asset.svg_scan_skipped! }
+          .not_to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful upload" do
+        expect { asset.upload_success! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when asset is marked as clean" do
+      let(:state) { "clean" }
+
+      it "does not allow recording a successful virus scan" do
+        expect { asset.virus_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful virus scan" do
+        expect { asset.virus_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful SVG scan" do
+        expect { asset.svg_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "dose not allow recording an unsuccessful SVG scan" do
+        expect { asset.svg_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a skipped SVG scan" do
+        expect { asset.svg_scan_skipped! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "allows recording a successful upload" do
+        expect { asset.upload_success! }
+          .not_to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when asset is marked as uploaded" do
+      let(:state) { "uploaded" }
+
+      it "does not allow recording a successful virus scan" do
+        expect { asset.virus_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful virus scan" do
+        expect { asset.virus_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful SVG scan" do
+        expect { asset.svg_scanned_clean! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording an unsuccessful SVG scan" do
+        expect { asset.svg_scanned_infected! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a skipped SVG scan" do
+        expect { asset.svg_scan_skipped! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+
+      it "does not allow recording a successful upload" do
+        expect { asset.upload_success! }
+          .to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+  end
+
   describe "scheduling a virus scan" do
     it "schedules a scan after create" do
       a = described_class.new(file: load_fixture_file("asset.png"))
