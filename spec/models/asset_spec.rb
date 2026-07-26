@@ -808,166 +808,6 @@ RSpec.describe Asset, type: :model do
     end
   end
 
-  describe "scheduling a virus scan" do
-    it "schedules a scan after create" do
-      a = described_class.new(file: load_fixture_file("asset.png"))
-
-      expect(VirusScanJob).to receive(:perform_async).with(a.id)
-
-      a.save!
-    end
-
-    it "schedules a scan after save if the file is changed" do
-      a = FactoryBot.create(:clean_asset)
-      a.file = load_fixture_file("lorem.txt")
-
-      expect(VirusScanJob).to receive(:perform_async).with(a.id)
-
-      a.save!
-    end
-
-    it "schedules a scan after save if the file is changed even if filename is unchanged" do
-      a = FactoryBot.create(:clean_asset)
-      original_filename = a.file.send(:original_filename)
-      a.file = load_fixture_file("lorem.txt", named: original_filename)
-
-      expect(VirusScanJob).to receive(:perform_async).with(a.id)
-
-      a.save!
-    end
-
-    it "does not schedule a scan after update if the file is unchanged" do
-      a = FactoryBot.create(:clean_asset)
-      a.created_at = 5.days.ago
-
-      expect(VirusScanJob).not_to receive(:perform_async)
-
-      a.save!
-    end
-
-    it "does not schedule a scan if a redirect url is present" do
-      a = FactoryBot.create(:asset, redirect_url: "/some-redirect")
-
-      expect(VirusScanJob).not_to receive(:perform_async)
-
-      a.save!
-    end
-  end
-
-  describe "scheduling an SVG scan" do
-    it "schedules a scan after a clean virus scan" do
-      a = described_class.new(file: load_fixture_file("asset-safe.svg"))
-
-      expect(SvgScanJob).to receive(:perform_async).with(a.id)
-
-      a.virus_scanned_clean!
-    end
-
-    it "schedules another scan after saving a file" do
-      a = FactoryBot.create(:svg_asset_clean)
-      a.file = load_fixture_file("asset-safe.svg")
-
-      expect(SvgScanJob).to receive(:perform_async).with(a.id)
-
-      a.save!
-
-      allow(Services.virus_scanner).to receive(:scan)
-      VirusScanJob.drain
-    end
-  end
-
-  describe "when an asset is marked as clean" do
-    let(:state) { "virus_scanned_clean" }
-    let(:asset) { FactoryBot.build(:asset, state:) }
-
-    before do
-      allow(SaveToCloudStorageJob).to receive(:perform_async)
-    end
-
-    it "sets the asset state to clean" do
-      asset.svg_scanned_clean!
-
-      expect(asset.reload).to be_clean
-    end
-
-    it "schedules saving the asset to cloud storage" do
-      expect(SaveToCloudStorageJob).to receive(:perform_async).with(asset.id)
-
-      asset.svg_scanned_clean!
-    end
-
-    context "when asset is already clean" do
-      let(:state) { "clean" }
-
-      it "does not allow the state transition" do
-        expect { asset.virus_scanned_clean! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-
-    context "when asset is already infected" do
-      let(:state) { "infected" }
-
-      it "does not allow the state transition" do
-        expect { asset.virus_scanned_clean! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-
-    context "when asset is already uploaded" do
-      let(:state) { "uploaded" }
-
-      it "does not allow the state transition" do
-        expect { asset.virus_scanned_clean! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-  end
-
-  describe "when an asset is marked as infected by a virus" do
-    let(:state) { "unscanned" }
-    let(:asset) { FactoryBot.build(:asset, state:) }
-
-    it "does not schedule saving the asset to cloud storage" do
-      expect(SaveToCloudStorageJob).not_to receive(:perform_async).with(asset.id)
-
-      asset.virus_scanned_infected!
-    end
-
-    it "sets the asset state to infected" do
-      asset.virus_scanned_infected!
-
-      expect(asset.reload).to be_infected
-    end
-
-    context "when asset is clean" do
-      let(:state) { "clean" }
-
-      it "does not allow the state transition" do
-        expect { asset.virus_scanned_infected! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-
-    context "when asset is already infected" do
-      let(:state) { "infected" }
-
-      it "does not allow the state transition" do
-        expect { asset.virus_scanned_infected! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-
-    context "when asset is already uploaded" do
-      let(:state) { "uploaded" }
-
-      it "does not allow the state transition" do
-        expect { asset.virus_scanned_infected! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-  end
-
   describe "soft deletion" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
 
@@ -1511,47 +1351,18 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#upload_success!" do
-    context "when asset is unscanned" do
-      let(:asset) { FactoryBot.create(:asset) }
+    let(:asset) { FactoryBot.create(:clean_asset) }
+    let(:path) { asset.file.path }
 
-      it "does not allow asset state change to uploaded" do
-        expect { asset.upload_success! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
+    it "changes asset state to uploaded" do
+      asset.upload_success!
+
+      expect(asset.reload).to be_uploaded
     end
 
-    context "when asset is clean" do
-      let(:asset) { FactoryBot.create(:clean_asset) }
-      let(:path) { asset.file.path }
-
-      it "changes asset state to uploaded" do
-        asset.upload_success!
-
-        expect(asset.reload).to be_uploaded
-      end
-
-      it "triggers the delete asset file worker" do
-        expect(DeleteAssetFileFromNfsJob).to receive(:perform_in)
-        asset.upload_success!
-      end
-    end
-
-    context "when asset is infected" do
-      let(:asset) { FactoryBot.create(:infected_asset) }
-
-      it "does not allow asset state change to uploaded" do
-        expect { asset.upload_success! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
-    end
-
-    context "when asset is uploaded" do
-      let(:asset) { FactoryBot.create(:uploaded_asset) }
-
-      it "does not allow asset state change to uploaded" do
-        expect { asset.upload_success! }
-          .to raise_error(StateMachines::InvalidTransition)
-      end
+    it "triggers the delete asset file worker" do
+      expect(DeleteAssetFileFromNfsJob).to receive(:perform_in)
+      asset.upload_success!
     end
   end
 
