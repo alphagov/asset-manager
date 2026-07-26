@@ -15,11 +15,11 @@ class SvgScanJob
           "SvgScanJob",
           -> { asset.svg_scanned_clean! },
         ) do
-          Rails.logger.info("#{asset_id} - SvgScanJob#perform - SVG scan started")
+          Rails.logger.info("#{asset_id} - SvgScanJob - SVG scan started")
           Services.svg_scanner.scan(asset.file.path)
         end
       rescue SvgDocument::UnsafeSvg
-        Rails.logger.warn("#{asset_id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe")
+        Rails.logger.warn("#{asset_id} - SvgScanJob - File #{asset.filename} marked as unsafe")
         asset.svg_scanned_infected!
       end
     end
