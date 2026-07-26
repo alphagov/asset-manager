@@ -40,7 +40,7 @@ RSpec.describe VirusScanJob do
 
       it "logs the job failure and does not update the asset's state" do
         worker.perform(asset.id)
-        expect(Rails.logger).to have_received(:info).with("#{asset.id} VirusScanJob checksum failed").once
+        expect(Rails.logger).to have_received(:info).with("#{asset.id} - VirusScanJob - Checksum failed").once
         expect(asset.reload).not_to be_clean
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe VirusScanJob do
     it "logs the failure" do
       worker.perform(asset.id)
 
-      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob#perform - File #{asset.filename} marked as infected").once
+      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob - File #{asset.filename} marked as infected").once
     end
   end
 end

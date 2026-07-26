@@ -7,7 +7,7 @@ module EnsureFile
     if asset.reload.md5_hexdigest == initial_digest
       success_callback.call
     else
-      Rails.logger.info("#{asset.id} #{job_name} checksum failed")
+      Rails.logger.info("#{asset.id} - #{job_name} - Checksum failed")
     end
   end
 end
