@@ -24,18 +24,6 @@ FactoryBot.define do
     after :create, &:svg_scanned_clean!
   end
 
-  factory :svg_asset_unsafe_element, parent: :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-element.svg")) }
-  end
-
-  factory :svg_asset_unsafe_event_handler, parent: :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-event-handler.svg")) }
-  end
-
-  factory :svg_asset_unsafe_uri, parent: :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-uri.svg")) }
-  end
-
   factory :svg_infected_asset, parent: :svg_asset_safe do
     after :create, &:svg_scanned_infected!
   end
