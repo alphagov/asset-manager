@@ -41,6 +41,9 @@ class Asset
   field :size, type: Integer
   protected :size=
 
+  field :mime_type, type: String
+  protected :mime_type=
+
   field :content_type, type: String
 
   field :access_limited, type: Array, default: []
@@ -187,6 +190,10 @@ class Asset
     file_stat.size if file_exists?
   end
 
+  def mime_type_from_file
+    Marcel::MimeType.for(Pathname.new(file.path)) if file_exists?
+  end
+
   def update_indirect_replacements_on_publish
     return unless saved_change_to_attribute(:draft) && !draft?
 
@@ -238,7 +245,7 @@ class Asset
   end
 
   def schedule_svg_scan
-    Marcel::MimeType.for(Pathname.new(file.path)) == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
+    mime_type == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
 protected
@@ -248,6 +255,7 @@ protected
     self.last_modified = last_modified_from_file
     self.md5_hexdigest = md5_hexdigest_from_file
     self.size = size_from_file
+    self.mime_type = mime_type_from_file
   end
 
   def valid_filenames
