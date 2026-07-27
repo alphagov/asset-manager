@@ -634,6 +634,21 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#upload_success!" do
+    let(:asset) { FactoryBot.create(:clean_asset) }
+
+    it "changes asset state to uploaded" do
+      asset.upload_success!
+
+      expect(asset.reload).to be_uploaded
+    end
+
+    it "triggers the delete asset file worker" do
+      expect(DeleteAssetFileFromNfsJob).to receive(:perform_in)
+      asset.upload_success!
+    end
+  end
+
   describe "invalid events" do
     let(:asset) { FactoryBot.build(:asset, state:) }
 
@@ -1347,21 +1362,6 @@ RSpec.describe Asset, type: :model do
 
     it "cannot be called from outside the Asset class" do
       expect { asset.md5_hexdigest = "md5-value" }.to raise_error(NoMethodError)
-    end
-  end
-
-  describe "#upload_success!" do
-    let(:asset) { FactoryBot.create(:clean_asset) }
-
-    it "changes asset state to uploaded" do
-      asset.upload_success!
-
-      expect(asset.reload).to be_uploaded
-    end
-
-    it "triggers the delete asset file worker" do
-      expect(DeleteAssetFileFromNfsJob).to receive(:perform_in)
-      asset.upload_success!
     end
   end
 
