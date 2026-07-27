@@ -1264,7 +1264,7 @@ RSpec.describe Asset, type: :model do
     let(:asset_size) { 100 }
 
     before do
-      allow(asset).to receive(:size).and_return(asset_size)
+      allow(asset).to receive(:size_from_file).and_return(asset_size)
     end
 
     context "when asset is created" do
@@ -1283,7 +1283,7 @@ RSpec.describe Asset, type: :model do
         let(:new_asset_size) { 200 }
 
         before do
-          allow(asset).to receive(:size).and_return(new_asset_size)
+          allow(asset).to receive(:size_from_file).and_return(new_asset_size)
           asset.update!(file: new_file)
         end
 
