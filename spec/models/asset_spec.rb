@@ -1364,6 +1364,84 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#mime_type_from_file" do
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
+    let(:mime_type) { "image/png" }
+
+    it "returns the MIME type of the file" do
+      expect(asset.mime_type_from_file).to eq(mime_type)
+    end
+
+    context "when the file has been updated" do
+      before do
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+      end
+
+      let(:new_mime_type) { "image/jpeg" }
+
+      it "returns the new file's MIME type" do
+        expect(asset.mime_type_from_file).to eq(new_mime_type)
+      end
+    end
+
+    context "when the file has been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(asset.mime_type_from_file).to be_nil
+      end
+    end
+  end
+
+  describe "#mime_type" do
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), mime_type:) }
+    let(:asset_mime_type) { "image/png" }
+
+    before do
+      allow(asset).to receive(:mime_type_from_file).and_return(asset_mime_type)
+    end
+
+    context "when asset is created" do
+      let(:mime_type) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.mime_type).to eq(asset_mime_type)
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+        let(:new_asset_mime_type) { "image/jpeg" }
+
+        before do
+          allow(asset).to receive(:mime_type_from_file).and_return(new_asset_mime_type)
+          asset.update!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.mime_type).to eq(new_asset_mime_type)
+        end
+      end
+    end
+  end
+
+  describe "#mime_type=" do
+    let(:asset) { described_class.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.mime_type = "application/pdf" }.to raise_error(NoMethodError)
+    end
+  end
+
   describe "#md5_hexdigest_from_file" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { "a0d8aa55f6db670e38a14962c0652776" }
