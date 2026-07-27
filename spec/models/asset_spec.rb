@@ -1084,7 +1084,7 @@ RSpec.describe Asset, type: :model do
 
     before do
       asset.file = load_fixture_file("asset.png")
-      allow(File).to receive(:stat).and_return(stat)
+      allow(File).to receive(:stat).with(asset.file.path).and_return(stat)
     end
 
     it "returns string made up of 2 parts separated by a hyphen" do
@@ -1102,6 +1102,36 @@ RSpec.describe Asset, type: :model do
       size_hex = asset.etag_from_file.split("-").last
       asset_size = size_hex.to_i(16)
       expect(asset_size).to eq(size)
+    end
+
+    context "when the file has been updated" do
+      let(:new_size) { 2048 }
+      let(:new_mtime) { Time.zone.parse("2018-02-02") }
+      let(:new_stat) do
+        instance_double(File::Stat, size: new_size, mtime: new_mtime)
+      end
+
+      before do
+        allow(File).to receive(:stat).and_call_original
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+        allow(File)
+          .to receive(:stat)
+          .with(asset.file.path)
+          .and_return(new_stat)
+      end
+
+      it "has 1st part as new file mtime" do
+        last_modified_hex = asset.etag_from_file.split("-").first
+        last_modified = last_modified_hex.to_i(16)
+        expect(last_modified).to eq(new_mtime.to_i)
+      end
+
+      it "has 2nd part as new file size" do
+        size_hex = asset.etag_from_file.split("-").last
+        asset_size = size_hex.to_i(16)
+        expect(asset_size).to eq(new_size)
+      end
     end
 
     context "when the file has been deleted" do
@@ -1167,11 +1197,30 @@ RSpec.describe Asset, type: :model do
 
     before do
       asset.file = load_fixture_file("asset.png")
-      allow(File).to receive(:stat).and_return(stat)
+      allow(File).to receive(:stat).with(asset.file.path).and_return(stat)
     end
 
     it "returns time file was last modified" do
       expect(asset.last_modified_from_file).to eq(mtime)
+    end
+
+    context "when the file has been updated" do
+      let(:new_mtime) { Time.zone.parse("2018-02-02") }
+      let(:new_stat) { instance_double(File::Stat, mtime: new_mtime) }
+
+      before do
+        allow(File).to receive(:stat).and_call_original
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+        allow(File)
+          .to receive(:stat)
+          .with(asset.reload.file.path)
+          .and_return(new_stat)
+      end
+
+      it "returns when the new file was last modified" do
+        expect(asset.last_modified_from_file).to eq(new_mtime)
+      end
     end
 
     context "when the file has been deleted" do
@@ -1241,6 +1290,19 @@ RSpec.describe Asset, type: :model do
       expect(asset.size_from_file).to eq(size)
     end
 
+    context "when the file has been updated" do
+      before do
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+      end
+
+      let(:new_size) { 82_328 }
+
+      it "returns the new file's size" do
+        expect(asset.size_from_file).to eq(new_size)
+      end
+    end
+
     context "when the file has been deleted" do
       let(:stat) { Errno::ENOENT }
 
@@ -1304,6 +1366,19 @@ RSpec.describe Asset, type: :model do
 
     it "returns MD5 hex digest for asset file content" do
       expect(asset.md5_hexdigest_from_file).to eq(md5_hexdigest)
+    end
+
+    context "when the file has been updated" do
+      before do
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+      end
+
+      let(:new_md5_hexdigest) { "f99cbda3715ac4e52961855bbac8fc05" }
+
+      it "returns the new file's MD5 hex digest" do
+        expect(asset.md5_hexdigest_from_file).to eq(new_md5_hexdigest)
+      end
     end
 
     context "when the file has been deleted" do

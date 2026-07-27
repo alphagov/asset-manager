@@ -180,7 +180,7 @@ class Asset
   end
 
   def md5_hexdigest_from_file
-    @md5_hexdigest_from_file ||= Digest::MD5.hexdigest(file.file.read) if file_exists?
+    Digest::MD5.hexdigest(file.file.read) if file_exists?
   end
 
   def size_from_file
