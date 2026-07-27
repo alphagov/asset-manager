@@ -54,6 +54,9 @@ class Asset
 
   field :parent_document_url, type: String
 
+  field :svg_scanned_at, type: Time
+  field :svg_scan_state, type: String
+
   field :deleted_at, type: Time
 
   validates :file, presence: true, if: :unscanned?
@@ -72,6 +75,14 @@ class Asset
               message: "must match the format defined in rfc6838",
               allow_nil: true,
             }
+
+  validates :svg_scan_state,
+            inclusion: {
+              in: %w[svg_clean svg_infected],
+              message: "%{value} is not a valid svg_scan_state",
+            },
+            allow_nil: true
+  validates :svg_scan_state, absence: true, if: :unscanned?
 
   validate :check_specified_replacement_exists
   validate :prevent_transition_from_published_to_draft_if_replaced
@@ -109,8 +120,16 @@ class Asset
       transition virus_scanned_clean: :infected
     end
 
+    after_transition on: :svg_scanned_infected do |asset, _|
+      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_infected")
+    end
+
     event :svg_scanned_clean do
       transition virus_scanned_clean: :clean
+    end
+
+    after_transition on: :svg_scanned_clean do |asset, _|
+      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_clean")
     end
 
     event :svg_scan_skipped do
@@ -263,6 +282,8 @@ protected
   end
 
   def reset_state
+    self.svg_scanned_at = nil
+    self.svg_scan_state = nil
     self.state = "unscanned"
   end
 

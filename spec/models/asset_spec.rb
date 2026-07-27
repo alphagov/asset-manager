@@ -284,6 +284,54 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
+
+    context "when asset is unscanned" do
+      before { asset.state = "unscanned" }
+
+      it "allows svg_scan_state to be nil" do
+        asset.svg_scan_state = nil
+
+        expect(asset).to be_valid
+      end
+
+      it "does not accept otherwise valid states" do
+        %w[svg_clean svg_infected].each do |svg_scan_state|
+          asset.svg_scan_state = svg_scan_state
+
+          expect(asset).to be_invalid
+        end
+      end
+
+      it "does not accept otherwise invalid states" do
+        asset.svg_scan_state = "something_fishy"
+
+        expect(asset).to be_invalid
+      end
+    end
+
+    context "when asset is not unscanned" do
+      before { asset.state = "uploaded" }
+
+      it "allows svg_scan_state to be nil" do
+        asset.svg_scan_state = nil
+
+        expect(asset).to be_valid
+      end
+
+      it "accept valid states" do
+        %w[svg_clean svg_infected].each do |svg_scan_state|
+          asset.svg_scan_state = svg_scan_state
+
+          expect(asset).to be_valid
+        end
+      end
+
+      it "does not accept invalid states" do
+        asset.svg_scan_state = "something_fishy"
+
+        expect(asset).to be_invalid
+      end
+    end
   end
 
   describe "creation" do
@@ -609,6 +657,20 @@ RSpec.describe Asset, type: :model do
 
         expect(asset).to be_clean
       end
+
+      it "records the time of the scan" do
+        travel_to Time.zone.parse("2026-07-20 16:10")
+
+        asset.svg_scanned_clean!
+
+        expect(asset.svg_scanned_at.to_s).to eq("2026-07-20 16:10:00 +0100")
+      end
+
+      it "records the result of the scan" do
+        asset.svg_scanned_clean!
+
+        expect(asset.svg_scan_state).to eq("svg_clean")
+      end
     end
 
     context "when file fails SVG scan" do
@@ -630,6 +692,20 @@ RSpec.describe Asset, type: :model do
         asset.svg_scanned_infected!
 
         expect(asset).to be_infected
+      end
+
+      it "records the time of the scan" do
+        travel_to Time.zone.parse("2026-07-20 16:10")
+
+        asset.svg_scanned_infected!
+
+        expect(asset.svg_scanned_at.to_s).to eq("2026-07-20 16:10:00 +0100")
+      end
+
+      it "records the result of the scan" do
+        asset.svg_scanned_infected!
+
+        expect(asset.svg_scan_state).to eq("svg_infected")
       end
     end
   end
@@ -1618,6 +1694,20 @@ RSpec.describe Asset, type: :model do
     it "resets the scanning state" do
       expect { asset.file = load_fixture_file("asset2.jpg") }
         .to change(asset, :state).from("uploaded").to("unscanned")
+    end
+
+    context "when the file was an SVG" do
+      let(:asset) { FactoryBot.create(:uploaded_svg_asset) }
+
+      it "resets SVG scan status" do
+        expect { asset.file = load_fixture_file("asset2.jpg") }
+          .to change(asset, :svg_scan_state).from("svg_clean").to(nil)
+      end
+
+      it "resets SVG scan time" do
+        expect { asset.file = load_fixture_file("asset2.jpg") }
+          .to change(asset, :svg_scanned_at).to(nil)
+      end
     end
 
     context "when there was no previous file" do
