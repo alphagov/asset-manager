@@ -1352,7 +1352,6 @@ RSpec.describe Asset, type: :model do
 
   describe "#upload_success!" do
     let(:asset) { FactoryBot.create(:clean_asset) }
-    let(:path) { asset.file.path }
 
     it "changes asset state to uploaded" do
       asset.upload_success!
