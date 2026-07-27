@@ -256,8 +256,6 @@ protected
 
   def reset_state
     self.state = "unscanned"
-    @file_stat = nil
-    @md5_hexdigest = nil
   end
 
   def schedule_virus_scan
