@@ -349,10 +349,22 @@ RSpec.describe Asset, type: :model do
   end
 
   describe "#valid_auth_bypass_token?" do
-    it "returns true when given an auth_bypass_id which is in the auth_bypass_ids" do
+    it "returns true when given an auth_bypass_id which is in the auth_bypass_ids and there is no auth_bypass_ids_expiry" do
       asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token])
       auth_bypass_id = "my-token"
       expect(asset.valid_auth_bypass_token?(auth_bypass_id)).to be true
+    end
+
+    it "returns true when given an auth_bypass_id which is in the auth_bypass_ids and auth_bypass_ids_expiry is in the future" do
+      asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token], auth_bypass_ids_expiry: Time.zone.now + 1.day)
+      auth_bypass_id = "my-token"
+      expect(asset.valid_auth_bypass_token?(auth_bypass_id)).to be true
+    end
+
+    it "returns false when given an auth_bypass_id which is in the auth_bypass_ids and auth_bypass_ids_expiry is in the past" do
+      asset = FactoryBot.build(:asset, auth_bypass_ids: %w[my-token], auth_bypass_ids_expiry: Time.zone.now - 1.day)
+      auth_bypass_id = "my-token"
+      expect(asset.valid_auth_bypass_token?(auth_bypass_id)).to be false
     end
 
     it "returns false when given an auth_bypass_id which is not in the auth_bypass_ids" do
