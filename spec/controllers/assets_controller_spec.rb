@@ -67,6 +67,14 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).auth_bypass_ids).to eq(%w[id1 id2])
       end
 
+      it "stores auth_bypass_ids_expiry on asset" do
+        expiry_time = Time.zone.now + 30.days
+        attributes = valid_attributes.merge(auth_bypass_ids_expiry: expiry_time)
+        post :create, params: { asset: attributes }
+
+        expect(assigns(:asset).auth_bypass_ids_expiry.floor).to eq(expiry_time.floor)
+      end
+
       it "stores parent_document_url on asset" do
         attributes = valid_attributes.merge(parent_document_url: "http://parent-document-url")
         post :create, params: { asset: attributes }
