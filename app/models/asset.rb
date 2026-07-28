@@ -49,6 +49,8 @@ class Asset
 
   field :auth_bypass_ids, type: Array, default: []
 
+  field :auth_bypass_ids_expiry, type: Time
+
   field :parent_document_url, type: String
 
   field :deleted_at, type: Time
