@@ -137,7 +137,7 @@ class Asset
   end
 
   def valid_auth_bypass_token?(auth_bypass_id)
-    auth_bypass_ids.include?(auth_bypass_id)
+    auth_bypass_ids.include?(auth_bypass_id) && (auth_bypass_ids_expiry.nil? || auth_bypass_ids_expiry > Time.zone.now)
   end
 
   def public_url_path
