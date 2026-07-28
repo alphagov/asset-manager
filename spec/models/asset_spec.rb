@@ -1611,4 +1611,45 @@ RSpec.describe Asset, type: :model do
       expect(asset.access_limited?).to be false
     end
   end
+
+  describe "#file=" do
+    let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+    it "resets the scanning state" do
+      expect { asset.file = load_fixture_file("asset2.jpg") }
+        .to change(asset, :state).from("uploaded").to("unscanned")
+    end
+
+    context "when there was no previous file" do
+      let(:asset) { described_class.new }
+
+      it "leaves the filename history empty" do
+        asset.file = load_fixture_file("asset.png")
+
+        expect(asset.filename_history).to be_empty
+      end
+    end
+
+    context "when there was a previous file" do
+      let(:asset) { FactoryBot.build(:asset, file: load_fixture_file("asset.png")) }
+
+      it "records the old filename in the filename history" do
+        asset.file = load_fixture_file("asset2.jpg")
+
+        expect(asset.filename_history).to eq(["asset.png"])
+      end
+    end
+
+    context "when there were two previous files" do
+      let(:asset) { FactoryBot.build(:asset, file: load_fixture_file("asset.png")) }
+
+      before { asset.file = load_fixture_file("lorem.txt") }
+
+      it "appends the old filename to the filename history" do
+        asset.file = load_fixture_file("asset2.jpg")
+
+        expect(asset.filename_history).to eq(["asset.png", "lorem.txt"])
+      end
+    end
+  end
 end
