@@ -54,7 +54,7 @@ RSpec.describe VirusScanJob do
   end
 
   context "when the asset is already marked as clean" do
-    let(:asset) { FactoryBot.create(:clean_asset) }
+    let(:asset) { FactoryBot.create(:virus_free_asset) }
 
     it "does not virus scan file" do
       expect(scanner).not_to receive(:scan)
@@ -64,7 +64,7 @@ RSpec.describe VirusScanJob do
   end
 
   context "when the asset is already marked as infected" do
-    let(:asset) { FactoryBot.create(:infected_asset) }
+    let(:asset) { FactoryBot.create(:virus_infected_asset) }
 
     it "does not virus scan file" do
       expect(scanner).not_to receive(:scan)

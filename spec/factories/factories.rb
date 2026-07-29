@@ -3,44 +3,31 @@ FactoryBot.define do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
   end
 
-  factory :clean_asset, parent: :asset do
+  factory :virus_free_asset, parent: :asset do
     after :create, &:virus_scanned_clean!
   end
 
-  factory :infected_asset, parent: :asset do
+  factory :virus_infected_asset, parent: :asset do
     after :create, &:virus_scanned_infected!
   end
 
-  factory :uploaded_asset, parent: :clean_asset do
+  factory :uploaded_asset, parent: :virus_free_asset do
     after :create, &:upload_success!
   end
 
-  factory :svg_asset_safe, parent: :asset do
+  factory :virus_free_svg_asset, parent: :virus_free_asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-safe.svg")) }
-    after :create, &:virus_scanned_clean!
   end
 
-  factory :svg_asset_clean, parent: :svg_asset_safe do
+  factory :clean_svg_asset, parent: :virus_free_svg_asset do
     after :create, &:svg_scanned_clean!
   end
 
-  factory :svg_asset_unsafe_element, parent: :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-element.svg")) }
-  end
-
-  factory :svg_asset_unsafe_event_handler, parent: :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-event-handler.svg")) }
-  end
-
-  factory :svg_asset_unsafe_uri, parent: :asset do
-    file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset-unsafe-uri.svg")) }
-  end
-
-  factory :svg_infected_asset, parent: :svg_asset_safe do
+  factory :svg_infected_asset, parent: :virus_free_svg_asset do
     after :create, &:svg_scanned_infected!
   end
 
-  factory :svg_uploaded_asset, parent: :svg_asset_clean do
+  factory :uploaded_svg_asset, parent: :clean_svg_asset do
     after :create, &:upload_success!
   end
 
