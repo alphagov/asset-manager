@@ -40,7 +40,7 @@ RSpec.describe SvgScanJob do
 
       it "logs the job failure and does not update the asset's state" do
         worker.perform(asset.id)
-        expect(Rails.logger).to have_received(:info).with("#{asset.id} SvgScanJob checksum failed").once
+        expect(Rails.logger).to have_received(:info).with("#{asset.id} - SvgScanJob - Checksum failed").once
         expect(asset.reload).not_to be_clean
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe SvgScanJob do
     it "logs the failure" do
       worker.perform(asset.id)
 
-      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - SvgScanJob#perform - File #{asset.filename} marked as unsafe").once
+      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - SvgScanJob - File #{asset.filename} marked as unsafe").once
     end
   end
 end
