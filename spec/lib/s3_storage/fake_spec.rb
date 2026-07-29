@@ -8,6 +8,7 @@ RSpec.describe S3Storage::Fake do
   let(:root_directory) { Dir.mktmpdir }
   let(:root_path) { Pathname.new(root_directory.to_s) }
   let(:relative_path_to_asset) { storage.relative_path_for(asset) }
+  let(:download_path_to_asset) { storage.download_path_for(asset) }
 
   after do
     FileUtils.remove_entry(root_directory)
@@ -23,6 +24,16 @@ RSpec.describe S3Storage::Fake do
 
     it "writes file to fake S3 storage directory" do
       storage.upload(asset)
+
+      expect(File).to exist(asset_path)
+    end
+  end
+
+  context "when downloading a file" do
+    let(:asset_path) { root_path.join(download_path_to_asset) }
+
+    it "writes file to local directory" do
+      storage.download(asset)
 
       expect(File).to exist(asset_path)
     end
@@ -108,6 +119,14 @@ RSpec.describe S3Storage::Fake do
   describe "#metadata_for" do
     it "raises exception to indicate method not implemented" do
       expect { storage.metadata_for(asset) }.to raise_error(NotImplementedError)
+    end
+  end
+
+  describe "#download_path_for" do
+    it "returns a temporary file path containing the asset uuid" do
+      expect(download_path_to_asset).to be_a(String)
+      expect(download_path_to_asset).to include(asset.uuid)
+      expect(download_path_to_asset).to start_with(Dir.tmpdir)
     end
   end
 end

@@ -80,7 +80,7 @@ class Asset
 
   validates :svg_scan_state,
             inclusion: {
-              in: %w[svg_clean svg_infected],
+              in: %w[svg_clean svg_infected file_missing_from_s3],
               message: "%{value} is not a valid svg_scan_state",
             },
             allow_nil: true
@@ -267,6 +267,10 @@ class Asset
 
   def schedule_svg_scan
     mime_type == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
+  end
+
+  def schedule_svg_batch_scan
+    SvgScanBatchJob.perform_async(id.to_s)
   end
 
 protected
