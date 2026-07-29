@@ -284,6 +284,54 @@ RSpec.describe Asset, type: :model do
         end
       end
     end
+
+    context "when asset is unscanned" do
+      before { asset.state = "unscanned" }
+
+      it "allows svg_scan_state to be nil" do
+        asset.svg_scan_state = nil
+
+        expect(asset).to be_valid
+      end
+
+      it "does not accept otherwise valid states" do
+        %w[svg_clean svg_infected].each do |svg_scan_state|
+          asset.svg_scan_state = svg_scan_state
+
+          expect(asset).to be_invalid
+        end
+      end
+
+      it "does not accept otherwise invalid states" do
+        asset.svg_scan_state = "something_fishy"
+
+        expect(asset).to be_invalid
+      end
+    end
+
+    context "when asset is not unscanned" do
+      before { asset.state = "uploaded" }
+
+      it "allows svg_scan_state to be nil" do
+        asset.svg_scan_state = nil
+
+        expect(asset).to be_valid
+      end
+
+      it "accept valid states" do
+        %w[svg_clean svg_infected].each do |svg_scan_state|
+          asset.svg_scan_state = svg_scan_state
+
+          expect(asset).to be_valid
+        end
+      end
+
+      it "does not accept invalid states" do
+        asset.svg_scan_state = "something_fishy"
+
+        expect(asset).to be_invalid
+      end
+    end
   end
 
   describe "creation" do
@@ -621,6 +669,20 @@ RSpec.describe Asset, type: :model do
 
         expect(asset).to be_clean
       end
+
+      it "records the time of the scan" do
+        travel_to Time.zone.parse("2026-07-20 16:10")
+
+        asset.svg_scanned_clean!
+
+        expect(asset.svg_scanned_at.to_s).to eq("2026-07-20 16:10:00 +0100")
+      end
+
+      it "records the result of the scan" do
+        asset.svg_scanned_clean!
+
+        expect(asset.svg_scan_state).to eq("svg_clean")
+      end
     end
 
     context "when file fails SVG scan" do
@@ -642,6 +704,20 @@ RSpec.describe Asset, type: :model do
         asset.svg_scanned_infected!
 
         expect(asset).to be_infected
+      end
+
+      it "records the time of the scan" do
+        travel_to Time.zone.parse("2026-07-20 16:10")
+
+        asset.svg_scanned_infected!
+
+        expect(asset.svg_scanned_at.to_s).to eq("2026-07-20 16:10:00 +0100")
+      end
+
+      it "records the result of the scan" do
+        asset.svg_scanned_infected!
+
+        expect(asset.svg_scan_state).to eq("svg_infected")
       end
     end
   end
@@ -1100,7 +1176,7 @@ RSpec.describe Asset, type: :model do
 
     before do
       asset.file = load_fixture_file("asset.png")
-      allow(File).to receive(:stat).and_return(stat)
+      allow(File).to receive(:stat).with(asset.file.path).and_return(stat)
     end
 
     it "returns string made up of 2 parts separated by a hyphen" do
@@ -1118,6 +1194,36 @@ RSpec.describe Asset, type: :model do
       size_hex = asset.etag_from_file.split("-").last
       asset_size = size_hex.to_i(16)
       expect(asset_size).to eq(size)
+    end
+
+    context "when the file has been updated" do
+      let(:new_size) { 2048 }
+      let(:new_mtime) { Time.zone.parse("2018-02-02") }
+      let(:new_stat) do
+        instance_double(File::Stat, size: new_size, mtime: new_mtime)
+      end
+
+      before do
+        allow(File).to receive(:stat).and_call_original
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+        allow(File)
+          .to receive(:stat)
+          .with(asset.file.path)
+          .and_return(new_stat)
+      end
+
+      it "has 1st part as new file mtime" do
+        last_modified_hex = asset.etag_from_file.split("-").first
+        last_modified = last_modified_hex.to_i(16)
+        expect(last_modified).to eq(new_mtime.to_i)
+      end
+
+      it "has 2nd part as new file size" do
+        size_hex = asset.etag_from_file.split("-").last
+        asset_size = size_hex.to_i(16)
+        expect(asset_size).to eq(new_size)
+      end
     end
 
     context "when the file has been deleted" do
@@ -1183,11 +1289,30 @@ RSpec.describe Asset, type: :model do
 
     before do
       asset.file = load_fixture_file("asset.png")
-      allow(File).to receive(:stat).and_return(stat)
+      allow(File).to receive(:stat).with(asset.file.path).and_return(stat)
     end
 
     it "returns time file was last modified" do
       expect(asset.last_modified_from_file).to eq(mtime)
+    end
+
+    context "when the file has been updated" do
+      let(:new_mtime) { Time.zone.parse("2018-02-02") }
+      let(:new_stat) { instance_double(File::Stat, mtime: new_mtime) }
+
+      before do
+        allow(File).to receive(:stat).and_call_original
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+        allow(File)
+          .to receive(:stat)
+          .with(asset.reload.file.path)
+          .and_return(new_stat)
+      end
+
+      it "returns when the new file was last modified" do
+        expect(asset.last_modified_from_file).to eq(new_mtime)
+      end
     end
 
     context "when the file has been deleted" do
@@ -1257,6 +1382,19 @@ RSpec.describe Asset, type: :model do
       expect(asset.size_from_file).to eq(size)
     end
 
+    context "when the file has been updated" do
+      before do
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+      end
+
+      let(:new_size) { 82_328 }
+
+      it "returns the new file's size" do
+        expect(asset.size_from_file).to eq(new_size)
+      end
+    end
+
     context "when the file has been deleted" do
       let(:stat) { Errno::ENOENT }
 
@@ -1314,12 +1452,103 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#mime_type_from_file" do
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
+    let(:mime_type) { "image/png" }
+
+    it "returns the MIME type of the file" do
+      expect(asset.mime_type_from_file).to eq(mime_type)
+    end
+
+    context "when the file has been updated" do
+      before do
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+      end
+
+      let(:new_mime_type) { "image/jpeg" }
+
+      it "returns the new file's MIME type" do
+        expect(asset.mime_type_from_file).to eq(new_mime_type)
+      end
+    end
+
+    context "when the file has been deleted" do
+      let(:stat) { Errno::ENOENT }
+
+      before do
+        asset.file = nil
+        allow(File).to receive(:exist?).and_return(false)
+      end
+
+      it "returns nil" do
+        expect(asset.mime_type_from_file).to be_nil
+      end
+    end
+  end
+
+  describe "#mime_type" do
+    let(:asset) { described_class.new(file: load_fixture_file("asset.png"), mime_type:) }
+    let(:asset_mime_type) { "image/png" }
+
+    before do
+      allow(asset).to receive(:mime_type_from_file).and_return(asset_mime_type)
+    end
+
+    context "when asset is created" do
+      let(:mime_type) { nil }
+
+      before do
+        asset.save!
+      end
+
+      it "stores the value generated from the file in the database" do
+        expect(asset.reload.mime_type).to eq(asset_mime_type)
+      end
+
+      context "when asset is updated with new file" do
+        let(:new_file) { load_fixture_file("asset2.jpg") }
+        let(:new_asset_mime_type) { "image/jpeg" }
+
+        before do
+          allow(asset).to receive(:mime_type_from_file).and_return(new_asset_mime_type)
+          asset.update!(file: new_file)
+        end
+
+        it "stores the value generated from the new file in the database" do
+          expect(asset.reload.mime_type).to eq(new_asset_mime_type)
+        end
+      end
+    end
+  end
+
+  describe "#mime_type=" do
+    let(:asset) { described_class.new }
+
+    it "cannot be called from outside the Asset class" do
+      expect { asset.mime_type = "application/pdf" }.to raise_error(NoMethodError)
+    end
+  end
+
   describe "#md5_hexdigest_from_file" do
     let(:asset) { described_class.new(file: load_fixture_file("asset.png")) }
     let(:md5_hexdigest) { "a0d8aa55f6db670e38a14962c0652776" }
 
     it "returns MD5 hex digest for asset file content" do
       expect(asset.md5_hexdigest_from_file).to eq(md5_hexdigest)
+    end
+
+    context "when the file has been updated" do
+      before do
+        asset.save!
+        asset.update!(file: load_fixture_file("asset2.jpg"))
+      end
+
+      let(:new_md5_hexdigest) { "f99cbda3715ac4e52961855bbac8fc05" }
+
+      it "returns the new file's MD5 hex digest" do
+        expect(asset.md5_hexdigest_from_file).to eq(new_md5_hexdigest)
+      end
     end
 
     context "when the file has been deleted" do
@@ -1468,6 +1697,61 @@ RSpec.describe Asset, type: :model do
 
     it "is false if the access is not limited to neither users nor organisations" do
       expect(asset.access_limited?).to be false
+    end
+  end
+
+  describe "#file=" do
+    let(:asset) { FactoryBot.create(:uploaded_asset) }
+
+    it "resets the scanning state" do
+      expect { asset.file = load_fixture_file("asset2.jpg") }
+        .to change(asset, :state).from("uploaded").to("unscanned")
+    end
+
+    context "when the file was an SVG" do
+      let(:asset) { FactoryBot.create(:uploaded_svg_asset) }
+
+      it "resets SVG scan status" do
+        expect { asset.file = load_fixture_file("asset2.jpg") }
+          .to change(asset, :svg_scan_state).from("svg_clean").to(nil)
+      end
+
+      it "resets SVG scan time" do
+        expect { asset.file = load_fixture_file("asset2.jpg") }
+          .to change(asset, :svg_scanned_at).to(nil)
+      end
+    end
+
+    context "when there was no previous file" do
+      let(:asset) { described_class.new }
+
+      it "leaves the filename history empty" do
+        asset.file = load_fixture_file("asset.png")
+
+        expect(asset.filename_history).to be_empty
+      end
+    end
+
+    context "when there was a previous file" do
+      let(:asset) { FactoryBot.build(:asset, file: load_fixture_file("asset.png")) }
+
+      it "records the old filename in the filename history" do
+        asset.file = load_fixture_file("asset2.jpg")
+
+        expect(asset.filename_history).to eq(["asset.png"])
+      end
+    end
+
+    context "when there were two previous files" do
+      let(:asset) { FactoryBot.build(:asset, file: load_fixture_file("asset.png")) }
+
+      before { asset.file = load_fixture_file("lorem.txt") }
+
+      it "appends the old filename to the filename history" do
+        asset.file = load_fixture_file("asset2.jpg")
+
+        expect(asset.filename_history).to eq(["asset.png", "lorem.txt"])
+      end
     end
   end
 end

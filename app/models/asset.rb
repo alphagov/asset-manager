@@ -41,6 +41,9 @@ class Asset
   field :size, type: Integer
   protected :size=
 
+  field :mime_type, type: String
+  protected :mime_type=
+
   field :content_type, type: String
 
   field :access_limited, type: Array, default: []
@@ -52,6 +55,9 @@ class Asset
   field :auth_bypass_ids_expiry, type: Time
 
   field :parent_document_url, type: String
+
+  field :svg_scanned_at, type: Time
+  field :svg_scan_state, type: String
 
   field :deleted_at, type: Time
 
@@ -71,6 +77,14 @@ class Asset
               message: "must match the format defined in rfc6838",
               allow_nil: true,
             }
+
+  validates :svg_scan_state,
+            inclusion: {
+              in: %w[svg_clean svg_infected],
+              message: "%{value} is not a valid svg_scan_state",
+            },
+            allow_nil: true
+  validates :svg_scan_state, absence: true, if: :unscanned?
 
   validate :check_specified_replacement_exists
   validate :prevent_transition_from_published_to_draft_if_replaced
@@ -108,8 +122,16 @@ class Asset
       transition virus_scanned_clean: :infected
     end
 
+    after_transition on: :svg_scanned_infected do |asset, _|
+      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_infected")
+    end
+
     event :svg_scanned_clean do
       transition virus_scanned_clean: :clean
+    end
+
+    after_transition on: :svg_scanned_clean do |asset, _|
+      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_clean")
     end
 
     event :svg_scan_skipped do
@@ -174,7 +196,7 @@ class Asset
   end
 
   def etag_from_file
-    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size) if file_exists?
+    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: size_from_file) if file_exists?
   end
 
   def last_modified_from_file
@@ -182,11 +204,15 @@ class Asset
   end
 
   def md5_hexdigest_from_file
-    @md5_hexdigest_from_file ||= Digest::MD5.hexdigest(file.file.read) if file_exists?
+    Digest::MD5.hexdigest(file.file.read) if file_exists?
   end
 
   def size_from_file
     file_stat.size if file_exists?
+  end
+
+  def mime_type_from_file
+    Marcel::MimeType.for(Pathname.new(file.path)) if file_exists?
   end
 
   def update_indirect_replacements_on_publish
@@ -240,7 +266,7 @@ class Asset
   end
 
   def schedule_svg_scan
-    Marcel::MimeType.for(Pathname.new(file.path)) == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
+    mime_type == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
 protected
@@ -250,6 +276,7 @@ protected
     self.last_modified = last_modified_from_file
     self.md5_hexdigest = md5_hexdigest_from_file
     self.size = size_from_file
+    self.mime_type = mime_type_from_file
   end
 
   def valid_filenames
@@ -257,9 +284,9 @@ protected
   end
 
   def reset_state
+    self.svg_scanned_at = nil
+    self.svg_scan_state = nil
     self.state = "unscanned"
-    @file_stat = nil
-    @md5_hexdigest = nil
   end
 
   def schedule_virus_scan
