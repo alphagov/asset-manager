@@ -24,13 +24,13 @@ flowchart TD
     TriggerVirusScan --> VirusScanPerformed["Virus scan performed"]
 
     VirusScanPerformed -->|virus_scanned_clean| VirusScannedClean("Virus Scanned Clean")
-    VirusScanPerformed -->|scanned_infected| Infected("Infected")
+    VirusScanPerformed -->|virus_scanned_infected| Infected("Infected")
 
     VirusScannedClean --> TriggerSvgScan["SvgScanJob triggered"]
     TriggerSvgScan --> SvgScanPerformed["SVG scan performed"]
 
     SvgScanPerformed -->|svg_scanned_clean| Clean("Clean")
-    SvgScanPerformed -->|scanned_infected| Infected("Infected")
+    SvgScanPerformed -->|svg_scanned_infected| Infected("Infected")
 
     Clean --> TriggerSaveToCloudStorageJob["SaveToCloudStorageJob triggered"]
     TriggerSaveToCloudStorageJob --> Upload["Asset uploaded to AWS S3 bucket"]
