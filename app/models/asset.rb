@@ -172,7 +172,7 @@ class Asset
   end
 
   def etag_from_file
-    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: file_stat.size) if file_exists?
+    sprintf("%<mtime>x-%<size>x", mtime: last_modified_from_file, size: size_from_file) if file_exists?
   end
 
   def last_modified_from_file
