@@ -131,7 +131,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.7)
-    csv (3.3.5)
+    csv (3.3.6)
     database_cleaner-core (2.0.1)
     database_cleaner-mongoid (2.0.1)
       database_cleaner-core (~> 2.0.0)
