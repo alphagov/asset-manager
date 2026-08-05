@@ -1,5 +1,6 @@
 require "govuk_sidekiq/gds_sso_middleware"
 require "healthcheck/cloud_storage"
+require "sidekiq_unique_jobs/web"
 
 Rails.application.routes.draw do
   get "/healthcheck/live", to: proc { [200, {}, %w[OK]] }
