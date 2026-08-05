@@ -33,6 +33,14 @@ namespace :assets do
     puts "Asset ID for #{legacy_url_path} is #{asset.id}."
   end
 
+  desc "Clear legacy `access_limited` values ahead of us enabling individual access limiting in Whitehall"
+  task clear_legacy_access_limited: :environment do
+    Asset.collection.update_many(
+      { "access_limited.0" => { "$exists" => true } },
+      { "$set" => { access_limited: [] } },
+    )
+  end
+
   desc "Soft delete assets and check deleted invalid state"
   task :bulk_soft_delete, %i[csv_path] => :environment do |_t, args|
     csv_path = args.fetch(:csv_path)
