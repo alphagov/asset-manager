@@ -50,6 +50,8 @@ private
   end
 
   def asset_params
+    params[:asset].merge!(user_uid: current_user.uid)
+
     params.require(:asset).tap { |asset|
       if asset.key?(:redirect_url) && asset[:redirect_url].blank?
         asset[:redirect_url] = nil
@@ -72,6 +74,7 @@ private
       :parent_document_url,
       :content_type,
       :auth_bypass_ids_expiry,
+      :user_uid,
       access_limited: [],
       access_limited_organisation_ids: [],
       auth_bypass_ids: [],

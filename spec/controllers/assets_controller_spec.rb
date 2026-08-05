@@ -25,6 +25,12 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset).file.path).to match(/asset\.png$/)
       end
 
+      it "stores publishing user ID on asset" do
+        post :create, params: { asset: valid_attributes }
+
+        expect(assigns(:asset).user_uid).to eq("123456")
+      end
+
       it "stores access_limited_user_ids as access_limited on asset" do
         attributes = valid_attributes.merge(access_limited_user_ids: %w[user-id])
         post :create, params: { asset: attributes }

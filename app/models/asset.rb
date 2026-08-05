@@ -26,6 +26,7 @@ class Asset
   index uuid: 1
   attr_readonly :uuid
 
+  field :user_uid, type: String
   field :draft, type: Boolean, default: false
   field :redirect_url, type: String
 

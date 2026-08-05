@@ -55,5 +55,10 @@ FactoryBot.define do
   factory :user do
     sequence(:name) { |n| "Winston #{n}" }
     permissions { %w[signin] }
+    uid { "123456" }
+  end
+
+  factory :managing_user, parent: :user do
+    permissions { ["signin", "Manage all Assets"] }
   end
 end
