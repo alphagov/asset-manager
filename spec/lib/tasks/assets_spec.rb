@@ -30,29 +30,6 @@ RSpec.describe "assets.rake" do
     end
   end
 
-  describe "clear_legacy_access_limited" do
-    let(:task) { Rake::Task["assets:clear_legacy_access_limited"] }
-
-    before do
-      task.reenable
-    end
-
-    it "clears legacy access_limited values without changing any other attributes" do
-      asset = FactoryBot.create(:asset, access_limited: %w[user1 user2])
-      asset.reload
-
-      original_attributes = asset.attributes
-
-      expect {
-        task.invoke
-      }.not_to(change { asset.reload.updated_at })
-
-      expect(asset.reload.attributes).to eq(
-        original_attributes.merge("access_limited" => []),
-      )
-    end
-  end
-
   describe "assets:bulk_scan_svgs" do
     let(:task) { Rake::Task["assets:bulk_scan_svgs"] }
     let(:sidekiq_queue) { instance_double(Sidekiq::Queue) }
