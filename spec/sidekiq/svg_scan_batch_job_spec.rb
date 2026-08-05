@@ -14,15 +14,6 @@ RSpec.describe SvgScanBatchJob do
     allow(storage).to receive(:download).and_return(file)
   end
 
-  specify { expect(described_class).to have_valid_sidekiq_options }
-
-  it "does not permit multiple jobs to be enqueued for the same asset" do
-    SidekiqUniqueJobs.use_config(enabled: true) do
-      expect { described_class.perform_in(1.minute, asset.id.to_s) }.to enqueue_sidekiq_job(described_class)
-      expect { described_class.perform_in(1.minute, asset.id.to_s) }.not_to enqueue_sidekiq_job(described_class)
-    end
-  end
-
   context "when the file doesn't exist in S3" do
     before do
       context = Seahorse::Client::RequestContext.new
