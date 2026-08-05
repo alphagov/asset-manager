@@ -3,7 +3,7 @@ require "services"
 class SvgScanBatchJob
   include Sidekiq::Job
 
-  sidekiq_options lock: :until_executing, queue: "batch"
+  sidekiq_options queue: "batch"
 
   def perform(asset_id)
     asset = Asset.find(asset_id)
