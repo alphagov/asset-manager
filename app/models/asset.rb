@@ -111,31 +111,7 @@ class Asset
     end
 
     event :virus_scanned_clean do
-      transition unscanned: :virus_scanned_clean
-    end
-
-    after_transition to: :virus_scanned_clean do |asset, _|
-      asset.schedule_svg_scan
-    end
-
-    event :svg_scanned_infected do
-      transition virus_scanned_clean: :infected
-    end
-
-    after_transition on: :svg_scanned_infected do |asset, _|
-      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_infected")
-    end
-
-    event :svg_scanned_clean do
-      transition virus_scanned_clean: :clean
-    end
-
-    after_transition on: :svg_scanned_clean do |asset, _|
-      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_clean")
-    end
-
-    event :svg_scan_skipped do
-      transition virus_scanned_clean: :clean
+      transition unscanned: :clean
     end
 
     after_transition to: :clean do |asset, _|
@@ -263,10 +239,6 @@ class Asset
   def initialize_dup(other)
     @_mounters = nil
     super
-  end
-
-  def schedule_svg_scan
-    mime_type == "image/svg+xml" ? SvgScanJob.perform_async(id.to_s) : svg_scan_skipped!
   end
 
   def schedule_svg_batch_scan

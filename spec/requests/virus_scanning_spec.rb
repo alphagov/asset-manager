@@ -52,9 +52,6 @@ RSpec.describe "Virus scanning of uploaded images", :disable_cloud_storage_stub,
     allow(Services.virus_scanner).to receive(:scan)
     VirusScanJob.drain
 
-    allow(Services.svg_scanner).to receive(:scan)
-    SvgScanJob.drain
-
     get download_media_path(id: asset, filename: "asset-safe.svg")
     expect(response).to have_http_status(:not_found)
 
