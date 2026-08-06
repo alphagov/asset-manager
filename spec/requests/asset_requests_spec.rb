@@ -80,8 +80,10 @@ RSpec.describe "Asset requests", type: :request do
   end
 
   describe "retrieving an asset" do
+    let(:user) { stub_user }
+
     it "retreives details about an existing asset" do
-      asset = FactoryBot.create(:uploaded_asset)
+      asset = FactoryBot.create(:uploaded_asset, user:)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -97,7 +99,7 @@ RSpec.describe "Asset requests", type: :request do
     end
 
     it "returns details about an infected asset" do
-      asset = FactoryBot.create(:virus_infected_asset)
+      asset = FactoryBot.create(:virus_infected_asset, user:)
 
       get "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -122,8 +124,10 @@ RSpec.describe "Asset requests", type: :request do
   end
 
   describe "deleting an asset" do
+    let(:user) { stub_user }
+
     it "soft deletes an existing asset" do
-      asset = FactoryBot.create(:uploaded_asset)
+      asset = FactoryBot.create(:uploaded_asset, user:)
 
       delete "/assets/#{asset.id}"
       body = JSON.parse(response.body)
@@ -145,8 +149,10 @@ RSpec.describe "Asset requests", type: :request do
   end
 
   describe "restoring an asset" do
+    let(:user) { stub_user }
+
     it "restores a soft deleted asset" do
-      asset = FactoryBot.create(:uploaded_asset)
+      asset = FactoryBot.create(:uploaded_asset, user:)
 
       post "/assets/#{asset.id}/restore"
 

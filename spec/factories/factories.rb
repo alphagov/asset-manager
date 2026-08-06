@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
+    user
   end
 
   factory :virus_free_asset, parent: :asset do
