@@ -5,12 +5,12 @@ RSpec.describe AssetsController, type: :controller do
 
   let(:file) { load_fixture_file("asset.png") }
 
-  before do
-    login_as_stub_user
-  end
-
   describe "POST create" do
     let(:valid_attributes) { { file: } }
+
+    before do
+      login_as_stub_user
+    end
 
     context "when attributes are valid" do
       it "persists asset" do
@@ -232,195 +232,239 @@ RSpec.describe AssetsController, type: :controller do
       let(:file) { load_fixture_file("asset2.jpg") }
       let(:valid_attributes) { { file: } }
 
-      it "persists new attributes on existing asset" do
-        put :update, params: { id: asset.id, asset: valid_attributes }
-
-        expect(assigns(:asset)).to be_persisted
-      end
-
-      it "stores file on existing asset" do
-        put :update, params: { id: asset.id, asset: valid_attributes }
-
-        expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
-      end
-
-      it "stores access_limited on existing asset" do
-        attributes = valid_attributes.merge(access_limited: %w[user-id])
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).access_limited).to eq(%w[user-id])
-      end
-
-      it "resets access_limits for an existing asset with a blank acess_limited_user_ids param" do
-        asset.update!(access_limited: %w[user-uid])
-
-        # We have to use an empty string as that is what gds-api-adapters/rest-client
-        # will generate instead of an empty array
-        attributes = valid_attributes.merge(access_limited_user_ids: "")
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).access_limited).to eq([])
-      end
-
-      it "resets access_limits for an existing asset with a blank acess_limited param" do
-        asset.update!(access_limited: %w[user-uid])
-
-        # We have to use an empty string as that is what gds-api-adapters/rest-client
-        # will generate instead of an empty array
-        attributes = valid_attributes.merge(access_limited: "")
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).access_limited).to eq([])
-      end
-
-      it "stores access_limited_organisation_ids on existing asset" do
-        attributes = valid_attributes.merge(access_limited_organisation_ids: %w[org-id])
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).access_limited_organisation_ids).to eq(%w[org-id])
-      end
-
-      it "resets access_limited_organisation_ids to an empty array for an existing asset with an access_limited_organisation_ids array" do
-        asset.update!(access_limited_organisation_ids: %w[org-id])
-
-        # We have to use an empty string as that is what gds-api-adapters/rest-client
-        # will generate instead of an empty array
-        attributes = valid_attributes.merge(access_limited_organisation_ids: "")
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).access_limited_organisation_ids).to eq([])
-      end
-
-      it "stores auth_bypass_ids on existing asset" do
-        attributes = valid_attributes.merge(auth_bypass_ids: %w[bypass-id])
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).auth_bypass_ids).to eq(%w[bypass-id])
-      end
-
-      it "copes when auth_bypass_ids are passed in as an empty string" do
-        asset.update!(auth_bypass_ids: %w[bypass-1 bypass-2])
-
-        # We have to use an empty string as that is what gds-api-adapters/rest-client
-        # will generate instead of an empty array
-        attributes = valid_attributes.merge(auth_bypass_ids: "")
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).auth_bypass_ids).to eq([])
-      end
-
-      it "stores redirect_url on existing asset" do
-        redirect_url = "https://example.com/path/file.ext"
-        attributes = valid_attributes.merge(redirect_url:)
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).redirect_url).to eq(redirect_url)
-      end
-
-      it "stores blank redirect_url as nil on existing asset" do
-        redirect_url = ""
-        attributes = valid_attributes.merge(redirect_url:)
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).redirect_url).to be_nil
-      end
-
-      it "removes existing redirect_url from existing asset if empty one is sent" do
-        redirect_url = "https://example.com/path/file.ext"
-        attributes = valid_attributes.merge(redirect_url:)
-        put :update, params: { id: asset.id, asset: attributes }
-        expect(assigns(:asset).redirect_url).to eq(redirect_url)
-
-        attributes = valid_attributes.merge(redirect_url: "")
-        put :update, params: { id: asset.id, asset: attributes }
-        expect(assigns(:asset).redirect_url).to be_nil
-      end
-
-      it "stores replacement on existing asset" do
-        replacement = FactoryBot.create(:asset)
-        replacement_id = replacement.id.to_s
-        attributes = valid_attributes.merge(replacement_id:)
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).replacement).to eq(replacement)
-      end
-
-      it "stores replacement_id as nil if replacement_id is blank" do
-        replacement_id = ""
-        attributes = valid_attributes.merge(replacement_id:)
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(assigns(:asset).replacement_id).to be_nil
-      end
-
-      it "responds with unprocessable entity status if replacement is not found" do
-        replacement_id = "non-existent-asset-id"
-        attributes = valid_attributes.merge(replacement_id:)
-        put :update, params: { id: asset.id, asset: attributes }
-
-        expect(response).to have_http_status(:unprocessable_content)
-      end
-
-      it "includes error message in response if replacement is not found" do
-        replacement_id = "non-existent-asset-id"
-        attributes = valid_attributes.merge(replacement_id:)
-        put :update, params: { id: asset.id, asset: attributes }
-
-        body = JSON.parse(response.body)
-        status = body["_response_info"]["status"]
-        expect(status).to include("Replacement not found")
-      end
-
-      it "responds with success status" do
-        put :update, params: { id: asset.id, asset: valid_attributes }
-
-        expect(response).to have_http_status(:success)
-      end
-
-      it "responds with the details of the existing asset" do
-        put :update, params: { id: asset.id, asset: valid_attributes }
-
-        asset = assigns(:asset)
-
-        body = JSON.parse(response.body)
-
-        expect(body["id"]).to eq("http://test.host/assets/#{asset.id}")
-        expect(body["name"]).to eq("asset2.jpg")
-        expect(body["content_type"]).to eq("image/jpeg")
-        expect(body["draft"]).to be_falsey
-      end
-
-      context "when attributes include draft status" do
-        let(:attributes) { valid_attributes.merge(draft: true) }
-
-        it "stores draft status on existing asset" do
-          put :update, params: { id: asset.id, asset: attributes }
-
-          expect(assigns(:asset)).to be_draft
+      context "with a non-managing user" do
+        before do
+          login_as_stub_user
         end
 
-        it "includes the draft status in the response" do
+        context "when asset is owned by the user" do
+          it "response with a success status" do
+            put :update, params: { id: asset.id, asset: valid_attributes }
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with a forbidden status" do
+            put :update, params: { id: asset.id, asset: valid_attributes }
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+      end
+
+      context "with a managing user" do
+        before do
+          login_as_stub_managing_user
+        end
+
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with a success status" do
+            put :update, params: { id: asset.id, asset: valid_attributes }
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        it "persists new attributes on existing asset" do
+          put :update, params: { id: asset.id, asset: valid_attributes }
+
+          expect(assigns(:asset)).to be_persisted
+        end
+
+        it "stores file on existing asset" do
+          put :update, params: { id: asset.id, asset: valid_attributes }
+
+          expect(assigns(:asset).file.path).to match(/asset2\.jpg$/)
+        end
+
+        it "stores access_limited on existing asset" do
+          attributes = valid_attributes.merge(access_limited: %w[user-id])
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).access_limited).to eq(%w[user-id])
+        end
+
+        it "resets access_limits for an existing asset with a blank acess_limited_user_ids param" do
+          asset.update!(access_limited: %w[user-uid])
+
+          # We have to use an empty string as that is what gds-api-adapters/rest-client
+          # will generate instead of an empty array
+          attributes = valid_attributes.merge(access_limited_user_ids: "")
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).access_limited).to eq([])
+        end
+
+        it "resets access_limits for an existing asset with a blank acess_limited param" do
+          asset.update!(access_limited: %w[user-uid])
+
+          # We have to use an empty string as that is what gds-api-adapters/rest-client
+          # will generate instead of an empty array
+          attributes = valid_attributes.merge(access_limited: "")
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).access_limited).to eq([])
+        end
+
+        it "stores access_limited_organisation_ids on existing asset" do
+          attributes = valid_attributes.merge(access_limited_organisation_ids: %w[org-id])
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).access_limited_organisation_ids).to eq(%w[org-id])
+        end
+
+        it "resets access_limited_organisation_ids to an empty array for an existing asset with an access_limited_organisation_ids array" do
+          asset.update!(access_limited_organisation_ids: %w[org-id])
+
+          # We have to use an empty string as that is what gds-api-adapters/rest-client
+          # will generate instead of an empty array
+          attributes = valid_attributes.merge(access_limited_organisation_ids: "")
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).access_limited_organisation_ids).to eq([])
+        end
+
+        it "stores auth_bypass_ids on existing asset" do
+          attributes = valid_attributes.merge(auth_bypass_ids: %w[bypass-id])
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).auth_bypass_ids).to eq(%w[bypass-id])
+        end
+
+        it "copes when auth_bypass_ids are passed in as an empty string" do
+          asset.update!(auth_bypass_ids: %w[bypass-1 bypass-2])
+
+          # We have to use an empty string as that is what gds-api-adapters/rest-client
+          # will generate instead of an empty array
+          attributes = valid_attributes.merge(auth_bypass_ids: "")
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).auth_bypass_ids).to eq([])
+        end
+
+        it "stores redirect_url on existing asset" do
+          redirect_url = "https://example.com/path/file.ext"
+          attributes = valid_attributes.merge(redirect_url:)
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).redirect_url).to eq(redirect_url)
+        end
+
+        it "stores blank redirect_url as nil on existing asset" do
+          redirect_url = ""
+          attributes = valid_attributes.merge(redirect_url:)
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).redirect_url).to be_nil
+        end
+
+        it "removes existing redirect_url from existing asset if empty one is sent" do
+          redirect_url = "https://example.com/path/file.ext"
+          attributes = valid_attributes.merge(redirect_url:)
+          put :update, params: { id: asset.id, asset: attributes }
+          expect(assigns(:asset).redirect_url).to eq(redirect_url)
+
+          attributes = valid_attributes.merge(redirect_url: "")
+          put :update, params: { id: asset.id, asset: attributes }
+          expect(assigns(:asset).redirect_url).to be_nil
+        end
+
+        it "stores replacement on existing asset" do
+          replacement = FactoryBot.create(:asset)
+          replacement_id = replacement.id.to_s
+          attributes = valid_attributes.merge(replacement_id:)
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).replacement).to eq(replacement)
+        end
+
+        it "stores replacement_id as nil if replacement_id is blank" do
+          replacement_id = ""
+          attributes = valid_attributes.merge(replacement_id:)
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(assigns(:asset).replacement_id).to be_nil
+        end
+
+        it "responds with unprocessable entity status if replacement is not found" do
+          replacement_id = "non-existent-asset-id"
+          attributes = valid_attributes.merge(replacement_id:)
+          put :update, params: { id: asset.id, asset: attributes }
+
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it "includes error message in response if replacement is not found" do
+          replacement_id = "non-existent-asset-id"
+          attributes = valid_attributes.merge(replacement_id:)
           put :update, params: { id: asset.id, asset: attributes }
 
           body = JSON.parse(response.body)
-
-          expect(body["draft"]).to be_truthy
+          status = body["_response_info"]["status"]
+          expect(status).to include("Replacement not found")
         end
 
-        it "changes draft state for draft deleted asset" do
-          asset.update!(deleted_at: 1.hour.ago, draft: true)
+        it "responds with success status" do
+          put :update, params: { id: asset.id, asset: valid_attributes }
 
-          put :update, params: { id: asset.id, asset: attributes.merge(draft: false) }
-
-          expect(asset.reload).not_to be_draft
+          expect(response).to have_http_status(:success)
         end
 
-        it "preserves draft state for live deleted asset" do
-          asset.update!(deleted_at: 1.hour.ago, draft: false)
+        it "responds with the details of the existing asset" do
+          put :update, params: { id: asset.id, asset: valid_attributes }
 
-          put :update, params: { id: asset.id, asset: attributes.merge(draft: true) }
+          asset = assigns(:asset)
 
-          expect(asset.reload).not_to be_draft
+          body = JSON.parse(response.body)
+
+          expect(body["id"]).to eq("http://test.host/assets/#{asset.id}")
+          expect(body["name"]).to eq("asset2.jpg")
+          expect(body["content_type"]).to eq("image/jpeg")
+          expect(body["draft"]).to be_falsey
+        end
+
+        context "when attributes include draft status" do
+          let(:attributes) { valid_attributes.merge(draft: true) }
+
+          it "stores draft status on existing asset" do
+            put :update, params: { id: asset.id, asset: attributes }
+
+            expect(assigns(:asset)).to be_draft
+          end
+
+          it "includes the draft status in the response" do
+            put :update, params: { id: asset.id, asset: attributes }
+
+            body = JSON.parse(response.body)
+
+            expect(body["draft"]).to be_truthy
+          end
+
+          it "changes draft state for draft deleted asset" do
+            asset.update!(deleted_at: 1.hour.ago, draft: true)
+
+            put :update, params: { id: asset.id, asset: attributes.merge(draft: false) }
+
+            expect(asset.reload).not_to be_draft
+          end
+
+          it "preserves draft state for live deleted asset" do
+            asset.update!(deleted_at: 1.hour.ago, draft: false)
+
+            put :update, params: { id: asset.id, asset: attributes.merge(draft: true) }
+
+            expect(asset.reload).not_to be_draft
+          end
         end
       end
     end
@@ -430,20 +474,62 @@ RSpec.describe AssetsController, type: :controller do
     context "with an existing asset" do
       let(:asset) { FactoryBot.create(:asset) }
 
-      it "deletes the asset" do
-        delete :destroy, params: { id: asset.id }
+      context "with a managing user" do
+        before do
+          login_as_stub_managing_user
+        end
 
-        expect(Asset.where(id: asset.id).first.deleted_at).not_to be_nil
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "deletes the asset" do
+            delete :destroy, params: { id: asset.id }
+
+            expect(Asset.where(id: asset.id).first.deleted_at).not_to be_nil
+          end
+
+          it "responds with a success status" do
+            delete :destroy, params: { id: asset.id }
+
+            expect(response).to have_http_status(:success)
+          end
+        end
       end
 
-      it "responds with a success status" do
-        delete :destroy, params: { id: asset.id }
+      context "with a non-managing user" do
+        before do
+          login_as_stub_user
+        end
 
-        expect(response).to have_http_status(:success)
+        context "when the asset is owned by the user" do
+          it "responds with a success status" do
+            delete :destroy, params: { id: asset.id }
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with a forbidden status" do
+            delete :destroy, params: { id: asset.id }
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
       end
     end
 
     context "with no existing asset" do
+      before do
+        login_as_stub_user
+      end
+
       it "responds with not found status" do
         delete :destroy, params: { id: "12345" }
         expect(response).to have_http_status(:not_found)
@@ -455,45 +541,125 @@ RSpec.describe AssetsController, type: :controller do
     context "with an asset which exists" do
       let(:asset) { FactoryBot.create(:asset) }
 
-      it "responds with success status" do
-        get :show, params: { id: asset.id }
+      context "with a managing user" do
+        before do
+          login_as_stub_managing_user
+        end
 
-        expect(response).to be_successful
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with success status" do
+            get :show, params: { id: asset.id }
+
+            expect(response).to be_successful
+          end
+
+          it "makes the asset available to the view template" do
+            get :show, params: { id: asset.id }
+
+            expect(assigns(:asset)).to be_a(Asset)
+            expect(assigns(:asset).id).to eq(asset.id)
+          end
+
+          it "includes the draft status in the response" do
+            get :show, params: { id: asset.id }
+
+            body = JSON.parse(response.body)
+
+            expect(body["draft"]).to be_falsey
+          end
+
+          it "sets the Cache-Control header to no-cache" do
+            get :show, params: { id: asset.id }
+
+            expect(response.headers["Cache-Control"]).to eq("no-cache")
+          end
+        end
       end
 
-      it "makes the asset available to the view template" do
-        get :show, params: { id: asset.id }
+      context "with a non-managing user" do
+        before do
+          login_as_stub_user
+        end
 
-        expect(assigns(:asset)).to be_a(Asset)
-        expect(assigns(:asset).id).to eq(asset.id)
-      end
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
 
-      it "includes the draft status in the response" do
-        get :show, params: { id: asset.id }
+          it "responds with a forbidden status" do
+            get :show, params: { id: asset.id }
 
-        body = JSON.parse(response.body)
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
 
-        expect(body["draft"]).to be_falsey
-      end
+        context "when the asset is owned by the user" do
+          it "responds with success status" do
+            get :show, params: { id: asset.id }
 
-      it "sets the Cache-Control header to no-cache" do
-        get :show, params: { id: asset.id }
-
-        expect(response.headers["Cache-Control"]).to eq("no-cache")
+            expect(response).to be_successful
+          end
+        end
       end
     end
 
     context "with an asset that has been deleted" do
       let(:asset) { FactoryBot.create(:deleted_asset) }
 
-      it "responds with success status" do
-        get :show, params: { id: asset.id }
+      context "with a managing user" do
+        before do
+          login_as_stub_managing_user
+        end
 
-        expect(response).to be_successful
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with success status" do
+            get :show, params: { id: asset.id }
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+      end
+
+      context "with a non-managing user" do
+        before do
+          login_as_stub_user
+        end
+
+        context "when the asset is owned by the user" do
+          it "responds with success status" do
+            get :show, params: { id: asset.id }
+
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with a forbidden status" do
+            get :show, params: { id: asset.id }
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
       end
     end
 
     context "with no existing asset" do
+      before do
+        login_as_stub_user
+      end
+
       it "responds with not found status" do
         get :show, params: { id: "some-gif-or-other" }
 
@@ -510,21 +676,63 @@ RSpec.describe AssetsController, type: :controller do
   end
 
   describe "POST restore" do
+    before do
+      login_as_stub_user
+    end
+
     context "with an asset marked as deleted" do
       let(:asset) { FactoryBot.create(:asset, deleted_at: 10.minutes.ago) }
 
-      before do
-        post :restore, params: { id: asset.id }
+      context "with a managing user" do
+        before do
+          login_as_stub_managing_user
+        end
+
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with success status" do
+            post :restore, params: { id: asset.id }
+
+            expect(response).to be_successful
+          end
+
+          it "marks the asset as not deleted" do
+            post :restore, params: { id: asset.id }
+
+            restored_asset = assigns(:asset)
+            expect(restored_asset).not_to be_nil
+            expect(restored_asset.deleted_at).to be_nil
+          end
+        end
       end
 
-      it "responds with success status" do
-        expect(response).to be_successful
-      end
+      context "with a non managing user" do
+        before do
+          login_as_stub_user
+        end
 
-      it "marks the asset as not deleted" do
-        restored_asset = assigns(:asset)
-        expect(restored_asset).not_to be_nil
-        expect(restored_asset.deleted_at).to be_nil
+        context "when the asset is owned by the user" do
+          it "responds with success status" do
+            post :restore, params: { id: asset.id }
+
+            expect(response).to be_successful
+          end
+        end
+
+        context "when the asset is not owned by the user" do
+          before do
+            asset.update!(user_uid: "000000")
+          end
+
+          it "responds with forbidden status" do
+            post :restore, params: { id: asset.id }
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
       end
     end
   end
