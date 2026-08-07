@@ -7,6 +7,8 @@ class AssetsController < ApplicationController
   def show
     @asset = find_asset(include_deleted: true)
 
+    return error_403 unless can_manage_asset?
+
     expires_now
     render json: AssetPresenter.new(@asset, view_context)
   end
@@ -24,6 +26,8 @@ class AssetsController < ApplicationController
   def update
     @asset = Asset.undeleted.or(Asset.where(draft: true)).find(params[:id])
 
+    return error_403 unless can_manage_asset?
+
     if @asset.update(asset_params)
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
     else
@@ -33,12 +37,18 @@ class AssetsController < ApplicationController
 
   def destroy
     @asset = find_asset
+
+    return error_403 unless can_manage_asset?
+
     @asset.destroy!
     render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end
 
   def restore
     @asset = find_asset(include_deleted: true)
+
+    return error_403 unless can_manage_asset?
+
     @asset.restore
     render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end
@@ -50,6 +60,8 @@ private
   end
 
   def asset_params
+    params[:asset].merge!(user_uid: current_user.uid)
+
     params.require(:asset).tap { |asset|
       if asset.key?(:redirect_url) && asset[:redirect_url].blank?
         asset[:redirect_url] = nil
@@ -72,6 +84,7 @@ private
       :parent_document_url,
       :content_type,
       :auth_bypass_ids_expiry,
+      :user_uid,
       access_limited: [],
       access_limited_organisation_ids: [],
       auth_bypass_ids: [],
@@ -85,6 +98,10 @@ private
 
   def build_asset
     Asset.new(asset_params)
+  end
+
+  def can_manage_asset?
+    @asset.user_uid == current_user.uid || current_user.permissions.include?("Manage all Assets")
   end
 
   def check_request_size
