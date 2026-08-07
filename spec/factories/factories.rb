@@ -20,11 +20,9 @@ FactoryBot.define do
   end
 
   factory :clean_svg_asset, parent: :virus_free_svg_asset do
-    after :create, &:svg_scanned_clean!
-  end
-
-  factory :svg_infected_asset, parent: :virus_free_svg_asset do
-    after :create, &:svg_scanned_infected!
+    after :create do |asset|
+      asset.update!(svg_scanned_at: Time.zone.now, svg_scan_state: "svg_clean")
+    end
   end
 
   factory :uploaded_svg_asset, parent: :clean_svg_asset do
