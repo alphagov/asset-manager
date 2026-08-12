@@ -14,6 +14,8 @@ class AssetsController < ApplicationController
   def create
     @asset = build_asset
 
+    @asset.user = current_user
+
     if @asset.save
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :created), status: :created
     else

@@ -19,6 +19,12 @@ RSpec.describe AssetsController, type: :controller do
         expect(assigns(:asset)).to be_persisted
       end
 
+      it "associates current user to asset" do
+        post :create, params: { asset: valid_attributes }
+
+        expect(assigns(:asset).user).to match(stub_user)
+      end
+
       it "stores file on asset" do
         post :create, params: { asset: valid_attributes }
 
