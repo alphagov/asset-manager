@@ -135,6 +135,10 @@ class Asset
     access_limited.include?(user.uid) || access_limited_organisation_ids.include?(user.organisation_content_id)
   end
 
+  def manageable_by?(user)
+    self.user == user || user.permissions.include?("Manage all Assets")
+  end
+
   def valid_auth_bypass_token?(auth_bypass_id)
     auth_bypass_ids.include?(auth_bypass_id) && (auth_bypass_ids_expiry.nil? || auth_bypass_ids_expiry > Time.zone.now)
   end
