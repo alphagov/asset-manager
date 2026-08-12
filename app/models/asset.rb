@@ -17,6 +17,7 @@ class Asset
   index deleted_at: 1
 
   belongs_to :replacement, class_name: "Asset", optional: true, index: true
+  belongs_to :user, optional: true
 
   field :state, type: String, default: "unscanned"
   field :filename_history, type: Array, default: -> { [] }
