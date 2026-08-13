@@ -350,6 +350,50 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#manageable_by?" do
+    let(:asset) { FactoryBot.build(:asset, user: asset_owner) }
+
+    context "when the user is a managing user" do
+      let(:user) { FactoryBot.build(:managing_user) }
+
+      context "and the asset is owned by the user" do
+        let(:asset_owner) { user }
+
+        it "returns true" do
+          expect(asset).to be_manageable_by(user)
+        end
+      end
+
+      context "and the asset is not owned by the user" do
+        let(:asset_owner) { FactoryBot.build(:user) }
+
+        it "returns true" do
+          expect(asset).to be_manageable_by(user)
+        end
+      end
+    end
+
+    context "when the user is a regular user" do
+      let(:user) { FactoryBot.build(:user) }
+
+      context "and the asset is owned by the user" do
+        let(:asset_owner) { user }
+
+        it "returns true" do
+          expect(asset).to be_manageable_by(user)
+        end
+      end
+
+      context "and the asset is not owned by the user" do
+        let(:asset_owner) { FactoryBot.build(:user) }
+
+        it "returns false" do
+          expect(asset).not_to be_manageable_by(user)
+        end
+      end
+    end
+  end
+
   describe "#accessible_by?" do
     context "when the asset is live" do
       let(:asset) { FactoryBot.build(:asset, draft: false) }

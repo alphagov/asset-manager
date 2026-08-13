@@ -17,6 +17,7 @@ class Asset
   index deleted_at: 1
 
   belongs_to :replacement, class_name: "Asset", optional: true, index: true
+  belongs_to :user, optional: true
 
   field :state, type: String, default: "unscanned"
   field :filename_history, type: Array, default: -> { [] }
@@ -132,6 +133,10 @@ class Asset
     return true unless draft? && access_limited?
 
     access_limited.include?(user.uid) || access_limited_organisation_ids.include?(user.organisation_content_id)
+  end
+
+  def manageable_by?(user)
+    self.user == user || user.permissions.include?("Manage all Assets")
   end
 
   def valid_auth_bypass_token?(auth_bypass_id)

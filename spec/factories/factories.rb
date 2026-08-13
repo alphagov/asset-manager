@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :asset do
     file { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/asset.png")) }
+    user
   end
 
   factory :virus_free_asset, parent: :asset do
@@ -53,5 +54,9 @@ FactoryBot.define do
   factory :user do
     sequence(:name) { |n| "Winston #{n}" }
     permissions { %w[signin] }
+  end
+
+  factory :managing_user, parent: :user do
+    permissions { ["signin", "Manage all Assets"] }
   end
 end

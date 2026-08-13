@@ -7,12 +7,16 @@ class AssetsController < ApplicationController
   def show
     @asset = find_asset(include_deleted: true)
 
+    return error_403 unless @asset.manageable_by?(current_user)
+
     expires_now
     render json: AssetPresenter.new(@asset, view_context)
   end
 
   def create
     @asset = build_asset
+
+    @asset.user = current_user
 
     if @asset.save
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :created), status: :created
@@ -24,6 +28,8 @@ class AssetsController < ApplicationController
   def update
     @asset = Asset.undeleted.or(Asset.where(draft: true)).find(params[:id])
 
+    return error_403 unless @asset.manageable_by?(current_user)
+
     if @asset.update(asset_params)
       render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
     else
@@ -33,12 +39,18 @@ class AssetsController < ApplicationController
 
   def destroy
     @asset = find_asset
+
+    return error_403 unless @asset.manageable_by?(current_user)
+
     @asset.destroy!
     render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end
 
   def restore
     @asset = find_asset(include_deleted: true)
+
+    return error_403 unless @asset.manageable_by?(current_user)
+
     @asset.restore
     render json: AssetPresenter.new(@asset, view_context).as_json(status: :success)
   end

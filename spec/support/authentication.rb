@@ -20,11 +20,19 @@ module AuthenticationControllerHelpers
   end
 
   def stub_user
-    FactoryBot.create(:user)
+    @stub_user ||= FactoryBot.create(:user)
+  end
+
+  def stub_managing_user
+    @stub_managing_user ||= FactoryBot.create(:managing_user)
   end
 
   def login_as_stub_user
     login_as stub_user
+  end
+
+  def login_as_stub_managing_user
+    login_as stub_managing_user
   end
 end
 RSpec.configuration.include AuthenticationControllerHelpers, type: :controller
@@ -39,7 +47,7 @@ module AuthenticationFeatureHelpers
   end
 
   def stub_user
-    FactoryBot.create(:user)
+    @stub_user ||= FactoryBot.create(:user)
   end
 
   def login_as_stub_user
