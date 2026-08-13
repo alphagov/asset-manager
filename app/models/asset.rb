@@ -53,8 +53,6 @@ class Asset
 
   field :auth_bypass_ids, type: Array, default: []
 
-  field :auth_bypass_ids_expiry, type: Time
-
   field :parent_document_url, type: String
 
   field :svg_scanned_at, type: Time
@@ -140,7 +138,7 @@ class Asset
   end
 
   def valid_auth_bypass_token?(auth_bypass_id)
-    auth_bypass_ids.include?(auth_bypass_id) && (auth_bypass_ids_expiry.nil? || auth_bypass_ids_expiry > Time.zone.now)
+    auth_bypass_ids.include?(auth_bypass_id)
   end
 
   def public_url_path
