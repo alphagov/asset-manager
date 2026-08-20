@@ -45,4 +45,26 @@ RSpec.describe "Access limited assets", type: :request do
 
     expect(response).to be_forbidden
   end
+
+  it "is accessible to Whitehall server via the shared API key" do
+    login_as unauthorised_user
+
+    allow(ENV).to receive(:fetch).and_call_original
+    allow(ENV).to receive(:fetch).with("WHITEHALL_ASSET_MANAGER_SHARED_API_KEY", nil).and_return("shared-api-key")
+
+    get download_media_path(id: asset, filename: asset.filename), headers: { "X-Whitehall-Asset-Manager-Shared-API-Key" => "shared-api-key" }
+
+    expect(response).to be_successful
+  end
+
+  it "is not accessible to Whitehall server if the shared API key is incorrect" do
+    login_as unauthorised_user
+
+    allow(ENV).to receive(:fetch).and_call_original
+    allow(ENV).to receive(:fetch).with("WHITEHALL_ASSET_MANAGER_SHARED_API_KEY", nil).and_return("shared-api-key")
+
+    get download_media_path(id: asset, filename: asset.filename), headers: { "X-Whitehall-Asset-Manager-Shared-API-Key" => "incorrect-shared-api-key" }
+
+    expect(response).to be_forbidden
+  end
 end

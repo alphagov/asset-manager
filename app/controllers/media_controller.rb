@@ -65,8 +65,17 @@ protected
     asset.valid_auth_bypass_token?(@token_payload["sub"])
   end
 
+  def is_being_requested_from_whitehall_server?
+    shared_api_key = ENV.fetch("WHITEHALL_ASSET_MANAGER_SHARED_API_KEY", nil)
+    return false if shared_api_key.nil?
+
+    request.headers["X-Whitehall-Asset-Manager-Shared-API-Key"] == shared_api_key
+  end
+
   def authorized_for_asset?(asset)
     return true unless requested_from_draft_assets_host? || requested_from_internal_host?
+
+    return true if is_being_requested_from_whitehall_server?
 
     return true if has_bypass_id_for_asset?(asset)
 
