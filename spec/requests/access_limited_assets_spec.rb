@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe "Access limited assets", type: :request do
   let(:authorised_user) { FactoryBot.create(:user, uid: "user-1-id") }
   let(:unauthorised_user) { FactoryBot.create(:user, uid: "user-2-id") }
+  let(:api_user_with_special_permission) { FactoryBot.create(:user, uid: "api-user-id", permissions: ["Bypass access-limiting"]) }
   let(:user_from_authorised_organisation) { FactoryBot.create(:user, uid: "user-3-id", organisation_content_id: "org-a") }
   let(:user_from_unauthorised_organisation) { FactoryBot.create(:user, uid: "user-4-id", organisation_content_id: "org-b") }
   let(:asset) { FactoryBot.create(:uploaded_asset, draft: true, access_limited: ["user-1-id"], access_limited_organisation_ids: %w[org-a]) }
@@ -44,5 +45,13 @@ RSpec.describe "Access limited assets", type: :request do
     get download_media_path(id: asset, filename: asset.filename)
 
     expect(response).to be_forbidden
+  end
+
+  it "is accessible to API users with the 'Bypass access-limiting' permission" do
+    login_as api_user_with_special_permission
+
+    get download_media_path(id: asset, filename: asset.filename)
+
+    expect(response).to be_successful
   end
 end

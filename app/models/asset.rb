@@ -130,7 +130,7 @@ class Asset
   def accessible_by?(user)
     return true unless draft? && access_limited?
 
-    access_limited.include?(user.uid) || access_limited_organisation_ids.include?(user.organisation_content_id)
+    access_limited.include?(user.uid) || access_limited_organisation_ids.include?(user.organisation_content_id) || user.permissions.include?("Bypass access-limiting")
   end
 
   def manageable_by?(user)
