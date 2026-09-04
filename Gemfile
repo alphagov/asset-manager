@@ -32,11 +32,10 @@ group :development, :test do
   gem "database_cleaner-mongoid"
   gem "factory_bot_rails"
   gem "pact", "~> 1.67", require: false
-  gem "pact_broker-client", require: false
+  gem "pact-ffi", require: false
   gem "rspec-rails"
   gem "rubocop-govuk"
   gem "simplecov"
-  gem "webmock", require: false
 end
 
 group :development do
@@ -45,4 +44,5 @@ end
 
 group :test do
   gem "rspec-sidekiq"
+  gem "webmock"
 end
