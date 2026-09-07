@@ -1,6 +1,5 @@
 require "rails_helper"
-require "pact/v2"
-require "pact/v2/rspec"
+require "pact/rspec"
 require "webrick"
 
 # The Pact v2 verifier serves the provider app with WEBrick, and its Rust core
@@ -39,8 +38,8 @@ class PactExampleOrgHost
   end
 end
 
-RSpec.describe "Verify pacts from GDS API Adapters", :pact_v2 do # rubocop:disable RSpec/EmptyExampleGroup
-  Pact::V2.configure do |config|
+RSpec.describe "Verify pacts from GDS API Adapters", :pact do # rubocop:disable RSpec/EmptyExampleGroup
+  Pact.configure do |config|
     config.before_provider_state_setup do
       DatabaseCleaner.clean_with :deletion
       GDS::SSO.test_user = FactoryBot.create(:user, permissions: %w[signin])

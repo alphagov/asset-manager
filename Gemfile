@@ -6,7 +6,7 @@ gem "addressable"
 gem "aws-sdk-core"
 gem "aws-sdk-s3"
 gem "bootsnap", require: false
-gem "carrierwave", "< 3" # pin at v2 to avoid breaking changes
+gem "carrierwave", "> 2.2.0", "< 3" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "csv"
 gem "gds-sso"
@@ -31,8 +31,8 @@ group :development, :test do
   gem "climate_control"
   gem "database_cleaner-mongoid"
   gem "factory_bot_rails"
-  gem "pact", "~> 1.67", require: false
-  gem "pact-ffi", require: false
+  gem "pact", "~> 2.0", require: false
+  gem "rspec"
   gem "rspec-rails"
   gem "rubocop-govuk"
   gem "simplecov"
