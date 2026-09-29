@@ -576,6 +576,32 @@ RSpec.describe Asset, type: :model do
     end
   end
 
+  describe "#schedule_virus_scan" do
+    it "queues a VirusScanJob for an unscanned asset" do
+      asset = FactoryBot.build(:asset)
+
+      expect(VirusScanJob).to receive(:perform_async).with(asset.id.to_s)
+
+      asset.schedule_virus_scan
+    end
+
+    it "does not queue a job when the asset is not unscanned" do
+      asset = FactoryBot.create(:virus_free_asset)
+
+      expect(VirusScanJob).not_to receive(:perform_async)
+
+      asset.schedule_virus_scan
+    end
+
+    it "does not queue a job when redirect_url is set" do
+      asset = FactoryBot.build(:asset, redirect_url: "https://gov.uk/random")
+
+      expect(VirusScanJob).not_to receive(:perform_async)
+
+      asset.schedule_virus_scan
+    end
+  end
+
   describe "scanning files" do
     context "when creating an asset" do
       let(:asset) { FactoryBot.build(:asset) }
