@@ -244,6 +244,10 @@ class Asset
     super
   end
 
+  def schedule_virus_scan
+    VirusScanJob.perform_async(id.to_s) if unscanned? && redirect_url.blank?
+  end
+
   def schedule_svg_batch_scan
     SvgScanBatchJob.perform_async(id.to_s)
   end
@@ -266,10 +270,6 @@ protected
     self.svg_scanned_at = nil
     self.svg_scan_state = nil
     self.state = "unscanned"
-  end
-
-  def schedule_virus_scan
-    VirusScanJob.perform_async(id.to_s) if unscanned? && redirect_url.blank?
   end
 
   def file_exists?
