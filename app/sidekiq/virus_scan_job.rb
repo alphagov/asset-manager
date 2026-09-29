@@ -6,8 +6,6 @@ class VirusScanJob
 
   sidekiq_options lock: :until_executing
 
-  class AssetReplaced < StandardError; end
-
   def perform(asset_id)
     asset = Asset.find(asset_id)
     if asset.unscanned?
