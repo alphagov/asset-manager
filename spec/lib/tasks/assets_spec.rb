@@ -86,6 +86,56 @@ RSpec.describe "assets.rake" do
     end
   end
 
+  describe "assets:fix_draft_origin_parent_document_urls" do
+    let(:task) { Rake::Task["assets:fix_draft_origin_parent_document_urls"] }
+    let(:draft_origin_url) { "https://draft-origin.publishing.service.gov.uk/government/publications/example?foo=bar#baz" }
+    let(:live_url) { "#{Plek.website_root}/government/publications/example?foo=bar#baz" }
+
+    before { task.reenable }
+
+    def asset_with_parent_document_url(parent_document_url, **attributes)
+      asset = FactoryBot.create(:uploaded_asset, **attributes)
+      asset.set(parent_document_url:)
+      asset
+    end
+
+    it "points the parent_document_url of a deleted, non-draft asset at the live site, so it can be restored" do
+      asset = asset_with_parent_document_url(draft_origin_url, deleted_at: Time.zone.now)
+      expect(asset).not_to be_valid
+
+      expect { task.invoke }.to output("#{asset.id}: #{draft_origin_url} -> #{live_url}\n").to_stdout
+
+      asset.reload
+      expect(asset.parent_document_url).to eq(live_url)
+      expect { asset.restore }.not_to raise_error
+      expect(asset).not_to be_deleted
+    end
+
+    it "fixes non-deleted, non-draft assets too, as they also fail validation" do
+      asset = asset_with_parent_document_url(draft_origin_url)
+
+      expect { task.invoke }.to output.to_stdout
+
+      expect(asset.reload.parent_document_url).to eq(live_url)
+    end
+
+    it "does not change draft assets, whose draft-origin parent_document_url is valid" do
+      asset = asset_with_parent_document_url(draft_origin_url, draft: true)
+
+      expect { task.invoke }.not_to output.to_stdout
+
+      expect(asset.reload.parent_document_url).to eq(draft_origin_url)
+    end
+
+    it "does not change assets with a live parent_document_url" do
+      asset = asset_with_parent_document_url("https://www.gov.uk/government/publications/example")
+
+      expect { task.invoke }.not_to output.to_stdout
+
+      expect(asset.reload.parent_document_url).to eq("https://www.gov.uk/government/publications/example")
+    end
+  end
+
   describe "assets:bulk_scan_svgs" do
     let(:task) { Rake::Task["assets:bulk_scan_svgs"] }
     let(:sidekiq_queue) { instance_double(Sidekiq::Queue) }

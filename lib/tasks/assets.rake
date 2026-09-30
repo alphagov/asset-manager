@@ -33,6 +33,22 @@ namespace :assets do
     puts "Asset ID for #{legacy_url_path} is #{asset.id}."
   end
 
+  desc "Point non-draft assets' draft-origin `parent_document_url`s at the live site, as they fail validation (and so can't be restored or updated)"
+  task fix_draft_origin_parent_document_urls: :environment do
+    website_root = Addressable::URI.parse(Plek.website_root)
+
+    Asset.where(draft: false, parent_document_url: %r{\Ahttps?://draft-origin}).each do |asset|
+      old_parent_document_url = asset.parent_document_url
+      new_parent_document_url = Addressable::URI.parse(old_parent_document_url)
+      new_parent_document_url.scheme = website_root.scheme
+      new_parent_document_url.host = website_root.host
+
+      # `set` skips validations, which the asset currently fails
+      asset.set(parent_document_url: new_parent_document_url.to_s)
+      puts "#{asset.id}: #{old_parent_document_url} -> #{new_parent_document_url}"
+    end
+  end
+
   desc "Soft delete assets and check deleted invalid state"
   task :bulk_soft_delete, %i[csv_path] => :environment do |_t, args|
     csv_path = args.fetch(:csv_path)
