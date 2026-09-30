@@ -16,7 +16,7 @@ Assets must be in draft for certain authorisation protocols to apply. See [docum
 
 This is a representation of the internal Asset Manager processing of the asset, particularly around uploading and virus scanning status.
 
-NB: There are some invalid remnants of a previous state machine, including state values such as `deleted`, in the database. These should be removed.
+NB: `state` has nothing to do with deletion, which is driven entirely by `deleted_at`.
 
 ```mermaid
 flowchart TD
