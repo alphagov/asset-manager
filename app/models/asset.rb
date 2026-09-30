@@ -85,7 +85,7 @@ class Asset
             allow_nil: true
   validates :svg_scan_state, absence: true, if: :unscanned?
 
-  validate :check_specified_replacement_exists
+  validate :check_specified_replacement_exists, if: :replacement_id?
   validate :prevent_transition_from_published_to_draft_if_replaced
   validate :ensure_parent_document_url_is_valid
 
@@ -281,10 +281,7 @@ protected
   end
 
   def check_specified_replacement_exists
-    replacement = Asset.where(id: replacement_id)
-    if replacement_id.present? && replacement.blank?
-      errors.add(:replacement, "not found")
-    end
+    errors.add(:replacement, "not found") unless Asset.exists?(id: replacement_id)
   end
 
   def prevent_transition_from_published_to_draft_if_replaced
