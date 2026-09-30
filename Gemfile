@@ -9,7 +9,7 @@ gem "bootsnap", require: false
 gem "carrierwave", "> 2.2.0", "< 3" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "csv"
-gem "gds-sso"
+gem "gds-sso", github: "alphagov/gds-sso", branch: "PP-7978-resolve-argument-error-in-support-api"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "jwt"

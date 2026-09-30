@@ -1,3 +1,18 @@
+GIT
+  remote: https://github.com/alphagov/gds-sso.git
+  revision: bd1ccb15be42c52c7e8d9cec74eb2007a81f68c9
+  branch: PP-7978-resolve-argument-error-in-support-api
+  specs:
+    gds-sso (22.3.0)
+      oauth2 (~> 2.0)
+      omniauth (~> 2.1)
+      omniauth-oauth2 (~> 1.8)
+      plek (>= 5)
+      rack
+      rails (>= 7)
+      warden (~> 1.2)
+      warden-oauth2 (~> 0.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -166,15 +181,6 @@ GEM
       plek (>= 1.9.0)
       rack (>= 2.2.0)
       rest-client (~> 2.0)
-    gds-sso (22.3.0)
-      oauth2 (~> 2.0)
-      omniauth (~> 2.1)
-      omniauth-oauth2 (~> 1.8)
-      plek (>= 5)
-      rack
-      rails (>= 7)
-      warden (~> 1.2)
-      warden-oauth2 (~> 0.0.1)
     globalid (1.4.0)
       activesupport (>= 6.1)
     google-protobuf (4.36.1-aarch64-linux-gnu)
@@ -768,7 +774,7 @@ DEPENDENCIES
   csv
   database_cleaner-mongoid
   factory_bot_rails
-  gds-sso
+  gds-sso!
   govuk_app_config
   govuk_sidekiq
   jwt
@@ -851,7 +857,7 @@ CHECKSUMS
   ffi (1.17.4-x86_64-linux-gnu) sha256=9d3db14c2eae074b382fa9c083fe95aec6e0a1451da249eab096c34002bc752d
   ffi (1.17.4-x86_64-linux-musl) sha256=3fdf9888483de005f8ef8d1cf2d3b20d86626af206cbf780f6a6a12439a9c49e
   gds-api-adapters (103.4.4) sha256=d53085a8134493167b4069561e51acfc27e47e42c06045819392d45f50c3a0f2
-  gds-sso (22.3.0) sha256=28e356090c6b577ebdcb17ac9d77c5473086bbb2c080153920089034521e766a
+  gds-sso (22.3.0)
   globalid (1.4.0) sha256=037f12fbf1d9d7a014d501c2d5c77356fd4ddd96d7a7991d6700bba96706f427
   google-protobuf (4.36.1-aarch64-linux-gnu) sha256=3883fa1b0e99221f68f4a8511bc4fb1888897dcb6cc8bf2805c92c16fc99b499
   google-protobuf (4.36.1-aarch64-linux-musl) sha256=6da393554ecc96168ae6ddf663392bf8ce4e4fce7c18fda348882ce2e97d6a87
