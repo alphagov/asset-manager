@@ -30,6 +30,62 @@ RSpec.describe "assets.rake" do
     end
   end
 
+  describe "assets:fix_legacy_deleted_state" do
+    let(:task) { Rake::Task["assets:fix_legacy_deleted_state"] }
+    let(:original_deleted_at) { Time.zone.parse("2020-01-01") }
+    let!(:soft_deleted) { legacy_deleted_asset(deleted_at: original_deleted_at) }
+    let!(:not_soft_deleted) { legacy_deleted_asset(deleted_at: nil) }
+    let!(:replaced) { legacy_deleted_asset(deleted_at: nil, replacement: FactoryBot.create(:uploaded_asset)) }
+    let!(:unaffected) { FactoryBot.create(:uploaded_asset) }
+
+    before { task.reenable }
+
+    def legacy_deleted_asset(deleted_at:, replacement: nil)
+      asset = FactoryBot.create(:uploaded_asset, deleted_at:, replacement:)
+      asset.set(state: "deleted", updated_at: Time.zone.parse("2019-06-01"))
+      asset
+    end
+
+    it "sets already soft deleted assets to 'uploaded', keeping their deleted_at" do
+      expect { task.invoke }.to output(/Fixed state of 2 soft deleted or replaced assets/).to_stdout
+
+      soft_deleted.reload
+      expect(soft_deleted.state).to eq("uploaded")
+      expect(soft_deleted.deleted_at).to eq(original_deleted_at)
+      expect(soft_deleted).to be_valid
+    end
+
+    it "soft deletes assets without deleted_at, using their updated_at" do
+      expect { task.invoke }.to output(/Soft deleted and fixed state: #{not_soft_deleted.id}/).to_stdout
+
+      not_soft_deleted.reload
+      expect(not_soft_deleted.state).to eq("uploaded")
+      expect(not_soft_deleted.deleted_at).to eq(Time.zone.parse("2019-06-01"))
+      expect(not_soft_deleted).to be_deleted
+      expect(not_soft_deleted).to be_valid
+    end
+
+    it "sets replaced assets to 'uploaded' without soft deleting them, so they still redirect" do
+      expect { task.invoke }.to output.to_stdout # Swallows output for cleaner test output
+
+      replaced.reload
+      expect(replaced.state).to eq("uploaded")
+      expect(replaced).not_to be_deleted
+      expect(replaced).to be_valid
+    end
+
+    it "does not touch assets in other states" do
+      # `reload` needed before and after so we compare database precision rather than
+      # re-serialized in-memory object precision
+      updated_at = unaffected.reload.updated_at
+
+      expect { task.invoke }.to output.to_stdout # Swallows output for cleaner test output
+
+      expect(unaffected.reload.updated_at).to eq(updated_at)
+      expect(unaffected).not_to be_deleted
+    end
+  end
+
   describe "assets:bulk_scan_svgs" do
     let(:task) { Rake::Task["assets:bulk_scan_svgs"] }
     let(:sidekiq_queue) { instance_double(Sidekiq::Queue) }

@@ -51,6 +51,20 @@ namespace :assets do
     end
   end
 
+  desc "Fix assets in the legacy 'deleted' state, soft deleting any that aren't already (unless replaced)"
+  task fix_legacy_deleted_state: :environment do
+    # `set` and `update_all` skip validations and callbacks, which is what we want:
+    # these records fail validation (invalid state) and must not trigger any jobs.
+    Asset.where(state: "deleted", deleted_at: nil, replacement_id: nil).each do |asset|
+      asset.set(state: "uploaded", deleted_at: asset.updated_at || Time.zone.now)
+      puts "Soft deleted and fixed state: #{asset.id}"
+    end
+
+    # Replaced assets are left undeleted, so that they continue to redirect to their replacement.
+    result = Asset.where(state: "deleted").update_all(state: "uploaded")
+    puts "Fixed state of #{result.modified_count} soft deleted or replaced assets"
+  end
+
   desc "Scan a batch of files yet to be scanned for SVG vulnerabilites"
   task :bulk_scan_svgs, %i[batch_size] => :environment do |_t, args|
     if Sidekiq::Queue.new("batch").any?
