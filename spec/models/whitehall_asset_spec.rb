@@ -12,7 +12,7 @@ RSpec.describe WhitehallAsset, type: :model do
     end
 
     context "when legacy_url_path is set" do
-      context "and legacy_url_path starts with /government/uploads" do
+      context "and legacy_url_path starts with /government/uploads/" do
         before do
           asset.legacy_url_path = "/government/uploads/asset.png"
         end
@@ -22,14 +22,25 @@ RSpec.describe WhitehallAsset, type: :model do
         end
       end
 
-      context "and legacy_url_path does not start with /government/uploads" do
+      context "and legacy_url_path does not start with /government/uploads/" do
         before do
           asset.legacy_url_path = "/not-government/uploads/asset.png"
         end
 
         it "is not valid" do
           expect(asset).not_to be_valid
-          expect(asset.errors[:legacy_url_path]).to include("must start with /government/uploads")
+          expect(asset.errors[:legacy_url_path]).to include("must start with /government/uploads/ and have a slug")
+        end
+      end
+
+      context "and legacy_url_path does not have a valid slug" do
+        before do
+          asset.legacy_url_path = "/not-government/uploads/"
+        end
+
+        it "is not valid" do
+          expect(asset).not_to be_valid
+          expect(asset.errors[:legacy_url_path]).to include("must start with /government/uploads/ and have a slug")
         end
       end
 

@@ -66,7 +66,7 @@ class Asset
             presence: true,
             uniqueness: true,
             format: {
-              with: /[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}/,
+              with: /\A[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}\z/,
               message: "must match the format defined in rfc4122",
             }
 
