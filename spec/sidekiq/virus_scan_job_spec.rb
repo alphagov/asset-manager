@@ -38,10 +38,39 @@ RSpec.describe VirusScanJob do
         allow(Rails.logger).to receive(:info).at_least(:once)
       end
 
-      it "logs the job failure and does not update the asset's state" do
+      it "logs the mismatch, queues a new scan and does not update the asset's state" do
+        expect(described_class).to receive(:perform_async).with(asset.id.to_s)
+
         worker.perform(asset.id)
-        expect(Rails.logger).to have_received(:info).with("#{asset.id} - VirusScanJob - Checksum failed").once
+
+        expect(Rails.logger).to have_received(:info).with("#{asset.id} - VirusScanJob - Checksum failed; queueing a new scan").once
         expect(asset.reload).not_to be_clean
+      end
+    end
+
+    context "when the file is replaced by a new upload while the scan is running" do
+      let(:start_scan) { Queue.new }
+      let(:finish_scan) { Queue.new }
+      let(:new_upload) { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/lorem.txt")) }
+
+      before do
+        allow(scanner).to receive(:scan) do
+          start_scan << true
+          finish_scan.pop # blocks the thread until pushed to
+          true
+        end
+      end
+
+      it "leaves the asset unscanned and queues a scan of the new file" do
+        thread = Thread.new { worker.perform(asset.id) }
+        start_scan.pop
+        asset.file = File.open(new_upload)
+        asset.save!
+        finish_scan << true
+        thread.join(5)
+
+        expect(asset.reload).to be_unscanned
+        expect(described_class.jobs.size).to eq(3) # create + re-upload + requeue
       end
     end
 
@@ -81,6 +110,22 @@ RSpec.describe VirusScanJob do
 
       worker.perform(asset.id)
     end
+
+    context "when its file has since been deleted" do
+      before do
+        FileUtils.rm_rf(File.dirname(asset.file.path))
+      end
+
+      it "does nothing: no scan, no error, no state change" do
+        expect(scanner).not_to receive(:scan)
+        expect(Rails.logger).not_to receive(:warn)
+
+        expect { worker.perform(asset.id) }.not_to raise_error
+
+        expect(asset.reload).to be_uploaded
+        expect { worker.perform(asset.id) }.not_to change(described_class.jobs, :size)
+      end
+    end
   end
 
   context "when a virus is found" do
@@ -103,6 +148,97 @@ RSpec.describe VirusScanJob do
       worker.perform(asset.id)
 
       expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob - File #{asset.filename} marked as infected").once
+    end
+  end
+
+  context "when the scanner errors because the scanned file no longer exists" do
+    let(:exception) { VirusScanner::Error.new("/path/to/file.pdf: Can't access file ERROR") }
+
+    before do
+      allow(scanner).to receive(:scan).and_raise(exception)
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with(asset.file.path).and_return(false)
+      allow(Rails.logger).to receive(:warn).at_least(:once)
+    end
+
+    it "does not raise, does not update the asset's state and does not retry" do
+      expect { worker.perform(asset.id) }.not_to raise_error
+
+      asset.reload
+      expect(asset).to be_unscanned
+      expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob - File removed during scan and no new file available to scan").once
+    end
+
+    context "and the asset has since been re-uploaded with a new file" do
+      let(:reuploaded_asset) do
+        instance_double(
+          Asset,
+          id: asset.id,
+          unscanned?: true,
+          redirect_url: nil,
+          file: double(path: "/path/to/new/file.pdf"),
+        )
+      end
+
+      before do
+        allow(Asset).to receive(:find).with(asset.id).and_return(asset)
+        allow(asset).to receive(:reload).and_return(reuploaded_asset)
+        allow(File).to receive(:exist?).with("/path/to/new/file.pdf").and_return(true)
+      end
+
+      it "queues a scan of the current file instead of retrying" do
+        expect(reuploaded_asset).to receive(:schedule_virus_scan)
+
+        expect { worker.perform(asset.id) }.not_to raise_error
+
+        expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob - File replaced during scan; queueing scan of the current file").once
+      end
+    end
+  end
+
+  context "when the file is replaced while the scan is running" do
+    let(:start_scan) { Queue.new }
+    let(:finish_scan)  { Queue.new }
+    let(:new_upload) { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/lorem.txt")) }
+
+    before do
+      allow(Rails.logger).to receive(:warn).at_least(:once)
+      allow(scanner).to receive(:scan) do |path|
+        start_scan << true
+        finish_scan.pop # blocks the thread until pushed to
+        raise VirusScanner::Error, "Can't access file" unless File.exist?(path)
+
+        true
+      end
+    end
+
+    it "warns and queues a scan of the new file" do
+      thread = Thread.new { worker.perform(asset.id) }
+      begin
+        start_scan.pop
+        asset.file = new_upload
+        asset.save!
+        finish_scan << true
+        thread.join(5)
+
+        expect(asset.reload).to be_unscanned
+        expect(described_class.jobs.size).to eq(3) # create + re-upload + requeue
+      ensure
+        finish_scan << true
+        thread.join(1)
+      end
+    end
+  end
+
+  context "when the scanner errors but the file still exists" do
+    let(:exception) { VirusScanner::Error.new("WARNING: Can't connect to clamd") }
+
+    before do
+      allow(scanner).to receive(:scan).and_raise(exception)
+    end
+
+    it "re-raises so that Sidekiq can retry the job" do
+      expect { worker.perform(asset.id) }.to raise_error(VirusScanner::Error)
     end
   end
 end

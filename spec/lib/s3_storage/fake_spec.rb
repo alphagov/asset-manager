@@ -77,10 +77,10 @@ RSpec.describe S3Storage::Fake do
 
     it "returns URL with host set to AssetManager.fake_s3.host" do
       url = storage.presigned_url_for(asset)
-      scheme, domain, port = URI(url).select(:scheme, :host, :port)
-      host = "#{scheme}://#{domain}:#{port}"
+      actual = URI(url).select(:scheme, :host, :port)
+      expected = URI(AssetManager.fake_s3.host).select(:scheme, :host, :port)
 
-      expect(host).to eq(AssetManager.fake_s3.host)
+      expect(actual).to eq(expected)
     end
   end
 

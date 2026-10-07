@@ -5,6 +5,14 @@ require File.expand_path("../config/environment", __dir__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "spec_helper"
 require "rspec/rails"
+
+# Rails 8.1 lazy-loads and caches routes. The following forces it to draw the
+# routes before any of the tests run, resulting in /fake-s3 to always be
+# present. The combination of randomised test ordering and stubbing can lead to
+# the mounting of this route being skipped, which in turn then leads to all
+# tests that rely on the route being present failing.
+Rails.application.routes.routes.size
+
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
