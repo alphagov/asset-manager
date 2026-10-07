@@ -462,7 +462,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "cannot be changed after creation" do
-      uuid = "11111111-1111-1111-1111-11111111111111"
+      uuid = "11111111-1111-1111-1111-111111111111"
       asset = FactoryBot.create(:asset, uuid:)
       expect { asset.uuid = "22222222-2222-2222-2222-222222222222" }
         .not_to change(asset, :uuid)
@@ -475,7 +475,7 @@ RSpec.describe Asset, type: :model do
     end
 
     it "must be unique" do
-      uuid = "11111111-1111-1111-1111-11111111111111"
+      uuid = "11111111-1111-1111-1111-111111111111"
       FactoryBot.create(:asset, uuid:)
       asset = FactoryBot.build(:asset, uuid:)
       expect(asset).not_to be_valid
@@ -484,6 +484,20 @@ RSpec.describe Asset, type: :model do
 
     it "must be in the format defined in rfc4122" do
       asset = FactoryBot.build(:asset, uuid: "uuid")
+      expect(asset).not_to be_valid
+      expect(asset.errors[:uuid]).to include("must match the format defined in rfc4122")
+    end
+
+    it "must not contain any leading characters" do
+      uuid = "a11111111-1111-1111-1111-111111111111"
+      asset = FactoryBot.build(:asset, uuid:)
+      expect(asset).not_to be_valid
+      expect(asset.errors[:uuid]).to include("must match the format defined in rfc4122")
+    end
+
+    it "must not contain any trailing characters" do
+      uuid = "11111111-1111-1111-1111-111111111111a"
+      asset = FactoryBot.build(:asset, uuid:)
       expect(asset).not_to be_valid
       expect(asset.errors[:uuid]).to include("must match the format defined in rfc4122")
     end

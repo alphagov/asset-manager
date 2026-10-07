@@ -12,8 +12,8 @@ class WhitehallAsset < Asset
               conditions: -> { where(deleted_at: nil) },
             },
             format: {
-              with: %r{\A/government/uploads},
-              message: "must start with /government/uploads",
+              with: %r{\A/government/uploads/.+\z},
+              message: "must start with /government/uploads/ and have a slug",
             }
 
   def self.from_params(path:, format: nil, path_prefix: nil)
