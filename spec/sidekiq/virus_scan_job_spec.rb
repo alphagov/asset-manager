@@ -48,6 +48,32 @@ RSpec.describe VirusScanJob do
       end
     end
 
+    context "when the file is replaced by a new upload while the scan is running" do
+      let(:start_scan) { Queue.new }
+      let(:finish_scan) { Queue.new }
+      let(:new_upload) { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/lorem.txt")) }
+
+      before do
+        allow(scanner).to receive(:scan) do
+          start_scan << true
+          finish_scan.pop # blocks the thread until pushed to
+          true
+        end
+      end
+
+      it "leaves the asset unscanned and queues a scan of the new file" do
+        thread = Thread.new { worker.perform(asset.id) }
+        start_scan.pop
+        asset.file = File.open(new_upload)
+        asset.save!
+        finish_scan << true
+        thread.join(5)
+
+        expect(asset.reload).to be_unscanned
+        expect(described_class.jobs.size).to eq(3) # create + re-upload + requeue
+      end
+    end
+
     it "sets the state to clean" do
       worker.perform(asset.id)
 
@@ -83,6 +109,22 @@ RSpec.describe VirusScanJob do
       expect(scanner).not_to receive(:scan)
 
       worker.perform(asset.id)
+    end
+
+    context "when its file has since been deleted" do
+      before do
+        FileUtils.rm_rf(File.dirname(asset.file.path))
+      end
+
+      it "does nothing: no scan, no error, no state change" do
+        expect(scanner).not_to receive(:scan)
+        expect(Rails.logger).not_to receive(:warn)
+
+        expect { worker.perform(asset.id) }.not_to raise_error
+
+        expect(asset.reload).to be_uploaded
+        expect { worker.perform(asset.id) }.not_to change(described_class.jobs, :size)
+      end
     end
   end
 
@@ -150,6 +192,40 @@ RSpec.describe VirusScanJob do
         expect { worker.perform(asset.id) }.not_to raise_error
 
         expect(Rails.logger).to have_received(:warn).with("#{asset.id} - VirusScanJob - File replaced during scan; queueing scan of the current file").once
+      end
+    end
+  end
+
+  context "when the file is replaced while the scan is running" do
+    let(:start_scan) { Queue.new }
+    let(:finish_scan)  { Queue.new }
+    let(:new_upload) { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/files/lorem.txt")) }
+
+    before do
+      allow(Rails.logger).to receive(:warn).at_least(:once)
+      allow(scanner).to receive(:scan) do |path|
+        start_scan << true
+        finish_scan.pop # blocks the thread until pushed to
+        raise VirusScanner::Error, "Can't access file" unless File.exist?(path)
+
+        true
+      end
+    end
+
+    it "warns and queues a scan of the new file" do
+      thread = Thread.new { worker.perform(asset.id) }
+      begin
+        start_scan.pop
+        asset.file = new_upload
+        asset.save!
+        finish_scan << true
+        thread.join(5)
+
+        expect(asset.reload).to be_unscanned
+        expect(described_class.jobs.size).to eq(3) # create + re-upload + requeue
+      ensure
+        finish_scan << true
+        thread.join(1)
       end
     end
   end
