@@ -50,7 +50,7 @@ ENV GOVUK_APP_NAME=asset-manager
 # TODO: move ClamAV into a completely separate service or (better) stop trying
 # to run our own antimalware and use a hosted service (such as VirusTotal or
 # S3 Malware Scanning or similar).
-RUN install_packages shared-mime-info netcat-openbsd ; \
+RUN install_packages libcurl4t64 shared-mime-info netcat-openbsd ; \
     mkdir -p /var/lib/clamav ; \
     chown app:app /var/lib/clamav
 COPY --from=clam_builder /clamav /
