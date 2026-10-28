@@ -77,6 +77,55 @@ RSpec.describe Asset, type: :model do
       end
     end
 
+    context "when the asset is its own replacement" do
+      subject(:asset) { FactoryBot.create(:asset, draft: false) }
+
+      before do
+        asset.replacement_id = asset.id
+      end
+
+      it "is not valid" do
+        expect(asset).not_to be_valid
+      end
+
+      it "includes error for replacing itself" do
+        asset.valid?
+        expect(asset.errors[:replacement]).to include("cannot be the asset itself")
+      end
+
+      it "does not blow the stack when saved" do
+        expect { asset.save }.not_to raise_error
+      end
+    end
+
+    context "when the replacement chain loops back to the asset" do
+      let(:original) { FactoryBot.create(:asset, draft: false) }
+      let(:replacement) { FactoryBot.create(:asset, draft: false) }
+
+      before do
+        original.update!(replacement:)
+        replacement.replacement_id = original.id
+      end
+
+      it "is not valid" do
+        expect(replacement).not_to be_valid
+      end
+
+      it "includes error for the loop" do
+        replacement.valid?
+        expect(replacement.errors[:replacement]).to include("would create a loop of replacements")
+      end
+
+      it "does not blow the stack when saved" do
+        expect { replacement.save }.not_to raise_error
+      end
+
+      it "leaves the original pointing at the replacement" do
+        expect(replacement.save).to be(false)
+        expect(original.reload.replacement_id).to eq(replacement.id)
+      end
+    end
+
     context "when replacements are replaced" do
       let(:first_replacement) { FactoryBot.create(:asset, draft: false) }
       let(:second_replacement) { FactoryBot.create(:asset, draft: true) }

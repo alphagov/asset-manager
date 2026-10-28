@@ -86,6 +86,7 @@ class Asset
   validates :svg_scan_state, absence: true, if: :unscanned?
 
   validate :check_specified_replacement_exists, if: :replacement_id?
+  validate :prevent_replacement_loop, if: :replacement_id?
   validate :prevent_transition_from_published_to_draft_if_replaced
   validate :ensure_parent_document_url_is_valid
 
@@ -282,6 +283,26 @@ protected
 
   def check_specified_replacement_exists
     errors.add(:replacement, "not found") unless Asset.exists?(id: replacement_id)
+  end
+
+  def prevent_replacement_loop
+    if replacement_id == id
+      errors.add(:replacement, "cannot be the asset itself")
+      return
+    end
+
+    visited_ids = Set.new([id])
+    current_id = replacement_id
+
+    while current_id
+      if visited_ids.include?(current_id)
+        errors.add(:replacement, "would create a loop of replacements")
+        return
+      end
+
+      visited_ids << current_id
+      current_id = Asset.where(id: current_id).pick(:replacement_id)
+    end
   end
 
   def prevent_transition_from_published_to_draft_if_replaced
