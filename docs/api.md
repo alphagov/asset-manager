@@ -132,13 +132,8 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
-  "state":"clean"
-}
-
-# Confirm that it's been deleted
-curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
-{
-  "_response_info":{"status":"not found"}
+  "state":"clean",
+  "deleted":true
 }
 ```
 
