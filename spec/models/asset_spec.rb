@@ -875,6 +875,12 @@ RSpec.describe Asset, type: :model do
       expect(asset.deleted_at).to be_nil
     end
 
+    context "when the asset has already been deleted" do
+      it "leaves the original deletion time intact" do
+        expect { asset.destroy }.not_to change(asset, :deleted_at)
+      end
+    end
+
     context "when the file has already been deleted" do
       let(:stat) { Errno::ENOENT }
 

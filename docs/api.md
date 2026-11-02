@@ -120,7 +120,7 @@ Tue 18 Jul 2017 17:06:41 BST
 
 ## Delete asset
 
-`DELETE /assets/:id` marks the asset as having been deleted.
+`DELETE /assets/:id` marks the asset as having been deleted. It's idempotent: deleting an asset that's already been deleted succeeds and leaves the original deletion time intact.
 
 ```
 # Delete the asset

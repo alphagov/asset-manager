@@ -38,7 +38,7 @@ class AssetsController < ApplicationController
   end
 
   def destroy
-    @asset = find_asset
+    @asset = find_asset(include_deleted: true)
 
     return error_403 unless @asset.manageable_by?(current_user)
 
