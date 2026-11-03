@@ -10,7 +10,7 @@ gem "carrierwave", "> 2.2.0", "< 3" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "csv"
 gem "gds-sso"
-gem "govuk_app_config"
+gem "govuk_app_config", ">= 9.27.0"
 gem "govuk_sidekiq"
 gem "jwt"
 gem "mongo", "~> 2.23.0"
