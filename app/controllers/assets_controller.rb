@@ -5,7 +5,7 @@ class AssetsController < ApplicationController
   before_action :check_request_size, only: %i[create update]
 
   def show
-    @asset = find_asset(include_deleted: true)
+    @asset = Asset.find(params[:id])
 
     return error_403 unless @asset.manageable_by?(current_user)
 
@@ -38,7 +38,7 @@ class AssetsController < ApplicationController
   end
 
   def destroy
-    @asset = find_asset(include_deleted: true)
+    @asset = Asset.find(params[:id])
 
     return error_403 unless @asset.manageable_by?(current_user)
 
@@ -47,7 +47,7 @@ class AssetsController < ApplicationController
   end
 
   def restore
-    @asset = find_asset(include_deleted: true)
+    @asset = Asset.find(params[:id])
 
     return error_403 unless @asset.manageable_by?(current_user)
 
@@ -87,11 +87,6 @@ private
       access_limited_organisation_ids: [],
       auth_bypass_ids: [],
     )
-  end
-
-  def find_asset(include_deleted: false)
-    scope = include_deleted ? Asset : Asset.undeleted
-    scope.find(params[:id])
   end
 
   def build_asset
