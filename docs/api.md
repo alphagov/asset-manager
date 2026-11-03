@@ -139,7 +139,7 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
 
 ## Restore asset
 
-`POST /assets/:id/restore` restores a previously deleted asset.
+`POST /assets/:id/restore` restores a previously deleted asset. It's idempotent: restoring an asset that isn't deleted succeeds and leaves it unchanged.
 
 ```
 # This assumes the asset has been deleted
