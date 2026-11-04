@@ -120,7 +120,7 @@ Tue 18 Jul 2017 17:06:41 BST
 
 ## Delete asset
 
-`DELETE /assets/:id` marks the asset as having been deleted.
+`DELETE /assets/:id` marks the asset as having been deleted. It's idempotent: deleting an asset that's already been deleted succeeds and leaves the original deletion time intact.
 
 ```
 # Delete the asset
@@ -132,19 +132,14 @@ curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96 \
   "name":"tmp.txt",
   "content_type":"text/plain",
   "file_url":"http://assets-origin.dev.gov.uk/media/597b098a759b743e0b759a96/tmp.txt",
-  "state":"clean"
-}
-
-# Confirm that it's been deleted
-curl http://asset-manager.dev.gov.uk/assets/597b098a759b743e0b759a96
-{
-  "_response_info":{"status":"not found"}
+  "state":"clean",
+  "deleted":true
 }
 ```
 
 ## Restore asset
 
-`POST /assets/:id/restore` restores a previously deleted asset.
+`POST /assets/:id/restore` restores a previously deleted asset. It's idempotent: restoring an asset that isn't deleted succeeds and leaves it unchanged.
 
 ```
 # This assumes the asset has been deleted

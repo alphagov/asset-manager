@@ -488,6 +488,22 @@ RSpec.describe AssetsController, type: :controller do
         end
       end
 
+      context "with an asset that has already been deleted" do
+        let(:user) { stub_user }
+        let(:asset) { FactoryBot.create(:deleted_asset, user:) }
+
+        it "responds with a success status" do
+          delete :destroy, params: { id: asset.id }
+
+          expect(response).to have_http_status(:success)
+        end
+
+        it "leaves the original deletion time intact" do
+          expect { delete :destroy, params: { id: asset.id } }
+            .not_to(change { asset.reload.deleted_at })
+        end
+      end
+
       context "with an asset not owned by the user" do
         let(:user) { FactoryBot.create(:user) }
 

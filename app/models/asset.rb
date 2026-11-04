@@ -218,6 +218,8 @@ class Asset
   # can be used with 'deleted' and 'undeleted' scopes.
   #
   def destroy(_options = nil)
+    return true if deleted?
+
     update!(deleted_at: Time.zone.now)
   end
 
