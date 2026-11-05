@@ -1,4 +1,4 @@
-ARG clam_version=1.3.1
+ARG clam_version=1.5.4
 ARG ruby_version=4.0
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
@@ -15,6 +15,8 @@ WORKDIR /src
 RUN curl -SLfso - "$clam_url" | tar -zxf - --strip-components=1
 
 WORKDIR /src/build
+# CVD_CERTS_DIRECTORY keeps the database signing certs out of /usr/local/etc,
+# because the Helm chart mounts the clamd/freshclam config over that directory.
 RUN install_packages \
       cmake pkg-config check libbz2-dev libcurl4-openssl-dev libjson-c-dev \
       libncurses-dev libpcre2-dev libxml2-dev zlib1g-dev cargo rustc \
@@ -23,6 +25,7 @@ RUN install_packages \
       -DCLAMAV_USER=app \
       -DCLAMAV_GROUP=app \
       -DCMAKE_BUILD_TYPE="Release" \
+      -DCVD_CERTS_DIRECTORY="/usr/local/share/clamav/certs" \
       -DDATABASE_DIRECTORY="/var/lib/clamav" \
       -DENABLE_CLAMONACC=OFF \
       -DENABLE_JSON_SHARED=OFF \
