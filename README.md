@@ -14,6 +14,8 @@ You can use the [GOV.UK Docker environment](https://github.com/alphagov/govuk-do
 
 **Use GOV.UK Docker to run any commands that follow.**
 
+The app *always* responds to asset requests by setting the `X-Accel-Redirect` response header and *not* sending the asset file in the response body. nginx is configured to proxy the request to the URL supplied in the `X-Accel-Redirect` response header. If you want to run the app standalone and you want to actually serve the asset file in the response body, you'll need something (e.g. nginx) in front of the Rails app.
+
 ### Running the test suite
 
 `bundle exec rspec`

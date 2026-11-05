@@ -31,6 +31,4 @@ passed to asset manager to prevent general public access to the asset.
 
 To apply bypass token authorisation to a draft asset, include the `auth_bypass_ids` key in the request body when creating or updating an
 asset. The value should be an array of auth bypass token IDs. The value must be an array because publishing apps may create
-multiple shareable preview links for a content item. An empty array means "no restrictions of this type". 
-
-
+multiple shareable preview links for a content item. An empty array means "no restrictions of this type".
