@@ -9,7 +9,7 @@ gem "bootsnap", require: false
 gem "carrierwave", "> 2.2.0", "< 3" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "csv"
-gem "gds-sso", "22.3.0"
+gem "gds-sso", "23.1.1"
 gem "govuk_app_config", ">= 9.27.0"
 gem "govuk_sidekiq"
 gem "jwt"
