@@ -1,0 +1,29 @@
+name: Build ClamAV image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - docker/clamav.Dockerfile
+      - .github/workflows/clamav-image.yml
+
+jobs:
+  clam-version:
+    runs-on: ubuntu-latest
+    outputs:
+      clam_version: ${{ steps.v.outputs.clam_version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: v
+        run: echo "clam_version=$(sed -n 's/^ARG clam_version=//p' docker/clamav.Dockerfile)" >> "$GITHUB_OUTPUT"
+
+  build-and-publish:
+    needs: clam-version
+    uses: alphagov/govuk-infrastructure/.github/workflows/build-push-arm-image.yml@main
+    with:
+      imageName: asset-manager-clamav
+      dockerfilePath: docker/clamav.Dockerfile
+      gitRef: ${{ github.sha }}
+      additionalTags: type=raw,value=${{ needs.clam-version.outputs.clam_version }}
+      timeoutMinutes: 15
