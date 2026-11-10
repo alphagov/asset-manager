@@ -264,13 +264,13 @@ GEM
     mini_magick (5.4.0)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.6)
+    minitest (6.1.0)
       drb (~> 2.0)
-      prism (~> 1.5)
-    mongo (2.23.1)
+      prism (>= 1.5, < 3)
+    mongo (2.26.1)
       base64
       bson (>= 4.14.1, < 6.0.0)
-    mongoid (9.1.0)
+    mongoid (9.1.1)
       activemodel (>= 5.1, < 8.2, != 7.0.0)
       concurrent-ruby (>= 1.0.5, < 2.0)
       mongo (>= 2.18.0, < 3.0.0)
@@ -780,7 +780,7 @@ DEPENDENCIES
   govuk_sidekiq
   jwt
   listen
-  mongo (~> 2.23.0)
+  mongo (~> 2.26.1)
   mongoid
   nokogiri
   observer
@@ -893,9 +893,9 @@ CHECKSUMS
   mime-types-data (3.2026.0701) sha256=cd8811e1fb89d836499ba0582368a10ee74cef929ba956d1d5ddca045e6a730f
   mini_magick (5.4.0) sha256=f120af581d9ed4ec52c57f35a67a605d112bb1d8f582d1415b147fda42d11d78
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
-  minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
-  mongo (2.23.1) sha256=da24d5546ccf672c2316bc7e350e7dc4b533081229e22305348412ead8853040
-  mongoid (9.1.0) sha256=ef7b50f4c84e636850c3431bc3c92f98481f4e1d147ff06a1c21242d0b242a9e
+  minitest (6.1.0) sha256=ff373595aa8888631e8a5463986a76b3845346ae6d7fa46e139c1633d418076e
+  mongo (2.26.1) sha256=ed47d4bc9d5c372976fa28ab3945878afaa8d0a9b6f7cbda7a0bdfd7e48157c5
+  mongoid (9.1.1) sha256=eaf0e14f34374fd7b8cb041e913d4c60daa66e1b841188f4635296bcdb2e3337
   mongoid-grid_fs (2.6.0) sha256=59a16bce6b77a222eceb35259a6eee1ae561d8498ea708bacd9114afd6107d9e
   msgpack (1.8.7) sha256=dfefec761b5f9047e6e8d95d2c7f8af4b3725d984a01942adc533aa819a2df33
   multi_xml (0.9.1) sha256=7ce766b59c17241ed62976caeae1fae9b2431b263398c35396239a68c4a64e57
