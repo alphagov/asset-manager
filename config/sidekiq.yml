@@ -4,3 +4,8 @@
   - default
   - low_priority
   - batch
+:scheduler:
+  :schedule:
+    requeue_unscanned_assets:
+      class: RequeueUnscannedAssetsJob
+      cron: "10 4 * * *"
