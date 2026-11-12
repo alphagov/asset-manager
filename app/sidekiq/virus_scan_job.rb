@@ -4,7 +4,7 @@ class VirusScanJob
   include Sidekiq::Job
   include EnsureFile
 
-  sidekiq_options lock: :until_executing
+  sidekiq_options lock: :until_executing, on_client_conflict: :replace
 
   def perform(asset_id)
     asset = Asset.find(asset_id)

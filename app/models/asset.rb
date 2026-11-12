@@ -60,7 +60,7 @@ class Asset
 
   field :deleted_at, type: Time
 
-  validates :file, presence: true, if: :unscanned?
+  validates :file, presence: true, if: ->(asset) { !asset.deleted? && asset.unscanned? }
 
   validates :uuid,
             presence: true,
@@ -248,7 +248,9 @@ class Asset
   end
 
   def schedule_virus_scan
-    VirusScanJob.perform_async(id.to_s) if unscanned? && redirect_url.blank?
+    if unscanned? && redirect_url.blank? && File.exist?(file.path)
+      VirusScanJob.perform_async(id.to_s)
+    end
   end
 
   def schedule_svg_batch_scan

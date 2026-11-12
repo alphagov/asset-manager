@@ -20,6 +20,77 @@ RSpec.describe VirusScanJob do
     end
   end
 
+  context "when a scan job for the same asset is queued but not yet consumed" do
+    let(:queue) { Sidekiq::Queue.new("default") }
+
+    around do |example|
+      Sidekiq::Testing.disable! { example.run }
+    end
+
+    before do
+      asset
+      queue.clear
+    end
+
+    after do
+      queue.clear
+      SidekiqUniqueJobs::Digests.new.delete_by_pattern("*", count: 10_000)
+    end
+
+    it "replaces the queued job" do
+      SidekiqUniqueJobs.use_config(enabled: true) do
+        initial_jid = described_class.perform_async(asset.id.to_s)
+
+        expect(initial_jid).to be_present
+        expect(queue.size).to eq(1)
+
+        replacement_jid = described_class.perform_async(asset.id.to_s)
+
+        expect(replacement_jid).to be_present
+        expect(replacement_jid).not_to eq(initial_jid)
+        expect(queue.size).to eq(1)
+        expect(queue.first.jid).to eq(replacement_jid)
+      end
+    end
+
+    it "replaces a queued job from a different request" do
+      SidekiqUniqueJobs.use_config(enabled: true) do
+        GdsApi::GovukHeaders.set_header(:govuk_request_id, "upload-request")
+        initial_jid = described_class.perform_async(asset.id.to_s)
+
+        GdsApi::GovukHeaders.set_header(:govuk_request_id, "replacement-request")
+        replacement_jid = described_class.perform_async(asset.id.to_s)
+
+        expect(replacement_jid).to be_present
+        expect(replacement_jid).not_to eq(initial_jid)
+        expect(queue.size).to eq(1)
+        expect(queue.first.jid).to eq(replacement_jid)
+      end
+    ensure
+      GdsApi::GovukHeaders.clear_headers
+    end
+
+    it "keeps a single job and stays re-enqueueable across repeated replacements" do
+      SidekiqUniqueJobs.use_config(enabled: true) do
+        3.times { described_class.perform_async(asset.id.to_s) }
+        final_jid = described_class.perform_async(asset.id.to_s)
+
+        expect(queue.size).to eq(1)
+        expect(queue.first.jid).to eq(final_jid)
+      end
+    end
+
+    it "leaves scans queued for other assets untouched" do
+      SidekiqUniqueJobs.use_config(enabled: true) do
+        this_jid = described_class.perform_async(asset.id.to_s)
+        another_asset = FactoryBot.create(:asset)
+        another_jid = described_class.perform_async(another_asset.id.to_s)
+
+        expect(queue.map(&:jid)).to contain_exactly(this_jid, another_jid)
+      end
+    end
+  end
+
   it "calls out to the VirusScanner to scan the file" do
     expect(scanner).to receive(:scan).with(asset.file.path)
 
