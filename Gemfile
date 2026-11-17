@@ -6,7 +6,7 @@ gem "addressable"
 gem "aws-sdk-core"
 gem "aws-sdk-s3"
 gem "bootsnap", require: false
-gem "carrierwave", "> 2.2.0", "< 3" # pin at v2 to avoid breaking changes
+gem "carrierwave", "> 2.2.0", "< 4" # pin at v2 to avoid breaking changes
 gem "carrierwave-mongoid", require: "carrierwave/mongoid"
 gem "csv"
 gem "gds-sso", "23.1.1"
