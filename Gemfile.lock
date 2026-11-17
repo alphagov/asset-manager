@@ -126,7 +126,7 @@ GEM
       mongoid-grid_fs (>= 1.3, < 3.0)
     climate_control (1.2.0)
     concurrent-ruby (1.3.8)
-    connection_pool (3.0.2)
+    connection_pool (3.0.3)
     crack (1.0.1)
       bigdecimal
       rexml
@@ -206,11 +206,11 @@ GEM
       rake (~> 13.3)
     googleapis-common-protos-types (1.25.0)
       google-protobuf (~> 4.26)
-    govuk_app_config (9.27.0)
+    govuk_app_config (9.27.1)
       connection_pool (< 4)
       logstasher (>= 2.1, < 4.0)
       opentelemetry-exporter-otlp (>= 0.25, < 0.35)
-      opentelemetry-instrumentation-all (>= 0.39.1, < 0.97.0)
+      opentelemetry-instrumentation-all (>= 0.39.1, < 0.98.0)
       opentelemetry-sdk (~> 1.2)
       plek (>= 4, < 6)
       prometheus_exporter (~> 2.3)
@@ -253,8 +253,8 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
-    logstasher (2.1.5)
-      activesupport (>= 5.2)
+    logstasher (3.0.0)
+      activesupport (>= 7.0)
       request_store
     loofah (2.25.3)
       crass (~> 1.0.2)
@@ -375,7 +375,7 @@ GEM
       opentelemetry-instrumentation-active_support (~> 0.10)
     opentelemetry-instrumentation-active_support (0.12.1)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-all (0.96.0)
+    opentelemetry-instrumentation-all (0.97.0)
       opentelemetry-instrumentation-active_model_serializers (~> 0.25.0)
       opentelemetry-instrumentation-anthropic (~> 0.5.0)
       opentelemetry-instrumentation-aws_lambda (~> 0.7.0)
@@ -395,7 +395,7 @@ GEM
       opentelemetry-instrumentation-http_client (~> 0.29.0)
       opentelemetry-instrumentation-httpx (~> 0.8.0)
       opentelemetry-instrumentation-koala (~> 0.24.0)
-      opentelemetry-instrumentation-lmdb (~> 0.26.0)
+      opentelemetry-instrumentation-lmdb (~> 0.27.0)
       opentelemetry-instrumentation-mongo (~> 0.26.0)
       opentelemetry-instrumentation-mysql2 (~> 0.34.0)
       opentelemetry-instrumentation-net_http (~> 0.29.0)
@@ -455,7 +455,7 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-koala (0.24.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-lmdb (0.26.1)
+    opentelemetry-instrumentation-lmdb (0.27.0)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-mongo (0.26.0)
       opentelemetry-instrumentation-base (~> 0.25)
@@ -552,7 +552,7 @@ GEM
     prometheus_exporter (2.3.1)
       webrick
     public_suffix (7.0.5)
-    puma (8.0.2)
+    puma (8.1.2)
       nio4r (~> 2.0)
     raabro (1.5.0)
     racc (1.8.1)
@@ -561,7 +561,7 @@ GEM
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
       rack (>= 3.0.0, < 4)
-    rack-proxy (1.0.2)
+    rack-proxy (1.0.3)
       rack (>= 2.0, < 4)
     rack-session (2.1.2)
       base64 (>= 0.1.0)
@@ -855,7 +855,7 @@ CHECKSUMS
   carrierwave-mongoid (1.5.0) sha256=2290084854dede7084f8b72275b6e9a3e83deec35f356a2f9e4adf40ae45177a
   climate_control (1.2.0) sha256=36b21896193fa8c8536fa1cd843a07cf8ddbd03aaba43665e26c53ec1bd70aa5
   concurrent-ruby (1.3.8) sha256=b2f1be836e968ccc78ccfce277ea79c72a88633f22306782c16ff23fb415d1e1
-  connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
+  connection_pool (3.0.3) sha256=e0f8ee3ee0039396753e06e8a2dde0ef028e40f7df29e97f57da7577c489cb5e
   crack (1.0.1) sha256=ff4a10390cd31d66440b7524eb1841874db86201d5b70032028553130b6d4c7e
   crass (1.0.8) sha256=7a0145c7a2c59f8e7923b3a69ce819c444823a00a5127d805298fea13be24efe
   csv (3.3.7) sha256=15a3f16f6628da8664d455eb634e7f22031bcf53044923caf56975109e71b9f8
@@ -891,7 +891,7 @@ CHECKSUMS
   google-protobuf (4.36.2-x86_64-linux-gnu) sha256=d25a820873e423f1d209ae8c672a4a28b019e2429debd0901d26670a0b4e14db
   google-protobuf (4.36.2-x86_64-linux-musl) sha256=0fa17686c896da96a60a705e56ddc7d4ff56413f52787c655bd4c9fb33ffe14f
   googleapis-common-protos-types (1.25.0) sha256=3eac7998e9e52f506d5a68d944284b8d2f6d65d744ab92a0cdd269198a009d15
-  govuk_app_config (9.27.0) sha256=dda3c7638ad725bdb688a6399914dab93aee023228245104bea5c99e59619321
+  govuk_app_config (9.27.1) sha256=b8d360bcea291de19cf16e11f03fdc17df4a798f750125a712e264354ddb7057
   govuk_sidekiq (12.0.0) sha256=378b0741330212d60c5bdd9787fd8122d71523ef9b61dfbf02d1f3ea666b85f2
   hashdiff (1.2.1) sha256=9c079dbc513dfc8833ab59c0c2d8f230fa28499cc5efb4b8dd276cf931457cd1
   hashie (5.2.0) sha256=357a22635195c2e3911fbbc3de9a7d528843d1f42ab0aae02171048f16332d72
@@ -909,7 +909,7 @@ CHECKSUMS
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   listen (3.10.1) sha256=4c3f32855657f348747da4dd2372ff3790d90a6b1d3e4f21a3706adb2d04783c
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
-  logstasher (2.1.5) sha256=095e9208d9a72b9da521909b3947cf3776c70517e933acbf071228617dcd0d02
+  logstasher (3.0.0) sha256=4f0649dbac58d31cbdb254070fa843e363f73c56f1c275220c3aa0fc944b7a23
   loofah (2.25.3) sha256=545f14eef0cc2a7de80df560530d593232b7c07e515c5c4e37532d9cb5b0185c
   mail (2.9.1) sha256=06574eca475253d6c18145dd70af80d0eb970182d55053497c5f4d797ea160e8
   marcel (1.0.4) sha256=0d5649feb64b8f19f3d3468b96c680bae9746335d02194270287868a661516a4
@@ -957,7 +957,7 @@ CHECKSUMS
   opentelemetry-instrumentation-active_record (0.13.0) sha256=239fceaae5a42e82dd9dd87bc63b1888bea32058dac0779b5ea36110fcb3a299
   opentelemetry-instrumentation-active_storage (0.5.1) sha256=7acbab82184db6bf00c52fdb4ce7e2f4e6a1c6e3e5585b100d43d5d3e2d69b5b
   opentelemetry-instrumentation-active_support (0.12.1) sha256=c90dc3bb2a02ab614f95bee56f8f14ba6164a7dfaee6f87a2ca3de30fa87413d
-  opentelemetry-instrumentation-all (0.96.0) sha256=8bd08dfd485f1ad7a559003dfc5e5031424991816ea7da6497ce0db5073b9689
+  opentelemetry-instrumentation-all (0.97.0) sha256=115c0681db32140a092560994c0638dc524eec6cf7a982dcc5c86fd676d7f5a2
   opentelemetry-instrumentation-anthropic (0.5.0) sha256=a6b1e1f324d35323d4714a7f204c9d34c46da07529877a725829420a4a44bb13
   opentelemetry-instrumentation-aws_lambda (0.7.1) sha256=e7d19e8fc850fe337f9b5b4b692d02cec5172908e71e265c55af726cbeaab37b
   opentelemetry-instrumentation-aws_sdk (0.13.0) sha256=9f8cc9c80f5a520b5307eebc9f511120d35135e024045a5b3b30d42de6dc7355
@@ -977,7 +977,7 @@ CHECKSUMS
   opentelemetry-instrumentation-http_client (0.29.1) sha256=ad9cb7458a360c390bb36b97b3ed5703c0dd18c4ae91b4d9e1e2792f4c07fc33
   opentelemetry-instrumentation-httpx (0.8.0) sha256=694b6e3eb6df04f1534d7713b5bd67ab5c2e2f2d5438f2c972542b1617378fec
   opentelemetry-instrumentation-koala (0.24.0) sha256=70acc5e23bec54de26f3741e35056523cf9746329e7789f5be99ba1424b955f9
-  opentelemetry-instrumentation-lmdb (0.26.1) sha256=a1a3274624ce520e7fa64e2b20635cca4b51bc9466ddaddddb1323a47da794b0
+  opentelemetry-instrumentation-lmdb (0.27.0) sha256=39a4b069a89b8db0aa2312a33259934f8063978d12b36aa0119f09f215cc09b5
   opentelemetry-instrumentation-mongo (0.26.0) sha256=511407dd4fe06cb11be54b40b0a38f684aba1fc0569a5f6982c013e07e370ffd
   opentelemetry-instrumentation-mysql2 (0.34.1) sha256=45945f3b4b8bd862ba87fbaaf7263eba3b840c65e2270215ec8e10827afb3a52
   opentelemetry-instrumentation-net_http (0.29.2) sha256=4256105f058404eb0bd43e4a987e48f9e48fcade06b40a388092c380b2e946eb
@@ -1016,12 +1016,12 @@ CHECKSUMS
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
   prometheus_exporter (2.3.1) sha256=c501a7a46c3a3b515b152eecfaeffa65fd0b4c02d8e617a476c6d67a91fc6a04
   public_suffix (7.0.5) sha256=1a8bb08f1bbea19228d3bed6e5ed908d1cb4f7c2726d18bd9cadf60bc676f623
-  puma (8.0.2) sha256=c8ed871dfbbe66448ea9ffd46692342d9804d4071522b52b5331b7b6e7b686fb
+  puma (8.1.2) sha256=3a6d9a34c9a4d0175eabd11b703939b5d43ebe08bc2534ac7dfd4df33a6ceedc
   raabro (1.5.0) sha256=3f998a7bc84f9c84df3ab580634d2e0a5bda4f0841168d56035f529c9877440a
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
   rack (3.2.8) sha256=1fecc85e463ebc7a2a945fff829ffcd549babeb1556384796fad946c28dc4ec7
   rack-protection (4.2.1) sha256=cf6e2842df8c55f5e4d1a4be015e603e19e9bc3a7178bae58949ccbb58558bac
-  rack-proxy (1.0.2) sha256=9f57da746be62ec3fed46646dbae2d50f7f4ddc39307d693affff9ffd431865b
+  rack-proxy (1.0.3) sha256=136482e77254550e8e52c7c5a3c02845e4c4573c228b300cd83559c5a08338ae
   rack-session (2.1.2) sha256=595434f8c0c3473ae7d7ac56ecda6cc6dfd9d37c0b2b5255330aa1576967ffe8
   rack-test (2.3.0) sha256=b118d177cc002c572fc1b6fd8d19c9ed5881a36e8d6f689f9e618f9f861241e8
   rack_strip_client_ip (0.0.2) sha256=322591f9b22ef9d748371097ffa945f82fc12d6b98be11cd2d973a3f32a3729f
