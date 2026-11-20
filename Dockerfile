@@ -1,40 +1,6 @@
-ARG clam_version=1.5.4
 ARG ruby_version=4.0
 ARG base_image=ghcr.io/alphagov/govuk-ruby-base:$ruby_version
 ARG builder_image=ghcr.io/alphagov/govuk-ruby-builder:$ruby_version
-
-
-FROM --platform=$TARGETPLATFORM $builder_image AS clam_builder
-SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
-
-ARG clam_version
-ARG clam_url_prefix=https://github.com/Cisco-Talos/clamav/releases/download
-ARG clam_url=$clam_url_prefix/clamav-${clam_version}/clamav-${clam_version}.tar.gz
-
-WORKDIR /src
-RUN curl -SLfso - "$clam_url" | tar -zxf - --strip-components=1
-
-WORKDIR /src/build
-# CVD_CERTS_DIRECTORY keeps the database signing certs out of /usr/local/etc,
-# because the Helm chart mounts the clamd/freshclam config over that directory.
-RUN install_packages \
-      cmake pkg-config check libbz2-dev libcurl4-openssl-dev libjson-c-dev \
-      libncurses-dev libpcre2-dev libxml2-dev zlib1g-dev cargo rustc \
-      ; \
-    cmake .. \
-      -DCLAMAV_USER=app \
-      -DCLAMAV_GROUP=app \
-      -DCMAKE_BUILD_TYPE="Release" \
-      -DCVD_CERTS_DIRECTORY="/usr/local/share/clamav/certs" \
-      -DDATABASE_DIRECTORY="/var/lib/clamav" \
-      -DENABLE_CLAMONACC=OFF \
-      -DENABLE_JSON_SHARED=OFF \
-      -DENABLE_MAN_PAGES=OFF \
-      -DENABLE_MILTER=OFF \
-      ; \
-    make DESTDIR=/clamav -j$(nproc) install ; \
-    rm -r /clamav/usr/local/{bin/clambc,include,lib/pkgconfig,share/doc}
-
 
 FROM --platform=$TARGETPLATFORM $builder_image AS app_builder
 
@@ -50,18 +16,17 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV GOVUK_APP_NAME=asset-manager
 
-# TODO: move ClamAV into a completely separate service or (better) stop trying
-# to run our own antimalware and use a hosted service (such as VirusTotal or
-# S3 Malware Scanning or similar).
-RUN install_packages libcurl4t64 shared-mime-info netcat-openbsd ; \
+# ClamAV now comes from the org's shared image (ghcr.io/alphagov/govuk/clamav)
+# Here we only need the clamdscan client and freshclam for signature updates
+RUN install_packages libcurl4t64 shared-mime-info netcat-openbsd \
+      clamdscan clamav-freshclam ; \
     mkdir -p /var/lib/clamav ; \
     chown app:app /var/lib/clamav
-COPY --from=clam_builder /clamav /
 # Crude smoke test and print library versions.
-RUN echo -n clamd:\ ; clamd --version -c /dev/null ; \
-    ldd $(which clamd) ; \
-    echo -n clamdscan:\ ; clamdscan --version -c /dev/null ; \
-    ldd $(which clamdscan)
+RUN echo -n clamdscan:\ ; clamdscan --version -c /dev/null ; \
+    ldd $(which clamdscan) ; \
+    echo -n freshclam:\ ; freshclam --version --config-file /dev/null ; \
+    ldd $(which freshclam)
 
 WORKDIR $APP_HOME
 COPY --from=app_builder $BUNDLE_PATH $BUNDLE_PATH
