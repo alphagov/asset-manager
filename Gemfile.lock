@@ -83,8 +83,8 @@ GEM
     auth-sanitizer (0.2.5)
       version_gem (~> 1.1, >= 1.1.16)
     aws-eventstream (1.4.1)
-    aws-partitions (1.1306.0)
-    aws-sdk-core (3.268.0)
+    aws-partitions (1.1311.0)
+    aws-sdk-core (3.271.1)
       aws-eventstream (~> 1, >= 1.4.1)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -838,8 +838,8 @@ CHECKSUMS
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   auth-sanitizer (0.2.5) sha256=eec0f5ee354931a1431be6f7025bc38d03db1731a2185726cbe6248e49bee177
   aws-eventstream (1.4.1) sha256=ceb6a99c61df4bb00344e54aed0351574beca24f87a0d1487d1d2ed80929ce96
-  aws-partitions (1.1306.0) sha256=a81c504476036b27b2cadc6ca40fc338aa91d70f42cbda183145e216aa75fefd
-  aws-sdk-core (3.268.0) sha256=471950504724daa017711705647245ed2dcb44afc658dda88ca38176fe0f4612
+  aws-partitions (1.1311.0) sha256=de5d8bb04d3f184317e7c02bbf1ee4ee5f5095fe1461b8fbd618ebba607a6f93
+  aws-sdk-core (3.271.1) sha256=ee006612eb374da44bfe580f28063e7bdc66cb45875f71b2d2a879012a089c48
   aws-sdk-kms (1.143.0) sha256=0f1286c8abf2b91817acffc0cd58580f7de703706c2b55e5be1cfc5cc7740dac
   aws-sdk-s3 (1.242.0) sha256=f0fd5ca4a41e26b84026021d19ff0c7a3ecae66536f5b38cc71b4562b75a5bba
   aws-sigv4 (1.12.1) sha256=6973ff95cb0fd0dc58ba26e90e9510a2219525d07620c8babeb70ef831826c00
