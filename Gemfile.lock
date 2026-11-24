@@ -206,13 +206,14 @@ GEM
       rake (~> 13.3)
     googleapis-common-protos-types (1.25.0)
       google-protobuf (~> 4.26)
-    govuk_app_config (9.27.1)
+    govuk_app_config (10.1.0)
       connection_pool (< 4)
       logstasher (>= 2.1, < 4.0)
       opentelemetry-exporter-otlp (>= 0.25, < 0.35)
       opentelemetry-instrumentation-all (>= 0.39.1, < 0.98.0)
       opentelemetry-sdk (~> 1.2)
-      plek (>= 4, < 6)
+      ostruct (~> 0.6)
+      plek (>= 4, < 7)
       prometheus_exporter (~> 2.3)
       puma (>= 5.6, < 9.0)
       rack-proxy (>= 0.7, < 2.0)
@@ -544,7 +545,7 @@ GEM
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
-    plek (5.3.2)
+    plek (6.0.0)
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.1)
@@ -891,7 +892,7 @@ CHECKSUMS
   google-protobuf (4.36.2-x86_64-linux-gnu) sha256=d25a820873e423f1d209ae8c672a4a28b019e2429debd0901d26670a0b4e14db
   google-protobuf (4.36.2-x86_64-linux-musl) sha256=0fa17686c896da96a60a705e56ddc7d4ff56413f52787c655bd4c9fb33ffe14f
   googleapis-common-protos-types (1.25.0) sha256=3eac7998e9e52f506d5a68d944284b8d2f6d65d744ab92a0cdd269198a009d15
-  govuk_app_config (9.27.1) sha256=b8d360bcea291de19cf16e11f03fdc17df4a798f750125a712e264354ddb7057
+  govuk_app_config (10.1.0) sha256=5c9659bd7949382dda944e7e37b024fa4bc900fddb7de8eab0a1cb01f0509faa
   govuk_sidekiq (12.0.0) sha256=378b0741330212d60c5bdd9787fd8122d71523ef9b61dfbf02d1f3ea666b85f2
   hashdiff (1.3.0) sha256=0b6724b8f3fef3961acc09489b175698ce0b7fd22c9cc5aa559d280cc6b65649
   hashie (5.2.0) sha256=357a22635195c2e3911fbbc3de9a7d528843d1f42ab0aae02171048f16332d72
@@ -1010,7 +1011,7 @@ CHECKSUMS
   pact-ffi (0.4.28.0-x86_64-linux-musl) sha256=eef72fa200bb50200e5e611afdcd583acfeae4e2d7c58703c0698edd13f47029
   parallel (1.28.0) sha256=33e6de1484baf2524792d178b0913fc8eb94c628d6cfe45599ad4458c638c970
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
-  plek (5.3.2) sha256=98bacbd22262e742910f29d766b65328a203eb35ba20f9876181dd76ce4c4420
+  plek (6.0.0) sha256=48a3e22b32892f5a30865262573886162ab664b4fb5db8b02043349754e7618d
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
   prettyprint (0.2.1) sha256=d555d57ea6d7cf001d4774b693546a6bd88bec1e778ddffb5c60b68ceec4b7d4
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
